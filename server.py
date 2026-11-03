@@ -3,7 +3,7 @@
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 from pathlib import Path
-import json, random, string, time, threading, socket, webbrowser, os, sys, io
+import json, random, string, time, threading, socket, webbrowser, os, sys, io, zlib, struct
 from datetime import datetime, timezone, timedelta
 from xlsx_report import generate_report
 
@@ -23,6 +23,40 @@ TEAM_NAMES = ['البرق ⚡','الصقور 🦅','النجوم ⭐','الفر�
 AVATARS = [f'{i:02}' for i in range(1, 13)]
 SCENES = ['cartoon','anime','cinematic']
 
+
+def qr_png(text, scale=9, border=4):
+    """Render an actual black-white QR as PNG (pure stdlib output, no Pillow required)."""
+    if qrcode is None:
+        raise RuntimeError('QR encoder unavailable')
+    qr=qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_M, box_size=1, border=0)
+    qr.add_data(text);qr.make(fit=True)
+    matrix=qr.get_matrix();side=len(matrix);n=side+border*2;width=n*scale
+    white=bytes([255,255,255]);black=bytes([8,37,72]);rows=[]
+    for y in range(n):
+        j=y-border
+        bits=[(0 <= j < side and 0 <= x-border < side and matrix[j][x-border]) for x in range(n)]
+        row=b'\x00'+b''.join(black if v else white for v in bits for _ in range(scale))
+        rows.extend([row]*scale)
+    def chunk(name,data): return struct.pack('!I',len(data))+name+data+struct.pack('!I',zlib.crc32(name+data)&0xffffffff)
+    return (b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('!2I5B',width,width,8,2,0,0,0))+
+            chunk(b'IDAT',zlib.compress(b''.join(rows),8))+chunk(b'IEND',b''))
+
+def qr_svg(text):
+    if qrcode is None: raise RuntimeError('QR encoder unavailable')
+    qr=qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_M,box_size=1,border=0)
+    qr.add_data(text);qr.make(fit=True)
+    matrix=qr.get_matrix();border=4;size=len(matrix)+border*2
+    # Horizontal run-length rectangles keep the image compact, portable and crisp on every browser.
+    rects=[]
+    for y,row in enumerate(matrix):
+        i=0
+        while i<len(row):
+            if not row[i]: i+=1;continue
+            j=i+1
+            while j<len(row) and row[j]:j+=1
+            rects.append(f'<rect x="{i+border}" y="{y+border}" width="{j-i}" height="1"/>');i=j
+    svg=f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {size} {size}" width="300" height="300" shape-rendering="crispEdges"><rect width="{size}" height="{size}" fill="white"/><g fill="#082548">'+''.join(rects)+'</g></svg>'
+    return svg.encode('utf-8')
 
 def now_ms(): return int(time.time()*1000)
 def rid(n=18): return ''.join(random.choice(string.ascii_letters+string.digits) for _ in range(n))
@@ -308,11 +342,15 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path=='/api/status':
             base=public_base(self); return self.send_json({'ok':True,'mode':('cloud' if IS_CLOUD else 'local'),'student_url':base+'/student.html','teacher_url':base+'/', 'features':['qr','pin','teams','live-analytics','powerups','reactions','internet']})
         if u.path=='/api/qr':
-            text=(parse_qs(u.query).get('text') or [''])[0]
-            if not text or qrcode is None: return self.send_json({'ok':False,'error':'qr_unavailable'},404)
-            qr=qrcode.QRCode(version=None,error_correction=qrcode.constants.ERROR_CORRECT_M,box_size=8,border=3); qr.add_data(text); qr.make(fit=True)
-            img=qr.make_image(image_factory=qrcode.image.svg.SvgPathImage)
-            buf=io.BytesIO(); img.save(buf); return self.send_bytes(buf.getvalue(),'image/svg+xml; charset=utf-8')
+            qs=parse_qs(u.query);text=(qs.get('text') or [''])[0]
+            if not text or len(text)>2000: return self.send_json({'ok':False,'error':'invalid_qr_content'},400)
+            try:
+                if (qs.get('format') or ['png'])[0].lower()=='svg':
+                    return self.send_bytes(qr_svg(text),'image/svg+xml; charset=utf-8')
+                return self.send_bytes(qr_png(text),'image/png')
+            except Exception as e:
+                self.log_message('QR generation failure: %s',str(e))
+                return self.send_json({'ok':False,'error':'qr_unavailable'},503)
         if u.path=='/api/room/export.xlsx':
             qs=parse_qs(u.query); code=(qs.get('code') or [''])[0]; token=(qs.get('host') or [''])[0]
             with LOCK:
