@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: quiznova-arena-online
+    runtime: python
+    plan: free
+    buildCommand: "python --version"
+    startCommand: "python server.py"
+    healthCheckPath: /api/health
+    autoDeploy: true
