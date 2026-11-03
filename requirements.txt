@@ -1,1 +1,1 @@
-qrcode==8.2
+# QuizNova uses Python standard library and a vendored SVG QR encoder.

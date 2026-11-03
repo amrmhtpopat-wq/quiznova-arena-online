@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#5b2cff" />
+  <meta name="theme-color" content="#0099d5" />
   <title>QuizNova Arena</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="arena.css" />
+  <link rel="stylesheet" href="v7-theme.css" />
 </head>
 <body>
 <div class="ambient ambient-a"></div><div class="ambient ambient-b"></div>
@@ -181,6 +182,8 @@
           <div class="section-title"><div><div class="overline">LIVE GAME</div><h3>أنشئ غرفة لعب مباشرة</h3><p>بعد الضغط سيظهر لك QR ورمز من 6 أرقام ليدخل الطلاب فورًا.</p></div></div>
           <div class="live-config-grid">
             <label>الاختبار<select id="liveQuizSelect"></select></label>
+            <label>الشعبة (تظهر في Excel)<input id="liveSection" maxlength="75" placeholder="مثال: التاسع أ"></label>
+            <label>خلفية اللعبة<select id="liveBackground"><option value="cartoon">☁️ عالم كرتوني سماوي</option><option value="anime">🌸 عالم أنمي وسحب</option><option value="cinematic">🌌 أجواء سينمائية</option></select></label>
             <label>طريقة المنافسة<select id="liveMode"><option value="individual">👤 فردي — كل طالب لنفسه</option><option value="teams">👥 مجموعات — نقاط الفريق مجمّعة</option></select></label>
             <label>أسلوب اللعبة<select id="liveGameMode"><option value="classic">🎯 كلاسيكي</option><option value="speed">⚡ سرعة + نقاط زمن</option><option value="boss">👑 Boss — السؤال الأخير ×2</option><option value="zen">🧠 تقييم هادئ بدون نقاط</option></select></label>
             <label>حماية من النقل<select id="liveVariantMode"><option value="options" selected>🛡️ متزامن آمن — نفس السؤال وخيارات مختلفة</option><option value="models4">🔀 نماذج A/B/C/D — ترتيب أسئلة وخيارات مختلف</option><option value="same">📺 موحّد — نفس السؤال ونفس الخيارات</option></select></label>
@@ -206,7 +209,7 @@
     </section>
 
     <section class="view" id="view-settings">
-      <div class="grid-2"><div class="panel"><div class="overline">BRANDING</div><h3>الهوية</h3><div class="form-stack"><label>اسم المعلم<input id="teacherName" value="الأستاذ عكرمة التوبات"></label><label>اسم المدرسة<input id="schoolName" value="مدرسة الطيبة الأساسية للبنين"></label><label>اسم المنصة<input id="platformName" value="QuizNova"></label><button class="btn btn-primary" id="saveSettings">حفظ الإعدادات</button></div></div><div class="panel"><div class="overline">BACKUP</div><h3>النسخ الاحتياطي</h3><p>يحفظ الاختبارات وبنك الأسئلة والنتائج والإعدادات في ملف واحد.</p><div class="form-stack"><button class="btn btn-secondary" id="exportBackup">تصدير نسخة احتياطية</button><button class="btn btn-secondary" id="importBackup">استعادة نسخة احتياطية</button><input type="file" id="backupFile" accept="application/json" hidden></div><div class="tip-box"><strong>🔒 الخصوصية</strong><p>الاختبارات والنتائج الدائمة محفوظة في متصفح جهاز المعلم. الجلسة المباشرة تمر عبر خادم QuizNova أثناء اللعب؛ لا يحتاج الطالب إلى حساب.</p></div></div></div>
+      <div class="grid-2"><div class="panel"><div class="overline">BRANDING</div><h3>الهوية</h3><div class="form-stack"><label>اسم المعلم<input id="teacherName" value="الأستاذ عكرمة التوبات"></label><label>اسم المدرسة<input id="schoolName" value="مدرسة الطيبة الأساسية للبنين"></label><label>اسم المنصة<input id="platformName" value="QuizNova"></label><label>خلفية لوحة المعلم<select id="teacherBackground"><option value="cartoon">☁️ كرتونية سماوية</option><option value="anime">🌸 أنمي</option><option value="cinematic">🌌 سينمائية</option></select></label><button class="btn btn-primary" id="saveSettings">حفظ الإعدادات</button></div></div><div class="panel"><div class="overline">BACKUP</div><h3>النسخ الاحتياطي</h3><p>يحفظ الاختبارات وبنك الأسئلة والنتائج والإعدادات في ملف واحد.</p><div class="form-stack"><button class="btn btn-secondary" id="exportBackup">تصدير نسخة احتياطية</button><button class="btn btn-secondary" id="importBackup">استعادة نسخة احتياطية</button><input type="file" id="backupFile" accept="application/json" hidden></div><div class="tip-box"><strong>🔒 الخصوصية</strong><p>الاختبارات والنتائج الدائمة محفوظة في متصفح جهاز المعلم. الجلسة المباشرة تمر عبر خادم QuizNova أثناء اللعب؛ لا يحتاج الطالب إلى حساب.</p></div></div></div>
     </section>
   </main>
 </div>

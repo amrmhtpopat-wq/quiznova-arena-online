@@ -1,0 +1,75 @@
+/* QuizNova • Sky Edition — a curated visual identity for classroom play */
+:root{
+ --violet:#068bd5;--violet2:#36c4ef;--navy:#082e59;--cyan:#16cbe5;--bg:#d3f2ff;
+ --ink:#063653;--muted:#4d7590;--line:#9edbed;
+ --shadow:0 18px 50px rgba(4,83,141,.14);--softShadow:0 12px 28px rgba(3,81,153,.09)
+}
+body{background-color:#9edcff!important;background-image:linear-gradient(180deg,rgba(176,235,255,.31),rgba(22,126,204,.1)),url('/assets/backgrounds/cartoon.svg')!important;background-size:cover!important;background-position:center!important;background-attachment:fixed!important;color:#073c61!important}
+body[data-scene="anime"]{background-image:linear-gradient(180deg,rgba(207,239,255,.25),rgba(19,77,179,.14)),url('/assets/backgrounds/anime.svg')!important}
+body[data-scene="cinematic"]{background-image:linear-gradient(180deg,rgba(4,24,57,.52),rgba(3,67,129,.37)),url('/assets/backgrounds/cinematic.svg')!important}
+body:before{background:linear-gradient(105deg,rgba(207,248,255,.22),rgba(5,105,200,.09))!important;backdrop-filter:blur(1px)}
+.ambient,.bg-orb{display:none!important}
+button,input,select,textarea{font-family:'Segoe UI',Tahoma,Arial,sans-serif}
+/* Navigation feels like a designed game HUD rather than a generic admin panel */
+.sidebar{background:linear-gradient(180deg,#053f80ef,#0066a8eb 65%,#0d86c5f2)!important;box-shadow:18px 0 60px #07376733!important;border-inline-end:1px solid #d8f9ff44!important}
+.sidebar .brand h1,.sidebar .brand p,.nav-item,.nav-item span,.teacher-card strong,.teacher-card small{color:#e9fcff!important}
+.brand-logo,.student-brand .logo{background:linear-gradient(145deg,#0e64af,#11bdec)!important;box-shadow:0 12px 28px #003d9755!important;border:1px solid #8feaff99!important}
+.nav-item{border-radius:15px!important;transition:transform .2s ease,background .2s ease!important}
+.nav-item:hover,.nav-item.active{background:linear-gradient(95deg,#ffffff30,#b4f4ff20)!important;transform:translateX(-2px);box-shadow:inset 3px 0 #8ff3ff!important}
+.nav-ico{font-weight:900;filter:drop-shadow(0 2px 3px #042f7240)}
+.edition-badge,.teacher-card{background:#e7faff16!important;border:1px solid #8edffe37!important;color:#ecffff!important}
+.main{background:transparent!important}.topbar{background:rgba(220,250,255,.83)!important;backdrop-filter:blur(24px)!important;border-bottom:1px solid #80d7ec!important;box-shadow:0 5px 26px #08558622!important}.topbar h2{color:#064778!important}.topbar p{color:#517d9a!important}
+.local-badge{color:#005b97!important;background:#a0f5efbd!important;border:1px solid #64dcca!important}
+.btn-primary{background:linear-gradient(125deg,#0068bb,#14bbe6)!important;box-shadow:0 8px 25px #0b71c65a!important;color:#fff!important}
+.btn-primary:hover{filter:brightness(1.1)}.btn-secondary,.btn-soft,.book-chip{background:#dff6ffed!important;border:1px solid #9bd7ea!important;color:#075d88!important}
+.panel,.quiz-card,.bank-item,.stat-card,.question-card,.modal{background:linear-gradient(155deg,rgba(236,251,255,.96),rgba(184,229,248,.9))!important;box-shadow:0 13px 36px #06589322!important;border:1px solid #e4fbffde!important;backdrop-filter:blur(22px)!important}
+.panel h3,.panel h4,.stat-card strong,.bank-item h4,.quiz-card strong{color:#063b68!important}
+.stat-card,.mode-card,.bank-item{transition:transform .22s ease, box-shadow .22s ease!important}
+.stat-card:hover,.bank-item:hover{transform:translateY(-4px)!important;box-shadow:0 23px 48px #006eae2b!important}
+.stat-icon{background:linear-gradient(140deg,#b3f7ff,#44bde9)!important;color:#005f9e!important}
+.game-hero{background:linear-gradient(100deg,#033d7bda,#037abcbd 68%,#09b5d58a),url('/assets/backgrounds/cartoon.svg') center/cover!important;border:1px solid #e1ffff7a!important;box-shadow:0 22px 70px #00497664!important}
+body[data-scene="anime"] .game-hero{background:linear-gradient(100deg,#032d75cf,#0389c7a8),url('/assets/backgrounds/anime.svg') center/cover!important}
+body[data-scene="cinematic"] .game-hero{background:linear-gradient(100deg,#001b45d5,#0064add0),url('/assets/backgrounds/cinematic.svg') center/cover!important}
+.hero-copy h3 em{color:#8af6ff!important;text-shadow:0 4px 22px #0abce090!important}
+.hero-copy p{color:#e6faff!important}.stage-pin{color:#024f8e!important;background:linear-gradient(145deg,#f0fdff,#b8eeff)!important}
+.curriculum-ribbon{background:linear-gradient(90deg,#e7fbffea,#b1e8fae8)!important;border:1px solid #cffaff!important}
+.mode-card{border:1px solid #b9f8ffb0!important;box-shadow:0 11px 30px #06578d24!important}.mc-purple{background:linear-gradient(135deg,#0b6fbf,#00a7cd)!important}.mc-yellow{background:linear-gradient(135deg,#dcb44c,#e7a147)!important}.mc-red{background:linear-gradient(135deg,#c45f93,#da5c83)!important}.mc-blue{background:linear-gradient(135deg,#1779be,#39bbea)!important}.mc-green{background:linear-gradient(135deg,#04a6a5,#178e98)!important}.mc-gray{background:linear-gradient(135deg,#144c88,#33759b)!important}
+.generator-panel,.live-launch-card{background:linear-gradient(155deg,#defafff4,#b8eafaef)!important}.generator-grid input,.generator-grid select,.live-config-grid input,.live-config-grid select,.modal-grid input,.modal-grid select,.question-row input,.question-row select,.form-stack input,.form-stack select,textarea{background:#f2fcffec!important;border:1px solid #85cde8!important;color:#073d6f!important;border-radius:14px!important}
+.generator-grid input:focus,.live-config-grid input:focus,.live-config-grid select:focus,.modal-grid input:focus{border-color:#02add5!important;box-shadow:0 0 0 4px #0eb9e322!important}
+.type-pick,.leader-row,.player-chip{background:linear-gradient(140deg,#edfaff,#b9edfa)!important;border:1px solid #a6dcee!important}
+.type-pick.active,.type-pick:has(input:checked){background:#abf1fa!important;border-color:#1dadd8!important}
+.magic-logo,.ai-orb{background:linear-gradient(145deg,#006fb5,#13c3db)!important}
+.room-code-card{background:linear-gradient(120deg,#054989e8,#007bbad9),url('/assets/backgrounds/cartoon.svg') center/cover!important}
+.room-code{color:#fff;text-shadow:0 6px 18px #001f66a0}
+.live-info{background:linear-gradient(135deg,#00508e,#079fc4)!important}
+.player-avatar{background:linear-gradient(145deg,#bdefff,#39bde2)!important;padding:0!important;overflow:hidden;width:48px!important;height:48px!important;border-radius:15px!important}
+.player-avatar img{width:100%;height:100%;object-fit:cover}
+.leader-rank{background:linear-gradient(145deg,#0067b0,#00bcdf)!important;color:white!important}
+.round-results-hero{background:linear-gradient(145deg,#e6fbff,#a6def7)!important;border-radius:26px!important;padding:22px!important;border:1px solid #89dbf5!important}
+.correct-answer-box,.tip-box{background:#c5f4ff!important;border:1px solid #8ed9ee!important;color:#125475!important}
+.live-kpi{background:#e8faff!important}.answer-bar .bar-fill{background:linear-gradient(90deg,#0b93de,#25d6f0)!important}
+.live-kpi.good,.answer-bar.correct .bar-fill{background:#cbf5da!important}
+.btn-skip{background:linear-gradient(135deg,#ffb34c,#f07458)!important;border:1px solid #ffe2ad!important;color:#3e2705!important;font-weight:1000!important;box-shadow:0 9px 22px #e0924238!important}
+#liveClock{background:#073d77!important;color:#c6faff!important;font-size:16px;font-weight:1000;min-width:95px;text-align:center}
+.host-question-image{width:min(560px,100%);max-height:235px;object-fit:contain;display:block;margin:12px auto 18px;border-radius:20px;box-shadow:0 15px 33px #05528a29;background:#d8f6ff;padding:4px}
+.bank-art{width:100%;height:105px;object-fit:cover;display:block;border-radius:15px;margin:11px 0;box-shadow:0 8px 17px #0c91c333}
+.question-media-preview{max-height:155px;max-width:220px;object-fit:contain;background:#b9f3ff;border-radius:14px}
+.round-podium-card,.podium-card{background:linear-gradient(145deg,#e9fbff,#b2eafb)!important;border:1px solid #8ce0f7!important}
+thead th{background:#9adef1!important;color:#07466b!important}
+/* Student and stage scenes share the same palette. */
+body:has(.student-shell),body:has(#stage){min-height:100vh;background-color:#0f80bc!important;background-image:linear-gradient(110deg,#044d8f80,#2bb2dd20),url('/assets/backgrounds/cartoon.svg')!important}
+body[data-scene="anime"]:has(.student-shell),body[data-scene="anime"]:has(#stage){background-image:linear-gradient(110deg,#044d8f60,#2bb2dd20),url('/assets/backgrounds/anime.svg')!important}
+body[data-scene="cinematic"]:has(.student-shell),body[data-scene="cinematic"]:has(#stage){background-image:linear-gradient(110deg,#02143865,#047aaf20),url('/assets/backgrounds/cinematic.svg')!important}
+body:has(.student-shell) .join-card,body:has(.student-shell) .question-card,body:has(.student-shell) .lobby-card,body:has(.student-shell) .round-screen,body:has(.student-shell) .finish-card{background:linear-gradient(155deg,#e8f9ffed,#b2e8fcf2)!important;border:1px solid #edffffd8!important;box-shadow:0 28px 60px #002f7066!important;backdrop-filter:blur(22px)!important;color:#063d69!important}
+body:has(.student-shell) .join-visual{background:linear-gradient(140deg,#024a8dc9,#00abddad),url('/assets/backgrounds/cartoon.svg') center/cover!important;border:1px solid #86ecff8e!important;box-shadow:0 25px 70px #003d8455!important}
+body[data-scene="anime"]:has(.student-shell) .join-visual{background-image:linear-gradient(140deg,#0450a0c7,#1896d8ad),url('/assets/backgrounds/anime.svg')!important}
+body[data-scene="cinematic"]:has(.student-shell) .join-visual{background-image:linear-gradient(140deg,#022352c7,#04568aab),url('/assets/backgrounds/cinematic.svg')!important}
+body:has(.student-shell) .student-brand{color:#fff!important;text-shadow:0 3px 12px #002456a8}
+body:has(.student-shell) .student-brand small{color:#bdf6ff!important}
+body:has(.student-shell) .primary{background:linear-gradient(130deg,#0067ba,#09bce7)!important;box-shadow:0 12px 29px #077cbb70!important;color:#fff!important}
+body:has(.student-shell) .question-card .answer{border:2px solid #b7ecff!important;box-shadow:0 11px 24px #053a8a26!important}
+body:has(.student-shell) .score-pill,body:has(.student-shell) .streak-pill{background:#a2e9ff!important;color:#003d6f!important}
+.avatar-picker-title{margin-top:15px;font-size:14px;font-weight:900;color:#074d7f}.avatar-picker{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin:8px 0 15px}.avatar-choice{border:3px solid transparent;background:#b4e9fc;border-radius:16px;padding:2px;display:grid;place-items:center;aspect-ratio:1;overflow:hidden;transition:.18s}.avatar-choice img{width:100%;height:100%;object-fit:cover}.avatar-choice.selected{border-color:#0878c9;transform:translateY(-3px) scale(1.035);box-shadow:0 8px 15px #0878c944}.avatar-choice:focus-visible{outline:3px solid #043963}
+.lobby-avatar{width:120px;height:120px;display:grid;place-items:center;margin:0 auto 12px;border-radius:30px;border:5px solid #fff;background:#54c6ec;box-shadow:0 18px 36px #086ca462;transform:rotate(-4deg)}.lobby-avatar img{width:100%;height:100%;object-fit:cover;border-radius:24px}.pill-avatar{width:32px;height:32px;border-radius:10px;vertical-align:middle;margin-left:5px}.player-pill{display:flex;gap:6px;align-items:center}
+.stage-avatar{width:38px;height:38px;vertical-align:middle;border-radius:12px;margin-left:8px;border:2px solid #b7f7ff}.stage-question-image{max-width:min(510px,60vw);max-height:225px;object-fit:contain;border-radius:18px;border:3px solid #b5f3ff;margin:8px auto;display:block}.stage-wrap,.stage-head{color:#f8ffff!important}.stage-wrap .question h1{text-shadow:0 4px 14px #034779a4}
+@media(max-width:760px){.sidebar{background:linear-gradient(#034c8a,#0587c0)!important}.avatar-picker{grid-template-columns:repeat(4,minmax(0,1fr))}.host-question-image{max-height:180px}#liveClock{font-size:12px;min-width:65px}.live-question-header{gap:7px;flex-wrap:wrap}.bank-art{height:90px}}
