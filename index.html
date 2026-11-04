@@ -9,8 +9,9 @@
 <link rel="stylesheet" href="/portal.css?v=10.4">
 <link rel="stylesheet" href="/v10-theme.css?v=10.2">
 <link rel="stylesheet" href="/v104-theme.css?v=10.4">
+<link rel="stylesheet" href="/v105-reference.css?v=10.4.1">
 </head>
-<body>
+<body class="v105-portal">
 <div class="glow g1"></div><div class="glow g2"></div>
 <section id="authWall" class="authwall">
   <div class="auth-art">
@@ -59,14 +60,14 @@
  <main class="main">
    <header class="topbar"><div><span class="kicker">YOUR QUIZNOVA WORKSPACE</span><h1 id="pageTitle">لوحة القيادة</h1><p id="pageDesc">نظرة شاملة على فصولك وتقدم طلابك</p></div><div class="topbar-actions"><span class="status" id="storageStatus">◉ جاري الاتصال...</span><button type="button" id="downloadBackup" class="minibtn" title="تنزيل نسخة احتياطية خاصة بحسابك">⬇ نسخة بياناتي</button><button type="button" id="refresh" class="icon" title="تحديث البيانات">↻</button><a href="/studio.html" class="primary">＋ اختبار جديد</a></div></header>
    <section id="panel-home" class="panel-view active">
-     <div class="hero"><div><div class="kicker">LEVEL UP EDUCATION</div><h2>مرحبًا في عالم<br><em>QuizNova Arena</em></h2><p id="welcome">لوحة القيادة لجميع موادك وشعبك.</p><div class="hero-buttons"><a class="primary" href="/studio.html#live">▶ ابدأ تحديًا مباشرًا</a><a class="ghost" href="/studio.html#generator">✦ أنشئ أسئلة</a></div></div><div class="hero-illustration"><div class="trophy">🏆</div><div class="float f1">✧ MULTI-TEACHER</div><div class="float f2">🎮 LIVE ARENA</div><div class="float f3">⚡ XP & LEVELS</div></div></div>
+     <div class="hero"><div><div class="kicker">LEVEL UP EDUCATION</div><h2>مرحبًا في عالم<br><em>QuizNova Arena</em></h2><p id="welcome">لوحة القيادة لجميع موادك وشعبك.</p><div class="hero-buttons"><a class="primary" href="/studio.html#live">▶ ابدأ تحديًا مباشرًا</a><a class="ghost" href="/studio.html#generator">✦ أنشئ أسئلة</a></div></div><div class="hero-illustration"><img class="v105-portal-hero-portrait" src="/assets/avatars3d/m07.svg" alt="" loading="lazy"><div class="trophy">🏆</div><div class="float f1">✧ MULTI-TEACHER</div><div class="float f2">🎮 LIVE ARENA</div><div class="float f3">⚡ XP & LEVELS</div></div></div>
      <div class="metric-grid"><div class="metric"><span>🎯</span><small>جلسات مكتملة</small><strong id="metSessions">0</strong></div><div class="metric"><span>👥</span><small>الطلاب المسجلون</small><strong id="metStudents">0</strong></div><div class="metric"><span>📈</span><small>متوسط الدقة</small><strong id="metAverage">0%</strong></div><div class="metric"><span>📝</span><small>محاولات الطلاب</small><strong id="metAttempts">0</strong></div></div>
      <div class="grid-two"><div class="pane"><div class="pane-head"><h3>🏆 ترتيب الشعب</h3><button class="minibtn" type="button" data-jump="classes">كل الشعب</button></div><div id="homeClasses"></div></div><div class="pane"><div class="pane-head"><h3>💡 المهارات التي تحتاج دعمًا</h3><button class="minibtn" type="button" data-jump="mastery">الخريطة الكاملة</button></div><div id="homeMastery"></div></div></div>
      <div class="pane"><div class="pane-head"><h3>🕘 أحدث الجلسات</h3><button class="minibtn" type="button" data-jump="history">السجل الكامل</button></div><div id="homeHistory"></div></div>
    </section>
    <section id="panel-classes" class="panel-view"><div class="page-hero"><span class="kicker">CLASS WARS</span><h2>⚔️ حرب الشعب</h2><p>قارن أداء الشعب في مادّتك بعد انتهاء الجلسات؛ يحصل كل صف على تقييم عادل من 100.</p></div><div class="pane"><div class="pane-head"><h3>تصنيف الشعب</h3></div><div id="classesBoard"></div></div></section>
    <section id="panel-mastery" class="panel-view"><div class="page-hero"><span class="kicker">MASTERY MAP</span><h2>◈ خريطة إتقان المهارات</h2><p>اكتشف أي مهارة أتقنها الطلاب وأين تحتاج إلى إعادة الشرح.</p></div><div class="pane"><div class="pane-head"><h3>إتقان نتاجات التعلم</h3></div><div id="masteryBoard"></div></div></section>
-   <section id="panel-students" class="panel-view"><div class="page-hero"><span class="kicker">SMART SCHOOL ID</span><h2>🪪 بطاقات الطلاب الذكية</h2><p>أضف الطالب مرة واحدة، وامنحه بطاقة QR ثابتة وصورة كرتونية ومستوى خبرة.</p></div>
+   <section id="panel-students" class="panel-view"><div class="page-hero"><span class="kicker">SMART SCHOOL ID</span><h2>🪪 بطاقات الطلاب الذكية</h2><p>أضف الطالب مرة واحدة، وامنحه بطاقة QR ثابتة وشخصية ثلاثية الأبعاد ومستوى خبرة.</p></div>
       <div class="grid-two"><div class="pane"><h3>➕ إضافة طالب</h3><form id="addStudentForm" class="student-form"><label for="newStudentName">اسم الطالب</label><input id="newStudentName" required maxlength="120" placeholder="اكتب اسم الطالب"><label for="newStudentClass">الصف والشعبة</label><input id="newStudentClass" required maxlength="80" placeholder="مثال: التاسع أ"><label for="newStudentAvatar">الصورة الشخصية</label><select id="newStudentAvatar"></select><img id="studentAvatarPreview" class="v10-avatar-preview" alt="معاينة الشخصية المختارة"><button class="primary" type="submit">إنشاء البطاقة</button></form></div>
       <div class="pane"><h3>📥 إضافة شعبة كاملة</h3><label for="bulkClass">الصف والشعبة</label><input id="bulkClass" maxlength="80" placeholder="مثال: التاسع ب"><label for="bulkNames">أسماء الطلاب (كل اسم في سطر)</label><textarea id="bulkNames" rows="5" placeholder="أحمد محمد&#10;سارة خالد&#10;..." ></textarea><button class="secondary" id="bulkImport" type="button">إضافة جميع الطلاب</button></div></div>
       <div class="pane"><div class="pane-head"><h3>بطاقات الطلاب <small>(<span id="studentCount">0</span>)</small></h3><button class="minibtn" id="printCards" type="button">🖨 طباعة بطاقات QR</button></div><div class="cards-board" id="studentsBoard"></div></div>
@@ -80,7 +81,7 @@
 </div>
 <div id="notification" class="toast hidden" role="status" aria-live="polite"></div>
 
-<script src="/portal.js?v=10.4" defer></script>
+<script src="/portal.js?v=10.4.1" defer></script>
 <script src="/portal-security.js?v=10.4" defer></script>
 </body>
 </html>
