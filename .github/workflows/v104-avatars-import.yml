@@ -1,0 +1,48 @@
+name: QuizNova one-time 3D avatar asset import
+on:
+  push:
+    branches: [v10-4-feature-lab]
+    paths: [.github/tmp/v104-avatar-urls.json]
+permissions:
+  contents: write
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install pillow
+      - name: Download eight independent 3D portraits and optimize for web
+        run: |
+          python - <<'PY'
+          import io,json,urllib.request
+          from pathlib import Path
+          from PIL import Image, ImageOps
+          manifest=Path('.github/tmp/v104-avatar-urls.json')
+          assets=json.loads(manifest.read_text())
+          assert len(assets)==8
+          root=Path('assets/avatars3d');root.mkdir(parents=True,exist_ok=True)
+          for item in assets:
+              ident=item['name']
+              assert ident in ['m%02d'%i for i in range(1,9)]
+              request=urllib.request.Request(item['url'],headers={'User-Agent':'Mozilla/5.0'})
+              with urllib.request.urlopen(request,timeout=40) as response:raw=response.read(18000000)
+              assert len(raw)>5000,'Asset unexpectedly tiny'
+              photo=Image.open(io.BytesIO(raw)).convert('RGB')
+              photo=ImageOps.fit(photo,(384,512),method=Image.Resampling.LANCZOS,centering=(.5,.43))
+              target=root/(ident+'.webp')
+              photo.save(target,'WEBP',quality=84,method=6)
+              print('Saved avatar',ident,'bytes',target.stat().st_size)
+          manifest.unlink()
+          PY
+      - name: Commit self-hosted portraits and remove one-time source URLs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/avatars3d/m*.webp .github/tmp/v104-avatar-urls.json
+          git commit -m "Save eight independent 3D character portraits as optimized local WebP assets [skip avatar import]"
+          git push
