@@ -1,0 +1,130 @@
+/*
+ QuizNova Arena V10.4.2 — contrast and accessible text remediation.
+ Every editable field is legible independently of its parent card's dark theme.
+ This file MUST load after v105-reference.css.
+*/
+:root{
+ --qn-field-bg:#f7fbff;
+ --qn-field-color:#0c2548;
+ --qn-field-border:#5a9ccd;
+ --qn-field-placeholder:#526b88;
+ --qn-body-ink:#edf7ff;
+}
+body.v105-studio,body.v105-portal,body.v105-student{
+ font-size:15px!important;line-height:1.65;letter-spacing:0;
+ text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;
+}
+body.v105-stage{font-size:17px;line-height:1.65}
+:is(body.v105-studio,body.v105-portal,body.v105-student) :is(h1,h2,h3,h4,th,b,strong){
+ letter-spacing:0;line-height:1.55
+}
+body.v105-studio :is(.sidebar,.nav-item,.topbar,.page-title) button,
+body.v105-portal :is(.sidebar,.topbar) button{
+ font-size:clamp(12px,1.05vw,14px)!important
+}
+body.v105-studio .form-grid label,body.v105-studio .form-stack label,
+body.v105-studio .live-config-grid label,body.v105-studio .generator-grid label,
+body.v105-studio .play-form label,
+body.v105-studio .v104-question-meta label,body.v105-studio .v104-question-support label,
+body.v105-studio .options-editor label,
+body.v105-portal .student-form label,body.v105-portal .auth-card label,
+body.v105-portal .pane label{
+ color:#d7ecff!important;
+ font-size:13px!important;
+ font-weight:800!important;line-height:1.7!important
+}
+/* The user reported white input backgrounds and nearly invisible white text.
+   Normalize all text-entry controls to consistent light surfaces and dark text. */
+:is(body.v105-studio,body.v105-portal,body.v105-student) input:not([type=checkbox]):not([type=radio]):not([type=color]):not([type=file]):not([type=range]):not([type=hidden]):not([type=button]):not([type=submit]):not([type=reset]),
+:is(body.v105-studio,body.v105-portal,body.v105-student) select,
+:is(body.v105-studio,body.v105-portal,body.v105-student) textarea{
+ background:var(--qn-field-bg)!important;
+ color:var(--qn-field-color)!important;
+ -webkit-text-fill-color:var(--qn-field-color)!important;
+ border:1.5px solid var(--qn-field-border)!important;
+ box-shadow:inset 0 1px 2px #06295710!important;
+ font-size:14px!important;
+ font-weight:700!important;
+ line-height:1.55!important;
+ border-radius:11px!important;
+ opacity:1!important;
+ color-scheme:light!important;
+ min-height:42px;
+ padding:10px 12px!important;
+}
+:is(body.v105-studio,body.v105-portal,body.v105-student) textarea{
+ min-height:85px;resize:vertical!important
+}
+:is(body.v105-studio,body.v105-portal,body.v105-student) :is(input,textarea)::placeholder{
+ color:var(--qn-field-placeholder)!important;
+ -webkit-text-fill-color:var(--qn-field-placeholder)!important;
+ opacity:1!important;
+ font-weight:500!important
+}
+:is(body.v105-studio,body.v105-portal,body.v105-student) :is(select,option,optgroup){
+ color:var(--qn-field-color)!important;
+ background:var(--qn-field-bg)!important;
+}
+:is(body.v105-studio,body.v105-portal,body.v105-student) :is(input,select,textarea):focus-visible{
+ border-color:#127ac5!important;
+ box-shadow:0 0 0 3px #32c1ff88,inset 0 1px 2px #152c5015!important;
+ outline:none!important
+}
+:is(body.v105-studio,body.v105-portal,body.v105-student) :is(input,select,textarea):disabled{
+ background:#dce9f5!important;color:#415a73!important;opacity:.8!important
+}
+:is(body.v105-studio,body.v105-portal,body.v105-student) input[type=checkbox],
+:is(body.v105-studio,body.v105-portal,body.v105-student) input[type=radio]{
+ accent-color:#7450fa!important;
+ width:18px;min-width:18px;height:18px;
+ opacity:1!important
+}
+/* Explicitly correct legacy mixed light cards/dark cards. */
+body.v105-studio :is(.form-grid,.question-card,.bank-toolbar,.search-row,.options-editor,.question-row,.v104-question-meta,.v104-question-support) input:not([type=checkbox]):not([type=radio]),
+body.v105-studio :is(.form-grid,.question-card,.bank-toolbar,.search-row,.options-editor,.question-row,.v104-question-meta,.v104-question-support) select,
+body.v105-studio :is(.form-grid,.question-card,.bank-toolbar,.search-row,.options-editor,.question-row,.v104-question-meta,.v104-question-support) textarea{
+ color:var(--qn-field-color)!important;
+ background:var(--qn-field-bg)!important;
+ -webkit-text-fill-color:var(--qn-field-color)!important
+}
+body.v105-studio .type-pick,
+body.v105-studio .v104-idea-grid button,
+body.v105-studio .question-top,
+body.v105-studio .question-card label{
+ font-size:13px!important;line-height:1.6!important
+}
+body.v105-studio #view-builder .question-card :is(.v104-question-meta,.v104-question-support,.v104-estimate) :is(input,textarea,select){
+ background:var(--qn-field-bg)!important;
+ color:var(--qn-field-color)!important;
+ -webkit-text-fill-color:var(--qn-field-color)!important;
+}
+body.v105-studio .question-card .v104-q-main textarea{min-height:115px}
+body.v105-studio .v104-builder-progress{
+ color:#e8f9ff!important;border-color:#68e6ffba!important
+}
+body.v105-studio .v104-builder-progress :is(b,span,small){color:#e9f9ff!important}
+body.v105-studio .v104-guide{color:#d8edff!important}
+body.v105-studio #view-live .v104-team-selector select{background:#f3faff!important;color:#102b4e!important}
+body.v105-studio .add-question-wrap button{font-size:14px!important}
+body.v105-studio .hero-mini-badges span,
+body.v105-studio .curriculum-ribbon small{
+ color:#d9ebff!important;font-size:12px!important
+}
+body.v105-portal :is(.metric,.pane,.page-hero) small{color:#cde8ff!important}
+body.v105-portal .auth-card small{color:#b6d7ec!important}
+body.v105-student .question-card .answer{
+ color:#fff!important;font-size:clamp(15px,2vw,19px)!important;
+ line-height:1.55!important
+}
+body.v105-student .v105-answer-hint{color:#c4fff0!important;font-size:13px!important}
+body.v105-student .question-card .feedback{font-size:15px!important}
+@media(max-width:800px){
+ body.v105-studio .nav-item,body.v105-portal .nav{font-size:13px!important}
+ body.v105-studio .v104-question-meta{grid-template-columns:1fr 1fr}
+}
+@media(max-width:520px){
+ :is(body.v105-studio,body.v105-portal,body.v105-student) input:not([type=checkbox]):not([type=radio]), 
+ :is(body.v105-studio,body.v105-portal,body.v105-student) select,
+ :is(body.v105-studio,body.v105-portal,body.v105-student) textarea{font-size:16px!important}
+ body.v105-studio .v104-question-support{grid-template-columns:1fr!important}
+}
