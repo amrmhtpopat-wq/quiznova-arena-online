@@ -3,7 +3,7 @@
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 from pathlib import Path
-import json, random, string, time, threading, socket, webbrowser, os, sys, io, zlib, struct, re
+import json, random, string, time, threading, socket, webbrowser, os, sys, io, zlib, struct, re, math
 from datetime import datetime, timezone, timedelta
 from xlsx_report import generate_report
 import platform_store
@@ -111,6 +111,14 @@ def evaluate(q, ans):
     if t=='multi': return sorted(ans or []) == sorted(q.get('correct') or [])
     if t=='tf': return ans is q.get('correct')
     if t=='short': return any(norm(x)==norm(ans) for x in q.get('answers',[]))
+    if t=='estimate':
+        try:
+            if isinstance(ans,bool):return False
+            number=float(str(ans).strip().replace('٫','.').replace('،','.'))
+            expected=float(q.get('estimateAnswer'))
+            tolerance=float(q.get('tolerance',0))
+            return all(math.isfinite(v) for v in (number,expected,tolerance)) and tolerance>=0 and abs(number-expected)<=tolerance
+        except (ValueError,TypeError,OverflowError):return False
     if t=='order': return list(ans or []) == list(q.get('items',[]))
     if t=='match':
         pairs=q.get('pairs',[])
@@ -187,6 +195,7 @@ def correct_display(q):
         return '، '.join(q.get('options',[])[i] for i in q.get('correct',[]) if isinstance(i,int) and i < len(q.get('options',[])))
     if t=='tf': return 'صح' if q.get('correct') else 'خطأ'
     if t=='short': return ' / '.join(q.get('answers',[])[:3])
+    if t=='estimate': return f"{q.get('estimateAnswer','')} ± {q.get('tolerance',0)}"
     if t=='order': return ' ← '.join(q.get('items',[]))
     if t=='match': return ' | '.join(f"{p.get('left','')} ↔ {p.get('right','')}" for p in q.get('pairs',[]))
     return 'استطلاع بلا إجابة صحيحة'
@@ -221,7 +230,9 @@ def choose_team(room):
     counts={t:0 for t in teams}
     for p in room['players'].values():
         if p.get('team') in counts: counts[p['team']]+=1
-    return min(teams, key=lambda t:(counts[t], teams.index(t))) if teams else ''
+    if not teams:return ''
+    minimum=min(counts.values())
+    return random.choice([t for t in teams if counts[t]==minimum])
 
 def team_leaders(room):
     totals={t:{'name':t,'score':0,'correct':0,'members':0} for t in room.get('teamNames',[])}
@@ -415,8 +426,8 @@ class Handler(SimpleHTTPRequestHandler):
                 result=platform_store.query('SELECT 1 AS ok')
                 if not result or int(result['ok'])!=1:raise RuntimeError('db_not_ready')
             except Exception:
-                return self.send_json({'ok':False,'service':'quiznova-arena','version':'10.3','database':'unavailable'},503)
-            return self.send_json({'ok':True,'service':'quiznova-arena','version':'10.3','storage':platform_store.DATABASE_KIND,'database':'ready','rooms':len(ROOMS)})
+                return self.send_json({'ok':False,'service':'quiznova-arena','version':'10.4-beta','database':'unavailable'},503)
+            return self.send_json({'ok':True,'service':'quiznova-arena','version':'10.4-beta','storage':platform_store.DATABASE_KIND,'database':'ready','rooms':len(ROOMS)})
         if u.path=='/api/status':
             base=public_base(self); return self.send_json({'ok':True,'mode':('cloud' if IS_CLOUD else 'local'),'student_url':base+'/student.html','teacher_url':base+'/', 'features':['qr','pin','teams','live-analytics','powerups','reactions','internet','auth','student-cards','exams','classwars','mastery','persistent-reports']})
         if u.path=='/api/qr':
@@ -486,7 +497,7 @@ class Handler(SimpleHTTPRequestHandler):
                 if not (is_host or is_stage): return self.send_json({'ok':False,'error':'host_auth_required'},403)
                 # Only the authenticated host sees private per-student marks during an active exam.
                 exam_private=room.get('examMode') and room['status']!='finished' and not is_host
-                players=[{'name':p['name'],'level':p.get('level',1),'team':p.get('team',''),'model':p.get('model',''),'avatar':p.get('avatar','01'),'score':0 if exam_private else p['score'],'correct':0 if exam_private else p['correct'],'wrong':0 if exam_private else p['wrong'],'streak':0 if exam_private else p['streak']} for p in room['players'].values()]
+                players=[{'id':(p['id'] if is_host else ''),'name':p['name'],'level':p.get('level',1),'team':p.get('team',''),'model':p.get('model',''),'avatar':p.get('avatar','01'),'score':0 if exam_private else p['score'],'correct':0 if exam_private else p['correct'],'wrong':0 if exam_private else p['wrong'],'streak':0 if exam_private else p['streak']} for p in room['players'].values()]
                 qobj=room['quiz']['questions'][idx] if 0<=idx<total else None
                 stats=current_stats(room)
                 if (room.get('examMode') and room['status']!='finished') or (is_stage and room['status']=='question'):
@@ -495,7 +506,7 @@ class Handler(SimpleHTTPRequestHandler):
                     'code':code,'status':room['status'],'index':idx,'total':total,'players':players,'section':room.get('section',''),'quizTitle':room['quiz'].get('title',''),'createdAt':room.get('createdAt',0),'roundDurationMs':room.get('roundDurationMs',20000),'startedAt':room.get('startedAt',0),'roundEndReason':room.get('roundEndReason',''),'background':room.get('background','cartoon'),'requireCard':bool(room.get('requireCard')),'playType':room['playType'],'gameMode':room['gameMode'],
                     'question':(public_question(qobj) if qobj and room.get('variantMode')!='models4' else None),'question_text':(qobj.get('text','') if qobj and room.get('variantMode')!='models4' else ''),
                     'correctAnswer':(correct_display(qobj) if qobj and room.get('variantMode')!='models4' and (not room.get('examMode') or room['status']=='finished') and (not is_stage or room['status']!='question') else ''),'explanation':(qobj.get('explanation','') if qobj and room['status']!='question' and not room.get('examMode') else ''),'examMode':bool(room.get('examMode')),'cooperative':bool(room.get('cooperative')),'stats':stats,'variantMode':room.get('variantMode','options'),
-                    'leaders':(individual_leaders(room) if not room.get('examMode') or room['status']=='finished' else []),'teams':(team_leaders(room) if not room.get('examMode') or room['status']=='finished' else []),'teamNames':room.get('teamNames',[]),
+                    'leaders':(individual_leaders(room) if not room.get('examMode') or room['status']=='finished' else []),'teams':(team_leaders(room) if not room.get('examMode') or room['status']=='finished' else []),'teamNames':room.get('teamNames',[]),'teamAssignment':room.get('teamAssignment','random'),
                     'report':final_report(room) if room['status']=='finished' else [],
                     'questionReport':question_report(room) if room['status']=='finished' else []
                 }})
@@ -511,6 +522,7 @@ class Handler(SimpleHTTPRequestHandler):
             quiz=data.get('quiz'); play_type=data.get('playType','individual'); game_mode=data.get('gameMode','classic'); variant_mode=data.get('variantMode','options')
             if not isinstance(quiz,dict) or not isinstance(quiz.get('questions'),list) or not quiz['questions']: return self.send_json({'ok':False,'error':'invalid_quiz'},400)
             if play_type not in ('individual','teams'): play_type='individual'
+            team_assignment='manual' if data.get('teamAssignment')=='manual' and play_type=='teams' else 'random'
             team_count=max(2,min(6,int(data.get('teamCount',4) or 4)))
             if variant_mode not in ('same','options','models4'): variant_mode='options'
             exam=bool(data.get('examMode'))
@@ -524,10 +536,26 @@ class Handler(SimpleHTTPRequestHandler):
                 host_token=rid(36); stage_token=rid(30)
                 ROOMS[c]={'code':c,'quiz':q,'playType':play_type,'gameMode':game_mode,'status':'lobby','index':-1,'players':{},'createdAt':now_ms(),'startedAt':0,
                           'showFeedback':(bool(data.get('showFeedback',True)) and not exam),'powerupsEnabled':(bool(data.get('powerups',True)) and not exam),'examMode':exam,'maxAttempts':max(1,min(5,int(data.get('maxAttempts',1) or 1))),'requireCard':bool(data.get('requireCard',False)),'cooperative':(bool(data.get('cooperative')) and play_type=='teams' and not exam),'teacherId':teacher['id'],'schoolType':teacher.get('school_type','mixed'),'_persisted':False,'variantMode':variant_mode,'bossFinal':bool(variant_mode=='models4' and (game_mode=='boss' or quiz.get('settings',{}).get('bossEnabled'))),
-                          'teamNames':TEAM_NAMES[:team_count] if play_type=='teams' else [],'reactions':{},'hostToken':host_token,'stageToken':stage_token,'section':section,'background':background,'roundDurationMs':20000,'roundEndReason':''}
+                          'teamNames':TEAM_NAMES[:team_count] if play_type=='teams' else [],'teamAssignment':team_assignment,'reactions':{},'hostToken':host_token,'stageToken':stage_token,'section':section,'background':background,'roundDurationMs':20000,'roundEndReason':''}
             snapshot_room(ROOMS[c])
             root=public_base(self); base=root+'/student.html'; join=f'{base}?code={c}'
-            return self.send_json({'ok':True,'code':c,'student_url':base,'join_url':join,'playType':play_type,'teamNames':ROOMS[c]['teamNames'],'variantMode':variant_mode,'hostToken':host_token,'stageToken':stage_token})
+            return self.send_json({'ok':True,'code':c,'student_url':base,'join_url':join,'playType':play_type,'teamNames':ROOMS[c]['teamNames'],'teamAssignment':team_assignment,'variantMode':variant_mode,'hostToken':host_token,'stageToken':stage_token})
+        if u.path=='/api/room/team':
+            code=str(data.get('code','')).strip()
+            host_token=str(data.get('hostToken',''))
+            player_id=str(data.get('playerId',''))
+            team=str(data.get('team','')).strip()
+            with LOCK:
+                room=ROOMS.get(code)
+                if not room:return self.send_json({'ok':False,'error':'room_not_found'},404)
+                if not host_token or host_token!=room.get('hostToken'):return self.send_json({'ok':False,'error':'host_auth_required'},403)
+                if room['status']!='lobby' or room['playType']!='teams':return self.send_json({'ok':False,'error':'not_in_lobby'},409)
+                if team not in room['teamNames']:return self.send_json({'ok':False,'error':'invalid_team'},400)
+                player=room['players'].get(player_id)
+                if not player:return self.send_json({'ok':False,'error':'player_not_found'},404)
+                player['team']=team
+                snapshot_room(room)
+            return self.send_json({'ok':True,'team':team})
         if u.path=='/api/room/join':
             code=str(data.get('code','')).strip(); name=str(data.get('name','')).strip()[:60]
             avatar=str(data.get('avatar','01')).strip()
@@ -552,7 +580,7 @@ class Handler(SimpleHTTPRequestHandler):
                 if not name:return self.send_json({'ok':False,'error':'name_required'},400)
                 # prevent duplicate exact nickname in same room, but allow explicit suffix by student
                 if any(norm(x['name'])==norm(name) for x in room['players'].values()): return self.send_json({'ok':False,'error':'name_taken'},409)
-                team=choose_team(room) if room['playType']=='teams' else ''
+                team=choose_team(room) if room['playType']=='teams' and room.get('teamAssignment')!='manual' else ''
                 pid=rid(); model=''
                 total=len(room['quiz']['questions']); order=list(range(total))
                 if room.get('variantMode')=='models4':
@@ -568,11 +596,18 @@ class Handler(SimpleHTTPRequestHandler):
                 if not host_token or host_token != room.get('hostToken'): return self.send_json({'ok':False,'error':'host_auth_required'},403)
                 if action=='start':
                     if room['status']!='lobby': return self.send_json({'ok':False,'error':'already_started'},409)
+                    if room['playType']=='teams' and any(not p.get('team') for p in room['players'].values()):return self.send_json({'ok':False,'error':'team_missing'},409)
                     room['status']='question'; room['index']=0; room['startedAt']=now_ms();room['roundDurationMs']=round_duration_ms(room)
+                elif action=='shuffle-teams':
+                    if room['status']!='lobby' or room['playType']!='teams':return self.send_json({'ok':False,'error':'not_in_lobby'},409)
+                    players=list(room['players'].values());random.shuffle(players)
+                    names=list(room['teamNames']);random.shuffle(names)
+                    for i,player in enumerate(players):player['team']=names[i%len(names)]
                 elif action=='reveal':
                     if room['status']=='question': finish_round(room,'manual')
                 elif action=='next':
                     if room['status']=='lobby':
+                        if room['playType']=='teams' and any(not p.get('team') for p in room['players'].values()):return self.send_json({'ok':False,'error':'team_missing'},409)
                         room['status']='question';room['index']=0;room['startedAt']=now_ms();room['roundDurationMs']=round_duration_ms(room)
                     elif room['status']=='question':
                         finish_round(room,'manual')

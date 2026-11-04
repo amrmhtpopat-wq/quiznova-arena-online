@@ -8,9 +8,9 @@ DATABASE_URL = os.getenv('DATABASE_URL','').strip()
 LOCAL_DB = os.getenv('QUIZNOVA_SQLITE_PATH',str(Path(__file__).resolve().parent/'quiznova_local.db'))
 DATABASE_KIND = 'postgres' if DATABASE_URL else 'sqlite'
 SCHOOL_TYPES = ('boys','girls','mixed')
-AVATAR_3D_IDS = [f'b{i:02}' for i in range(1,17)] + [f'g{i:02}' for i in range(1,17)]
+AVATAR_3D_IDS = [f'b{i:02}' for i in range(1,17)] + [f'g{i:02}' for i in range(1,17)] + [f'm{i:02}' for i in range(1,9)]
 def avatar_pool(school_type):
-    return [a for a in AVATAR_3D_IDS if school_type=='mixed' or a[0]==('b' if school_type=='boys' else 'g')]
+    return [a for a in AVATAR_3D_IDS if school_type=='mixed' or (a[0] in ('b','m') if school_type=='boys' else a[0]=='g')]
 def inferred_school_type(school):
     school=str(school or '')
     if any(x in school for x in ('للبنين','بنين','boys')):return 'boys'
