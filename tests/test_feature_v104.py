@@ -34,6 +34,43 @@ class FeatureTests(unittest.TestCase):
         self.assertEqual(code,200,d)
         return d
 
+    def test_single_tap_answer_scores_before_clock_expires(self):
+        """The answer endpoint must score immediately without waiting for the clock."""
+        room_data={
+            'quiz':{'id':uuid.uuid4().hex,'title':'سباق السرعة','questions':[{
+                'id':'speedq','type':'single','text':'كم الناتج؟',
+                'options':['4','9','2','1'],'correct':[0],'time':90,'points':1000
+            }]},
+            'playType':'individual','gameMode':'speed','variantMode':'same'
+        }
+        code,room=self.api('/api/room/start',room_data,self.token)
+        self.assertEqual(code,200,room)
+        players=[]
+        for name in ('أحمد','محمد'):
+            status,p=self.api('/api/room/join',{'code':room['code'],'name':name,'avatar':'m01'})
+            self.assertEqual(status,200,p)
+            players.append(p)
+        status,_=self.api('/api/room/control',{
+            'code':room['code'],'hostToken':room['hostToken'],'action':'start'
+        })
+        self.assertEqual(status,200)
+        status,answer=self.api('/api/room/answer',{
+            'code':room['code'],'playerId':players[0]['playerId'],
+            'index':0,'answer':0,'elapsedMs':200000
+        })
+        self.assertEqual(status,200,answer)
+        self.assertTrue(answer['result']['correct'])
+        self.assertGreater(answer['result']['earned'],600)
+        status,state=self.api('/api/room/state?code='+room['code']+'&player='+players[0]['playerId'])
+        self.assertEqual(status,200,state)
+        self.assertTrue(state['room']['answeredCurrent'])
+        self.assertEqual(state['room']['status'],'question')
+        status,duplicate=self.api('/api/room/answer',{
+            'code':room['code'],'playerId':players[0]['playerId'],'index':0,'answer':0
+        })
+        self.assertEqual(status,200,duplicate)
+        self.assertTrue(duplicate['duplicate'])
+
     def test_numeric_estimation_boundaries(self):
         q={'type':'estimate','estimateAnswer':100,'tolerance':5}
         self.assertTrue(server.evaluate(q,95))

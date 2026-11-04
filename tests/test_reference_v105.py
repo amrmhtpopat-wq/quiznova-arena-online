@@ -46,6 +46,25 @@ class VisualAndDirectAnswerTests(unittest.TestCase):
         store=read('platform_store.py')
         self.assertIn("AVATAR_3D_IDS = [f'm{i:02}'",store)
 
+    def test_high_contrast_inputs_and_fresh_client_assets(self):
+        css=read('v106-contrast.css')
+        self.assertIn('--qn-field-color:#0c2548',css)
+        self.assertIn('--qn-field-bg:#f7fbff',css)
+        self.assertIn('color:var(--qn-field-color)!important',css)
+        self.assertIn('-webkit-text-fill-color:var(--qn-field-color)!important',css)
+        for page in ('index.html','studio.html','student.html','stage.html'):
+            html=read(page)
+            self.assertIn('v106-contrast.css?v=10.4.2',html)
+            self.assertGreater(html.index('v106-contrast.css'),html.index('v105-reference.css'))
+        online=read('student.js')
+        offline=read('app.js')
+        self.assertIn("$('.answer').forEach(b=>b.disabled=true)",online)
+        self.assertIn("$('.answer-btn').forEach(b=>b.disabled=true)",offline)
+        self.assertIn('void submitAnswer(session.currentRoomState)',online)
+        self.assertIn('void submitGameAnswer()',offline)
+        studio=read('studio.html')
+        self.assertIn('<option value="speed" selected>',studio)
+
     def test_teacher_photo_is_not_in_profile_card(self):
         dashboard=read('index.html')
         studio=read('studio.html')
