@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="v8-theme.css?v=8.2" />
 <link rel="stylesheet" href="/v10-theme.css?v=10.4">
 <link rel="stylesheet" href="/v104-theme.css?v=10.4">
-<link rel="stylesheet" href="/v105-reference.css?v=10.4.1">
+<link rel="stylesheet" href="/v105-reference.css?v=10.4.1"><link rel="stylesheet" href="/v106-contrast.css?v=10.4.2">
 </head>
 <body class="v105-studio">
 <div class="ambient ambient-a"></div><div class="ambient ambient-b"></div>
@@ -203,7 +203,7 @@
             <label>الشعبة (تظهر في Excel)<input id="liveSection" maxlength="75" placeholder="مثال: التاسع أ"></label>
             <label>خلفية اللعبة<select id="liveBackground"><option value="cartoon">☁️ عالم كرتوني سماوي</option><option value="anime">🌸 عالم أنمي وسحب</option><option value="cinematic">🌌 أجواء سينمائية</option></select></label>
             <label>طريقة المنافسة<select id="liveMode"><option value="individual">👤 فردي — كل طالب لنفسه</option><option value="teams">👥 مجموعات — نقاط الفريق مجمّعة</option></select></label>
-            <label>أسلوب اللعبة<select id="liveGameMode"><option value="classic">🎯 كلاسيكي</option><option value="speed">⚡ سرعة + نقاط زمن</option><option value="boss">👑 Boss — السؤال الأخير ×2</option><option value="zen">🧠 تقييم هادئ بدون نقاط</option></select></label>
+            <label>أسلوب اللعبة<select id="liveGameMode"><option value="classic">🎯 كلاسيكي (دون مكافأة سرعة)</option><option value="speed" selected>⚡ سرعة + نقاط زمن (افتراضي)</option><option value="boss">👑 Boss — السؤال الأخير ×2</option><option value="zen">🧠 تقييم هادئ بدون نقاط</option></select></label>
             <label>حماية من النقل<select id="liveVariantMode"><option value="options" selected>🛡️ متزامن آمن — نفس السؤال وخيارات مختلفة</option><option value="models4">🔀 نماذج A/B/C/D — ترتيب أسئلة وخيارات مختلف</option><option value="same">📺 موحّد — نفس السؤال ونفس الخيارات</option></select></label>
             <label>طريقة توزيع الطلاب على الفرق<select id="liveTeamAssignment"><option value="random" selected>🎲 عشوائي متوازن — تلقائي</option><option value="manual">✋ أنا أحدد فريق كل طالب</option></select></label>
             <label>عدد الفرق<select id="liveTeamCount"><option value="2">فريقان</option><option value="3">3 فرق</option><option value="4" selected>4 فرق</option><option value="5">5 فرق</option><option value="6">6 فرق</option></select></label>
@@ -245,6 +245,6 @@
 <script src="curriculum_bank.js"></script>
 <script src="curriculum_plus.js"></script>
 <script src="media_library.js"></script>
-<script src="studio-auth.js?v=10.4.1"></script>
+<script src="studio-auth.js?v=10.4.2"></script>
 </body>
 </html>
