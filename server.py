@@ -3,9 +3,12 @@
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 from pathlib import Path
-import json, random, string, time, threading, socket, webbrowser, os, sys, io, zlib, struct
+import json, random, string, time, threading, socket, webbrowser, os, sys, io, zlib, struct, re
 from datetime import datetime, timezone, timedelta
 from xlsx_report import generate_report
+import platform_api
+import platform_store
+platform_store.init()
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / 'vendor'))
@@ -20,7 +23,7 @@ LOCK = threading.RLock()
 PORT = int(os.environ.get('PORT', '8765'))
 IS_CLOUD = bool(os.environ.get('RENDER') or os.environ.get('RENDER_EXTERNAL_URL') or os.environ.get('QUIZNOVA_CLOUD'))
 TEAM_NAMES = ['البرق ⚡','الصقور 🦅','النجوم ⭐','الفرسان 🛡️','الرواد 🚀','الأبطال 🏆']
-AVATARS = [f'{i:02}' for i in range(1, 13)]
+AVATARS = platform_store.AVATAR_3D_IDS + [f'{i:02}' for i in range(1, 21)]
 SCENES = ['cartoon','anime','cinematic']
 
 
@@ -69,9 +72,24 @@ def code6():
 def shuffle(a):
     b=list(a); random.shuffle(b); return b
 
+def safe_image_path(value):
+    if not isinstance(value,str):return ''
+    value=value.strip()
+    if re.fullmatch(r'/assets/[a-zA-Z0-9_./-]{1,180}\.(?:png|jpg|jpeg|webp|svg)',value):
+        return value if '..' not in value else ''
+    if len(value)<8_000_000 and re.fullmatch(r'data:image/(?:png|jpeg|webp);base64,[A-Za-z0-9+/=]+',value):
+        return value
+    return ''
+
 def prepare_quiz(quiz, game_mode, variant_mode='options'):
     q=json.loads(json.dumps(quiz, ensure_ascii=False))
     questions=q.get('questions',[])
+    if len(questions)>250:questions=questions[:250]
+    for x in questions:
+        x['image']=safe_image_path(x.get('image',''))
+        x['text']=str(x.get('text',''))[:2500]
+        x['explanation']=str(x.get('explanation',''))[:1500]
+        x['skill']=str(x.get('skill') or x.get('topic') or x.get('unit') or 'مهارات عامة')[:150]
     settings=q.get('settings',{})
     # In four-model mode each model receives its own question order, so keep the canonical list stable.
     if variant_mode!='models4' and settings.get('randomQuestions'):
@@ -103,7 +121,7 @@ def evaluate(q, ans):
 
 def public_question(q):
     t=q.get('type')
-    out={k:q.get(k) for k in ('id','type','text','time','points','image','difficulty','_boss','source','sourcePage') if k in q}
+    out={k:q.get(k) for k in ('id','type','text','time','points','image','difficulty','_boss','source','sourcePage','unit','skill') if k in q}
     if t in ('single','multi','poll'): out['options']=q.get('options',[])
     elif t=='order': out['items']=shuffle(q.get('items',[]))
     elif t=='match':
@@ -126,7 +144,7 @@ def public_question_for_player(room, p, round_idx):
     qidx=player_question_index(room,p,round_idx)
     q=room['quiz']['questions'][qidx]
     # Build a stable view so polling never changes the order on the student's screen.
-    out={k:q.get(k) for k in ('id','type','text','time','points','image','difficulty','_boss','source','sourcePage') if k in q}
+    out={k:q.get(k) for k in ('id','type','text','time','points','image','difficulty','_boss','source','sourcePage','unit','skill') if k in q}
     seed=f"{room['code']}:{p['id']}:{round_idx}:{q.get('id','q')}"
     rng=random.Random(seed)
     t=q.get('type')
@@ -186,7 +204,10 @@ def public_base(handler):
     if configured: return configured
     proto=(handler.headers.get('X-Forwarded-Proto') or ('https' if IS_CLOUD else 'http')).split(',')[0].strip()
     host=(handler.headers.get('X-Forwarded-Host') or handler.headers.get('Host') or '').split(',')[0].strip()
-    if host: return f'{proto}://{host}'
+    if host:
+        if not IS_CLOUD and (host.startswith('localhost:') or host.startswith('127.0.0.1:') or host in ('localhost','127.0.0.1')):
+            return f"http://{local_ip()}:{handler.server.server_port}"
+        return f'{proto}://{host}'
     return f'http://{local_ip()}:{PORT}'
 
 def cleanup_rooms():
@@ -224,6 +245,10 @@ def round_duration_ms(room):
         return max(5000, max(int(room['quiz']['questions'][i].get('time',20) or 20) for i in qidxs)*1000)
     return max(5000,int(room['quiz']['questions'][idx].get('time',20) or 20)*1000)
 
+def snapshot_room(room):
+    try:platform_store.save_active_room(room)
+    except Exception as exc:print('[QuizNova] room snapshot error:',repr(exc),flush=True)
+
 def maybe_end_round(room):
     if room['status']!='question': return False
     players=list(room['players'].values())
@@ -231,23 +256,60 @@ def maybe_end_round(room):
     time_up=now_ms() >= room.get('startedAt',0)+room.get('roundDurationMs',20000)
     everyone=bool(players) and all(index in p['answers'] for p in players)
     if time_up or everyone:
-        room['status']='results'
-        room['roundEndedAt']=now_ms()
-        room['roundEndReason']='timeout' if time_up else 'all_answered'
+        finish_round(room,'timeout' if time_up else 'all_answered')
         return True
     return False
 
+def persist_finished_room(room):
+    if room.get('_persisted') or not room.get('teacherId'):return
+    room['_persisted']=True
+    try:
+        platform_store.persist_room(room, final_report(room), question_report(room))
+    except Exception as exc:
+        room['_persisted']=False
+        print('[QuizNova] persistence error:',repr(exc),flush=True)
+
+def finish_round(room,reason='manual'):
+    if room['status']!='question':return
+    if room.get('cooperative') and room['playType']=='teams':
+        idx=str(room['index'])
+        for team in room.get('teamNames',[]):
+            members=[p for p in room['players'].values() if p.get('team')==team]
+            if not members:continue
+            votes=[p.get('answers',{}).get(idx) for p in members]
+            full=bool(votes) and all(a is not None and a.get('correct') is True for a in votes)
+            # Team consensus means every member chose the same canonical correct answer.
+            if full:
+                votes_json=[json.dumps(a.get('answer'),sort_keys=True,ensure_ascii=False) for a in votes]
+                full=len(set(votes_json))==1
+            for p,a in zip(members,votes):
+                if not a or a.get('consensusResolved'):continue
+                bonus=int(a.get('pendingTeamBonus',0)) if full else 0
+                p['score']+=bonus
+                a['earned']+=bonus;a['consensusResolved']=True
+                a['teamConsensus']=full
+                if p.get('lastResult',{}).get('index')==room['index']:
+                    p['lastResult']['earned']+=bonus
+                    p['lastResult']['teamConsensus']=full
+    room['status']='results'
+    room['roundEndedAt']=now_ms()
+    room['roundEndReason']=reason
+    snapshot_room(room)
+
 def next_round(room):
+    if room['status']=='question':finish_round(room,'skip')
     room['index']+=1
     if room['index']>=len(room['quiz']['questions']):
         room['status']='finished'
         room['finishedAt']=now_ms()
         room['index']=len(room['quiz']['questions'])
+        persist_finished_room(room)
     else:
         room['status']='question'
         room['startedAt']=now_ms()
         room['roundDurationMs']=round_duration_ms(room)
         room['roundEndReason']=''
+    snapshot_room(room)
 
 def current_stats(room):
     idx=room['index']
@@ -315,7 +377,7 @@ def question_report(room):
         skipped=[p['name'] for p in players if p['name'] not in answered_names]
         scored=[a for p,a in hits if a.get('correct') is not None]
         acc=round(len(correct)/len(scored)*100) if scored else 0
-        rows.append({'index':qidx,'text':q.get('text',''),'type':q.get('type',''),'correctAnswer':correct_display(q),'correctStudents':correct,'wrongStudents':wrong,'skippedStudents':skipped,'accuracy':acc,'source':q.get('source',''),'sourcePage':q.get('sourcePage','')})
+        rows.append({'index':qidx,'text':q.get('text',''),'type':q.get('type',''),'correctAnswer':correct_display(q),'correctStudents':correct,'wrongStudents':wrong,'skippedStudents':skipped,'accuracy':acc,'source':q.get('source',''),'sourcePage':q.get('sourcePage',''),'skill':q.get('skill') or q.get('unit') or 'مهارات عامة','unit':q.get('unit',''),'explanation':q.get('explanation','')})
     return rows
 
 class Handler(SimpleHTTPRequestHandler):
@@ -323,7 +385,11 @@ class Handler(SimpleHTTPRequestHandler):
         parsed=urlparse(path).path
         rel=parsed.lstrip('/') or 'index.html'
         safe=(ROOT/rel).resolve()
-        if ROOT not in safe.parents and safe!=ROOT: return str(ROOT/'index.html')
+        if ROOT not in safe.parents and safe!=ROOT:return str(ROOT/'__not_found__')
+        # Never expose database credentials, Python sources or other private server files.
+        if safe.is_dir():return str(ROOT/'__not_found__')
+        allowed={'.html','.js','.css','.svg','.png','.jpg','.jpeg','.webp','.ico','.woff','.woff2'}
+        if safe.suffix.lower() not in allowed:return str(ROOT/'__not_found__')
         return str(safe)
     def log_message(self, fmt, *args):
         sys.stdout.write('[QuizNova] '+fmt%args+'\n')
@@ -332,15 +398,21 @@ class Handler(SimpleHTTPRequestHandler):
     def send_json(self,obj,status=200):
         data=json.dumps(obj,ensure_ascii=False).encode('utf-8'); self.send_bytes(data,'application/json; charset=utf-8',status)
     def read_json(self):
-        n=min(int(self.headers.get('Content-Length','0') or 0),5_000_000)
+        n=min(int(self.headers.get('Content-Length','0') or 0),13_000_000)
         raw=self.rfile.read(n) if n else b'{}'
         return json.loads(raw.decode('utf-8') or '{}')
     def do_GET(self):
         u=urlparse(self.path)
+        if platform_api.handle_get(self,u):return
         if u.path=='/api/health':
-            return self.send_json({'ok':True,'service':'quiznova-arena','rooms':len(ROOMS)})
+            try:
+                result=platform_store.query('SELECT 1 AS ok')
+                if not result or int(result['ok'])!=1:raise RuntimeError('db_not_ready')
+            except Exception:
+                return self.send_json({'ok':False,'service':'quiznova-arena','version':'10.0','database':'unavailable'},503)
+            return self.send_json({'ok':True,'service':'quiznova-arena','version':'10.0','storage':platform_store.DATABASE_KIND,'database':'ready','rooms':len(ROOMS)})
         if u.path=='/api/status':
-            base=public_base(self); return self.send_json({'ok':True,'mode':('cloud' if IS_CLOUD else 'local'),'student_url':base+'/student.html','teacher_url':base+'/', 'features':['qr','pin','teams','live-analytics','powerups','reactions','internet']})
+            base=public_base(self); return self.send_json({'ok':True,'mode':('cloud' if IS_CLOUD else 'local'),'student_url':base+'/student.html','teacher_url':base+'/', 'features':['qr','pin','teams','live-analytics','powerups','reactions','internet','auth','student-cards','exams','classwars','mastery','persistent-reports']})
         if u.path=='/api/qr':
             qs=parse_qs(u.query);text=(qs.get('text') or [''])[0]
             if not text or len(text)>2000: return self.send_json({'ok':False,'error':'invalid_qr_content'},400)
@@ -351,6 +423,23 @@ class Handler(SimpleHTTPRequestHandler):
             except Exception as e:
                 self.log_message('QR generation failure: %s',str(e))
                 return self.send_json({'ok':False,'error':'qr_unavailable'},503)
+        if u.path=='/api/room/config':
+            qs=parse_qs(u.query); code=(qs.get('code') or [''])[0]
+            with LOCK:
+                room=ROOMS.get(code)
+                if not room:return self.send_json({'ok':False,'error':'room_not_found'},404)
+                school_type=room.get('schoolType','mixed')
+                return self.send_json({'ok':True,'schoolType':school_type,'avatars':platform_store.avatar_pool(school_type),
+                                      'section':room.get('section',''),'subject':room['quiz'].get('subject','عام'),
+                                      'examMode':bool(room.get('examMode')),'requireCard':bool(room.get('requireCard'))})
+        if u.path=='/api/card/resolve':
+            qs=parse_qs(u.query);card=(qs.get('card') or [''])[0];code=(qs.get('code') or [''])[0]
+            with LOCK:
+                room=ROOMS.get(code)
+                if not room:return self.send_json({'ok':False,'error':'room_not_found'},404)
+                s=platform_store.student_by_card(card,room.get('teacherId',''))
+                if not s:return self.send_json({'ok':False,'error':'invalid_card'},403)
+                return self.send_json({'ok':True,'name':s['name'],'avatar':s['avatar'],'className':s['class_name'],'level':1+s['xp']//500,'xp':s['xp']})
         if u.path=='/api/room/export.xlsx':
             qs=parse_qs(u.query); code=(qs.get('code') or [''])[0]; token=(qs.get('host') or [''])[0]
             with LOCK:
@@ -381,22 +470,26 @@ class Handler(SimpleHTTPRequestHandler):
                     leaders=team_leaders(room) if room['playType']=='teams' else individual_leaders(room)[:10]
                     return self.send_json({'ok':True,'room':{
                         'status':room['status'],'index':idx,'total':total,'playType':room['playType'],'gameMode':room['gameMode'],'variantMode':room.get('variantMode','options'),'model':p.get('model',''),
-                        'question':q,'startedAt':room.get('startedAt',0),'answeredCurrent':str(idx) in p['answers'],'lastResult':result,
-                        'playerScore':p['score'],'playerCorrect':p['correct'],'playerStreak':p['streak'],'team':p.get('team',''),
-                        'powerups':p.get('powerups',{}),'leaders':leaders,'quizTitle':room['quiz'].get('title',''),
-                        'showFeedback':room['showFeedback'],'powerupsEnabled':room['powerupsEnabled'],'background':room.get('background','cartoon'),'roundDurationMs':room.get('roundDurationMs',20000),'avatar':p.get('avatar','01')
+                        'question':q,'review':({'explanation':room['quiz']['questions'][player_question_index(room,p,idx)].get('explanation',''),'image':room['quiz']['questions'][player_question_index(room,p,idx)].get('image',''),'correctAnswer':correct_display(room['quiz']['questions'][player_question_index(room,p,idx)])} if room['status']=='results' and not room.get('examMode') and 0<=idx<total else None),'startedAt':room.get('startedAt',0),'answeredCurrent':str(idx) in p['answers'],'lastResult':(result if not room.get('examMode') else ({'index':idx,'correct':None,'earned':0} if result else None)),
+                        'playerScore':(p['score'] if not room.get('examMode') or room['status']=='finished' else 0),'playerCorrect':(p['correct'] if not room.get('examMode') or room['status']=='finished' else 0),'playerStreak':(p['streak'] if not room.get('examMode') else 0),'team':p.get('team',''),
+                        'powerups':p.get('powerups',{}),'leaders':(leaders if not room.get('examMode') or room['status']=='finished' else []),'examMode':bool(room.get('examMode')),'level':p.get('level',1),'quizTitle':room['quiz'].get('title',''),
+                        'showFeedback':(room['showFeedback'] and not room.get('examMode')),'powerupsEnabled':(room['powerupsEnabled'] and not room.get('examMode')),'background':room.get('background','cartoon'),'cooperative':bool(room.get('cooperative')),'roundDurationMs':room.get('roundDurationMs',20000),'avatar':p.get('avatar','01')
                     }})
                 is_host = bool(host) and host == room.get('hostToken')
                 is_stage = bool(stage) and stage == room.get('stageToken')
                 if not (is_host or is_stage): return self.send_json({'ok':False,'error':'host_auth_required'},403)
-                players=[{'name':p['name'],'team':p.get('team',''),'model':p.get('model',''),'avatar':p.get('avatar','01'),'score':p['score'],'correct':p['correct'],'wrong':p['wrong'],'streak':p['streak']} for p in room['players'].values()]
+                # Only the authenticated host sees private per-student marks during an active exam.
+                exam_private=room.get('examMode') and room['status']!='finished' and not is_host
+                players=[{'name':p['name'],'level':p.get('level',1),'team':p.get('team',''),'model':p.get('model',''),'avatar':p.get('avatar','01'),'score':0 if exam_private else p['score'],'correct':0 if exam_private else p['correct'],'wrong':0 if exam_private else p['wrong'],'streak':0 if exam_private else p['streak']} for p in room['players'].values()]
                 qobj=room['quiz']['questions'][idx] if 0<=idx<total else None
                 stats=current_stats(room)
+                if (room.get('examMode') and room['status']!='finished') or (is_stage and room['status']=='question'):
+                    stats={'answered':stats['answered'],'pending':stats['pending'],'correct':0,'wrong':0,'accuracy':0,'distribution':[], 'correctStudents':[], 'wrongStudents':[], 'reactions':{},'mixed':False,'models':[]}
                 return self.send_json({'ok':True,'room':{
-                    'code':code,'status':room['status'],'index':idx,'total':total,'players':players,'section':room.get('section',''),'quizTitle':room['quiz'].get('title',''),'createdAt':room.get('createdAt',0),'roundDurationMs':room.get('roundDurationMs',20000),'startedAt':room.get('startedAt',0),'roundEndReason':room.get('roundEndReason',''),'background':room.get('background','cartoon'),'playType':room['playType'],'gameMode':room['gameMode'],
+                    'code':code,'status':room['status'],'index':idx,'total':total,'players':players,'section':room.get('section',''),'quizTitle':room['quiz'].get('title',''),'createdAt':room.get('createdAt',0),'roundDurationMs':room.get('roundDurationMs',20000),'startedAt':room.get('startedAt',0),'roundEndReason':room.get('roundEndReason',''),'background':room.get('background','cartoon'),'requireCard':bool(room.get('requireCard')),'playType':room['playType'],'gameMode':room['gameMode'],
                     'question':(public_question(qobj) if qobj and room.get('variantMode')!='models4' else None),'question_text':(qobj.get('text','') if qobj and room.get('variantMode')!='models4' else ''),
-                    'correctAnswer':(correct_display(qobj) if qobj and room.get('variantMode')!='models4' else ''), 'stats':stats,'variantMode':room.get('variantMode','options'),
-                    'leaders':individual_leaders(room),'teams':team_leaders(room),'teamNames':room.get('teamNames',[]),
+                    'correctAnswer':(correct_display(qobj) if qobj and room.get('variantMode')!='models4' and (not room.get('examMode') or room['status']=='finished') and (not is_stage or room['status']!='question') else ''),'explanation':(qobj.get('explanation','') if qobj and room['status']!='question' and not room.get('examMode') else ''),'examMode':bool(room.get('examMode')),'cooperative':bool(room.get('cooperative')),'stats':stats,'variantMode':room.get('variantMode','options'),
+                    'leaders':(individual_leaders(room) if not room.get('examMode') or room['status']=='finished' else []),'teams':(team_leaders(room) if not room.get('examMode') or room['status']=='finished' else []),'teamNames':room.get('teamNames',[]),
                     'report':final_report(room) if room['status']=='finished' else [],
                     'questionReport':question_report(room) if room['status']=='finished' else []
                 }})
@@ -405,12 +498,18 @@ class Handler(SimpleHTTPRequestHandler):
         u=urlparse(self.path)
         try: data=self.read_json()
         except Exception: return self.send_json({'ok':False,'error':'bad_json'},400)
+        if platform_api.handle_post(self,u,data):return
         if u.path=='/api/room/start':
+            teacher=platform_api.authorized(self)
+            if not teacher:return
             quiz=data.get('quiz'); play_type=data.get('playType','individual'); game_mode=data.get('gameMode','classic'); variant_mode=data.get('variantMode','options')
             if not isinstance(quiz,dict) or not isinstance(quiz.get('questions'),list) or not quiz['questions']: return self.send_json({'ok':False,'error':'invalid_quiz'},400)
             if play_type not in ('individual','teams'): play_type='individual'
             team_count=max(2,min(6,int(data.get('teamCount',4) or 4)))
             if variant_mode not in ('same','options','models4'): variant_mode='options'
+            exam=bool(data.get('examMode'))
+            if exam: variant_mode='models4' if variant_mode=='models4' else 'options'
+            if bool(data.get('cooperative')) and play_type=='teams':variant_mode='options'
             c=code6(); q=prepare_quiz(quiz,game_mode,variant_mode)
             section=str(data.get('section') or quiz.get('section') or '').strip()[:75]
             background=str(data.get('background') or 'cartoon')
@@ -418,19 +517,33 @@ class Handler(SimpleHTTPRequestHandler):
             with LOCK:
                 host_token=rid(36); stage_token=rid(30)
                 ROOMS[c]={'code':c,'quiz':q,'playType':play_type,'gameMode':game_mode,'status':'lobby','index':-1,'players':{},'createdAt':now_ms(),'startedAt':0,
-                          'showFeedback':bool(data.get('showFeedback',True)),'powerupsEnabled':bool(data.get('powerups',True)),'variantMode':variant_mode,'bossFinal':bool(variant_mode=='models4' and (game_mode=='boss' or quiz.get('settings',{}).get('bossEnabled'))),
+                          'showFeedback':(bool(data.get('showFeedback',True)) and not exam),'powerupsEnabled':(bool(data.get('powerups',True)) and not exam),'examMode':exam,'maxAttempts':max(1,min(5,int(data.get('maxAttempts',1) or 1))),'requireCard':bool(data.get('requireCard',False)),'cooperative':(bool(data.get('cooperative')) and play_type=='teams' and not exam),'teacherId':teacher['id'],'schoolType':teacher.get('school_type','mixed'),'_persisted':False,'variantMode':variant_mode,'bossFinal':bool(variant_mode=='models4' and (game_mode=='boss' or quiz.get('settings',{}).get('bossEnabled'))),
                           'teamNames':TEAM_NAMES[:team_count] if play_type=='teams' else [],'reactions':{},'hostToken':host_token,'stageToken':stage_token,'section':section,'background':background,'roundDurationMs':20000,'roundEndReason':''}
+            snapshot_room(ROOMS[c])
             root=public_base(self); base=root+'/student.html'; join=f'{base}?code={c}'
             return self.send_json({'ok':True,'code':c,'student_url':base,'join_url':join,'playType':play_type,'teamNames':ROOMS[c]['teamNames'],'variantMode':variant_mode,'hostToken':host_token,'stageToken':stage_token})
         if u.path=='/api/room/join':
             code=str(data.get('code','')).strip(); name=str(data.get('name','')).strip()[:60]
             avatar=str(data.get('avatar','01')).strip()
-            if avatar not in AVATARS: avatar='01'
-            if not name: return self.send_json({'ok':False,'error':'name_required'},400)
+            if avatar not in AVATARS: avatar='b01'
+            card=str(data.get('card','')).strip()
             with LOCK:
                 room=ROOMS.get(code)
                 if not room: return self.send_json({'ok':False,'error':'room_not_found'},404)
                 if room['status']=='finished': return self.send_json({'ok':False,'error':'finished'},400)
+                if room.get('examMode') and room['status']!='lobby':return self.send_json({'ok':False,'error':'exam_started'},409)
+                student=platform_store.student_by_card(card,room.get('teacherId','')) if card else None
+                if student:
+                    name=student['name'];avatar=student['avatar']
+                    if room.get('examMode') and room.get('section') and room['section']!=student['class_name']:
+                        return self.send_json({'ok':False,'error':'wrong_class'},403)
+                    if room.get('examMode') and platform_store.attempt_count(student['id'],room['quiz'].get('id',''))>=room['maxAttempts']:
+                        return self.send_json({'ok':False,'error':'attempt_limit'},403)
+                elif room.get('requireCard'):
+                    return self.send_json({'ok':False,'error':'card_required'},403)
+                allowed=platform_store.avatar_pool(room.get('schoolType','mixed'))
+                if avatar not in allowed: avatar=allowed[0]
+                if not name:return self.send_json({'ok':False,'error':'name_required'},400)
                 # prevent duplicate exact nickname in same room, but allow explicit suffix by student
                 if any(norm(x['name'])==norm(name) for x in room['players'].values()): return self.send_json({'ok':False,'error':'name_taken'},409)
                 team=choose_team(room) if room['playType']=='teams' else ''
@@ -438,8 +551,9 @@ class Handler(SimpleHTTPRequestHandler):
                 total=len(room['quiz']['questions']); order=list(range(total))
                 if room.get('variantMode')=='models4':
                     model=['A','B','C','D'][len(room['players'])%4]; order=model_order(code,model,total)
-                room['players'][pid]={'id':pid,'name':name,'avatar':avatar,'team':team,'model':model,'questionOrder':order,'optionMaps':{},'score':0,'correct':0,'wrong':0,'streak':0,'answers':{},'lastResult':{},'powerups':{'double':True}}
-            return self.send_json({'ok':True,'playerId':pid,'quizTitle':room['quiz'].get('title',''),'team':team,'playType':room['playType'],'model':model,'variantMode':room.get('variantMode','options'),'avatar':avatar,'background':room.get('background','cartoon')})
+                room['players'][pid]={'id':pid,'name':name,'studentId':student['id'] if student else None,'level':1+student['xp']//500 if student else 1,'avatar':avatar,'team':team,'model':model,'questionOrder':order,'optionMaps':{},'score':0,'correct':0,'wrong':0,'streak':0,'answers':{},'lastResult':{},'powerups':{'double':True}}
+            snapshot_room(room)
+            return self.send_json({'ok':True,'playerId':pid,'name':name,'quizTitle':room['quiz'].get('title',''),'team':team,'playType':room['playType'],'model':model,'variantMode':room.get('variantMode','options'),'avatar':avatar,'background':room.get('background','cartoon'),'examMode':room.get('examMode',False)})
         if u.path=='/api/room/control':
             code=str(data.get('code','')); action=data.get('action'); host_token=str(data.get('hostToken',''))
             with LOCK:
@@ -450,19 +564,23 @@ class Handler(SimpleHTTPRequestHandler):
                     if room['status']!='lobby': return self.send_json({'ok':False,'error':'already_started'},409)
                     room['status']='question'; room['index']=0; room['startedAt']=now_ms();room['roundDurationMs']=round_duration_ms(room)
                 elif action=='reveal':
-                    if room['status']=='question': room['status']='results'
+                    if room['status']=='question': finish_round(room,'manual')
                 elif action=='next':
                     if room['status']=='lobby':
                         room['status']='question';room['index']=0;room['startedAt']=now_ms();room['roundDurationMs']=round_duration_ms(room)
                     elif room['status']=='question':
-                        room['status']='results';room['roundEndReason']='manual'
+                        finish_round(room,'manual')
                     elif room['status']=='results':next_round(room)
                 elif action=='skip':
                     # Immediately advance, without waiting for the timer or any student.
                     if room['status'] in ('question','results'): next_round(room)
                     else:return self.send_json({'ok':False,'error':'not_playing'},409)
-                elif action=='end': room['status']='finished'; room['index']=len(room['quiz']['questions']);room['finishedAt']=now_ms()
+                elif action=='end':
+                    if room['status']=='question':finish_round(room,'ended')
+                    room['status']='finished'; room['index']=len(room['quiz']['questions']);room['finishedAt']=now_ms()
+                    persist_finished_room(room)
                 else: return self.send_json({'ok':False,'error':'bad_action'},400)
+                snapshot_room(room)
             return self.send_json({'ok':True})
         if u.path=='/api/room/answer':
             code=str(data.get('code','')); pid=str(data.get('playerId','')); idx=int(data.get('index',-1)); ans=data.get('answer'); elapsed=max(0,int(data.get('elapsedMs',0))); power=data.get('power','')
@@ -472,7 +590,11 @@ class Handler(SimpleHTTPRequestHandler):
                 maybe_end_round(room)
                 if room['status']!='question' or room['index']!=idx: return self.send_json({'ok':False,'error':'question_changed'},409)
                 key=str(idx)
-                if key in p['answers']: return self.send_json({'ok':True,'duplicate':True,'result':p['lastResult'],'score':p['score']})
+                if key in p['answers']:
+                    result=({'index':idx,'correct':None,'earned':0,'streak':0} if room.get('examMode') else p['lastResult'])
+                    return self.send_json({'ok':True,'duplicate':True,'result':result,'score':0 if room.get('examMode') else p['score']})
+                # The server clock is authoritative; the client-provided elapsedMs can be forged.
+                elapsed=max(0,now_ms()-room.get('startedAt',now_ms()))
                 qidx,q,ans=canonical_answer(room,p,idx,ans); correct=evaluate(q,ans); points=int(q.get('points',1000) or 0);
                 if room.get('bossFinal') and idx==len(room['quiz']['questions'])-1: points*=2
                 earned=0; used_power=''
@@ -485,13 +607,20 @@ class Handler(SimpleHTTPRequestHandler):
                     streak_bonus=min(0.25, max(0,p['streak']-1)*0.05)
                     mult*=1+streak_bonus
                     if used_power=='double': mult*=2
-                    earned=round(points*mult); p['score']+=earned; p['correct']+=1
+                    earned=round(points*mult); p['correct']+=1
                 elif correct is False:
                     p['wrong']+=1; p['streak']=0
-                p['answers'][key]={'correct':correct,'earned':earned,'answer':ans,'elapsedMs':elapsed,'power':used_power,'questionIndex':qidx}
+                bonus=0
+                if room.get('cooperative') and room['playType']=='teams' and correct is True:
+                    bonus=max(0,earned-round(earned*0.4));earned-=bonus
+                p['score']+=earned
+                p['answers'][key]={'correct':correct,'earned':earned,'pendingTeamBonus':bonus,'answer':ans,'elapsedMs':elapsed,'power':used_power,'questionIndex':qidx}
                 p['lastResult']={'index':idx,'correct':correct,'earned':earned,'streak':p['streak'],'power':used_power}
                 maybe_end_round(room)
-            return self.send_json({'ok':True,'result':p['lastResult'],'score':p['score'],'powerups':p['powerups']})
+                shown=({'index':idx,'correct':None,'earned':0,'streak':0} if room.get('examMode') else p['lastResult'])
+                score=p['score'] if not room.get('examMode') else 0
+                snapshot_room(room)
+            return self.send_json({'ok':True,'result':shown,'score':score,'powerups':p['powerups']})
         if u.path=='/api/room/react':
             code=str(data.get('code','')); pid=str(data.get('playerId','')); idx=str(int(data.get('index',-1))); emoji=str(data.get('emoji',''))[:4]
             if emoji not in ('🔥','🤩','😅','🤔'): return self.send_json({'ok':False,'error':'bad_reaction'},400)
@@ -503,8 +632,12 @@ class Handler(SimpleHTTPRequestHandler):
         return self.send_json({'ok':False,'error':'unknown_endpoint'},404)
 
 if __name__=='__main__':
+    if IS_CLOUD and not platform_store.DATABASE_URL and os.getenv('QUIZNOVA_ALLOW_EPHEMERAL')!='yes':
+        print('QuizNova V10: DATABASE_URL is required for cloud mode. Refusing ephemeral account storage.',flush=True)
+        sys.exit(78)
     os.chdir(ROOT)
     ip=local_ip()
+    ROOMS.update(platform_store.recover_active_rooms())
     cleanup_rooms()
     print('\n'+'='*68)
     print(' QuizNova Arena - Online/Local Classroom Server')

@@ -2,14 +2,14 @@ const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 
 const DB = {
-  get quizzes(){ return JSON.parse(localStorage.getItem('qn3_quizzes')||localStorage.getItem('qn2_quizzes')||localStorage.getItem('qn_quizzes')||'[]') },
-  set quizzes(v){ localStorage.setItem('qn3_quizzes', JSON.stringify(v)) },
-  get results(){ return JSON.parse(localStorage.getItem('qn3_results')||localStorage.getItem('qn2_results')||localStorage.getItem('qn_results')||'[]') },
-  set results(v){ localStorage.setItem('qn3_results', JSON.stringify(v)) },
-  get bank(){ return JSON.parse(localStorage.getItem('qn3_bank')||localStorage.getItem('qn2_bank')||'[]') },
-  set bank(v){ localStorage.setItem('qn3_bank', JSON.stringify(v)) },
-  get settings(){ return JSON.parse(localStorage.getItem('qn3_settings')||localStorage.getItem('qn2_settings')||localStorage.getItem('qn_settings')||'{}') },
-  set settings(v){ localStorage.setItem('qn3_settings', JSON.stringify(v)) }
+  get quizzes(){return JSON.parse(localStorage.getItem(window.QN9_KEY('quizzes'))||'[]')},
+  set quizzes(v){localStorage.setItem(window.QN9_KEY('quizzes'),JSON.stringify(v));window.QN9_ONCHANGE()},
+  get results(){return JSON.parse(localStorage.getItem(window.QN9_KEY('results'))||'[]')},
+  set results(v){localStorage.setItem(window.QN9_KEY('results'),JSON.stringify(v));window.QN9_ONCHANGE()},
+  get bank(){return JSON.parse(localStorage.getItem(window.QN9_KEY('bank'))||'[]')},
+  set bank(v){localStorage.setItem(window.QN9_KEY('bank'),JSON.stringify(v));window.QN9_ONCHANGE()},
+  get settings(){return JSON.parse(localStorage.getItem(window.QN9_KEY('settings'))||'{}')},
+  set settings(v){localStorage.setItem(window.QN9_KEY('settings'),JSON.stringify(v));window.QN9_ONCHANGE()}
 };
 
 let builderQuestions = [];
@@ -21,6 +21,7 @@ let liveStageToken = '';
 let livePollTimer = null;
 let liveSaved = false;
 let liveAutoRevealIndex = -1;
+let liveCurrentStatus = null;
 let serverInfo = null;
 
 const viewMeta = {
@@ -29,7 +30,7 @@ const viewMeta = {
   builder:['إنشاء اختبار','استوديو متقدم للأسئلة والوسائط والمهارات العملية'],
   bank:['بنك الأسئلة','صنّف أسئلتك وأعد استخدامها بذكاء'],
   media:['مكتبة الصور','صور جاهزة مصنفة وصورك المضافة؛ اخترها للأسئلة بسهولة'],
-  library:['مكتبة الاختبارات','كل اختباراتك المحفوظة محليًا'],
+  library:['مكتبة الاختبارات','اختباراتك المحفوظة في حساب المعلم'],
   live:['صف مباشر','غرفة صفية مباشرة عبر الإنترنت — QR وPIN من أي مكان'],
   play:['تشغيل فردي','طالب واحد أو محطة تعلم على نفس الجهاز'],
   results:['النتائج والتحليل','متابعة الأداء وأصعب الأسئلة'],
@@ -67,7 +68,7 @@ $$('[data-modejump]').forEach(b=>b.onclick=()=>{ go('play'); setTimeout(()=>$('#
 $$('.book-chip').forEach(b=>b.addEventListener('click',()=>setTimeout(()=>{if($('#genGrade')){$('#genGrade').value=b.dataset.grade;renderGeneratorUnits();updateGeneratorPool()}},20)));
 
 function blankQuestion(type='single'){
-  const base={id:uid(),type,text:'',time:20,points:1000,difficulty:'medium',subject:'المهارات الرقمية',grade:'السابع',unit:'عام',tags:[],image:''};
+  const base={id:uid(),type,text:'',time:20,points:1000,difficulty:'medium',subject:window.QN9_TEACHER?.subject||'عام',grade:'السابع',unit:'عام',tags:[],image:'',skill:'',explanation:''};
   if(type==='single')Object.assign(base,{options:['','','',''],correct:[0]});
   if(type==='multi')Object.assign(base,{options:['','','',''],correct:[0,1]});
   if(type==='tf')Object.assign(base,{correct:true});
@@ -81,7 +82,8 @@ function blankQuestion(type='single'){
 function sampleBank(){
   const main=Array.isArray(window.CURRICULUM_BANK)?window.CURRICULUM_BANK:[];
   const extra=Array.isArray(window.CURRICULUM_PLUS)?window.CURRICULUM_PLUS:[];
-  return [...main,...extra].map((q,i)=>({...clone(q),image:q.image||`/assets/questions/${String(i%99+1).padStart(2,'0')}.svg`,id:q.id||`qnseed_${i+1}`,subject:q.subject||'المهارات الرقمية'}));
+  if(!/مهارات|رقمي|حاسوب|digital/i.test(window.QN9_TEACHER?.subject||''))return [];
+  return [...main,...extra].map((q,i)=>({...clone(q),skill:q.skill||q.topic||q.unit,explanation:q.explanation||((q.type==='single'&&q.options&&q.correct)?'الإجابة الصحيحة: '+q.options[q.correct[0]]+'، راجع درس '+(q.topic||q.unit)+'.':'راجع درس '+(q.topic||q.unit)+'.'),image:q.image||`/assets/questions/${String(i%99+1).padStart(2,'0')}.svg`,id:q.id||`qnseed_${i+1}`,subject:q.subject||'المهارات الرقمية'}));
 }
 
 function demoQuizForGrade(grade){
@@ -91,8 +93,8 @@ function demoQuizForGrade(grade){
 function demoQuiz(){ return demoQuizForGrade('السابع') }
 
 function migrateAndSeed(){
-  let qs=DB.quizzes.map(q=>{ q.settings=q.settings||{}; q.settings.bossEnabled=!!q.settings.bossEnabled; q.questions=(q.questions||[]).map(x=>Object.assign({difficulty:'medium',unit:'عام',subject:q.subject||'عام',grade:q.grade||'السابع',tags:[],image:''},x)); return q });
-  if(!qs.length)qs=['السابع','الثامن','التاسع'].map(demoQuizForGrade);
+  let qs=DB.quizzes.map(q=>{ q.settings=q.settings||{}; q.settings.bossEnabled=!!q.settings.bossEnabled; q.questions=(q.questions||[]).map(x=>Object.assign({difficulty:'medium',unit:'عام',subject:q.subject||'عام',grade:q.grade||'السابع',tags:[],image:'',skill:'',explanation:''},x)); return q });
+  if(!qs.length&&sampleBank().length)qs=['السابع','الثامن','التاسع'].map(demoQuizForGrade);
   const illustrationBySig=new Map(sampleBank().map(q=>[qSignature(q),q.image]));
   qs.forEach(quiz=>(quiz.questions||[]).forEach(q=>{if(!q.image && illustrationBySig.has(qSignature(q)))q.image=illustrationBySig.get(qSignature(q))}));
   DB.quizzes=qs;
@@ -146,8 +148,8 @@ $('#generateQuiz').onclick=generateFromBank;
 $('#previewPool').onclick=()=>{ const p=generatorPool(); openModal(`<div class="overline">PREVIEW</div><h3>الأسئلة المتاحة (${p.length})</h3><div class="modal-list">${p.slice(0,80).map(q=>`<div class="modal-item"><div><b>${typeIcon(q.type)} ${escapeHtml(q.text)}</b><small style="display:block;color:#7b8397">${difficultyName(q.difficulty)} • ${escapeHtml(q.unit||'عام')}</small></div></div>`).join('')||'<p>لا توجد أسئلة.</p>'}</div>`) };
 
 // ---------- Builder ----------
-function resetBuilder(){ editingQuizId=null; $('#quizTitle').value=''; $('#quizSubject').value='المهارات الرقمية'; $('#quizGrade').value='السابع'; $('#quizSection').value=''; $('#randomQuestions').checked=true; $('#randomOptions').checked=true; $('#showFeedback').checked=true; $('#speedBonus').checked=true; $('#bossEnabled').checked=false; builderQuestions=[blankQuestion('single')]; renderQuestions() }
-function addQuestion(type='single'){ const q=blankQuestion(type); q.subject=$('#quizSubject').value||'المهارات الرقمية';q.grade=$('#quizGrade').value;builderQuestions.push(q);renderQuestions() }
+function resetBuilder(){ editingQuizId=null; $('#quizTitle').value=''; $('#quizSubject').value=window.QN9_TEACHER?.subject||'عام'; $('#quizGrade').value='السابع'; $('#quizSection').value=''; $('#randomQuestions').checked=true; $('#randomOptions').checked=true; $('#showFeedback').checked=true; $('#speedBonus').checked=true; $('#bossEnabled').checked=false; builderQuestions=[blankQuestion('single')]; renderQuestions() }
+function addQuestion(type='single'){ const q=blankQuestion(type); q.subject=$('#quizSubject').value||window.QN9_TEACHER?.subject||'عام';q.grade=$('#quizGrade').value;builderQuestions.push(q);renderQuestions() }
 $('#addQuestion').onclick=()=>addQuestion('single'); $$('#quickTypes [data-addtype]').forEach(b=>b.onclick=()=>addQuestion(b.dataset.addtype)); $('#resetBuilder').onclick=resetBuilder;
 $('#loadDemo').onclick=()=>{ const d=demoQuiz();editingQuizId=null;fillBuilder(d);toast('تم تحميل نموذج متقدم') };
 function getQ(id){ return builderQuestions.find(x=>x.id===id) }
@@ -156,6 +158,7 @@ function questionEditor(q,i){
   return `<div class="question-card" data-qid="${q.id}">
   <div class="question-top"><div class="question-number">${i+1}</div><select onchange="changeType('${q.id}',this.value)">${['single','multi','tf','short','order','match','poll'].map(t=>`<option value="${t}" ${q.type===t?'selected':''}>${typeName(t)}</option>`).join('')}</select><select class="difficulty-select ${q.difficulty}" onchange="updateQ('${q.id}','difficulty',this.value);renderQuestions()"><option value="easy" ${q.difficulty==='easy'?'selected':''}>سهل</option><option value="medium" ${q.difficulty==='medium'?'selected':''}>متوسط</option><option value="hard" ${q.difficulty==='hard'?'selected':''}>صعب</option></select><div class="spacer"></div><button class="icon-btn" onclick="duplicateQuestion('${q.id}')">⧉</button><button class="icon-btn danger" onclick="removeQuestion('${q.id}')">✕</button></div>
   <div class="question-row"><input value="${escapeHtml(q.text)}" oninput="updateQ('${q.id}','text',this.value)" placeholder="اكتب السؤال هنا..."><input value="${escapeHtml(q.unit||'عام')}" oninput="updateQ('${q.id}','unit',this.value)" placeholder="الوحدة / الموضوع"><input type="number" min="5" max="300" value="${q.time||20}" oninput="updateQ('${q.id}','time',+this.value)" title="الوقت بالثواني"><input type="number" min="0" step="100" value="${q.points??1000}" oninput="updateQ('${q.id}','points',+this.value)" title="النقاط"></div>
+  <div class="question-row" style="margin:8px 0"><input value="${escapeHtml(q.skill||q.topic||'')}" oninput="updateQ('${q.id}','skill',this.value)" placeholder="نتاج التعلم / المهارة"><input value="${escapeHtml(q.explanation||'')}" oninput="updateQ('${q.id}','explanation',this.value)" placeholder="شرح مختصر يظهر بعد السؤال"></div>
   <div class="question-media-row">${q.image?`<img class="question-media-preview" src="${q.image}">`:''}<label class="btn btn-soft" style="font-size:9px">🖼 ${q.image?'تغيير الصورة':'إضافة صورة'}<input type="file" accept="image/*" hidden onchange="attachImage('${q.id}',this)"></label><button type="button" class="btn btn-soft" onclick="chooseFromMedia('${q.id}')">▧ مكتبة الصور</button>${q.image?`<button class="btn btn-danger-soft" onclick="removeImage('${q.id}')">حذف الصورة</button>`:''}</div>
   ${typeEditor(q)}</div>`;
 }
@@ -168,7 +171,7 @@ function typeEditor(q){
   return '';
 }
 window.updateQ=(id,k,v)=>{ const q=getQ(id); if(q)q[k]=v };
-window.changeType=(id,type)=>{ const i=builderQuestions.findIndex(x=>x.id===id),old=builderQuestions[i],n=blankQuestion(type); ['id','text','time','points','difficulty','subject','grade','unit','tags','image'].forEach(k=>n[k]=old[k]); if(type==='poll')n.points=0; builderQuestions[i]=n;renderQuestions() };
+window.changeType=(id,type)=>{ const i=builderQuestions.findIndex(x=>x.id===id),old=builderQuestions[i],n=blankQuestion(type); ['id','text','time','points','difficulty','subject','grade','unit','tags','image','skill','explanation'].forEach(k=>n[k]=old[k]); if(type==='poll')n.points=0; builderQuestions[i]=n;renderQuestions() };
 window.removeQuestion=id=>{builderQuestions=builderQuestions.filter(x=>x.id!==id);renderQuestions()};
 window.duplicateQuestion=id=>{const q=clone(getQ(id));q.id=uid();builderQuestions.splice(builderQuestions.findIndex(x=>x.id===id)+1,0,q);renderQuestions()};
 window.updateOption=(id,j,v)=>getQ(id).options[j]=v;
@@ -186,7 +189,7 @@ async function optimizeImage(file){
   return canvas.toDataURL('image/jpeg',0.76);
 }
 window.attachImage=async(id,input)=>{const f=input.files[0];if(!f)return;try{getQ(id).image=await optimizeImage(f);renderQuestions();toast('تمت إضافة الصورة للسؤال')}catch(e){toast(e.message||'تعذر قراءة الصورة')}}; window.removeImage=id=>{getQ(id).image='';renderQuestions()};
-function fillBuilder(q){$('#quizTitle').value=q.title;$('#quizSubject').value=q.subject||'المهارات الرقمية';$('#quizGrade').value=q.grade||'السابع';$('#quizSection').value=q.section||'';$('#randomQuestions').checked=!!q.settings?.randomQuestions;$('#randomOptions').checked=!!q.settings?.randomOptions;$('#showFeedback').checked=q.settings?.showFeedback!==false;$('#speedBonus').checked=q.settings?.speedBonus!==false;$('#bossEnabled').checked=!!q.settings?.bossEnabled;builderQuestions=clone(q.questions||[]);renderQuestions()}
+function fillBuilder(q){$('#quizTitle').value=q.title;$('#quizSubject').value=q.subject||window.QN9_TEACHER?.subject||'عام';$('#quizGrade').value=q.grade||'السابع';$('#quizSection').value=q.section||'';$('#randomQuestions').checked=!!q.settings?.randomQuestions;$('#randomOptions').checked=!!q.settings?.randomOptions;$('#showFeedback').checked=q.settings?.showFeedback!==false;$('#speedBonus').checked=q.settings?.speedBonus!==false;$('#bossEnabled').checked=!!q.settings?.bossEnabled;builderQuestions=clone(q.questions||[]);renderQuestions()}
 function validateQuestion(q){if(!q.text.trim())return 'يوجد سؤال بدون نص'; if((q.type==='single'||q.type==='multi')&&q.options.some(x=>!x.trim()))return 'يوجد خيار فارغ'; if(q.type==='single'&&q.correct.length!==1)return 'سؤال اختيار بدون إجابة صحيحة'; if(q.type==='multi'&&q.correct.length<1)return 'سؤال متعدد بدون إجابة صحيحة'; if(q.type==='short'&&!q.answers.some(x=>x.trim()))return 'سؤال قصير بدون إجابة مقبولة'; if(q.type==='order'&&q.items.some(x=>!x.trim()))return 'سؤال ترتيب يحتوي خطوة فارغة'; if(q.type==='match'&&q.pairs.some(p=>!p.left.trim()||!p.right.trim()))return 'سؤال مطابقة يحتوي خانة فارغة'; return ''}
 function syncQuestionsToBank(questions,quizMeta){let bank=DB.bank,seen=new Set(bank.map(qSignature)),added=0;questions.filter(q=>q.type!=='poll').forEach(q=>{const x=clone(q);x.id=uid();x.subject=quizMeta.subject;x.grade=quizMeta.grade;if(!seen.has(qSignature(x))){bank.push(x);seen.add(qSignature(x));added++}});DB.bank=bank;return added}
 $('#saveQuiz').onclick=()=>{const title=$('#quizTitle').value.trim();if(!title)return toast('اكتب عنوان الاختبار أولًا');if(!builderQuestions.length)return toast('أضف سؤالًا واحدًا على الأقل');for(const q of builderQuestions){const e=validateQuestion(q);if(e)return toast(e)}const subject=$('#quizSubject').value.trim()||'عام',grade=$('#quizGrade').value;builderQuestions.forEach(q=>{q.subject=subject;q.grade=grade});const obj={id:editingQuizId||uid(),title,subject,grade,section:$('#quizSection').value.trim(),createdAt:Date.now(),settings:{randomQuestions:$('#randomQuestions').checked,randomOptions:$('#randomOptions').checked,showFeedback:$('#showFeedback').checked,speedBonus:$('#speedBonus').checked,bossEnabled:$('#bossEnabled').checked},questions:clone(builderQuestions)};const arr=DB.quizzes,idx=arr.findIndex(x=>x.id===obj.id);if(idx>=0)arr[idx]=obj;else arr.push(obj);DB.quizzes=arr;editingQuizId=obj.id;const added=syncQuestionsToBank(obj.questions,obj);toast(`تم حفظ الاختبار${added?` وإضافة ${added} سؤال للبنك`:''}`);renderDashboard()};
@@ -208,7 +211,7 @@ window.chooseFromMedia=id=>openMediaPicker(img=>{const q=builderQuestions.find(x
 window.bankToBuilder=id=>{const q=clone(DB.bank.find(x=>x.id===id));if(!q)return;q.id=uid();builderQuestions.push(q);renderQuestions();go('builder');toast('تمت إضافة السؤال إلى الاختبار الحالي')};window.deleteBankQ=id=>{if(!confirm('حذف السؤال من بنك الأسئلة؟'))return;DB.bank=DB.bank.filter(x=>x.id!==id);renderBank();renderGenerator()};
 $('#importFromQuizzes').onclick=()=>{let added=0;DB.quizzes.forEach(q=>added+=syncQuestionsToBank(q.questions,q));renderBank();toast(added?`تمت إضافة ${added} سؤال جديد`:'كل أسئلة الاختبارات موجودة مسبقًا')};
 $('#openBankAdd').onclick=()=>openBankAdd();
-function openBankAdd(){openModal(`<div class="overline">NEW QUESTION</div><h3>إضافة سؤال إلى البنك</h3><div class="modal-grid"><label>نوع السؤال<select id="baType"><option value="single">اختيار واحد</option><option value="multi">اختيارات متعددة</option><option value="tf">صح / خطأ</option><option value="short">إجابة قصيرة</option><option value="order">ترتيب</option><option value="match">مطابقة</option></select></label><label>الصعوبة<select id="baDifficulty"><option value="easy">سهل</option><option value="medium" selected>متوسط</option><option value="hard">صعب</option></select></label><label>المادة<input id="baSubject" value="المهارات الرقمية"></label><label>الصف<select id="baGrade"><option>السابع</option><option>الثامن</option><option>التاسع</option><option>العاشر</option><option>الحادي عشر</option><option>الثاني عشر</option></select></label><label>الوحدة / الموضوع<input id="baUnit" value="عام"></label><label>الوقت بالثواني<input id="baTime" type="number" value="20"></label></div><button type="button" class="btn btn-soft" style="margin-top:12px" id="baPickMedia">▧ اختر صورة من مكتبة الصور</button><div id="baPreviewMedia" style="margin-top:8px"></div><label style="display:block;margin-top:10px">🖼 صورة السؤال (اختيارية)<input id="baImage" type="file" accept="image/jpeg,image/png,image/webp,image/gif"><small>يمكنك اختيار رسم من الكتاب أو صورة توضيحية، وسيتم تصغيرها تلقائيًا قبل الحفظ.</small></label><label style="display:block;margin-top:10px">نص السؤال<textarea id="baText" style="width:100%;min-height:75px;border:1px solid #e8eaf1;border-radius:11px;padding:10px"></textarea></label><div id="baDynamic" style="margin-top:10px"></div><button class="btn btn-primary" id="saveBankQ" style="margin-top:12px">حفظ في البنك</button>`);const render=()=>{const t=$('#baType').value;let h='';if(t==='single'||t==='multi')h=`<label>الخيارات — كل خيار في سطر<textarea id="baLines" style="width:100%;min-height:100px"></textarea></label><label style="display:block;margin-top:7px">رقم/أرقام الإجابة الصحيحة (مثال 1 أو 1,3)<input id="baCorrect" placeholder="1"></label>`;if(t==='tf')h=`<label>الإجابة الصحيحة<select id="baTF"><option value="true">صح</option><option value="false">خطأ</option></select></label>`;if(t==='short')h=`<label>الإجابات المقبولة — كل إجابة في سطر<textarea id="baLines" style="width:100%;min-height:90px"></textarea></label>`;if(t==='order')h=`<label>الخطوات بالترتيب الصحيح — كل خطوة في سطر<textarea id="baLines" style="width:100%;min-height:110px"></textarea></label>`;if(t==='match')h=`<label>أزواج المطابقة — كل سطر بالشكل: العنصر | المطابقة<textarea id="baLines" placeholder="CPU | تنفيذ التعليمات" style="width:100%;min-height:110px"></textarea></label>`;$('#baDynamic').innerHTML=h};$('#baType').onchange=render;render();let baSelectedImage='';$('#baPickMedia').onclick=()=>openMediaPicker(url=>{baSelectedImage=url;$('#baPreviewMedia').innerHTML=`<img src="${escapeHtml(url)}" style="width:190px;max-height:140px;object-fit:contain;border-radius:14px" alt="معاينة">`});$('#saveBankQ').onclick=async()=>{try{const t=$('#baType').value,q=blankQuestion(t);q.text=$('#baText').value.trim();if(!q.text)return toast('اكتب نص السؤال');q.difficulty=$('#baDifficulty').value;q.subject=$('#baSubject').value.trim()||'عام';q.grade=$('#baGrade').value;q.unit=$('#baUnit').value.trim()||'عام';q.time=+$('#baTime').value||20;if(t==='single'||t==='multi'){q.options=$('#baLines').value.split(/\n/).map(x=>x.trim()).filter(Boolean);q.correct=$('#baCorrect').value.split(',').map(x=>+x.trim()-1).filter(x=>x>=0&&x<q.options.length);if(q.options.length<2||!q.correct.length)return toast('تحقق من الخيارات والإجابة الصحيحة')}if(t==='tf')q.correct=$('#baTF').value==='true';if(t==='short')q.answers=$('#baLines').value.split(/\n/).map(x=>x.trim()).filter(Boolean);if(t==='order')q.items=$('#baLines').value.split(/\n/).map(x=>x.trim()).filter(Boolean);if(t==='match')q.pairs=$('#baLines').value.split(/\n/).map(x=>x.split('|').map(y=>y.trim())).filter(x=>x.length>=2&&x[0]&&x[1]).map(x=>({left:x[0],right:x[1]}));if(baSelectedImage)q.image=baSelectedImage;if($('#baImage')?.files?.[0])q.image=await optimizeImage($('#baImage').files[0]);const e=validateQuestion(q);if(e)return toast(e);const b=DB.bank;if(b.some(x=>qSignature(x)===qSignature(q)))return toast('هذا السؤال موجود مسبقًا');b.push(q);DB.bank=b;closeModal();renderBank();renderGenerator();toast('تمت إضافة السؤال للبنك')}catch{toast('تعذر حفظ السؤال، تحقق من البيانات')}}}
+function openBankAdd(){openModal(`<div class="overline">NEW QUESTION</div><h3>إضافة سؤال إلى البنك</h3><div class="modal-grid"><label>نوع السؤال<select id="baType"><option value="single">اختيار واحد</option><option value="multi">اختيارات متعددة</option><option value="tf">صح / خطأ</option><option value="short">إجابة قصيرة</option><option value="order">ترتيب</option><option value="match">مطابقة</option></select></label><label>الصعوبة<select id="baDifficulty"><option value="easy">سهل</option><option value="medium" selected>متوسط</option><option value="hard">صعب</option></select></label><label>المادة<input id="baSubject" placeholder="المادة الدراسية"></label><label>الصف<select id="baGrade"><option>السابع</option><option>الثامن</option><option>التاسع</option><option>العاشر</option><option>الحادي عشر</option><option>الثاني عشر</option></select></label><label>الوحدة / الموضوع<input id="baUnit" value="عام"></label><label>الوقت بالثواني<input id="baTime" type="number" value="20"></label></div><button type="button" class="btn btn-soft" style="margin-top:12px" id="baPickMedia">▧ اختر صورة من مكتبة الصور</button><div id="baPreviewMedia" style="margin-top:8px"></div><label style="display:block;margin-top:10px">🖼 صورة السؤال (اختيارية)<input id="baImage" type="file" accept="image/jpeg,image/png,image/webp,image/gif"><small>يمكنك اختيار رسم من الكتاب أو صورة توضيحية، وسيتم تصغيرها تلقائيًا قبل الحفظ.</small></label><label style="display:block;margin-top:10px">نص السؤال<textarea id="baText" style="width:100%;min-height:75px;border:1px solid #e8eaf1;border-radius:11px;padding:10px"></textarea></label><label style="display:block;margin-top:10px">مهارة / نتاج تعلم<input id="baSkill" placeholder="مثال: التمييز بين وحدات الإدخال والإخراج"></label><label style="display:block;margin-top:10px">الشرح بعد الإجابة<textarea id="baExplanation" rows="2" placeholder="لماذا الإجابة صحيحة؟"></textarea></label><div id="baDynamic" style="margin-top:10px"></div><button class="btn btn-primary" id="saveBankQ" style="margin-top:12px">حفظ في البنك</button>`);const render=()=>{const t=$('#baType').value;let h='';if(t==='single'||t==='multi')h=`<label>الخيارات — كل خيار في سطر<textarea id="baLines" style="width:100%;min-height:100px"></textarea></label><label style="display:block;margin-top:7px">رقم/أرقام الإجابة الصحيحة (مثال 1 أو 1,3)<input id="baCorrect" placeholder="1"></label>`;if(t==='tf')h=`<label>الإجابة الصحيحة<select id="baTF"><option value="true">صح</option><option value="false">خطأ</option></select></label>`;if(t==='short')h=`<label>الإجابات المقبولة — كل إجابة في سطر<textarea id="baLines" style="width:100%;min-height:90px"></textarea></label>`;if(t==='order')h=`<label>الخطوات بالترتيب الصحيح — كل خطوة في سطر<textarea id="baLines" style="width:100%;min-height:110px"></textarea></label>`;if(t==='match')h=`<label>أزواج المطابقة — كل سطر بالشكل: العنصر | المطابقة<textarea id="baLines" placeholder="CPU | تنفيذ التعليمات" style="width:100%;min-height:110px"></textarea></label>`;$('#baDynamic').innerHTML=h};$('#baType').onchange=render;render();$('#baSubject').value=window.QN9_TEACHER?.subject||'عام';let baSelectedImage='';$('#baPickMedia').onclick=()=>openMediaPicker(url=>{baSelectedImage=url;$('#baPreviewMedia').innerHTML=`<img src="${escapeHtml(url)}" style="width:190px;max-height:140px;object-fit:contain;border-radius:14px" alt="معاينة">`});$('#saveBankQ').onclick=async()=>{try{const t=$('#baType').value,q=blankQuestion(t);q.text=$('#baText').value.trim();if(!q.text)return toast('اكتب نص السؤال');q.difficulty=$('#baDifficulty').value;q.subject=$('#baSubject').value.trim()||'عام';q.grade=$('#baGrade').value;q.unit=$('#baUnit').value.trim()||'عام';q.skill=$('#baSkill').value.trim()||q.unit;q.explanation=$('#baExplanation').value.trim();q.time=+$('#baTime').value||20;if(t==='single'||t==='multi'){q.options=$('#baLines').value.split(/\n/).map(x=>x.trim()).filter(Boolean);q.correct=$('#baCorrect').value.split(',').map(x=>+x.trim()-1).filter(x=>x>=0&&x<q.options.length);if(q.options.length<2||!q.correct.length)return toast('تحقق من الخيارات والإجابة الصحيحة')}if(t==='tf')q.correct=$('#baTF').value==='true';if(t==='short')q.answers=$('#baLines').value.split(/\n/).map(x=>x.trim()).filter(Boolean);if(t==='order')q.items=$('#baLines').value.split(/\n/).map(x=>x.trim()).filter(Boolean);if(t==='match')q.pairs=$('#baLines').value.split(/\n/).map(x=>x.split('|').map(y=>y.trim())).filter(x=>x.length>=2&&x[0]&&x[1]).map(x=>({left:x[0],right:x[1]}));if(baSelectedImage)q.image=baSelectedImage;if($('#baImage')?.files?.[0])q.image=await optimizeImage($('#baImage').files[0]);const e=validateQuestion(q);if(e)return toast(e);const b=DB.bank;if(b.some(x=>qSignature(x)===qSignature(q)))return toast('هذا السؤال موجود مسبقًا');b.push(q);DB.bank=b;closeModal();renderBank();renderGenerator();toast('تمت إضافة السؤال للبنك')}catch{toast('تعذر حفظ السؤال، تحقق من البيانات')}}}
 
 // ---------- Solo game ----------
 function renderPlaySelect(){const q=DB.quizzes;$('#playQuizSelect').innerHTML=q.map(x=>`<option value="${x.id}">${escapeHtml(x.title)}</option>`).join('');$('#playSetup').classList.remove('hidden');$('#gameArea').classList.add('hidden')}
@@ -237,22 +240,61 @@ async function checkServer(){
   catch{serverInfo=null;return false}
 }
 async function renderLiveLanding(){
-  clearInterval(livePollTimer); const ok=await checkServer();
+  clearInterval(livePollTimer); livePollTimer=null;
+  liveRoom=null; liveHostToken=''; liveStageToken=''; liveCurrentStatus=null;
+  const ok=await checkServer();
   $('#liveOffline').classList.toggle('hidden',ok); $('#liveSetup').classList.toggle('hidden',!ok); $('#liveHost').classList.add('hidden');
   if(ok){
+    try{
+      const roomKey='qn9_live_'+window.QN9_TEACHER?.id;
+      const prior=JSON.parse(sessionStorage.getItem(roomKey)||'null');
+      if(prior?.code&&prior?.hostToken){
+        const response=await fetch('/api/room/state?code='+encodeURIComponent(prior.code)+'&host='+encodeURIComponent(prior.hostToken),{cache:'no-store'});
+        if(response.ok){
+          const data=await response.json();
+          if(data.ok && data.room?.status !== 'finished'){
+            liveRoom=prior.code;liveHostToken=prior.hostToken;liveStageToken=prior.stageToken||'';liveSaved=false;
+            $('#liveSetup').classList.add('hidden');$('#liveHost').classList.remove('hidden');
+            renderLiveHost({...prior,join_url:location.origin+'/student.html?code='+prior.code,student_url:location.origin+'/student.html'},DB.quizzes.find(x=>x.id===prior.quizId)||{title:data.room.quizTitle});
+            startLivePolling();return;
+          }
+          if(data.ok && data.room?.status === 'finished'){
+            // Preserve an unsaved report, but do not trap the teacher in a completed room.
+            liveRoom=prior.code;saveLiveSession(data.room);liveRoom=null;
+          }
+        }
+        sessionStorage.removeItem(roomKey);
+      }
+    }catch(err){console.warn('تعذر استعادة الغرفة السابقة',err);sessionStorage.removeItem('qn9_live_'+window.QN9_TEACHER?.id)}
     $('#liveQuizSelect').innerHTML=DB.quizzes.map(q=>`<option value="${q.id}">${escapeHtml(q.title)} — ${q.questions.length} سؤال</option>`).join('');
     $('#serverAddress').textContent=serverInfo.student_url||location.origin+'/student.html';
     const teamSel=$('#liveTeamCount'); const modeSel=$('#liveMode');
     $('#liveQuizSelect').onchange=()=>{const selected=DB.quizzes.find(x=>x.id===$('#liveQuizSelect').value);$('#liveSection').value=selected?.section||''};$('#liveQuizSelect').onchange();$('#liveBackground').value=DB.settings?.scene||'cartoon';
+    // Result privacy and identity cards are independent. An exam never auto-requires a card.
+    // Reset the opt-in identity requirement whenever opening a fresh setup (browsers may restore checked state).
+    $('#liveRequireCard').checked=false;
+    const syncExamSettings=()=>{
+      const exam=$('#liveExamMode').checked;
+      $('#livePowerups').disabled=exam;
+      $('#liveShowFeedback').disabled=exam;
+      $('#liveMaxAttempts').disabled=!$('#liveRequireCard').checked;
+      $('#liveMaxAttempts').closest('label').style.opacity=$('#liveRequireCard').checked?'1':'.55';
+      const hint=$('#examCardHint');
+      if(hint)hint.textContent=$('#liveRequireCard').checked?'بطاقة الطالب مطلوبة فقط لأنك فعّلت هذا الخيار.':'الدخول بالاسم متاح. ضبط المحاولات بين جلسات الامتحان يتطلب بطاقة الطالب الاختيارية.';
+    };
+    $('#liveExamMode').onchange=syncExamSettings;
+    $('#liveRequireCard').onchange=syncExamSettings;
+    syncExamSettings();
+    $('#liveCooperative').closest('label').style.opacity='1';
     const sync=()=>{teamSel.closest('label').style.opacity=modeSel.value==='teams'?'1':'.45';teamSel.disabled=modeSel.value!=='teams'};modeSel.onchange=sync;sync();
   }
 }
 $('#createLiveRoom').onclick=async()=>{
   const quiz=DB.quizzes.find(q=>q.id===$('#liveQuizSelect').value); if(!quiz)return toast('اختر اختبارًا أولًا');
   try{
-    const payload={quiz,playType:$('#liveMode').value,gameMode:$('#liveGameMode').value,variantMode:$('#liveVariantMode').value,teamCount:+$('#liveTeamCount').value,section:$('#liveSection').value.trim(),background:$('#liveBackground').value,showFeedback:$('#liveShowFeedback').checked,powerups:$('#livePowerups').checked};
+    const payload={quiz,examMode:$('#liveExamMode').checked,maxAttempts:Number($('#liveMaxAttempts').value||1),requireCard:$('#liveRequireCard').checked,cooperative:$('#liveCooperative').checked,playType:$('#liveMode').value,gameMode:$('#liveGameMode').value,variantMode:$('#liveVariantMode').value,teamCount:+$('#liveTeamCount').value,section:$('#liveSection').value.trim(),background:$('#liveBackground').value,showFeedback:$('#liveShowFeedback').checked,powerups:$('#livePowerups').checked};
     const r=await fetch('/api/room/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); const d=await r.json(); if(!d.ok)throw 0;
-    liveRoom=d.code; liveHostToken=d.hostToken||''; liveStageToken=d.stageToken||''; liveSaved=false; liveAutoRevealIndex=-1; $('#liveSetup').classList.add('hidden'); $('#liveHost').classList.remove('hidden'); renderLiveHost(d,quiz); startLivePolling();
+    liveRoom=d.code; liveHostToken=d.hostToken||''; liveStageToken=d.stageToken||'';sessionStorage.setItem('qn9_live_'+window.QN9_TEACHER?.id,JSON.stringify({code:d.code,hostToken:liveHostToken,stageToken:liveStageToken,quizId:quiz.id})); liveSaved=false; liveAutoRevealIndex=-1; $('#liveSetup').classList.add('hidden'); $('#liveHost').classList.remove('hidden'); renderLiveHost(d,quiz); startLivePolling();
   }catch{toast('تعذر إنشاء الغرفة. تحقق من اتصال الخادم بالإنترنت ثم حاول مرة أخرى')}
 };
 function renderLiveHost(data,quiz){
@@ -265,7 +307,7 @@ function renderLiveHost(data,quiz){
         <div class="qr-wrap"><img id="roomQr" src="/api/qr?format=png&text=${encodeURIComponent(join)}" alt="QR دخول الطلاب" loading="eager"><div class="qr-fallback" id="qrFallback">تعذر إظهار الرمز. انسخ الرابط بالزر أدناه.</div></div>
         <div class="join-copy"><small>جاهز للدخول</small><div class="room-code">${escapeHtml(data.code)}</div><p>الطالب يمسح QR بالكاميرا أو يفتح الرابط ثم يكتب الرمز.</p><div class="security-badge">${data.variantMode==='models4'?'🔀 نماذج A/B/C/D':data.variantMode==='same'?'📺 نموذج موحّد':'🛡️ خيارات مختلفة لكل جهاز'}</div><b>${escapeHtml(join)}</b></div>
       </div>
-      <div class="host-actions"><button class="btn btn-white" id="liveStartBtn">▶ ابدأ أول سؤال</button><button class="btn btn-glass" id="liveNextBtn">إظهار الترتيب 🏆</button><button class="btn btn-skip" id="liveSkipBtn" title="تخطّ السؤال فورًا، دون انتظار أي طالب">⏭ تخطّي السؤال</button><button class="btn btn-glass" id="openStageBtn">▣ شاشة العرض</button><button class="btn btn-glass" id="copyJoinBtn">نسخ الرابط</button><button class="btn btn-glass" id="liveEndBtn">إنهاء</button></div>
+      <div class="host-actions"><button class="btn btn-white" id="liveStartBtn">▶ ابدأ أول سؤال</button><button class="btn btn-glass" id="liveNextBtn">إظهار الترتيب 🏆</button><button class="btn btn-skip" id="liveSkipBtn" title="تخطّ السؤال فورًا، دون انتظار أي طالب">⏭ تخطّي السؤال</button><button class="btn btn-glass" id="openStageBtn">▣ شاشة العرض</button><button class="btn btn-glass" id="copyJoinBtn">نسخ الرابط</button><button class="btn btn-glass" id="liveEndBtn">إنهاء</button><button class="btn btn-primary" id="liveNewRoomBtn" title="إنهاء الغرفة الحالية وفتح إعدادات غرفة جديدة">＋ غرفة جديدة</button></div>
     </div>
     <div class="panel players-panel"><div class="panel-head"><div><div class="overline">LOBBY</div><h3>الطلاب المنضمون <span id="livePlayerCount">0</span></h3><p>${data.playType==='teams'?'سيتم توزيع الطلاب تلقائيًا على الفرق بالتساوي.':'اللعب فردي؛ لكل طالب ترتيبه ونقاطه.'}</p></div></div><div id="livePlayers" class="players-grid"></div></div>
   </div>
@@ -278,23 +320,46 @@ function renderLiveHost(data,quiz){
   </div>`;
   const qrEl=$('#roomQr');let qrAttempt=0;
   qrEl.onerror=()=>{if(qrAttempt++===0){qrEl.src='/api/qr?format=svg&text='+encodeURIComponent(join)}else{qrEl.style.display='none';$('#qrFallback').style.display='block';toast('تعذر تحميل QR؛ رابط الدخول ورمز الغرفة متاحان')}};
-  $('#liveStartBtn').onclick=()=>liveControl('start'); $('#liveNextBtn').onclick=()=>liveControl('next');$('#liveSkipBtn').onclick=()=>{if(confirm('تخطي السؤال الحالي والانتقال مباشرة إلى السؤال التالي؟'))liveControl('skip')}; $('#liveEndBtn').onclick=()=>liveControl('end');
+  $('#liveStartBtn').onclick=()=>liveControl('start'); $('#liveNextBtn').onclick=()=>liveControl('next');$('#liveSkipBtn').onclick=()=>{if(confirm('تخطي السؤال الحالي والانتقال مباشرة إلى السؤال التالي؟'))liveControl('skip')}; $('#liveEndBtn').onclick=()=>liveControl('end'); $('#liveNewRoomBtn').onclick=openNewLiveRoom;
   $('#copyJoinBtn').onclick=()=>navigator.clipboard?.writeText(join).then(()=>toast('تم نسخ رابط الدخول')).catch(()=>toast('انسخ الرابط الظاهر يدويًا')); $('#openStageBtn').onclick=()=>window.open('/stage.html?code='+encodeURIComponent(data.code)+'&stage='+encodeURIComponent(liveStageToken),'quiznova_stage','noopener');
 }
 async function liveControl(action){
-  try{const r=await fetch('/api/room/control',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:liveRoom,action,hostToken:liveHostToken})});const d=await r.json();if(!d.ok)throw 0;if(action==='end')toast('تم إنهاء الجلسة')}
+  try{const r=await fetch('/api/room/control',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:liveRoom,action,hostToken:liveHostToken})});const d=await r.json();if(!d.ok)throw 0;if(action==='end'){
+    toast('تم إنهاء الجلسة؛ يمكنك تنزيل التقرير أو فتح غرفة جديدة');
+    // Update the report immediately, without depending on the next polling tick.
+    try{const res=await fetch('/api/room/state?code='+encodeURIComponent(liveRoom)+'&host='+encodeURIComponent(liveHostToken),{cache:'no-store'});const data=await res.json();if(data.ok)updateLiveHost(data.room)}catch{}
+  }}
   catch{toast('تعذر تنفيذ الأمر')}
 }
+// Unblocks teachers whose browser had been restoring an old live room automatically.
+async function openNewLiveRoom(){
+  if(liveRoom&&liveHostToken&&liveCurrentStatus!=='finished'){
+    if(!confirm('إنشاء غرفة جديدة سيُنهي الجلسة الحالية. يمكنك تنزيل التقرير قبل المتابعة. هل تريد الاستمرار؟'))return;
+    try{
+      const r=await fetch('/api/room/control',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:liveRoom,action:'end',hostToken:liveHostToken})});
+      const d=await r.json();if(!d.ok)throw new Error('end failed');
+      const report=await fetch('/api/room/state?code='+encodeURIComponent(liveRoom)+'&host='+encodeURIComponent(liveHostToken),{cache:'no-store'});
+      if(report.ok){const data=await report.json();if(data.ok)saveLiveSession(data.room)}
+    }catch{
+      toast('تعذر إنهاء الغرفة القديمة. تحقق من تشغيل الخادم.');return;
+    }
+  }
+  sessionStorage.removeItem('qn9_live_'+window.QN9_TEACHER?.id);
+  clearInterval(livePollTimer);livePollTimer=null;
+  liveRoom=null;liveHostToken='';liveStageToken='';liveCurrentStatus=null;liveSaved=false;
+  await renderLiveLanding();
+  toast('تم فتح إعدادات غرفة جديدة');
+}
 function startLivePolling(){
-  clearInterval(livePollTimer); const poll=async()=>{if(!liveRoom)return;try{const r=await fetch('/api/room/state?code='+encodeURIComponent(liveRoom)+'&host='+encodeURIComponent(liveHostToken),{cache:'no-store'});const d=await r.json();if(d.ok)updateLiveHost(d.room)}catch{}};poll();livePollTimer=setInterval(poll,650)
+  clearInterval(livePollTimer); const poll=async()=>{if(!liveRoom)return;const activeCode=liveRoom;try{const r=await fetch('/api/room/state?code='+encodeURIComponent(activeCode)+'&host='+encodeURIComponent(liveHostToken),{cache:'no-store'});const d=await r.json();if(d.ok&&liveRoom===activeCode)updateLiveHost(d.room)}catch{}};poll();livePollTimer=setInterval(poll,650)
 }
 function renderPlayerCards(players){
-  return players.map(p=>`<div class="player-chip"><div class="player-avatar"><img src="/assets/avatars/${/^\d{2}$/.test(p.avatar||'')?p.avatar:'01'}.svg" alt=""></div><div><strong>${escapeHtml(p.name)} ${p.model?`<span class="model-tag">${escapeHtml(p.model)}</span>`:''}</strong><small>${escapeHtml(p.team||'فردي')} • ${p.score} نقطة</small></div></div>`).join('')||'<p>بانتظار دخول الطلاب...</p>'
+  return players.map(p=>`<div class="player-chip"><div class="player-avatar"><img src="${avatarPath(p.avatar)}" alt=""></div><div><strong>${escapeHtml(p.name)} ${p.model?`<span class="model-tag">${escapeHtml(p.model)}</span>`:''}</strong><small>${escapeHtml(p.team||'فردي')} • ${p.score} نقطة</small></div></div>`).join('')||'<p>بانتظار دخول الطلاب...</p>'
 }
 function renderLeaderboard(room){
   const isTeams=room.playType==='teams'; const leaders=isTeams?room.teams:room.leaders;
   $('#leaderTitle').textContent=isTeams?'ترتيب المجموعات':'الترتيب الفردي';
-  return (leaders||[]).slice(0,12).map((p,i)=>`<div class="leader-row"><div class="leader-rank">${i+1}</div>${!isTeams?`<img class="sky-leader-avatar" src="/assets/avatars/${/^\d{2}$/.test(p.avatar||'')?p.avatar:'01'}.svg" alt="">`:''}<div><strong>${escapeHtml(p.name)}</strong><small>${isTeams?`${p.members||0} طلاب • ${p.correct||0} صحيحة`:escapeHtml(p.team||'')}</small></div><b>${p.score}</b></div>`).join('')||'<p>لا يوجد ترتيب بعد.</p>'
+  return (leaders||[]).slice(0,12).map((p,i)=>`<div class="leader-row"><div class="leader-rank">${i+1}</div>${!isTeams?`<img class="sky-leader-avatar" src="${avatarPath(p.avatar)}" alt="">`:''}<div><strong>${escapeHtml(p.name)}</strong><small>${isTeams?`${p.members||0} طلاب • ${p.correct||0} صحيحة`:escapeHtml(p.team||'')}</small></div><b>${p.score}</b></div>`).join('')||'<p>لا يوجد ترتيب بعد.</p>'
 }
 function renderQuestionStats(room){
   const q=room.question,st=room.stats||{};
@@ -312,14 +377,15 @@ function renderQuestionStats(room){
   return `<div class="live-question-text">${escapeHtml(q.text)}</div>${q.image?`<img class="host-question-image" src="${escapeHtml(q.image)}" alt="صورة السؤال">`:''}
     <div class="live-kpis"><div class="live-kpi"><b>${st.answered||0}</b><span>أجابوا</span></div><div class="live-kpi good"><b>${st.correct||0}</b><span>صحيحة</span></div><div class="live-kpi bad"><b>${st.wrong||0}</b><span>خاطئة</span></div><div class="live-kpi wait"><b>${st.pending||0}</b><span>لم يجيبوا</span></div></div>
     ${bars?`<div class="answer-bars">${bars}</div>`:''}
-    <div class="correct-answer-box"><b>الإجابة الصحيحة:</b> ${escapeHtml(room.correctAnswer||'—')} ${st.answered?`• دقة الإجابات الحالية ${st.accuracy||0}%`:''}</div>
+    ${room.examMode?'':`<div class="correct-answer-box"><b>الإجابة الصحيحة:</b> ${escapeHtml(room.correctAnswer||'—')} ${st.answered?`• دقة الإجابات الحالية ${st.accuracy||0}%`:''}</div>`}
     <div class="student-lists"><div class="mini-list"><b>✅ أجابوا بشكل صحيح</b><p>${good}</p></div><div class="mini-list"><b>❌ يحتاجون مراجعة هذا السؤال</b><p>${bad}</p></div></div>`;
 }
 
 function renderRoundResults(room){
   const isTeams=room.playType==='teams',leaders=isTeams?(room.teams||[]):(room.leaders||[]),st=room.stats||{},medals=['🥇','🥈','🥉'];
-  const podium=leaders.slice(0,3).map((p,i)=>`<div class="round-podium-card p${i+1}"><div class="round-medal">${medals[i]}</div>${!isTeams?`<img class="sky-podium-avatar" src="/assets/avatars/${/^\d{2}$/.test(p.avatar||'')?p.avatar:'01'}.svg" alt="">`:''}<b>${escapeHtml(p.name)}</b><small>${isTeams?`${p.members||0} طلاب • `:''}${p.score} نقطة</small></div>`).join('');
+  const podium=leaders.slice(0,3).map((p,i)=>`<div class="round-podium-card p${i+1}"><div class="round-medal">${medals[i]}</div>${!isTeams?`<img class="sky-podium-avatar" src="${avatarPath(p.avatar)}" alt="">`:''}<b>${escapeHtml(p.name)}</b><small>${isTeams?`${p.members||0} طلاب • `:''}${p.score} نقطة</small></div>`).join('');
   const rest=leaders.slice(3,8).map((p,i)=>`<div class="round-rank-row"><span>${i+4}</span><b>${escapeHtml(p.name)}</b><strong>${p.score}</strong></div>`).join('');
+  if(room.examMode)return `<div class="round-results-hero"><h2>🛡️ تم استلام إجابات هذه الجولة</h2><p>النتائج محفوظة وسرية حتى نهاية الامتحان. اضغط السؤال التالي للمتابعة.</p></div>`;
   return `<div class="round-results-hero"><div class="round-results-title"><span class="trophy-orb">🏆</span><div><div class="overline">ROUND RESULTS</div><h2>ترتيب الجولة ${room.index+1}</h2><p>${st.accuracy||0}% دقة • ${st.correct||0} صحيحة • ${st.wrong||0} خاطئة</p></div></div><div class="round-podium">${podium}</div>${rest?`<div class="round-rest">${rest}</div>`:''}<div class="next-round-note">الترتيب ظاهر الآن للطلاب وشاشة العرض. اضغط «السؤال التالي» للمتابعة.</div></div>`;
 }
 
@@ -335,6 +401,8 @@ function saveLiveSession(room){
   if(liveSaved||room.status!=='finished')return; liveSaved=true;
   const now=Date.now(), qReport=room.questionReport||[], total=room.total||qReport.length;
   const arr=DB.results;
+  // Prevent the same finished room from being counted again after a refresh.
+  if(arr.some(p=>p.quizId==='live_'+liveRoom))return;
   (room.report||[]).forEach(p=>arr.push({id:uid(),student:p.name,team:p.team||'',quizId:'live_'+liveRoom,quizTitle:'جلسة مباشرة '+liveRoom,score:p.score,maxScore:0,percent:p.percent,correct:p.correct,total,seconds:0,date:now,mode:'live',answers:qReport.map(q=>({qid:'live_q_'+q.index,qtext:q.text,correct:(q.correctStudents||[]).includes(p.name)?true:(q.wrongStudents||[]).includes(p.name)?false:null}))}));
   DB.results=arr; renderDashboard();
 }
@@ -347,8 +415,9 @@ function liveReportCsv(room){
 
 function updateLiveHost(room){
   if(!$('#livePlayers'))return;
+  liveCurrentStatus=room.status;
   $('#livePlayerCount').textContent=room.players.length; $('#livePlayers').innerHTML=renderPlayerCards(room.players);
-  $('#liveLeaderboard').innerHTML=renderLeaderboard(room);
+  $('#liveLeaderboard').innerHTML=room.examMode&&room.status!=='finished'?'🛡️ تم إخفاء الترتيب أثناء الامتحان':renderLeaderboard(room);
   const nextBtn=$('#liveNextBtn'),startBtn=$('#liveStartBtn'),skipBtn=$('#liveSkipBtn'),clock=$('#liveClock');
   if(clock)clock.textContent=room.status==='question'?`⏱ ${Math.max(0,Math.ceil(((room.startedAt||0)+(room.roundDurationMs||20000)-Date.now())/1000))} ثانية`:room.status==='results'?'✓ انتهى السؤال':'—';
   if(skipBtn)skipBtn.classList.toggle('hidden',room.status!=='question');
@@ -375,8 +444,8 @@ function updateLiveHost(room){
 }
 
 // ---------- Settings ----------
-function loadSettings(){const s=DB.settings;if(s.teacherName)$('#teacherName').value=s.teacherName;if(s.schoolName)$('#schoolName').value=s.schoolName;if(s.platformName)$('#platformName').value=s.platformName;applySettings();if($('#teacherBackground'))$('#teacherBackground').value=s.scene||'cartoon'}
-function applySettings(){document.body.dataset.scene=DB.settings.scene||'cartoon';const teacher=$('#teacherName').value||'المعلم',platform=$('#platformName').value||'QuizNova';$('.teacher-card strong').textContent=teacher;$('.brand h1').textContent=platform;document.title=platform+' Arena'}
+function loadSettings(){const s=DB.settings;if(!s.teacherName&&window.QN9_TEACHER)$('#teacherName').value=window.QN9_TEACHER.name;if(!s.schoolName&&window.QN9_TEACHER)$('#schoolName').value=window.QN9_TEACHER.school;if(s.teacherName)$('#teacherName').value=s.teacherName;if(s.schoolName)$('#schoolName').value=s.schoolName;if(s.platformName)$('#platformName').value=s.platformName;applySettings();if($('#teacherBackground'))$('#teacherBackground').value=s.scene||'cartoon'}
+function applySettings(){document.body.dataset.scene=DB.settings.scene||'cartoon';const teacher=$('#teacherName').value||window.QN9_TEACHER?.name||'المعلم',platform=$('#platformName').value||'QuizNova';$('.teacher-card strong').textContent=teacher;$('.brand h1').textContent=platform;const sub=$('.teacher-card small');if(sub)sub.textContent=window.QN9_TEACHER?.subject||'مادة دراسية';document.title=platform+' Arena'}
 $('#saveSettings').onclick=()=>{DB.settings={teacherName:$('#teacherName').value,schoolName:$('#schoolName').value,platformName:$('#platformName').value,scene:$('#teacherBackground').value};applySettings();toast('تم حفظ الإعدادات')};$('#exportBackup').onclick=()=>download('quiznova-arena-backup.json',JSON.stringify({quizzes:DB.quizzes,bank:DB.bank,results:DB.results,settings:DB.settings,version:5},null,2));$('#importBackup').onclick=()=>$('#backupFile').click();$('#backupFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.quizzes)||!Array.isArray(d.results))throw 0;DB.quizzes=d.quizzes;DB.results=d.results;DB.bank=Array.isArray(d.bank)?d.bank:DB.bank;DB.settings=d.settings||{};loadSettings();renderDashboard();renderGenerator();toast('تمت استعادة النسخة الاحتياطية')}catch{toast('ملف النسخة غير صالح')}};r.readAsText(f);e.target.value=''};
 
 resetBuilder();loadSettings();renderDashboard();renderGenerator();checkServer();
