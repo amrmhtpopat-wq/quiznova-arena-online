@@ -28,3 +28,5 @@ jobs:
           node --check portal-security.js
       - name: End to end team assignment and numeric scoring
         run: python -m unittest discover -s tests -p 'test_feature_v104.py' -v
+      - name: Theme, portrait assets and one-tap answer checks
+        run: python -m unittest discover -s tests -p 'test_reference_v105.py' -v
