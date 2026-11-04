@@ -10,3 +10,13 @@
 .lobby-avatar img,.pill-avatar,.stage-avatar,.player-avatar img,.sky-leader-avatar,.sky-podium-avatar{object-fit:cover}
 .idcard img.avatar-pic{width:70px;height:70px;border-radius:15px;object-fit:cover}
 @media(max-width:600px){.avatar-picker{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:8px}.avatar-choice{aspect-ratio:1}.v10-avatar-gallery{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
+/* V10.1 live student roster */
+#view-live .player-chip{display:flex;align-items:center;gap:10px;min-width:0}
+#view-live .player-avatar{width:44px;height:44px;flex:0 0 44px;overflow:hidden;border-radius:50%}
+#view-live .player-avatar img{width:100%!important;height:100%!important;object-fit:cover!important}
+#view-live .player-information strong{display:block;overflow-wrap:anywhere}
+#view-live #liveJoinMessage{font-size:13px;color:#9beeff;font-weight:700}
+.stage-roster-title{font-size:22px;font-weight:850;color:#c2faff;margin:20px 0}
+.stage-active-roster{color:#dcfaff;font-size:14px;margin:10px auto}
+.stage-avatar{width:44px!important;height:44px!important;border-radius:50%;object-fit:cover}

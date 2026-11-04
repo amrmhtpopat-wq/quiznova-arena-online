@@ -1,3 +1,4 @@
+const avatarPath=id=>/^[bg](0[1-9]|1[0-6])$/.test(id)?'/assets/avatars3d/'+id+'.webp':'/assets/avatars/'+(/^\d{2}$/.test(id)?id:'01')+'.svg';
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 
@@ -22,6 +23,8 @@ let livePollTimer = null;
 let liveSaved = false;
 let liveAutoRevealIndex = -1;
 let liveCurrentStatus = null;
+let livePollInFlight=false;
+let livePlayerSignature='';
 let serverInfo = null;
 
 const viewMeta = {
@@ -309,7 +312,7 @@ function renderLiveHost(data,quiz){
       </div>
       <div class="host-actions"><button class="btn btn-white" id="liveStartBtn">▶ ابدأ أول سؤال</button><button class="btn btn-glass" id="liveNextBtn">إظهار الترتيب 🏆</button><button class="btn btn-skip" id="liveSkipBtn" title="تخطّ السؤال فورًا، دون انتظار أي طالب">⏭ تخطّي السؤال</button><button class="btn btn-glass" id="openStageBtn">▣ شاشة العرض</button><button class="btn btn-glass" id="copyJoinBtn">نسخ الرابط</button><button class="btn btn-glass" id="liveEndBtn">إنهاء</button><button class="btn btn-primary" id="liveNewRoomBtn" title="إنهاء الغرفة الحالية وفتح إعدادات غرفة جديدة">＋ غرفة جديدة</button></div>
     </div>
-    <div class="panel players-panel"><div class="panel-head"><div><div class="overline">LOBBY</div><h3>الطلاب المنضمون <span id="livePlayerCount">0</span></h3><p>${data.playType==='teams'?'سيتم توزيع الطلاب تلقائيًا على الفرق بالتساوي.':'اللعب فردي؛ لكل طالب ترتيبه ونقاطه.'}</p></div></div><div id="livePlayers" class="players-grid"></div></div>
+    <div class="panel players-panel"><div class="panel-head"><div><div class="overline">LOBBY</div><h3>الطلاب المنضمون <span id="livePlayerCount">0</span></h3><p id="liveJoinMessage">بانتظار دخول الطلاب...</p><p>${data.playType==='teams'?'سيتم توزيع الطلاب تلقائيًا على الفرق بالتساوي.':'اللعب فردي؛ لكل طالب ترتيبه ونقاطه.'}</p></div></div><div id="livePlayers" class="players-grid"></div></div>
   </div>
   <div class="live-game-grid">
     <div class="panel live-question-panel">
@@ -351,10 +354,25 @@ async function openNewLiveRoom(){
   toast('تم فتح إعدادات غرفة جديدة');
 }
 function startLivePolling(){
-  clearInterval(livePollTimer); const poll=async()=>{if(!liveRoom)return;const activeCode=liveRoom;try{const r=await fetch('/api/room/state?code='+encodeURIComponent(activeCode)+'&host='+encodeURIComponent(liveHostToken),{cache:'no-store'});const d=await r.json();if(d.ok&&liveRoom===activeCode)updateLiveHost(d.room)}catch{}};poll();livePollTimer=setInterval(poll,650)
+ clearInterval(livePollTimer);livePollInFlight=false;
+ const poll=async()=>{
+  if(!liveRoom||livePollInFlight)return;
+  livePollInFlight=true;
+  const code=liveRoom;
+  try{
+   const r=await fetch('/api/room/state?code='+encodeURIComponent(code)+'&host='+encodeURIComponent(liveHostToken),{cache:'no-store'});
+   const d=await r.json();
+   if(code!==liveRoom)return;
+   if(r.ok&&d.ok)updateLiveHost(d.room);
+   else{const m=document.getElementById('liveJoinMessage');if(m)m.textContent='تعذر تحديث قائمة الطلاب. تجري إعادة المحاولة.'}
+  }catch(e){const m=document.getElementById('liveJoinMessage');if(m)m.textContent='الاتصال غير مستقر. تجري إعادة المحاولة.'}
+  finally{livePollInFlight=false}
+ };
+ poll();livePollTimer=setInterval(poll,850);
 }
 function renderPlayerCards(players){
-  return players.map(p=>`<div class="player-chip"><div class="player-avatar"><img src="${avatarPath(p.avatar)}" alt=""></div><div><strong>${escapeHtml(p.name)} ${p.model?`<span class="model-tag">${escapeHtml(p.model)}</span>`:''}</strong><small>${escapeHtml(p.team||'فردي')} • ${p.score} نقطة</small></div></div>`).join('')||'<p>بانتظار دخول الطلاب...</p>'
+ if(!players.length)return '<p>بانتظار دخول أول طالب...</p>';
+ return players.map(p=>'<div class="player-chip"><div class="player-avatar"><img src="'+avatarPath(p.avatar)+'" alt="" onerror="this.style.display=\'none\'"></div><div class="player-information"><strong>'+escapeHtml(p.name)+'</strong><small>'+escapeHtml(p.team||'فردي')+' • '+p.score+' نقطة</small></div></div>').join('');
 }
 function renderLeaderboard(room){
   const isTeams=room.playType==='teams'; const leaders=isTeams?room.teams:room.leaders;
@@ -416,7 +434,7 @@ function liveReportCsv(room){
 function updateLiveHost(room){
   if(!$('#livePlayers'))return;
   liveCurrentStatus=room.status;
-  $('#livePlayerCount').textContent=room.players.length; $('#livePlayers').innerHTML=renderPlayerCards(room.players);
+  const players=Array.isArray(room.players)?room.players:[];$('#livePlayerCount').textContent=players.length;const sign=JSON.stringify(players.map(p=>[p.name,p.avatar,p.team,p.score]));if(sign!==livePlayerSignature){livePlayerSignature=sign;$('#livePlayers').innerHTML=renderPlayerCards(players)} const msg=document.getElementById('liveJoinMessage');if(msg)msg.textContent=players.length?'انضم '+players.length+' طالب إلى الغرفة':'بانتظار دخول الطلاب...';
   $('#liveLeaderboard').innerHTML=room.examMode&&room.status!=='finished'?'🛡️ تم إخفاء الترتيب أثناء الامتحان':renderLeaderboard(room);
   const nextBtn=$('#liveNextBtn'),startBtn=$('#liveStartBtn'),skipBtn=$('#liveSkipBtn'),clock=$('#liveClock');
   if(clock)clock.textContent=room.status==='question'?`⏱ ${Math.max(0,Math.ceil(((room.startedAt||0)+(room.roundDurationMs||20000)-Date.now())/1000))} ثانية`:room.status==='results'?'✓ انتهى السؤال':'—';

@@ -23,6 +23,6 @@
       return originalFetch(input,init);
     };
     document.documentElement.style.visibility='visible';
-    let script=document.createElement('script');script.src='/app.js?v=10.0';script.onload=()=>{const view=location.hash.slice(1);if(view&&window.go)window.go(['dashboard','generator','builder','bank','media','library','live','play','results','settings'].includes(view)?view:'dashboard')};document.body.appendChild(script);
+    let script=document.createElement('script');script.src='/app.js?v=10.1';script.onload=()=>{const view=location.hash.slice(1);if(view&&window.go)window.go(['dashboard','generator','builder','bank','media','library','live','play','results','settings'].includes(view)?view:'dashboard')};document.body.appendChild(script);
   }catch(e){localStorage.removeItem('qn9_teacher_token');location.replace('/')}
 })();

@@ -409,8 +409,8 @@ class Handler(SimpleHTTPRequestHandler):
                 result=platform_store.query('SELECT 1 AS ok')
                 if not result or int(result['ok'])!=1:raise RuntimeError('db_not_ready')
             except Exception:
-                return self.send_json({'ok':False,'service':'quiznova-arena','version':'10.0','database':'unavailable'},503)
-            return self.send_json({'ok':True,'service':'quiznova-arena','version':'10.0','storage':platform_store.DATABASE_KIND,'database':'ready','rooms':len(ROOMS)})
+                return self.send_json({'ok':False,'service':'quiznova-arena','version':'10.1','database':'unavailable'},503)
+            return self.send_json({'ok':True,'service':'quiznova-arena','version':'10.1','storage':platform_store.DATABASE_KIND,'database':'ready','rooms':len(ROOMS)})
         if u.path=='/api/status':
             base=public_base(self); return self.send_json({'ok':True,'mode':('cloud' if IS_CLOUD else 'local'),'student_url':base+'/student.html','teacher_url':base+'/', 'features':['qr','pin','teams','live-analytics','powerups','reactions','internet','auth','student-cards','exams','classwars','mastery','persistent-reports']})
         if u.path=='/api/qr':
