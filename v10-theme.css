@@ -20,3 +20,7 @@
 .stage-roster-title{font-size:22px;font-weight:850;color:#c2faff;margin:20px 0}
 .stage-active-roster{color:#dcfaff;font-size:14px;margin:10px auto}
 .stage-avatar{width:44px!important;height:44px!important;border-radius:50%;object-fit:cover}
+
+/* V10.2 — discreet professional teacher identity, not a student cartoon avatar */
+.teacher-card .teacher-avatar-pro{background:linear-gradient(145deg,#effaff,#c6eafd)!important;border:1px solid rgba(174,234,255,.55);border-radius:14px!important;box-shadow:0 6px 20px rgba(0,39,80,.22);overflow:hidden;padding:0!important;width:43px;height:43px;flex:0 0 43px}
+.teacher-card .teacher-avatar-pro svg{width:100%;height:100%;display:block}
