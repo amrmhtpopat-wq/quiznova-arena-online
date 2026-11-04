@@ -177,6 +177,13 @@ def persist_room(room,report,questions):
         if student_id:
             xp=correct*65+max(0,pct-50)*2
             exec_sql('UPDATE students SET xp=xp+?,correct_count=correct_count+?,played_count=played_count+1 WHERE id=? AND teacher_id=?',(xp,correct,student_id,tid))
+    # Activity-triggered backups: failures never block completed results.
+    try:
+        from platform_security import auto_backup
+        auto_backup(tid)
+    except Exception as e:
+        print('[QuizNova backup] automatic backup failed:',type(e).__name__)
+
 
 def history(teacher_id,limit=100):
     rows=query('SELECT code,section,subject,quiz_title,game_mode,played_at,report,questions FROM played_sessions WHERE teacher_id=? ORDER BY played_at DESC LIMIT ?',(teacher_id,limit),True)

@@ -4,13 +4,13 @@ const $$ = s => [...document.querySelectorAll(s)];
 
 const DB = {
   get quizzes(){return JSON.parse(localStorage.getItem(window.QN9_KEY('quizzes'))||'[]')},
-  set quizzes(v){localStorage.setItem(window.QN9_KEY('quizzes'),JSON.stringify(v));window.QN9_ONCHANGE()},
+  set quizzes(v){localStorage.setItem(window.QN9_KEY('quizzes'),JSON.stringify(v));window.QN9_ONCHANGE('quizzes')},
   get results(){return JSON.parse(localStorage.getItem(window.QN9_KEY('results'))||'[]')},
-  set results(v){localStorage.setItem(window.QN9_KEY('results'),JSON.stringify(v));window.QN9_ONCHANGE()},
+  set results(v){localStorage.setItem(window.QN9_KEY('results'),JSON.stringify(v));window.QN9_ONCHANGE('results')},
   get bank(){return JSON.parse(localStorage.getItem(window.QN9_KEY('bank'))||'[]')},
-  set bank(v){localStorage.setItem(window.QN9_KEY('bank'),JSON.stringify(v));window.QN9_ONCHANGE()},
+  set bank(v){localStorage.setItem(window.QN9_KEY('bank'),JSON.stringify(v));window.QN9_ONCHANGE('bank')},
   get settings(){return JSON.parse(localStorage.getItem(window.QN9_KEY('settings'))||'{}')},
-  set settings(v){localStorage.setItem(window.QN9_KEY('settings'),JSON.stringify(v));window.QN9_ONCHANGE()}
+  set settings(v){localStorage.setItem(window.QN9_KEY('settings'),JSON.stringify(v));window.QN9_ONCHANGE('settings')}
 };
 
 let builderQuestions = [];

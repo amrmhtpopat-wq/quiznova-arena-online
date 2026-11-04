@@ -6,9 +6,9 @@ from pathlib import Path
 import json, random, string, time, threading, socket, webbrowser, os, sys, io, zlib, struct, re
 from datetime import datetime, timezone, timedelta
 from xlsx_report import generate_report
-import platform_api
 import platform_store
 platform_store.init()
+import platform_api
 
 ROOT = Path(__file__).resolve().parent
 sys.path.append(str(ROOT / 'vendor'))
@@ -380,6 +380,13 @@ def question_report(room):
     return rows
 
 class Handler(SimpleHTTPRequestHandler):
+    def end_headers(self):
+        self.send_header('X-Content-Type-Options','nosniff')
+        self.send_header('X-Frame-Options','DENY')
+        self.send_header('Referrer-Policy','same-origin')
+        self.send_header('Permissions-Policy','camera=(), microphone=(), geolocation=()')
+        if IS_CLOUD:self.send_header('Strict-Transport-Security','max-age=15552000')
+        return super().end_headers()
     def translate_path(self,path):
         parsed=urlparse(path).path
         rel=parsed.lstrip('/') or 'index.html'
@@ -408,8 +415,8 @@ class Handler(SimpleHTTPRequestHandler):
                 result=platform_store.query('SELECT 1 AS ok')
                 if not result or int(result['ok'])!=1:raise RuntimeError('db_not_ready')
             except Exception:
-                return self.send_json({'ok':False,'service':'quiznova-arena','version':'10.2','database':'unavailable'},503)
-            return self.send_json({'ok':True,'service':'quiznova-arena','version':'10.2','storage':platform_store.DATABASE_KIND,'database':'ready','rooms':len(ROOMS)})
+                return self.send_json({'ok':False,'service':'quiznova-arena','version':'10.3','database':'unavailable'},503)
+            return self.send_json({'ok':True,'service':'quiznova-arena','version':'10.3','storage':platform_store.DATABASE_KIND,'database':'ready','rooms':len(ROOMS)})
         if u.path=='/api/status':
             base=public_base(self); return self.send_json({'ok':True,'mode':('cloud' if IS_CLOUD else 'local'),'student_url':base+'/student.html','teacher_url':base+'/', 'features':['qr','pin','teams','live-analytics','powerups','reactions','internet','auth','student-cards','exams','classwars','mastery','persistent-reports']})
         if u.path=='/api/qr':
