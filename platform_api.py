@@ -1,12 +1,14 @@
 """Authenticated teacher APIs, purposefully separate from public student routes."""
 from urllib.parse import parse_qs
-import time,threading
+import time,threading,hashlib
 import platform_security as sec
 RATES={}
 RATE_LOCK=threading.Lock()
-def check_rate(handler,route):
+def check_rate(handler,route,identity=""):
     client=handler.client_address[0]
-    key=client+':'+route
+    # Distinguish teachers sharing the same school IP address.
+    ident=hashlib.sha256(str(identity or 'anonymous').strip().lower().encode()).hexdigest()[:16]
+    key=client+':'+route+':'+ident
     now=time.monotonic()
     with RATE_LOCK:
         records=[t for t in RATES.get(key,[]) if now-t<600]
@@ -53,7 +55,7 @@ def handle_get(h,u):
 def handle_post(h,u,data):
     if u.path not in ('/api/auth/register','/api/auth/login','/api/auth/forgot','/api/auth/reset','/api/auth/logout','/api/auth/password','/api/teacher/snapshot','/api/teacher/students','/api/teacher/school-type','/api/teacher/backups/create','/api/teacher/backups/restore'):return False
     try:
-        if u.path in ('/api/auth/register','/api/auth/login','/api/auth/forgot','/api/auth/reset') and not check_rate(h,u.path):
+        if u.path in ('/api/auth/register','/api/auth/login','/api/auth/forgot','/api/auth/reset') and not check_rate(h,u.path,data.get("email") or data.get("token") or ""):
             h.send_json({'ok':False,'error':'rate_limited'},429);return True
         if u.path=='/api/auth/register':
             d=create_teacher(str(data.get('email','')),str(data.get('password','')),str(data.get('name','')),str(data.get('school','')),str(data.get('subject','عام')),str(data.get('schoolType','mixed')))

@@ -110,6 +110,9 @@ def save_patch(teacher_id,patch,revision):
             args=[store.jdump(patch[k]) for k in keys]+[store.epoch(),teacher_id,revision]
             cur=con.execute(store.sql('UPDATE datasets SET '+columns+',updated_at=?,revision=revision+1 WHERE teacher_id=? AND revision=?'),args)
             if cur.rowcount!=1:raise ValueError('revision_conflict')
+    # Make one automatic recovery checkpoint every 12 hours of teacher edits.
+    try:auto_backup(teacher_id)
+    except Exception as e:print('[QuizNova backup] snapshot checkpoint failed:',type(e).__name__)
     return {'ok':True,'revision':revision+1}
 
 def _rows(conn,table,teacher_id):
