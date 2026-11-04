@@ -185,8 +185,16 @@ function renderQuestions(){
 function questionEditor(q,i){
   return `<div class="question-card" data-qid="${q.id}">
   <div class="question-top"><div class="question-number">${i+1}</div><select onchange="changeType('${q.id}',this.value)">${['single','multi','tf','short','estimate','order','match','poll'].map(t=>`<option value="${t}" ${q.type===t?'selected':''}>${typeName(t)}</option>`).join('')}</select><select class="difficulty-select ${q.difficulty}" onchange="updateQ('${q.id}','difficulty',this.value);renderQuestions()"><option value="easy" ${q.difficulty==='easy'?'selected':''}>سهل</option><option value="medium" ${q.difficulty==='medium'?'selected':''}>متوسط</option><option value="hard" ${q.difficulty==='hard'?'selected':''}>صعب</option></select><div class="spacer"></div><button class="icon-btn" onclick="duplicateQuestion('${q.id}')">⧉</button><button class="icon-btn danger" onclick="removeQuestion('${q.id}')">✕</button></div>
-  <div class="question-row"><input value="${escapeHtml(q.text)}" oninput="updateQ('${q.id}','text',this.value)" placeholder="اكتب السؤال هنا..."><input value="${escapeHtml(q.unit||'عام')}" oninput="updateQ('${q.id}','unit',this.value)" placeholder="الوحدة / الموضوع"><input type="number" min="5" max="300" value="${q.time||20}" oninput="updateQ('${q.id}','time',+this.value)" title="الوقت بالثواني"><input type="number" min="0" step="100" value="${q.points??1000}" oninput="updateQ('${q.id}','points',+this.value)" title="النقاط"></div>
-  <div class="question-row" style="margin:8px 0"><input value="${escapeHtml(q.skill||q.topic||'')}" oninput="updateQ('${q.id}','skill',this.value)" placeholder="نتاج التعلم / المهارة"><input value="${escapeHtml(q.explanation||'')}" oninput="updateQ('${q.id}','explanation',this.value)" placeholder="شرح مختصر يظهر بعد السؤال"></div>
+  <div class="v104-question-meta">
+   <label class="v104-q-main">نص السؤال <textarea rows="3" oninput="updateQ('${q.id}','text',this.value)" placeholder="صغ سؤالًا واضحًا ومحددًا...">${escapeHtml(q.text)}</textarea></label>
+   <label>الوحدة / الموضوع <input value="${escapeHtml(q.unit||'عام')}" oninput="updateQ('${q.id}','unit',this.value)" placeholder="اسم الوحدة"></label>
+   <label>الزمن (ثوانٍ) <input type="number" min="5" max="300" value="${q.time||20}" oninput="updateQ('${q.id}','time',+this.value)"></label>
+   <label>النقاط <input type="number" min="0" step="100" value="${q.points??1000}" oninput="updateQ('${q.id}','points',+this.value)"></label>
+  </div>
+  <div class="v104-question-support">
+   <label>نتاج التعلم / المهارة <input value="${escapeHtml(q.skill||q.topic||'')}" oninput="updateQ('${q.id}','skill',this.value)" placeholder="ماذا يتقن الطالب؟"></label>
+   <label>التفسير بعد السؤال <input value="${escapeHtml(q.explanation||'')}" oninput="updateQ('${q.id}','explanation',this.value)" placeholder="اشرح سبب الإجابة الصحيحة"></label>
+  </div>
   <div class="question-media-row">${q.image?`<img class="question-media-preview" src="${q.image}">`:''}<label class="btn btn-soft" style="font-size:9px">🖼 ${q.image?'تغيير الصورة':'إضافة صورة'}<input type="file" accept="image/*" hidden onchange="attachImage('${q.id}',this)"></label><button type="button" class="btn btn-soft" onclick="chooseFromMedia('${q.id}')">▧ مكتبة الصور</button>${q.image?`<button class="btn btn-danger-soft" onclick="removeImage('${q.id}')">حذف الصورة</button>`:''}</div>
   ${typeEditor(q)}</div>`;
 }
@@ -488,6 +496,7 @@ function updateLiveHost(room){
   const nextBtn=$('#liveNextBtn'),startBtn=$('#liveStartBtn'),skipBtn=$('#liveSkipBtn'),clock=$('#liveClock');
   const missing=room.playType==='teams'&&players.some(p=>!p.team);
   if(startBtn){startBtn.disabled=room.status==='lobby'&&missing;startBtn.title=missing?'لا يمكن البدء قبل تعيين فريق لكل طالب':''}
+  const joinStatus=$('#liveJoinMessage');if(joinStatus&&missing&&room.status==='lobby')joinStatus.textContent='⚠️ يوجد '+players.filter(p=>!p.team).length+' طالب دون فريق؛ اختر فريقًا لكل طالب أو اضغط التوزيع العشوائي.';
   const shuffle=$('#shuffleLiveTeams');if(shuffle)shuffle.disabled=room.status!=='lobby';
   if(clock)clock.textContent=room.status==='question'?`⏱ ${Math.max(0,Math.ceil(((room.startedAt||0)+(room.roundDurationMs||20000)-Date.now())/1000))} ثانية`:room.status==='results'?'✓ انتهى السؤال':'—';
   if(skipBtn)skipBtn.classList.toggle('hidden',room.status!=='question');

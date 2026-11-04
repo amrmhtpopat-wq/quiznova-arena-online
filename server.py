@@ -565,6 +565,7 @@ class Handler(SimpleHTTPRequestHandler):
                 room=ROOMS.get(code)
                 if not room: return self.send_json({'ok':False,'error':'room_not_found'},404)
                 if room['status']=='finished': return self.send_json({'ok':False,'error':'finished'},400)
+                if room['playType']=='teams' and room.get('teamAssignment')=='manual' and room['status']!='lobby':return self.send_json({'ok':False,'error':'team_assignment_closed'},409)
                 if room.get('examMode') and room['status']!='lobby':return self.send_json({'ok':False,'error':'exam_started'},409)
                 student=platform_store.student_by_card(card,room.get('teacherId','')) if card else None
                 if student:

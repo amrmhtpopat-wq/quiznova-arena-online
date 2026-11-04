@@ -67,6 +67,8 @@ class FeatureTests(unittest.TestCase):
         status,started=self.api('/api/room/control',{'code':code,'hostToken':host,'action':'start'})
         self.assertEqual(status,200,started)
         self.assertTrue(started['ok'])
+        late,reply=self.api('/api/room/join',{'code':code,'name':'طالب متأخر','avatar':'m02'})
+        self.assertEqual(late,409);self.assertEqual(reply['error'],'team_assignment_closed')
 
     def test_random_teams_balanced(self):
         room=self.create_room('random')
