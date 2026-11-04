@@ -1,0 +1,29 @@
+name: QuizNova V10.3 checks
+on:
+  push:
+    branches: [v10-3-staging]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install requirements
+        run: python -m pip install -r requirements.txt
+      - name: Python syntax checks
+        run: python -m compileall -q server.py platform_store.py platform_api.py platform_security.py
+      - name: Browser-script syntax checks
+        run: |
+          node --check portal-security.js
+          node --check studio-auth.js
+          node --check app.js
+      - name: Authentication, backups, and conflict tests
+        run: python -m unittest discover -s tests -p 'test_*.py' -v
