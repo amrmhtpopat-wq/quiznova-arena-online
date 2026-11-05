@@ -60,7 +60,7 @@ $$('[data-closemodal]').forEach(x=>x.onclick=closeModal);
 function go(view,options={}){
   if(!viewMeta[view])view='dashboard';
   if(location.hash!=='#'+view)history.replaceState(null,'','#'+view);
-  $('.view').forEach(v=>v.classList.remove('active')); const target=$('#view-'+view); if(target)target.classList.add('active');
+  $$('.view').forEach(v=>v.classList.remove('active')); const target=$('#view-'+view); if(target)target.classList.add('active');
   $$('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
   $('#pageTitle').textContent=viewMeta[view][0]; $('#pageSubtitle').textContent=viewMeta[view][1]; $('#sidebar').classList.remove('open');
   if(view==='dashboard')renderDashboard(); if(view==='generator')renderGenerator(); if(view==='library')renderLibrary(); if(view==='play')renderPlaySelect(options.quizId); if(view==='results')renderResults(); if(view==='bank')renderBank(); if(view==='media')renderMediaLibrary(); if(view==='live')renderLiveLanding(options.quizId);
