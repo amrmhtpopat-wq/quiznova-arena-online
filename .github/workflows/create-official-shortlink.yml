@@ -1,0 +1,95 @@
+name: Create and verify official BOOYAH short link
+on:
+  push:
+    branches:
+      - ops/booyah-shortlink-2026-11-06
+    paths:
+      - .github/workflows/create-official-shortlink.yml
+permissions:
+  contents: read
+jobs:
+  shortlink:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Create a free named link and verify its destination
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import time
+          from urllib.request import Request, urlopen
+          from urllib.error import HTTPError, URLError
+          from urllib.parse import urlencode, urlparse
+
+          TARGET = 'https://quiznova-arena-online.onrender.com/'
+          CANDIDATES = ('booyahjo', 'booyahquizjo', 'booyaharena', 'booyahplayjo', 'booyahclassjo', 'booyahschool')
+          PROVIDERS = ('is.gd', 'v.gd')
+
+          def api(host, endpoint, **kwargs):
+              url='https://'+host+'/'+endpoint+'?'+urlencode({'format':'json',**kwargs})
+              request=Request(url,headers={'User-Agent':'BOOYAH-QuizArena-Official-Link-Setup/1.0','Accept':'application/json'})
+              try:
+                  with urlopen(request,timeout=25) as res:
+                      body=res.read().decode('utf-8',errors='replace')
+                      status=res.status
+              except HTTPError as exc:
+                  body=exc.read().decode('utf-8',errors='replace')
+                  status=exc.code
+              try:
+                  return status,json.loads(body)
+              except ValueError:
+                  return status,{'errormessage':body[:200]}
+
+          def verify(host, alias):
+              for _ in range(3):
+                  try:
+                      status, result=api(host,'forward.php',shorturl=alias)
+                      if status==200 and result.get('url','').rstrip('/')==TARGET.rstrip('/'):
+                          return True
+                  except (TimeoutError,URLError,ConnectionError) as exc:
+                      print('Lookup retry:',str(exc)[:120])
+                  time.sleep(1)
+              return False
+
+          winner=None
+          for host in PROVIDERS:
+              for alias in CANDIDATES:
+                  try:
+                      status,lookup=api(host,'forward.php',shorturl=alias)
+                      if status==200 and lookup.get('url','').rstrip('/')==TARGET.rstrip('/'):
+                          winner='https://'+host+'/'+alias
+                          print('Existing correct custom alias found:',winner)
+                          break
+                      if status==200 and 'url' in lookup:
+                          print('Alias already occupied by unrelated destination:',host,alias)
+                          continue
+                      if lookup.get('errorcode') not in (1,'1'):
+                          print('Cannot check alias:',host,alias,status,str(lookup.get('errormessage',''))[:100])
+                          continue
+                      status,created=api(host,'create.php',url=TARGET,shorturl=alias)
+                      expected='https://'+host+'/'+alias
+                      if status==200 and created.get('shorturl','').rstrip('/')==expected:
+                          if verify(host,alias):
+                              winner=expected
+                              break
+                          print('Created alias could not be independently verified:',expected)
+                      else:
+                          print('Alias unavailable:',host,alias,status,str(created.get('errormessage',''))[:100])
+                  except Exception as exc:
+                      print('Provider request failed:',host,alias,type(exc).__name__,str(exc)[:120])
+              if winner:break
+
+          if not winner:
+              raise SystemExit('No verified custom short URL could be created; do not publish an unverified link.')
+          host=urlparse(winner).netloc
+          alias=urlparse(winner).path.lstrip('/')
+          if not verify(host,alias):
+              raise SystemExit('Final lookup did not match official platform URL')
+          print('BOOYAH_SHORTLINK_VERIFIED='+winner)
+          print('BOOYAH_DESTINATION_VERIFIED='+TARGET)
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a',encoding='utf8') as summary:
+              summary.write('## Verified BOOYAH short link\n\n')
+              summary.write('**'+winner+'** redirects to '+TARGET+' (verified via shortener lookup API).\n')
+          PY
