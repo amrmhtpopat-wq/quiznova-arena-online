@@ -57,15 +57,15 @@ function openModal(html){ $('#modalContent').innerHTML=html; $('#modal').classLi
 function closeModal(){ $('#modal').classList.add('hidden'); $('#modalContent').innerHTML='' }
 $$('[data-closemodal]').forEach(x=>x.onclick=closeModal);
 
-function go(view){
+function go(view,options={}){
   $$('.view').forEach(v=>v.classList.remove('active')); const target=$('#view-'+view); if(target)target.classList.add('active');
   $$('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
   $('#pageTitle').textContent=viewMeta[view][0]; $('#pageSubtitle').textContent=viewMeta[view][1]; $('#sidebar').classList.remove('open');
-  if(view==='dashboard')renderDashboard(); if(view==='generator')renderGenerator(); if(view==='library')renderLibrary(); if(view==='play')renderPlaySelect(); if(view==='results')renderResults(); if(view==='bank')renderBank(); if(view==='media')renderMediaLibrary(); if(view==='live')renderLiveLanding();
+  if(view==='dashboard')renderDashboard(); if(view==='generator')renderGenerator(); if(view==='library')renderLibrary(); if(view==='play')renderPlaySelect(options.quizId); if(view==='results')renderResults(); if(view==='bank')renderBank(); if(view==='media')renderMediaLibrary(); if(view==='live')renderLiveLanding(options.quizId);
 }
 window.go=go;
-$$('.nav-item').forEach(b=>b.onclick=()=>go(b.dataset.view));
-$$('[data-jump]').forEach(b=>b.onclick=()=>go(b.dataset.jump));
+$('.nav-item').forEach(b=>b.onclick=()=>b.dataset.view==='builder'?openNewQuiz():go(b.dataset.view));
+$('[data-jump]').forEach(b=>b.onclick=()=>b.dataset.jump==='builder'?openNewQuiz():go(b.dataset.jump));
 $('#menuBtn').onclick=()=>$('#sidebar').classList.toggle('open');
 $('#quickGenerate').onclick=()=>go('generator');
 $$('[data-modejump]').forEach(b=>b.onclick=()=>{ go('play'); setTimeout(()=>$('#playMode').value=b.dataset.modejump,0) });
@@ -153,6 +153,8 @@ $('#generateQuiz').onclick=generateFromBank;
 $('#previewPool').onclick=()=>{ const p=generatorPool(); openModal(`<div class="overline">PREVIEW</div><h3>الأسئلة المتاحة (${p.length})</h3><div class="modal-list">${p.slice(0,80).map(q=>`<div class="modal-item"><div><b>${typeIcon(q.type)} ${escapeHtml(q.text)}</b><small style="display:block;color:#7b8397">${difficultyName(q.difficulty)} • ${escapeHtml(q.unit||'عام')}</small></div></div>`).join('')||'<p>لا توجد أسئلة.</p>'}</div>`) };
 
 // ---------- Builder ----------
+function openNewQuiz(){resetBuilder();go('builder')}
+window.openNewQuiz=openNewQuiz;
 function resetBuilder(){ editingQuizId=null; $('#quizTitle').value=''; $('#quizSubject').value=window.QN9_TEACHER?.subject||'عام'; $('#quizGrade').value='السابع'; $('#quizSection').value=''; $('#randomQuestions').checked=true; $('#randomOptions').checked=true; $('#showFeedback').checked=true; $('#speedBonus').checked=true; $('#bossEnabled').checked=false; builderQuestions=[blankQuestion('single')]; boActiveQuestionId=builderQuestions[0].id; renderQuestions() }
 function addQuestion(type='single'){ const q=blankQuestion(type); q.subject=$('#quizSubject').value||window.QN9_TEACHER?.subject||'عام';q.grade=$('#quizGrade').value;builderQuestions.push(q);boActiveQuestionId=q.id;renderQuestions() }
 $('#addQuestion').onclick=()=>addQuestion('single'); $('#boRailAddQuestion').onclick=()=>addQuestion('single'); $$('#quickTypes [data-addtype]').forEach(b=>b.onclick=()=>addQuestion(b.dataset.addtype)); $('#resetBuilder').onclick=resetBuilder;
