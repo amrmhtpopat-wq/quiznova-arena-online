@@ -46,7 +46,7 @@ def check_colored_input(page):
     # Assert accessible contrast rather than an exact CSS RGB (the palette evolves).
     import re
     def luminance(rgb):
-        channels=[int(x)/255 for x in re.findall(r'\\d+',rgb)[:3]]
+        channels=[int(x)/255 for x in re.findall(r'\d+',rgb)[:3]]
         linear=[c/12.92 if c<=0.04045 else ((c+0.055)/1.055)**2.4 for c in channels]
         return sum(c*w for c,w in zip(linear,(.2126,.7152,.0722)))
     fg,bg=luminance(val['color']),luminance(val['background'])
