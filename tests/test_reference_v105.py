@@ -96,8 +96,8 @@ class VisualAndDirectAnswerTests(unittest.TestCase):
         self.assertIn("if(!r.ok||!d.ok)throw Object.assign",source)
         self.assertIn("e.status===401||e.message==='login_required'",source)
         self.assertNotIn("تعذر إنشاء الغرفة. تحقق من اتصال الخادم بالإنترنت ثم حاول مرة أخرى",source)
-        self.assertIn("script.src='/app.js?v=10.8'",read('studio-auth.js'))
-        self.assertIn("studio-auth.js?v=10.8",read('studio.html'))
+        self.assertIn("script.src='/app.js?v=11.0'",read('studio-auth.js'))
+        self.assertIn("studio-auth.js?v=11.0",read('studio.html'))
 
     def test_booyah_classroom_viewport_and_progress_contract(self):
         css=read('booyah-classroom.css')
@@ -127,6 +127,26 @@ class VisualAndDirectAnswerTests(unittest.TestCase):
         self.assertIn('body.v105-studio #view-results .insight-card strong',css)
         self.assertIn('body.v105-studio #view-bank .bank-item h4',css)
         self.assertIn('body.v105-studio :is(#view-live,#view-builder,#view-generator,#view-settings) .toggle-line',css)
+
+    def test_focused_question_builder_has_clear_time_points_and_navigation(self):
+        html=read('studio.html')
+        css=read('booyah-builder-v110.css')
+        script=read('app.js')
+        for control in ('boQuestionRail','boRailAddQuestion','boQuestionProperties',
+                        'quizTitle','quizSubject','quizGrade','saveQuiz'):
+            self.assertIn('id="'+control+'"',html)
+        self.assertIn('booyah-builder-v110.css?v=11.0',html)
+        self.assertGreater(html.index('booyah-builder-v110.css'),html.index('booyah-contrast-v109.css'))
+        self.assertIn('bo-optional-tools',html)
+        self.assertIn('bo-question-editor',css)
+        self.assertIn('grid-template-columns:repeat(2,minmax(0,1fr))',css)
+        self.assertIn('time:20,points:1000',script)
+        self.assertIn('id="boPropertyTime"',script)
+        self.assertIn('id="boPropertyPoints"',script)
+        self.assertIn('window.boSetQuestionTime',script)
+        self.assertIn('window.boSetQuestionPoints',script)
+        self.assertIn('window.boSelectQuestion',script)
+        self.assertIn('boActiveQuestionId=q.id;renderQuestions();return toast',script)
 
     def test_teacher_photo_is_not_in_profile_card(self):
         dashboard=read('index.html')
