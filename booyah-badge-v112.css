@@ -1,0 +1,262 @@
+/* BOOYAH! BADJ-TH42 — print-safe student badge and named game mascots.
+   Changes only avatar galleries/pickers and student ID card presentation. */
+body.v105-portal #studentsBoard {
+  display:grid!important;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr))!important;
+  align-items:start;
+  gap:18px!important;
+}
+body.v105-portal .bo-student-id {
+  --badge-ink:#102f51;
+  box-sizing:border-box!important;
+  display:grid!important;
+  grid-template-rows:auto minmax(0,1fr) auto;
+  gap:0!important;
+  min-width:0;
+  min-height:262px;
+  padding:0!important;
+  overflow:hidden;
+  border:1.5px solid #88b9d8!important;
+  border-radius:18px!important;
+  background:#f2f8fd!important;
+  color:#102f51!important;
+  box-shadow:0 14px 30px #00173138!important;
+  print-color-adjust:exact;
+  -webkit-print-color-adjust:exact;
+}
+body.v105-portal .bo-student-id .bo-badge-header {
+  display:flex;align-items:center;gap:9px;
+  padding:10px 14px;
+  background:linear-gradient(110deg,#072a52,#124d7c)!important;
+  border-bottom:3px solid #38c7e5;
+  color:#fff!important;
+  min-height:45px;
+}
+body.v105-portal .bo-student-id .bo-badge-icon{
+  display:grid;place-items:center;
+  flex:0 0 32px;width:32px;height:32px;
+  border-radius:11px;background:#2180b7;
+  font-size:20px;line-height:1;
+}
+body.v105-portal .bo-student-id .bo-badge-brand{display:grid;gap:0;min-width:0}
+body.v105-portal .bo-student-id .bo-badge-brand strong{
+  color:#fff!important;-webkit-text-fill-color:#fff!important;
+  font-size:17px!important;font-weight:900!important;
+  letter-spacing:.7px;line-height:1.2!important;
+}
+body.v105-portal .bo-student-id .bo-badge-brand small{
+  color:#dbf2ff!important;-webkit-text-fill-color:#dbf2ff!important;
+  font-size:9px!important;font-weight:750!important;
+  white-space:normal;line-height:1.4!important;
+}
+body.v105-portal .bo-student-id .bo-badge-edition{
+  margin-inline-start:auto;direction:ltr;unicode-bidi:isolate;
+  color:#c6e8fd!important;
+  font:800 10px/1.2 Cairo,Tahoma,Arial,sans-serif!important;
+  letter-spacing:.4px;
+  border:1px solid #64b8df;border-radius:6px;
+  padding:3px 5px;white-space:nowrap;
+}
+body.v105-portal .bo-student-id .bo-badge-content {
+  display:grid;grid-template-columns:75px minmax(0,1fr);
+  gap:10px;align-items:center;
+  padding:13px 14px 9px;
+  background:linear-gradient(145deg,#f8fbff,#e2f1fd)!important;
+}
+body.v105-portal .bo-student-id .bo-badge-avatar {
+  display:flex;flex-direction:column;gap:5px;align-items:center;
+  min-width:0;
+}
+body.v105-portal .bo-student-id .bo-badge-avatar img.avatar-pic {
+  display:block;
+  box-sizing:border-box;width:72px!important;height:72px!important;
+  border:3px solid #52aee4!important;border-radius:17px!important;
+  background:#0b315c!important;
+  object-fit:cover;box-shadow:0 3px 10px #2652723d;
+}
+body.v105-portal .bo-student-id .bo-badge-avatar span {
+  color:#174d75!important;
+  font-size:11px!important;font-weight:850!important;
+  max-width:76px;text-align:center;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+body.v105-portal .bo-student-id .bo-badge-identity {display:grid;gap:3px;min-width:0}
+body.v105-portal .bo-student-id .bo-badge-field-label,
+body.v105-portal .bo-student-id .bo-badge-class span,
+body.v105-portal .bo-student-id .bo-badge-code span{
+  color:#426481!important;-webkit-text-fill-color:#426481!important;
+  font-size:10px!important;font-weight:800!important;line-height:1.4!important;
+}
+body.v105-portal .bo-student-id .bo-badge-student-name {
+  display:block;
+  color:#0b2b4d!important;-webkit-text-fill-color:#0b2b4d!important;
+  font-size:clamp(16px,1.55vw,20px)!important;
+  font-weight:900!important;
+  line-height:1.55!important;
+  overflow-wrap:anywhere;
+  text-shadow:none!important;
+}
+body.v105-portal .bo-student-id :is(.bo-badge-class,.bo-badge-code) {
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  min-width:0;
+  padding:3px 0;
+}
+body.v105-portal .bo-student-id .bo-badge-class b{
+  color:#163e65!important;-webkit-text-fill-color:#163e65!important;
+  font-size:12px!important;font-weight:850!important;
+  overflow-wrap:anywhere;
+}
+body.v105-portal .bo-student-id .bo-badge-code {
+  padding:6px 8px;
+  border-radius:9px;
+  background:#d9ebfa!important;
+  border:1px solid #a9c9e2;
+  margin-top:2px;
+}
+body.v105-portal .bo-student-id .bo-badge-access-id {
+  color:#082c51!important;-webkit-text-fill-color:#082c51!important;
+  direction:ltr;unicode-bidi:isolate;white-space:nowrap;
+  letter-spacing:1px;font-family:Cairo,Tahoma,Arial,sans-serif!important;
+  font-size:clamp(13px,1.3vw,17px)!important;font-weight:950!important;
+}
+body.v105-portal .bo-student-id .bo-badge-bottom {
+  display:grid;grid-template-columns:minmax(0,1fr) 91px;
+  gap:12px;align-items:center;
+  min-width:0;
+  padding:9px 12px;
+  background:#e2f2fc!important;
+  border-top:1px solid #bad5e8;
+}
+body.v105-portal .bo-student-id .bo-badge-progress{display:grid;gap:8px;min-width:0}
+body.v105-portal .bo-student-id .bo-badge-level{
+  display:flex;gap:8px;justify-content:space-between;align-items:center;flex-wrap:wrap;
+  color:#163d65!important;
+  font-size:12px!important;font-weight:850!important;
+}
+body.v105-portal .bo-student-id .bo-badge-level b {
+  color:#115476!important;font-size:12px!important;font-weight:900!important;
+}
+body.v105-portal .bo-student-id .bo-badge-xp{
+  display:flex;gap:8px;justify-content:space-between;align-items:center;flex-wrap:wrap;
+}
+body.v105-portal .bo-student-id .bo-badge-xp strong{
+  color:#0b3d71!important;
+  font-size:13px!important;font-weight:950!important;
+  direction:ltr;unicode-bidi:isolate;
+}
+body.v105-portal .bo-student-id .bo-badge-xp small{
+  color:#3a627d!important;font-size:10px!important;font-weight:700!important;
+}
+body.v105-portal .bo-student-id .bo-badge-meter{
+  box-sizing:border-box;display:block;
+  overflow:hidden;width:100%;height:10px;
+  border-radius:99px;background:#bbd3e8!important;
+  border:1px solid #89b5d3;
+}
+body.v105-portal .bo-student-id .bo-badge-meter span{
+  display:block;height:100%;
+  background:linear-gradient(90deg,#108fa7,#26c59b)!important;
+  border-radius:99px;
+}
+body.v105-portal .bo-student-id .bo-badge-qr {
+  display:grid;justify-items:center;gap:3px;
+  align-self:center;
+  padding:3px 3px 4px;
+  border-radius:10px;
+  background:#fff!important;border:1px solid #a9c2d7!important;
+  min-width:0;
+}
+body.v105-portal .bo-student-id .bo-badge-qr img.qr{
+  box-sizing:border-box;
+  display:block;width:79px!important;height:79px!important;
+  padding:2px!important;border-radius:0!important;
+  background:white!important;image-rendering:pixelated;
+}
+body.v105-portal .bo-student-id .bo-badge-qr small{
+  color:#1b496a!important;font-size:9px!important;
+  line-height:1.4!important;font-weight:850!important;
+  text-align:center;
+}
+body.v105-portal .v10-avatar-gallery .bo-mascot-option {
+  display:grid;justify-items:center;gap:6px;
+  margin:0;padding:9px;
+  background:linear-gradient(145deg,#123762,#1e4778);
+  border:1px solid #54a5d4;
+  border-radius:15px;
+  min-width:0;
+}
+body.v105-portal .v10-avatar-gallery .bo-mascot-option img{
+  width:min(100%,118px);height:105px;
+  object-fit:contain;border-radius:11px;
+  display:block;
+}
+body.v105-portal .v10-avatar-gallery .bo-mascot-option figcaption{
+  color:#f1fbff!important;
+  font-size:12px!important;font-weight:850!important;
+  text-align:center;
+}
+/* Phone: single-column badge layout and legible text. */
+@media(max-width:600px){
+  body.v105-portal #studentsBoard{grid-template-columns:1fr!important}
+  body.v105-portal .bo-student-id .bo-badge-student-name{font-size:19px!important}
+}
+/* Paper output: precisely eight cards (2 x 4) on A4, with cut spacing. */
+@page{size:A4 portrait;margin:8mm}
+@media print{
+  html,body{margin:0!important;padding:0!important;width:auto!important}
+  body.v105-portal #studentsBoard{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:3mm 4mm!important;
+    align-items:start!important;
+  }
+  body.v105-portal .bo-student-id{
+    box-sizing:border-box!important;
+    height:62mm!important;min-height:62mm!important;
+    max-height:62mm!important;
+    overflow:hidden!important;
+    break-inside:avoid!important;
+    page-break-inside:avoid!important;
+    border-radius:3mm!important;
+    box-shadow:none!important;
+  }
+  body.v105-portal .bo-student-id .bo-badge-header {
+    min-height:10mm!important;
+    padding:1mm 2.5mm!important;
+    gap:1.4mm!important;
+  }
+  body.v105-portal .bo-student-id .bo-badge-icon{width:8mm;height:8mm;flex-basis:8mm;font-size:17px}
+  body.v105-portal .bo-student-id .bo-badge-brand strong{font-size:12px!important}
+  body.v105-portal .bo-student-id .bo-badge-brand small{font-size:6.5px!important}
+  body.v105-portal .bo-student-id .bo-badge-edition{font-size:6.2px!important;padding:1mm!important}
+  body.v105-portal .bo-student-id .bo-badge-content {
+    grid-template-columns:17mm minmax(0,1fr)!important;
+    padding:1.6mm 2.5mm!important;gap:2mm!important;
+  }
+  body.v105-portal .bo-student-id .bo-badge-avatar img.avatar-pic{
+    width:16mm!important;height:16mm!important;border-radius:2mm!important;
+  }
+  body.v105-portal .bo-student-id .bo-badge-avatar span {font-size:7px!important}
+  body.v105-portal .bo-student-id .bo-badge-student-name{font-size:12px!important;line-height:1.35!important}
+  body.v105-portal .bo-student-id .bo-badge-field-label,
+  body.v105-portal .bo-student-id .bo-badge-class span,
+  body.v105-portal .bo-student-id .bo-badge-code span{font-size:7px!important}
+  body.v105-portal .bo-student-id .bo-badge-class b{font-size:9px!important}
+  body.v105-portal .bo-student-id .bo-badge-code{padding:.8mm 1.2mm!important}
+  body.v105-portal .bo-student-id .bo-badge-access-id{font-size:11px!important;letter-spacing:.5px!important}
+  body.v105-portal .bo-student-id .bo-badge-bottom{
+    grid-template-columns:minmax(0,1fr) 23mm!important;
+    padding:1.2mm 2.2mm!important;gap:2mm!important;
+  }
+  body.v105-portal .bo-student-id .bo-badge-level,
+  body.v105-portal .bo-student-id .bo-badge-level b {font-size:9px!important}
+  body.v105-portal .bo-student-id .bo-badge-xp strong{font-size:10px!important}
+  body.v105-portal .bo-student-id .bo-badge-xp small{font-size:7px!important}
+  body.v105-portal .bo-student-id .bo-badge-progress{gap:1mm!important}
+  body.v105-portal .bo-student-id .bo-badge-meter{height:2.2mm!important}
+  body.v105-portal .bo-student-id .bo-badge-qr{padding:.4mm!important;gap:.1mm!important}
+  body.v105-portal .bo-student-id .bo-badge-qr img.qr{
+    width:21mm!important;height:21mm!important;padding:.5mm!important;
+  }
+  body.v105-portal .bo-student-id .bo-badge-qr small {font-size:6px!important}
+}
