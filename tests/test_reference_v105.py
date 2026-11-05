@@ -99,6 +99,18 @@ class VisualAndDirectAnswerTests(unittest.TestCase):
         self.assertIn("script.src='/app.js?v=10.5.2'",read('studio-auth.js'))
         self.assertIn("studio-auth.js?v=10.5.2",read('studio.html'))
 
+    def test_booyah_classroom_viewport_and_progress_contract(self):
+        css=read('booyah-classroom.css')
+        self.assertIn('grid-template-columns:repeat(2,minmax(0,1fr))',css)
+        self.assertIn('overflow:hidden!important',css)
+        self.assertIn('::placeholder',css)
+        for page in ('index.html','studio.html','student.html','stage.html'):
+            self.assertIn('booyah-classroom.css?v=10.8',read(page))
+        self.assertIn('fitQuestionToViewport',read('student.js'))
+        self.assertIn('qn-xp-progress',read('student.js'))
+        self.assertIn('qn-card-progress',read('portal.js'))
+        self.assertIn('xpBreakdown',read('server.py'))
+
     def test_teacher_photo_is_not_in_profile_card(self):
         dashboard=read('index.html')
         studio=read('studio.html')
