@@ -173,30 +173,134 @@ document.querySelectorAll('[data-idea]').forEach(b=>b.addEventListener('click',(
 }));
 $('#loadDemo').onclick=()=>{ const d=demoQuiz();editingQuizId=null;fillBuilder(d);toast('تم تحميل نموذج متقدم') };
 function getQ(id){ return builderQuestions.find(x=>x.id===id) }
+function boCurrentBuilderQuestion(){
+  if(!builderQuestions.length)return null;
+  let q=builderQuestions.find(item=>item.id===boActiveQuestionId);
+  if(!q){q=builderQuestions[0];boActiveQuestionId=q.id}
+  return q;
+}
+function boShowQuestion(index){
+  if(!builderQuestions.length)return;
+  const i=Math.max(0,Math.min(builderQuestions.length-1,index));
+  boActiveQuestionId=builderQuestions[i].id;
+  renderQuestions();
+}
+window.boSelectQuestion=id=>{
+  if(builderQuestions.some(q=>q.id===id)){
+    boActiveQuestionId=id;renderQuestions();
+  }
+};
+window.boMoveQuestion=delta=>{
+  const current=boCurrentBuilderQuestion();
+  if(current)boShowQuestion(builderQuestions.findIndex(q=>q.id===current.id)+delta);
+};
+window.boRefreshRailText=id=>{
+  const q=getQ(id),btn=document.querySelector('#boQuestionRail button[data-question-id="'+id+'"] .bo-rail-label');
+  if(q&&btn)btn.textContent=q.text.trim().slice(0,48)||'سؤال جديد';
+};
+window.boSetQuestionTime=value=>{
+  const q=boCurrentBuilderQuestion();if(!q)return;
+  const n=Number(value);if(!Number.isFinite(n))return;
+  q.time=Math.max(5,Math.min(300,Math.round(n)));
+  renderQuestions();
+};
+window.boSetQuestionPoints=value=>{
+  const q=boCurrentBuilderQuestion();if(!q)return;
+  if(q.type==='poll')return;
+  const n=Number(value);if(!Number.isFinite(n))return;
+  q.points=Math.max(0,Math.min(100000,Math.round(n/100)*100));
+  renderQuestions();
+};
+window.boSetQuestionDifficulty=value=>{
+  const q=boCurrentBuilderQuestion();if(!q)return;
+  if(['easy','medium','hard'].includes(value)){q.difficulty=value;renderQuestions()}
+};
+window.boSetQuestionType=value=>{
+  const q=boCurrentBuilderQuestion();if(q)changeType(q.id,value);
+};
 function renderQuestions(){
-  $('#questionCount').textContent=`${builderQuestions.length} سؤال`;
-  $('#questionsEditor').innerHTML=builderQuestions.map((q,i)=>questionEditor(q,i)).join('');
+  const total=builderQuestions.length,active=boCurrentBuilderQuestion();
+  const index=active?builderQuestions.findIndex(q=>q.id===active.id):-1;
+  $('#questionCount').textContent=total+' سؤال';
+  const count=$('#boRailCount');if(count)count.textContent=total+' سؤال';
+  const rail=$('#boQuestionRail');
+  if(rail)rail.innerHTML=builderQuestions.map((q,i)=>{
+    const ready=!validateQuestion(q),activeClass=q.id===boActiveQuestionId?' is-active':'';
+    return `<button type="button" class="bo-rail-question${activeClass}" data-question-id="${q.id}" onclick="boSelectQuestion('${q.id}')" aria-current="${q.id===boActiveQuestionId?'true':'false'}">
+      <span class="bo-rail-index">${i+1}</span>
+      <span class="bo-rail-label">${escapeHtml((q.text||'').trim().slice(0,48)||'سؤال جديد')}</span>
+      <span class="bo-rail-state ${ready?'is-ready':'is-empty'}" aria-label="${ready?'مكتمل':'يحتاج إكمال'}">${ready?'✓':'•'}</span>
+    </button>`;
+  }).join('');
+  const properties=$('#boQuestionProperties');
+  if(properties)properties.innerHTML=active?`
+    <label class="bo-property-field">نوع السؤال
+      <select id="boPropertyType" onchange="boSetQuestionType(this.value)">${['single','multi','tf','short','estimate','order','match','poll'].map(t=>`<option value="${t}" ${active.type===t?'selected':''}>${typeName(t)}</option>`).join('')}</select>
+    </label>
+    <label class="bo-property-field">⏱ وقت السؤال (بالثواني)
+      <input id="boPropertyTime" type="number" min="5" max="300" step="1" value="${Number(active.time)||20}" onchange="boSetQuestionTime(this.value)">
+    </label>
+    <div class="bo-presets bo-time-presets">${[15,20,30,60].map(n=>`<button type="button" class="${Number(active.time)===n?'is-current':''}" onclick="boSetQuestionTime(${n})">${n} ثانية</button>`).join('')}</div>
+    <label class="bo-property-field">🏆 نقاط السؤال
+      <input id="boPropertyPoints" type="number" min="0" max="100000" step="100" value="${active.points??(active.type==='poll'?0:1000)}" ${active.type==='poll'?'disabled title="الاستطلاع دون نقاط"':''} onchange="boSetQuestionPoints(this.value)">
+    </label>
+    <p class="bo-property-note">${active.type==='poll'?'الاستطلاع بدون نقاط.':'الافتراضي 1000 نقطة، ويمكنك زيادتها أو تخفيضها لهذا السؤال.'}</p>
+    <div class="bo-presets bo-points-presets">${[1000,2000,3000].map(n=>`<button type="button" class="${Number(active.points??1000)===n?'is-current':''}" ${active.type==='poll'?'disabled':''} onclick="boSetQuestionPoints(${n})">${n.toLocaleString('en-US')}</button>`).join('')}</div>
+    <label class="bo-property-field">مستوى الصعوبة
+      <select id="boPropertyDifficulty" onchange="boSetQuestionDifficulty(this.value)">
+        <option value="easy" ${active.difficulty==='easy'?'selected':''}>سهل</option>
+        <option value="medium" ${(active.difficulty||'medium')==='medium'?'selected':''}>متوسط</option>
+        <option value="hard" ${active.difficulty==='hard'?'selected':''}>صعب</option>
+      </select>
+    </label>
+    <div class="bo-prop-footnote">💡 كل سؤال يحتفظ بوقته ونقاطه بشكل مستقل عند حفظ الاختبار.</div>
+  `:'<p class="bo-no-question">أضف سؤالًا لتظهر خصائصه هنا.</p>';
+  $('#questionsEditor').innerHTML=active?questionEditor(active,index)+`
+    <div class="bo-editor-pagination">
+      <button type="button" onclick="boMoveQuestion(-1)" ${index===0?'disabled':''}>السابق</button>
+      <span>السؤال ${index+1} من ${total}</span>
+      <button type="button" onclick="boMoveQuestion(1)" ${index===total-1?'disabled':''}>التالي</button>
+    </div>`:'<div class="bo-empty-builder">ابدأ بإضافة سؤالك الأول من القائمة.</div>';
   const progress=document.querySelector('#v104BuilderProgress');
   if(progress){
     const ready=builderQuestions.filter(q=>!validateQuestion(q)).length;
-    progress.innerHTML=`<div class="v104-progress-top"><b>جاهزية أسئلة الاختبار</b><span>${ready} من ${builderQuestions.length} جاهزة</span></div><div class="v104-meter"><span style="width:${builderQuestions.length?Math.round(100*ready/builderQuestions.length):0}%"></span></div><small>يمكنك إضافة صور وتلميحات وتفسير للإجابة في كل سؤال.</small>`;
+    progress.innerHTML=`<div class="v104-progress-top"><b>جاهزية أسئلة الاختبار</b><span>${ready} من ${total} جاهزة</span></div><div class="v104-meter"><span style="width:${total?Math.round(100*ready/total):0}%"></span></div><small>سيحفظ النظام وقت كل سؤال ونقاطه وإجابته الصحيحة.</small>`;
   }
 }
 function questionEditor(q,i){
-  return `<div class="question-card" data-qid="${q.id}">
-  <div class="question-top"><div class="question-number">${i+1}</div><select onchange="changeType('${q.id}',this.value)">${['single','multi','tf','short','estimate','order','match','poll'].map(t=>`<option value="${t}" ${q.type===t?'selected':''}>${typeName(t)}</option>`).join('')}</select><select class="difficulty-select ${q.difficulty}" onchange="updateQ('${q.id}','difficulty',this.value);renderQuestions()"><option value="easy" ${q.difficulty==='easy'?'selected':''}>سهل</option><option value="medium" ${q.difficulty==='medium'?'selected':''}>متوسط</option><option value="hard" ${q.difficulty==='hard'?'selected':''}>صعب</option></select><div class="spacer"></div><button class="icon-btn" onclick="duplicateQuestion('${q.id}')">⧉</button><button class="icon-btn danger" onclick="removeQuestion('${q.id}')">✕</button></div>
-  <div class="v104-question-meta">
-   <label class="v104-q-main">نص السؤال <textarea rows="3" oninput="updateQ('${q.id}','text',this.value)" placeholder="صغ سؤالًا واضحًا ومحددًا...">${escapeHtml(q.text)}</textarea></label>
-   <label>الوحدة / الموضوع <input value="${escapeHtml(q.unit||'عام')}" oninput="updateQ('${q.id}','unit',this.value)" placeholder="اسم الوحدة"></label>
-   <label>الزمن (ثوانٍ) <input type="number" min="5" max="300" value="${q.time||20}" oninput="updateQ('${q.id}','time',+this.value)"></label>
-   <label>النقاط <input type="number" min="0" step="100" value="${q.points??1000}" oninput="updateQ('${q.id}','points',+this.value)"></label>
-  </div>
-  <div class="v104-question-support">
-   <label>نتاج التعلم / المهارة <input value="${escapeHtml(q.skill||q.topic||'')}" oninput="updateQ('${q.id}','skill',this.value)" placeholder="ماذا يتقن الطالب؟"></label>
-   <label>التفسير بعد السؤال <input value="${escapeHtml(q.explanation||'')}" oninput="updateQ('${q.id}','explanation',this.value)" placeholder="اشرح سبب الإجابة الصحيحة"></label>
-  </div>
-  <div class="question-media-row">${q.image?`<img class="question-media-preview" src="${q.image}">`:''}<label class="btn btn-soft" style="font-size:9px">🖼 ${q.image?'تغيير الصورة':'إضافة صورة'}<input type="file" accept="image/*" hidden onchange="attachImage('${q.id}',this)"></label><button type="button" class="btn btn-soft" onclick="chooseFromMedia('${q.id}')">▧ مكتبة الصور</button>${q.image?`<button class="btn btn-danger-soft" onclick="removeImage('${q.id}')">حذف الصورة</button>`:''}</div>
-  ${typeEditor(q)}</div>`;
+  const hasOptions=['single','multi','poll'].includes(q.type);
+  const hint=hasOptions?(q.type==='poll'?'اكتب الخيارات التي سيختار منها الطالب.':'اكتب الخيارات وحدد الإجابة الصحيحة من الدائرة أو المربع بجانبها.'):'اكتب الإجابة بالطريقة المناسبة لهذا النوع.';
+  return `<article class="question-card bo-question-editor" data-qid="${q.id}" data-type="${q.type}">
+    <header class="bo-editor-toolbar">
+      <span class="bo-question-index-badge">سؤال ${i+1} من ${builderQuestions.length}</span>
+      <span class="bo-question-type-badge">${typeName(q.type)}</span>
+      <div class="bo-question-actions">
+        <button type="button" onclick="duplicateQuestion('${q.id}')" aria-label="نسخ السؤال" title="نسخ السؤال">⧉ نسخ</button>
+        <button type="button" class="bo-delete-question" onclick="removeQuestion('${q.id}')" aria-label="حذف السؤال" title="حذف السؤال">✕ حذف</button>
+      </div>
+    </header>
+    <label class="bo-question-prompt">نص السؤال
+      <textarea rows="3" placeholder="اكتب سؤالك هنا بشكل واضح..." oninput="updateQ('${q.id}','text',this.value);boRefreshRailText('${q.id}')">${escapeHtml(q.text)}</textarea>
+    </label>
+    <div class="bo-media-box">
+      ${q.image?`<img class="bo-question-image question-media-preview" src="${q.image}" alt="الصورة المرفقة بالسؤال">`:`<div class="bo-media-placeholder"><span aria-hidden="true">🖼️</span><strong>صورة توضيحية للسؤال</strong><small>اختياري — يمكنك إضافة صورة من جهازك أو المكتبة</small></div>`}
+      <div class="question-media-row bo-media-actions">
+        <label class="btn btn-soft">＋ ${q.image?'تغيير الصورة':'رفع صورة'}<input type="file" accept="image/*" hidden onchange="attachImage('${q.id}',this)"></label>
+        <button type="button" class="btn btn-soft" onclick="chooseFromMedia('${q.id}')">مكتبة الصور</button>
+        ${q.image?`<button type="button" class="btn btn-danger-soft" onclick="removeImage('${q.id}')">حذف الصورة</button>`:''}
+      </div>
+    </div>
+    <div class="bo-answers-heading"><div><strong>${hasOptions?'الإجابات':'إجابة السؤال'}</strong><small>${hint}</small></div><span>${q.type==='single'?'4 خيارات افتراضيًا':''}</span></div>
+    ${typeEditor(q)}
+    <details class="bo-question-extra">
+      <summary>⚙️ تفاصيل إضافية (اختياري)</summary>
+      <div class="bo-extra-fields">
+        <label>الوحدة أو الموضوع<input value="${escapeHtml(q.unit||'عام')}" oninput="updateQ('${q.id}','unit',this.value)" placeholder="اسم الوحدة"></label>
+        <label>نتاج التعلم أو المهارة<input value="${escapeHtml(q.skill||q.topic||'')}" oninput="updateQ('${q.id}','skill',this.value)" placeholder="ما الذي سيتقنه الطالب؟"></label>
+        <label>تفسير الإجابة<input value="${escapeHtml(q.explanation||'')}" oninput="updateQ('${q.id}','explanation',this.value)" placeholder="شرح يظهر بعد السؤال"></label>
+      </div>
+    </details>
+  </article>`;
 }
 function typeEditor(q){
   if(q.type==='single'||q.type==='multi'||q.type==='poll')return `<div class="options-editor">${q.options.map((o,j)=>`<div class="option-line"><div class="marker">${['أ','ب','ج','د','هـ','و'][j]||j+1}</div><input value="${escapeHtml(o)}" oninput="updateOption('${q.id}',${j},this.value)" placeholder="الخيار ${j+1}">${q.type==='poll'?'<span></span>':`<label><input type="${q.type==='single'?'radio':'checkbox'}" name="correct-${q.id}" ${q.correct?.includes(j)?'checked':''} onchange="setCorrect('${q.id}',${j},this.checked)"> صحيح</label>`}<button class="icon-btn remove-option" onclick="removeOption('${q.id}',${j})">−</button></div>`).join('')}<button class="add-option" onclick="addOption('${q.id}')">+ خيار</button></div>`;
