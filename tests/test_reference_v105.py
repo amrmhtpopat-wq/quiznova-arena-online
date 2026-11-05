@@ -184,6 +184,16 @@ class VisualAndDirectAnswerTests(unittest.TestCase):
         self.assertIn("studio-auth.js?v=11.2",read('studio.html'))
         self.assertIn("script.src='/app.js?v=11.2'",studio_auth)
 
+    def test_studio_navigation_uses_collection_selectors(self):
+        import re
+        script=read('app.js')
+        self.assertIn("$$('.view').forEach",script)
+        self.assertIn("$$('.nav-item').forEach",script)
+        self.assertIn("$$('[data-jump]').forEach",script)
+        # querySelector returns one Element and cannot be iterated.
+        broken=re.findall(r"(?<!\\$)\\$\\(['\\\"]([^'\\\"]+)['\\\"]\\)\\.(?:forEach|map|filter|find|some|every|reduce)\\(",script)
+        self.assertEqual(broken,[],f"Bad single-selector list operations: {broken}")
+
     def test_teacher_photo_is_not_in_profile_card(self):
         dashboard=read('index.html')
         studio=read('studio.html')
