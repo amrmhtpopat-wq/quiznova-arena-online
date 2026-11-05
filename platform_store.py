@@ -167,7 +167,7 @@ def create_teacher(email,password,name,school,subject,school_type='mixed'):
     if existing:raise ValueError('email_taken')
     tid=uuid.uuid4().hex; salt=secrets.token_hex(16)
     exec_sql('INSERT INTO teachers(id,email,password_hash,salt,name,school,subject,school_type,created_at) VALUES(?,?,?,?,?,?,?,?,?)',(tid,email,password_hash(password,salt),salt,name,school,subject,school_type,epoch()))
-    exec_sql('INSERT INTO datasets (teacher_id,quizzes,bank,settings,results,updated_at) VALUES(?,?,?,?,?,?)',(tid,'[]','[]',jdump({'teacherName':name,'schoolName':school,'platformName':'QuizNova','scene':'cartoon'}),'[]',epoch()))
+    exec_sql('INSERT INTO datasets (teacher_id,quizzes,bank,settings,results,updated_at) VALUES(?,?,?,?,?,?)',(tid,'[]','[]',jdump({'teacherName':name,'schoolName':school,'platformName':'BOOYAH! QUIZ ARENA','scene':'cartoon'}),'[]',epoch()))
     return login(email,password)
 
 def login(email,password):
