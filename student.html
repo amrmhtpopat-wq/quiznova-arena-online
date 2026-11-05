@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#0099d5">
-  <title>QuizNova Arena — الطالب</title>
+  <title>BOOYAH! — بويا جو | بوابة الطالب</title>
   <link rel="stylesheet" href="student.css">
   <link rel="stylesheet" href="v7-theme.css">
   <link rel="stylesheet" href="v8-theme.css?v=8.2">
@@ -16,15 +16,22 @@
 <link rel="stylesheet" href="/booyah-contrast-v109.css?v=10.9">
 <link rel="stylesheet" href="/booyah-quiz-polish-v111.css?v=11.1">
 <link rel="stylesheet" href="/booyah-mascots-v112.css?v=11.3">
+<link rel="stylesheet" href="/booyah-student-v120.css?v=12.0">
 </head>
 <body class="v105-student">
 <div class="bg-orb orb-a"></div><div class="bg-orb orb-b"></div><div class="bg-orb orb-c"></div>
 <main class="student-shell">
   <header class="student-brand">
-    <div class="logo">Q</div>
-    <div><b>QuizNova</b><small>ARENA • STUDENT</small></div>
+    <div class="logo">B!</div>
+    <div><b>BOOYAH!</b><small>بويا جو • QUIZ ARENA</small></div>
     <span class="live-dot">LIVE</span>
   </header>
+
+    <nav class="bo-student-modes" id="studentModes" aria-label="طريقة دخول الطالب">
+    <button type="button" data-student-mode="live" class="is-active">🏆 تحدي مباشر</button>
+    <button type="button" data-student-mode="card">🪪 بطاقتي</button>
+    <button type="button" data-student-mode="solo">🎮 تدريب فردي</button>
+  </nav>
 
   <section id="joinView" class="join-wrap">
     <div class="join-visual" aria-hidden="true">
@@ -46,7 +53,7 @@
         <input id="roomCode" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="000 000">
       </label>
       <label>🪪 رمز بطاقة الطالب (اختياري إذا كان الدخول بالاسم مسموحًا)
-        <input id="cardCode" maxlength="24" autocomplete="off" autocapitalize="characters" dir="ltr" placeholder="QNA-XXXX-XXXX-XXXX">
+        <input id="cardCode" maxlength="24" autocomplete="off" autocapitalize="characters" dir="ltr" placeholder="ABCD-EFGH">
       </label>
       <button type="button" class="qn-profile-action" id="showCardProfile">🪪 عرض بطاقة الطالب ونقاطه</button>
       <div id="cardProfile" class="qn-card-profile" hidden></div>
@@ -61,8 +68,24 @@
     </div>
   </section>
 
+  <section id="soloView" class="bo-solo-view hidden" aria-labelledby="soloTitle">
+    <div class="bo-solo-card">
+      <div class="bo-solo-kicker">🎮 تدريب فردي • بويا جو</div>
+      <h1 id="soloTitle">تحدَّ نفسك وتقدم كل يوم</h1>
+      <p>أدخل رمز بطاقة الطالب، ثم اختر أحد اختبارات التدريب التي أتاحها معلمك. لا تحتاج رمز جلسة أو انتظار المعلم.</p>
+      <form id="soloCardForm" class="bo-solo-login">
+        <label for="soloCardCode">رمز بطاقة الطالب <small>مثل ABCD-EFGH</small></label>
+        <div class="bo-solo-form-row"><input id="soloCardCode" placeholder="ABCD-EFGH" dir="ltr" autocomplete="off" maxlength="90" required><button type="submit" id="soloLoadBtn">عرض اختبارات التدريب</button></div>
+      </form>
+      <p id="soloError" class="bo-solo-error" role="alert"></p>
+      <div id="soloStudentInfo" class="bo-solo-student-info" hidden></div>
+      <div id="soloQuizList" class="bo-solo-quizzes" aria-live="polite"></div>
+      <div id="soloPlayArea" class="bo-solo-play" aria-live="polite"></div>
+    </div>
+  </section>
   <section id="gameView" class="hidden"></section>
 </main>
-<script src="student.js?v=11.3"></script>
+<script src="student.js?v=12.0"></script>
+<script src="/solo-student-v120.js?v=12.0"></script>
 </body>
 </html>
