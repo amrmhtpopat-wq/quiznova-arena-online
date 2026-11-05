@@ -68,6 +68,11 @@ with sync_playwright() as playwright:
     for name in ('شرارة','روبوك','فوكسو','نينزو','درعو','بيكسو','زومي'):
       assert name in selected,(name,selected)
     assert 'شخصية شبابية' not in selected
+    page.eval_on_selector_all('#schoolAvatarGallery .bo-mascot-option img',
+        'imgs=>imgs.forEach(img=>img.loading="eager")')
+    page.wait_for_function(
+        'Array.from(document.querySelectorAll("#schoolAvatarGallery .bo-mascot-option img")).every(img=>img.complete && img.naturalWidth>0)',
+        timeout=20000)
     assert images_load(page,'#schoolAvatarGallery .bo-mascot-option img')
 
     page.emulate_media(media='print')
@@ -86,6 +91,11 @@ with sync_playwright() as playwright:
     student_page.locator('#avatarPicker .avatar-choice').first.wait_for(state='visible',timeout=10000)
     names=student_page.locator('#avatarPicker .bo-avatar-name').all_text_contents()
     assert names[:7]==['شرارة','روبوك','فوكسو','نينزو','درعو','بيكسو','زومي'],names
+    student_page.eval_on_selector_all('#avatarPicker img',
+        'imgs=>imgs.forEach(img=>img.loading="eager")')
+    student_page.wait_for_function(
+        'Array.from(document.querySelectorAll("#avatarPicker img")).every(img=>img.complete && img.naturalWidth>0)',
+        timeout=20000)
     assert images_load(student_page,'#avatarPicker img')
     student_page.locator('[data-avatar="m06"]').click()
     assert 'selected' in student_page.locator('[data-avatar="m06"]').get_attribute('class')
