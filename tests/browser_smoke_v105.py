@@ -1,6 +1,7 @@
 """Headless browser smoke test covering desktop, mobile, student cards and one-tap scoring."""
-import json,os,tempfile,threading,time,urllib.request,urllib.error,uuid
+import json,os,sys,tempfile,threading,time,urllib.request,urllib.error,uuid
 from pathlib import Path
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from playwright.sync_api import sync_playwright
 
 temp=tempfile.TemporaryDirectory()
