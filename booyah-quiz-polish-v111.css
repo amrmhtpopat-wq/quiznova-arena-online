@@ -179,6 +179,7 @@ body.v105-studio #view-live .live-config-grid :is(input,select) {
 /* Solo questions: calm paper background, strong ink, non-neon option colors. */
 body.v105-studio #view-play #gameArea .game-card {
   background:linear-gradient(165deg,#f8fbff,#e5f1fc)!important;
+  background-color:#f8fbff!important;
   border:1.5px solid #94bed9!important;
   box-shadow:0 15px 34px #03182b38!important;
   color:#163451!important;
