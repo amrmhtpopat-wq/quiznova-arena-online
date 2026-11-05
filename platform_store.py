@@ -18,6 +18,17 @@ def inferred_school_type(school):
     return 'mixed'
 
 DB_LOCK=threading.RLock()
+CARD_ALPHABET='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+
+def new_card_code():
+    '''A printable 60-bit bearer code; do not use sequential student IDs as credentials.'''
+    raw=''.join(secrets.choice(CARD_ALPHABET) for _ in range(12))
+    return 'QNA-'+raw[:4]+'-'+raw[4:8]+'-'+raw[8:]
+def xp_gain_for_attempt(score,correct):
+    return max(0,min(2500,int(max(0,score)//20)+max(0,int(correct))*20))
+def level_for_xp(xp):
+    return max(1,int(xp)//500+1)
+
 
 def epoch(): return int(time.time())
 def jdump(value): return json.dumps(value,ensure_ascii=False,separators=(',',':'))
@@ -77,6 +88,21 @@ def init():
                 con.execute("ALTER TABLE teachers ADD COLUMN school_type TEXT NOT NULL DEFAULT 'mixed'")
                 con.execute("UPDATE teachers SET school_type='boys' WHERE school LIKE '%بنين%'")
                 con.execute("UPDATE teachers SET school_type='girls' WHERE school LIKE '%بنات%'")
+            if DATABASE_URL:
+                present=bool(con.execute("SELECT 1 FROM information_schema.columns WHERE table_name='students' AND column_name='card_code'").fetchone())
+            else:
+                present='card_code' in [x[1] for x in con.execute('PRAGMA table_info(students)').fetchall()]
+            if not present:
+                con.execute('ALTER TABLE students ADD COLUMN card_code TEXT')
+            con.execute('CREATE UNIQUE INDEX IF NOT EXISTS idx_students_card_code ON students (card_code)')
+            # Backfill legacy cards without changing their existing QR bearer tokens.
+            old=con.execute("SELECT id FROM students WHERE card_code IS NULL OR card_code=''").fetchall()
+            for (sid,) in old:
+                for _ in range(12):
+                    candidate=new_card_code()
+                    if not con.execute(sql('SELECT id FROM students WHERE card_code=?'),(candidate,)).fetchone():break
+                else:raise RuntimeError('card_code_collision')
+                con.execute(sql('UPDATE students SET card_code=? WHERE id=?'),(candidate,sid))
 
 
 def password_hash(password,salt):return hashlib.pbkdf2_hmac('sha256',password.encode(),bytes.fromhex(salt),300000).hex()
@@ -145,45 +171,61 @@ def add_students(teacher_id,students):
         duplicate=query('SELECT id FROM students WHERE teacher_id=? AND name=? AND class_name=?',(teacher_id,name,cls))
         if duplicate:continue
         sid=uuid.uuid4().hex;card=secrets.token_urlsafe(24)
-        exec_sql('INSERT INTO students (id,teacher_id,name,class_name,avatar,card_token,created_at) VALUES (?,?,?,?,?,?,?)',(sid,teacher_id,name,cls,avatar,card,epoch()))
-        created.append({'id':sid,'name':name,'className':cls,'avatar':avatar,'card':card})
+        code=new_card_code()
+        for _ in range(12):
+            if not query('SELECT id FROM students WHERE card_code=?',(code,)):break
+            code=new_card_code()
+        else:raise RuntimeError('card_code_collision')
+        exec_sql('INSERT INTO students (id,teacher_id,name,class_name,avatar,card_token,card_code,created_at) VALUES (?,?,?,?,?,?,?,?)',(sid,teacher_id,name,cls,avatar,card,code,epoch()))
+        created.append({'id':sid,'name':name,'className':cls,'avatar':avatar,'card':card,'cardCode':code})
     return created
 
 def list_students(teacher_id):
-    rows=query('SELECT id,name,class_name,avatar,card_token,xp,correct_count,played_count FROM students WHERE teacher_id=? ORDER BY class_name,name',(teacher_id,),True)
-    return [{'id':r['id'],'name':r['name'],'className':r['class_name'],'avatar':r['avatar'],'card':r['card_token'],'xp':r['xp'],'level':max(1,r['xp']//500+1),'correct':r['correct_count'],'played':r['played_count']} for r in rows]
+    rows=query('SELECT id,name,class_name,avatar,card_token,card_code,xp,correct_count,played_count FROM students WHERE teacher_id=? ORDER BY class_name,name',(teacher_id,),True)
+    return [{'id':r['id'],'name':r['name'],'className':r['class_name'],'avatar':r['avatar'],'card':r['card_token'],'cardCode':r['card_code'],'xp':r['xp'],'level':level_for_xp(r['xp']),'correct':r['correct_count'],'played':r['played_count']} for r in rows]
 
 def student_by_card(token,teacher_id):
-    if not token or len(token)>90:return None
-    return query('SELECT * FROM students WHERE card_token=? AND teacher_id=?',(token,teacher_id))
+    token=str(token or '').strip()
+    if not token or len(token)>90 or not teacher_id:return None
+    # Accept the original QR token or the new printed card code.
+    return query('SELECT * FROM students WHERE (card_token=? OR card_code=?) AND teacher_id=?',(token,token.upper(),teacher_id))
 
 def attempt_count(sid,quiz_id):
     row=query('SELECT COUNT(*) AS c FROM student_attempts WHERE student_id=? AND quiz_id=?',(sid,quiz_id))
     return int(row['c'] or 0)
 
 def persist_room(room,report,questions):
+    """Atomically record results and award durable XP exactly once per finished room."""
     if not room.get('teacherId'):return
     tid=room['teacherId'];code=room['code']
-    existing=query('SELECT id FROM played_sessions WHERE code=?',(code,))
-    if existing:return
-    exec_sql('INSERT INTO played_sessions(id,teacher_id,code,section,subject,quiz_title,game_mode,played_at,report,questions) VALUES (?,?,?,?,?,?,?,?,?,?)',(
-       uuid.uuid4().hex,tid,code,room.get('section',''),room.get('quiz',{}).get('subject','عام'),room['quiz'].get('title',''),room.get('gameMode',''),epoch(),jdump(report),jdump(questions)))
-    total=sum(1 for x in room['quiz']['questions'] if x.get('type')!='poll')
-    for p in room['players'].values():
-        correct=int(p.get('correct',0));pct=round(correct/total*100) if total else 100
-        student_id=p.get('studentId')
-        exec_sql('INSERT INTO student_attempts (id,teacher_id,student_id,quiz_id,room_code,student_name,class_name,avatar,correct_count,question_total,percent,score,answers,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)',(
-          uuid.uuid4().hex,tid,student_id,room['quiz'].get('id',''),code,p['name'],room.get('section',''),p.get('avatar','01'),correct,total,pct,p.get('score',0),jdump(p.get('answers',{})),epoch()))
-        if student_id:
-            xp=correct*65+max(0,pct-50)*2
-            exec_sql('UPDATE students SET xp=xp+?,correct_count=correct_count+?,played_count=played_count+1 WHERE id=? AND teacher_id=?',(xp,correct,student_id,tid))
-    # Activity-triggered backups: failures never block completed results.
+    total=sum(1 for q in room['quiz']['questions'] if q.get('type')!='poll')
+    with DB_LOCK:
+        with db_connection() as con:
+            existing=con.execute(sql('SELECT id FROM played_sessions WHERE code=?'),(code,)).fetchone()
+            if existing:return
+            con.execute(sql('INSERT INTO played_sessions(id,teacher_id,code,section,subject,quiz_title,game_mode,played_at,report,questions) VALUES (?,?,?,?,?,?,?,?,?,?)'),(
+                uuid.uuid4().hex,tid,code,room.get('section',''),room.get('quiz',{}).get('subject','عام'),
+                room['quiz'].get('title',''),room.get('gameMode',''),epoch(),jdump(report),jdump(questions)))
+            for p in room['players'].values():
+                correct=int(p.get('correct',0));pct=round(correct/total*100) if total else 100
+                student_id=p.get('studentId')
+                con.execute(sql('INSERT INTO student_attempts(id,teacher_id,student_id,quiz_id,room_code,student_name,class_name,avatar,correct_count,question_total,percent,score,answers,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)'),(
+                    uuid.uuid4().hex,tid,student_id,room['quiz'].get('id',''),code,p['name'],
+                    room.get('section',''),p.get('avatar','01'),correct,total,pct,p.get('score',0),jdump(p.get('answers',{})),epoch()))
+                if student_id:
+                    gain=xp_gain_for_attempt(p.get('score',0),correct)
+                    con.execute(sql('UPDATE students SET xp=xp+?,correct_count=correct_count+?,played_count=played_count+1 WHERE id=? AND teacher_id=?'),
+                        (gain,correct,student_id,tid))
+                    progress=con.execute(sql('SELECT xp,played_count FROM students WHERE id=? AND teacher_id=?'),(student_id,tid)).fetchone()
+                    if progress:
+                        p['xpGain']=gain
+                        p['xp']=int(progress[0])
+                        p['level']=level_for_xp(p['xp'])
     try:
         from platform_security import auto_backup
         auto_backup(tid)
-    except Exception as e:
-        print('[QuizNova backup] automatic backup failed:',type(e).__name__)
-
+    except Exception as exc:
+        print('[QuizNova backup] automatic backup failed:',type(exc).__name__)
 
 def history(teacher_id,limit=100):
     rows=query('SELECT code,section,subject,quiz_title,game_mode,played_at,report,questions FROM played_sessions WHERE teacher_id=? ORDER BY played_at DESC LIMIT ?',(teacher_id,limit),True)
