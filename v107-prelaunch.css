@@ -114,3 +114,42 @@ body.v105-studio .form-grid label,body.v105-studio .live-config-grid label{font-
  body.v105-student:has(#gameView:not(.hidden) .question-card) .answers{max-height:46dvh!important}
 }
 @media(prefers-reduced-motion:reduce){body.v105-student .qn-wait-ring,body.v105-student .qn-answer-wait .qn-wait-glow{animation:none}}
+
+/* V10.5 original educational art — no personal avatar on teacher's homepage */
+body.v105-portal .hero-illustration,body.v105-studio .hero-stage{position:relative!important}
+body.v105-portal .v107-educational-hero{
+ display:block!important;width:min(36vw,370px)!important;height:clamp(150px,24vw,265px)!important;
+ max-width:100%!important;object-fit:cover!important;border-radius:18px!important;
+ border:1px solid #62e3ffb5;box-shadow:0 0 30px #00aefc5f,0 12px 36px #0011268c
+}
+body.v105-studio .v107-educational-hero{
+ position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
+ object-fit:cover!important;object-position:center!important;
+ opacity:.35!important;border-radius:22px!important;z-index:0!important
+}
+body.v105-studio .hero-stage>:not(.v107-educational-hero){position:relative;z-index:1}
+body.v105-studio .stage-pin{z-index:2!important}
+body.v105-portal .v105-portal-hero-portrait,body.v105-studio .v105-game-hero-portrait{display:none!important}
+body.v105-student .qn-profile-action{
+ margin:7px 0 12px;padding:10px 15px;width:100%;
+ border:1px solid #6cf6ff;background:linear-gradient(135deg,#193b89,#4423a9);
+ border-radius:11px;color:white;font-size:14px;font-weight:900
+}
+body.v105-student .qn-card-profile{
+ margin:8px 0 16px;padding:12px;display:flex;gap:12px;align-items:center;
+ border:1px solid #60e6ffc0;background:linear-gradient(120deg,#102f63,#102049);
+ border-radius:15px;box-shadow:0 0 18px #18bfff30
+}
+body.v105-student .qn-card-profile[hidden]{display:none!important}
+body.v105-student .qn-card-profile img{width:74px;height:92px;object-fit:cover;border-radius:11px;border:2px solid #81ebff}
+body.v105-student .qn-card-profile b{font-size:17px;display:block;color:white}
+body.v105-student .qn-card-profile small,body.v105-student .qn-card-profile span{font-size:12px;display:block;color:#d4efff;margin-top:2px}
+body.v105-student .qn-card-profile span{font-weight:800}
+body.v105-student:has(#gameView:not(.hidden) .question-card) .question-card[data-type="order"],
+body.v105-student:has(#gameView:not(.hidden) .question-card) .question-card[data-type="match"]{
+ overflow-y:auto!important;justify-content:flex-start!important
+}
+@media(max-width:750px){
+ body.v105-portal .v107-educational-hero{width:100%!important;height:165px!important}
+ body.v105-studio .v107-educational-hero{object-position:left center!important}
+}

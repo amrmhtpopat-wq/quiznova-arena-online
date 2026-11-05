@@ -28,7 +28,21 @@ $('#avatarPicker').addEventListener('click',e=>{const button=e.target.closest('[
 function esc(v=''){return String(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function api(path,opt){return fetch(path,opt).then(async r=>{const d=await r.json().catch(()=>({}));if(!r.ok&&!d.ok)throw d;return d})}
 function err(msg){$('#joinError').textContent=msg||''}
-function setCodeFromUrl(){const p=new URLSearchParams(location.search),code=(p.get('code')||'').replace(/\D/g,'').slice(0,6);if(code){$('#roomCode').value=code;$('#joinHint').textContent='تم التقاط رمز اللعبة من QR. اكتب اسمك ثم اضغط دخول.';setTimeout(()=>$('#playerName').focus(),150)}if(selectedCard){$('#cardCode').value=selectedCard;$('#joinHint').textContent='🪪 بطاقة الطالب جاهزة. اكتب رمز الغرفة للتعرف على اسمك وشعبتك تلقائيًا.';if(code)resolveCard();}if(code)loadRoomAvatarPool();}
+async function showCardProfile(){
+ const code=($('#cardCode').value||'').trim().toUpperCase(),panel=$('#cardProfile');
+ if(!code){panel.hidden=true;panel.textContent='';return}
+ try{
+  const d=await api('/api/card/profile?card='+encodeURIComponent(code));
+  if(!d.ok)throw d;
+  selectedCard=code;cardName=d.name;pickedAvatar=d.avatar;
+  $('#playerName').value=d.name;$('#playerName').readOnly=true;
+  panel.hidden=false;
+  panel.innerHTML='<div class="qn-profile-avatar"><img alt="" src="'+avatarPath(d.avatar)+'"></div><div><b>'+esc(d.name)+'</b><small>'+esc(d.className)+'</small><span>⭐ المستوى '+d.level+' • '+d.xp+' XP</span><span>🏆 '+d.played+' مشاركة • '+d.correct+' إجابة صحيحة</span></div>';
+  $('#joinHint').textContent='بطاقتك جاهزة. أدخل رمز الغرفة للانضمام للمسابقة.';
+  err('');
+ }catch(e){panel.hidden=true;cardName='';$('#playerName').readOnly=false;err('رمز البطاقة غير صالح، تأكد من الحروف والأرقام.')}
+}
+function setCodeFromUrl(){const p=new URLSearchParams(location.search),code=(p.get('code')||'').replace(/\D/g,'').slice(0,6);if(code){$('#roomCode').value=code;$('#joinHint').textContent='تم التقاط رمز اللعبة من QR. اكتب اسمك ثم اضغط دخول.';setTimeout(()=>$('#playerName').focus(),150)}if(selectedCard){$('#cardCode').value=selectedCard;setTimeout(showCardProfile,80);$('#joinHint').textContent='🪪 بطاقة الطالب جاهزة. اكتب رمز الغرفة للتعرف على اسمك وشعبتك تلقائيًا.';if(code)resolveCard();}if(code)loadRoomAvatarPool();}
 function beep(ok=true){try{const C=window.AudioContext||window.webkitAudioContext,a=new C(),o=a.createOscillator(),g=a.createGain();o.connect(g);g.connect(a.destination);o.type='sine';o.frequency.value=ok?660:210;g.gain.setValueAtTime(.06,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+.22);o.start();o.stop(a.currentTime+.23)}catch{}}
 function confetti(){const wrap=document.createElement('div');wrap.className='confetti';const cols=['#ff4d69','#2d7fe7','#f0b529','#28aa66','#6d3eff','#18c6d5'];for(let i=0;i<34;i++){const x=document.createElement('i');x.style.left=Math.random()*100+'vw';x.style.background=cols[i%cols.length];x.style.animationDelay=Math.random()*.35+'s';x.style.transform=`rotate(${Math.random()*180}deg)`;wrap.appendChild(x)}document.body.appendChild(wrap);setTimeout(()=>wrap.remove(),2400)}
 
@@ -37,6 +51,7 @@ async function resolveCard(){
  if(!selectedCard||$('#roomCode').value.length!==6){cardName='';$('#playerName').readOnly=false;return}
  try{const d=await api('/api/card/resolve?code='+$('#roomCode').value+'&card='+encodeURIComponent(selectedCard));if(d.ok){cardName=d.name;$('#playerName').value=d.name;$('#playerName').readOnly=true;pickedAvatar=d.avatar;$('#joinHint').textContent='✅ بطاقتك: '+d.name+' • '+d.className+' • المستوى '+d.level+' • '+d.xp+' XP'}}catch(e){cardName='';$('#playerName').readOnly=false;err('رمز البطاقة غير صالح لهذه الغرفة. تأكد من الرمز أو امسح QR.')}}
 $('#joinBtn').onclick=async()=>{await loadRoomAvatarPool();const code=$('#roomCode').value.replace(/\D/g,'').trim();let name=$('#playerName').value.trim();err('');if(code.length!==6)return err('اكتب رمز اللعبة المكوّن من 6 أرقام');if(selectedCard&&!cardName){await resolveCard();name=$('#playerName').value.trim()}if(!name&&!selectedCard)return err('اكتب اسمك الحقيقي');try{const d=await api('/api/room/join',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code,name,avatar:pickedAvatar,card:selectedCard})});if(!d.ok)throw d;session={...session,code,playerId:d.playerId,name:d.name||name,avatar:d.avatar||pickedAvatar,team:d.team||'',model:d.model||'',variantMode:d.variantMode||'options',playType:d.playType||'individual',xp:d.xp||0,level:d.level||1};sessionStorage.setItem('qn9_student_'+code,JSON.stringify({playerId:session.playerId,name:session.name,avatar:session.avatar,team:session.team,model:session.model}));$('#joinView').classList.add('hidden');$('#gameView').classList.remove('hidden');startPoll()}catch(e){const map={room_not_found:'رمز اللعبة غير صحيح أو انتهت الجلسة',name_taken:'هذا الاسم مستخدم بالفعل، أضف اسم العائلة',finished:'هذه اللعبة انتهت',name_required:'اكتب اسمك',card_required:'المعلم فعّل شرط بطاقة الطالب لهذه الغرفة؛ اطلب منه إلغاء الشرط أو استخدام بطاقتك',invalid_card:'بطاقة الطالب غير صالحة',card_already_joined:'الطالب يستخدم هذه البطاقة بالفعل في الغرفة',attempt_limit:'لقد استنفدت عدد المحاولات المحدد لهذا الامتحان',wrong_class:'البطاقة لا تتبع هذه الشعبة',exam_started:'بدأ الامتحان بالفعل ولا يمكن الانضمام الآن',team_assignment_closed:'انتهى توزيع الفرق اليدوي. اطلب من المعلم إنشاء غرفة جديدة.'};err(map[e?.error]||'تعذر الدخول إلى اللعبة')}};
+$('#showCardProfile').onclick=showCardProfile;
 $('#cardCode').addEventListener('input',e=>{cardName='';$('#playerName').readOnly=false;e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9_-]/g,'').slice(0,24);selectedCard=e.target.value;if($('#roomCode').value.length===6&&selectedCard.length>=12)resolveCard()});
 $('#roomCode').addEventListener('input',e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,6);if(e.target.value.length===6){resolveCard();loadRoomAvatarPool()}else{lastAvatarCode='';avatarRequest++}});$('#playerName').addEventListener('keydown',e=>{if(e.key==='Enter')$('#joinBtn').click()});
 
