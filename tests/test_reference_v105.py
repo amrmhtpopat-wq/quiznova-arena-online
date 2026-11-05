@@ -85,7 +85,7 @@ class VisualAndDirectAnswerTests(unittest.TestCase):
 
     def test_no_singular_query_selector_for_answer_buttons(self):
         student=read('student.js')
-        self.assertNotIn("$('.answer').forEach",student)
+        self.assertGreaterEqual(student.count("$(\'.answer\').forEach"),2)
         self.assertIn("$('.answer').forEach(b=>b.disabled=true)",student)
 
     def test_teacher_photo_is_not_in_profile_card(self):
