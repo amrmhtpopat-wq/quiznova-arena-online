@@ -83,9 +83,9 @@ with sync_playwright() as p:
         screenshot(page,'contrast-live-'+('mobile' if mobile else 'desktop')+'.png')
 
         page.evaluate("go('bank')")
-        page.locator('#questionBank .bank-item h4').wait_for(state='visible',timeout=10000)
+        page.locator('#questionBank .bank-item h4').first.wait_for(state='visible',timeout=10000)
         check_ratio(page,'#bankSummary .summary-chip','#bankSummary .summary-chip')
-        assert brightness(page.locator('#questionBank .bank-item h4').evaluate('e=>getComputedStyle(e).color'))<135
+        assert brightness(page.locator('#questionBank .bank-item h4').first.evaluate('e=>getComputedStyle(e).color'))<135
         screenshot(page,'contrast-bank-'+('mobile' if mobile else 'desktop')+'.png')
 
         page.evaluate("go('results')")
@@ -95,8 +95,8 @@ with sync_playwright() as p:
         screenshot(page,'contrast-results-'+('mobile' if mobile else 'desktop')+'.png')
 
         page.evaluate("go('library')")
-        page.locator('#quizLibrary .quiz-card h4').wait_for(state='visible',timeout=10000)
-        assert brightness(page.locator('#quizLibrary .quiz-card h4').evaluate('e=>getComputedStyle(e).color'))<135
+        page.locator('#quizLibrary .quiz-card h4').first.wait_for(state='visible',timeout=10000)
+        assert brightness(page.locator('#quizLibrary .quiz-card h4').first.evaluate('e=>getComputedStyle(e).color'))<135
 
         page.evaluate("go('play')")
         page.locator('#playQuizSelect').select_option('contrast-demo')
