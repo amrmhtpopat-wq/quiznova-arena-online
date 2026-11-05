@@ -61,6 +61,10 @@ class StudentSoloContract(unittest.TestCase):
                     'questions': cls.questions}
         store.save_snapshot(cls.tid, {'quizzes': [cls.quiz]})
 
+    def setUp(self):
+        # Each test must start with a private quiz; test ordering cannot publish it accidentally.
+        store.save_snapshot(self.tid, {'quizzes': [self.quiz]})
+
     def test_unpublished_is_private_and_only_own_card_can_access(self):
         status, data = post('catalog', {'card': self.card})
         self.assertEqual(status, 200)
