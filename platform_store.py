@@ -21,13 +21,59 @@ DB_LOCK=threading.RLock()
 CARD_ALPHABET='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
 
 def new_card_code():
-    '''A printable 60-bit bearer code; do not use sequential student IDs as credentials.'''
-    raw=''.join(secrets.choice(CARD_ALPHABET) for _ in range(12))
-    return 'QNA-'+raw[:4]+'-'+raw[4:8]+'-'+raw[8:]
-def xp_gain_for_attempt(score,correct):
-    return max(0,min(2500,int(max(0,score)//20)+max(0,int(correct))*20))
+    """Easy-to-type 40-bit random school card code, 4+4 characters.
+    Existing QNA-... codes remain valid; full QR tokens are unchanged.
+    """
+    raw=''.join(secrets.choice(CARD_ALPHABET) for _ in range(8))
+    return raw[:4]+'-'+raw[4:]
+
+LEVEL_TITLES=('مبتدئ','متقدم','منافس','بطل الصف','نجم الشعبة','أسطورة بويا')
+
+def xp_progress(xp):
+    """Return the exact level bounds so every client uses one XP scale."""
+    xp=max(0,int(xp))
+    bounds=[0,100,250,450,700,1000]
+    while xp>=bounds[-1]:
+        bounds.append(bounds[-1]+350+50*(len(bounds)-6))
+    level=next((i for i in range(1,len(bounds)) if xp<bounds[i]),len(bounds)-1)
+    floor=bounds[level-1]
+    ceiling=bounds[level]
+    return {'level':level,'title':LEVEL_TITLES[min(level-1,len(LEVEL_TITLES)-1)],
+            'startXp':floor,'nextXp':ceiling,'xpToNext':ceiling-xp,
+            'percent':round((xp-floor)*100/(ceiling-floor))}
+
 def level_for_xp(xp):
-    return max(1,int(xp)//500+1)
+    return xp_progress(xp)['level']
+
+def xp_gain_for_attempt(score,correct):
+    """Base XP for correct answers; completion/rank/speed are added at room finish."""
+    return max(0,int(correct))*10
+
+def room_xp_awards(room):
+    """Deterministic per-player XP; fastest 3 for the same question earn +5."""
+    players=list(room.get('players',{}).values())
+    fastest={}
+    for player in players:
+        for answer in player.get('answers',{}).values():
+            if answer.get('correct') is True:
+                qid=answer.get('questionIndex')
+                fastest.setdefault(qid,[]).append((int(answer.get('elapsedMs',0)),player['id']))
+    speed_bonus={p['id']:0 for p in players}
+    for answers in fastest.values():
+        for _,pid in sorted(answers,key=lambda item:(item[0],item[1]))[:3]:
+            speed_bonus[pid]+=5
+    ranking=sorted(players,key=lambda p:(-int(p.get('score',0)),-int(p.get('correct',0)),p['id']))
+    first=ranking[0]['id'] if ranking else None
+    total=len(room.get('quiz',{}).get('questions',[]))
+    awards={}
+    for p in players:
+        base=xp_gain_for_attempt(p.get('score',0),p.get('correct',0))
+        complete=10 if total and len(p.get('answers',{}))>=total else 0
+        winner=20 if p['id']==first else 0
+        fast=speed_bonus[p['id']]
+        awards[p['id']]={'correct':base,'fastest':fast,'completion':complete,'firstPlace':winner,
+                         'total':base+fast+complete+winner}
+    return awards
 
 
 def epoch(): return int(time.time())
@@ -182,7 +228,7 @@ def add_students(teacher_id,students):
 
 def list_students(teacher_id):
     rows=query('SELECT id,name,class_name,avatar,card_token,card_code,xp,correct_count,played_count FROM students WHERE teacher_id=? ORDER BY class_name,name',(teacher_id,),True)
-    return [{'id':r['id'],'name':r['name'],'className':r['class_name'],'avatar':r['avatar'],'card':r['card_token'],'cardCode':r['card_code'],'xp':r['xp'],'level':level_for_xp(r['xp']),'correct':r['correct_count'],'played':r['played_count']} for r in rows]
+    return [{'id':r['id'],'name':r['name'],'className':r['class_name'],'avatar':r['avatar'],'card':r['card_token'],'cardCode':r['card_code'],'xp':r['xp'],'level':level_for_xp(r['xp']),'progress':xp_progress(r['xp']),'correct':r['correct_count'],'played':r['played_count']} for r in rows]
 
 def student_profile_by_card(token):
     """A physical student card permits access to a limited student profile."""
@@ -205,6 +251,7 @@ def persist_room(room,report,questions):
     if not room.get('teacherId'):return
     tid=room['teacherId'];code=room['code']
     total=sum(1 for q in room['quiz']['questions'] if q.get('type')!='poll')
+    awards=room_xp_awards(room)
     with DB_LOCK:
         with db_connection() as con:
             existing=con.execute(sql('SELECT id FROM played_sessions WHERE code=?'),(code,)).fetchone()
@@ -219,14 +266,17 @@ def persist_room(room,report,questions):
                     uuid.uuid4().hex,tid,student_id,room['quiz'].get('id',''),code,p['name'],
                     room.get('section',''),p.get('avatar','01'),correct,total,pct,p.get('score',0),jdump(p.get('answers',{})),epoch()))
                 if student_id:
-                    gain=xp_gain_for_attempt(p.get('score',0),correct)
+                    breakdown=awards.get(p['id'],{})
+                    gain=breakdown.get('total',0)
                     con.execute(sql('UPDATE students SET xp=xp+?,correct_count=correct_count+?,played_count=played_count+1 WHERE id=? AND teacher_id=?'),
                         (gain,correct,student_id,tid))
                     progress=con.execute(sql('SELECT xp,played_count FROM students WHERE id=? AND teacher_id=?'),(student_id,tid)).fetchone()
                     if progress:
                         p['xpGain']=gain
+                        p['xpBreakdown']=breakdown
                         p['xp']=int(progress[0])
                         p['level']=level_for_xp(p['xp'])
+                        p['levelUp']=level_for_xp(max(0,p['xp']-gain))<p['level']
     try:
         from platform_security import auto_backup
         auto_backup(tid)
