@@ -493,7 +493,7 @@ async function renderLiveLanding(preferredQuizId=null){
     try{
       const roomKey='qn9_live_'+window.QN9_TEACHER?.id;
       const prior=JSON.parse(sessionStorage.getItem(roomKey)||'null');
-      if(prior?.code&&prior?.hostToken){
+      if(prior?.code&&prior?.hostToken&&!preferredQuizId){
         const response=await fetch('/api/room/state?code='+encodeURIComponent(prior.code)+'&host='+encodeURIComponent(prior.hostToken),{cache:'no-store'});
         if(response.ok){
           const data=await response.json();
