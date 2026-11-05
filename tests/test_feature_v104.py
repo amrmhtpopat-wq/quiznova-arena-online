@@ -84,9 +84,9 @@ class FeatureTests(unittest.TestCase):
         self.assertNotIn('tolerance',public)
 
     def test_mature_portraits_only_boys_mixed(self):
-        self.assertEqual(len(store.avatar_pool('boys')),24)
+        self.assertEqual(len(store.avatar_pool('boys')),32)
         self.assertEqual(len(store.avatar_pool('girls')),16)
-        self.assertEqual(len(store.avatar_pool('mixed')),40)
+        self.assertEqual(len(store.avatar_pool('mixed')),48)
         self.assertTrue(all(x[0]=='g' for x in store.avatar_pool('girls')))
         self.assertIn('m01',store.avatar_pool('boys'))
 
