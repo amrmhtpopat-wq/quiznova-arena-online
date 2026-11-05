@@ -116,6 +116,7 @@ def init():
       'CREATE TABLE IF NOT EXISTS played_sessions (id TEXT PRIMARY KEY,teacher_id TEXT NOT NULL,code TEXT UNIQUE NOT NULL,section TEXT NOT NULL,subject TEXT NOT NULL,quiz_title TEXT NOT NULL,game_mode TEXT NOT NULL,played_at BIGINT NOT NULL,report TEXT NOT NULL,questions TEXT NOT NULL)',
       'CREATE TABLE IF NOT EXISTS student_attempts (id TEXT PRIMARY KEY,teacher_id TEXT NOT NULL,student_id TEXT,quiz_id TEXT NOT NULL,room_code TEXT NOT NULL,student_name TEXT NOT NULL,class_name TEXT NOT NULL,avatar TEXT NOT NULL,correct_count INTEGER NOT NULL,question_total INTEGER NOT NULL,percent INTEGER NOT NULL,score INTEGER NOT NULL,answers TEXT NOT NULL,created_at BIGINT NOT NULL)',
       'CREATE TABLE IF NOT EXISTS active_rooms (code TEXT PRIMARY KEY, snapshot TEXT NOT NULL, updated_at BIGINT NOT NULL)',
+      'CREATE TABLE IF NOT EXISTS student_card_aliases (alias TEXT PRIMARY KEY, student_id TEXT NOT NULL, teacher_id TEXT NOT NULL, created_at BIGINT NOT NULL)',
       'CREATE INDEX IF NOT EXISTS idx_active_rooms_updated ON active_rooms (updated_at)',
       'CREATE INDEX IF NOT EXISTS idx_students_teacher ON students (teacher_id)',
       'CREATE INDEX IF NOT EXISTS idx_rooms_teacher ON played_sessions (teacher_id)',
@@ -226,6 +227,25 @@ def add_students(teacher_id,students):
         created.append({'id':sid,'name':name,'className':cls,'avatar':avatar,'card':card,'cardCode':code})
     return created
 
+def shorten_student_codes(teacher_id):
+    """Opt-in only: issue memorable short codes while old printed codes remain valid."""
+    updated=0
+    with DB_LOCK:
+        with db_connection() as con:
+            rows=con.execute(sql('SELECT id,card_code FROM students WHERE teacher_id=? AND card_code LIKE ?'),(teacher_id,'QNA-%')).fetchall()
+            for sid,old_code in rows:
+                for _ in range(30):
+                    candidate=new_card_code()
+                    exists=con.execute(sql('SELECT id FROM students WHERE card_code=?'),(candidate,)).fetchone()
+                    alias=con.execute(sql('SELECT student_id FROM student_card_aliases WHERE alias=?'),(candidate,)).fetchone()
+                    if not exists and not alias:break
+                else:raise RuntimeError('card_code_collision')
+                con.execute(sql('INSERT INTO student_card_aliases(alias,student_id,teacher_id,created_at) VALUES(?,?,?,?)'),
+                            (old_code,sid,teacher_id,epoch()))
+                con.execute(sql('UPDATE students SET card_code=? WHERE id=? AND teacher_id=?'),(candidate,sid,teacher_id))
+                updated+=1
+    return updated
+
 def list_students(teacher_id):
     rows=query('SELECT id,name,class_name,avatar,card_token,card_code,xp,correct_count,played_count FROM students WHERE teacher_id=? ORDER BY class_name,name',(teacher_id,),True)
     return [{'id':r['id'],'name':r['name'],'className':r['class_name'],'avatar':r['avatar'],'card':r['card_token'],'cardCode':r['card_code'],'xp':r['xp'],'level':level_for_xp(r['xp']),'progress':xp_progress(r['xp']),'correct':r['correct_count'],'played':r['played_count']} for r in rows]
@@ -234,13 +254,13 @@ def student_profile_by_card(token):
     """A physical student card permits access to a limited student profile."""
     value=str(token or '').strip()
     if not value or len(value)>90:return None
-    return query('SELECT id,name,class_name,avatar,xp,correct_count,played_count FROM students WHERE card_token=? OR card_code=?',(value,value.upper()))
+    return query('SELECT id,name,class_name,avatar,xp,correct_count,played_count FROM students WHERE card_token=? OR card_code=? OR id IN (SELECT student_id FROM student_card_aliases WHERE alias=?)',(value,value.upper(),value.upper()))
 
 def student_by_card(token,teacher_id):
     token=str(token or '').strip()
     if not token or len(token)>90 or not teacher_id:return None
     # Accept the original QR token or the new printed card code.
-    return query('SELECT * FROM students WHERE (card_token=? OR card_code=?) AND teacher_id=?',(token,token.upper(),teacher_id))
+    return query('SELECT * FROM students WHERE (card_token=? OR card_code=? OR id IN (SELECT student_id FROM student_card_aliases WHERE alias=? AND teacher_id=?)) AND teacher_id=?',(token,token.upper(),token.upper(),teacher_id,teacher_id))
 
 def attempt_count(sid,quiz_id):
     row=query('SELECT COUNT(*) AS c FROM student_attempts WHERE student_id=? AND quiz_id=?',(sid,quiz_id))
