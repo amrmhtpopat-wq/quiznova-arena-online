@@ -9,6 +9,8 @@ from xlsx_report import generate_report
 import platform_store
 platform_store.init()
 import platform_api
+import solo_api
+solo_api.ensure_schema()
 
 ROOT = Path(__file__).resolve().parent
 sys.path.append(str(ROOT / 'vendor'))
@@ -429,7 +431,7 @@ class Handler(SimpleHTTPRequestHandler):
                 return self.send_json({'ok':False,'service':'quiznova-arena','version':'10.5-beta','database':'unavailable'},503)
             return self.send_json({'ok':True,'service':'quiznova-arena','version':'10.5-beta','storage':platform_store.DATABASE_KIND,'database':'ready','rooms':len(ROOMS)})
         if u.path=='/api/status':
-            base=public_base(self); return self.send_json({'ok':True,'mode':('cloud' if IS_CLOUD else 'local'),'student_url':base+'/student.html','teacher_url':base+'/', 'features':['qr','pin','teams','live-analytics','powerups','reactions','internet','auth','student-cards','exams','classwars','mastery','persistent-reports']})
+            base=public_base(self); return self.send_json({'ok':True,'mode':('cloud' if IS_CLOUD else 'local'),'student_url':base+'/student.html','teacher_url':base+'/', 'features':['qr','pin','teams','live-analytics','powerups','reactions','internet','auth','student-cards','solo-practice','exams','classwars','mastery','persistent-reports']})
         if u.path=='/api/qr':
             qs=parse_qs(u.query);text=(qs.get('text') or [''])[0]
             if not text or len(text)>2000: return self.send_json({'ok':False,'error':'invalid_qr_content'},400)
@@ -525,6 +527,7 @@ class Handler(SimpleHTTPRequestHandler):
         try: data=self.read_json()
         except Exception: return self.send_json({'ok':False,'error':'bad_json'},400)
         if platform_api.handle_post(self,u,data):return
+        if solo_api.handle_post(self,u,data):return
         if u.path=='/api/room/start':
             teacher=platform_api.authorized(self)
             if not teacher:return
