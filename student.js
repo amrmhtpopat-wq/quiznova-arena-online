@@ -96,13 +96,13 @@ function showResult(res,q,showFeedback=true,examMode=false){
  $('#gameView').innerHTML=`<div class="qn-answer-wait" id="qnAnswerWait" role="status" aria-live="polite">
  <div class="qn-wait-glow">⚡</div><span class="eyebrow">الإجابة أُرسلت بنجاح</span>
  <h1>${title}</h1>
- ${examMode?'<p>ستظهر نتائج الامتحان في النهاية.</p>':`<div class="qn-points-live"><span>رصيد الجولة</span><strong id="qnLiveScore">${Number(session.score)||0}</strong> نقطة</div>
+ ${examMode?'<p>ستظهر نتائج الامتحان في النهاية.</p>':!reveal?'<p>سيُعلن الرصيد بعد انتهاء السؤال؛ استعد للجولة التالية.</p>':`<div class="qn-points-live"><span>رصيد الجولة</span><strong id="qnLiveScore">${Number(session.score)||0}</strong> نقطة</div>
  ${earned?'<div class="qn-earned">+'+earned+' نقطة من هذه الإجابة</div>':''}`}
  <div class="qn-wait-ring" aria-hidden="true"></div><p>استعد للسؤال التالي، انتهى دورك في هذا السؤال.</p>
  </div>`;
 }
 function showAnswered(r){
- if($('#qnAnswerWait')){const n=$('#qnLiveScore');if(n)n.textContent=Number(r.playerScore)||0;return}
+ if($('#qnAnswerWait')){if(r.showFeedback){const n=$('#qnLiveScore');if(n)n.textContent=Number(r.playerScore)||0}return}
  if(r.lastResult&&r.question)showResult(r.lastResult,r.question,r.showFeedback,r.examMode)
 }
 
