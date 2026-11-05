@@ -40,7 +40,7 @@ with sync_playwright() as playwright:
     page=ctx.new_page()
     errors=[]
     page.on('pageerror',lambda e:errors.append(str(e)))
-    page.goto(base+'/',wait_until='domcontentloaded',timeout=30000)
+    page.goto(base+'/?teacher=1',wait_until='domcontentloaded',timeout=30000)
     page.locator('button.nav[data-panel="students"]').wait_for(state='visible',timeout=15000)
     page.locator('button.nav[data-panel="students"]').click()
     page.locator('.bo-student-id').first.wait_for(state='visible',timeout=12000)
