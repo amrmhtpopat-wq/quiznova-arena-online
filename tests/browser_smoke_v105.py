@@ -91,7 +91,7 @@ with sync_playwright() as p:
         page.locator('#qnAnswerWait').wait_for(state='visible',timeout=4500)
         wait=page.locator('#qnAnswerWait').inner_text()
         assert 'تم تسجيل' in wait and 'إجابة صحيحة' not in wait,wait
-        assert 'نقطة' in wait,wait
+        assert 'نقطة' not in wait,wait  # Teacher disabled immediate feedback: keep score hidden
         page.screenshot(path=str(dest/('waiting-mobile.png' if mobile else 'waiting-desktop.png')))
         # Other student can still answer; teacher's countdown is not a blocker.
         api('/api/room/answer',{'code':room['code'],'playerId':guest['playerId'],'index':0,'answer':1})
