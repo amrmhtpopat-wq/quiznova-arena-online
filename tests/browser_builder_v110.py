@@ -33,6 +33,10 @@ with sync_playwright() as p:
         assert page.locator('#boQuestionRail .bo-rail-question').count()==1
         assert page.locator('#boPropertyPoints').input_value()=='1000'
         assert page.locator('#boPropertyTime').input_value()=='20'
+        # Digital Skills accounts start with three demo quizzes. Preserve them.
+        page.evaluate("go('library')")
+        initial_count=page.locator('#view-library .bo-library-quiz').count()
+        page.evaluate("go('builder')")
         page.locator('#quizTitle').fill('اختبار تجريبي بتصميم مبسط')
         page.locator('.bo-question-prompt textarea').fill('ما وظيفة وحدة المعالجة المركزية؟')
         options=page.locator('.bo-question-editor .option-line > input:not([type=checkbox]):not([type=radio])')
@@ -60,18 +64,19 @@ with sync_playwright() as p:
         page.locator('#saveQuiz').click()
         # Save is acknowledged by cloud before navigating to the library.
         page.locator('#view-library.active .bo-library-quiz').first.wait_for(state='visible',timeout=15000)
-        assert page.locator('#view-library .bo-library-quiz').count()==1
+        assert page.locator('#view-library .bo-library-quiz').count()==initial_count+1
         assert 'اختبار تجريبي بتصميم مبسط' in page.locator('#view-library .bo-library-quiz h4').first.inner_text()
         assert page.locator('#view-library .bo-saved-chip').count()==1
         quizzes=[]
         for attempt in range(25):
             quizzes=store.snapshot(account['teacher']['id'])['quizzes']
-            if len(quizzes)==1:break
+            if len(quizzes)==initial_count+1:break
             time.sleep(0.25)
-        assert len(quizzes)==1,quizzes
-        assert len(quizzes[0]['questions'])==2,quizzes
-        assert [q['points'] for q in quizzes[0]['questions']]==[1000,2500]
-        assert [q['time'] for q in quizzes[0]['questions']]==[20,45]
+        assert len(quizzes)==initial_count+1,quizzes
+        saved=next(q for q in quizzes if q['title']=='اختبار تجريبي بتصميم مبسط')
+        assert len(saved['questions'])==2,saved
+        assert [q['points'] for q in saved['questions']]==[1000,2500]
+        assert [q['time'] for q in saved['questions']]==[20,45]
         # A new quiz must never inherit the previous title/questions.
         page.locator('#view-library [data-jump="builder"]').click()
         assert page.locator('#quizTitle').input_value()==''
@@ -87,10 +92,10 @@ with sync_playwright() as p:
             inputs.nth(idx).fill(label)
         page.locator('#saveQuiz').click()
         page.locator('#view-library.active .bo-library-quiz').first.wait_for(state='visible',timeout=15000)
-        assert page.locator('#view-library .bo-library-quiz').count()==2
+        assert page.locator('#view-library .bo-library-quiz').count()==initial_count+2
         assert page.locator('#view-library .bo-library-quiz h4').first.inner_text()=='اختبار ثان جديد'
         persisted=store.snapshot(account['teacher']['id'])['quizzes']
-        assert len(persisted)==2,persisted
+        assert len(persisted)==initial_count+2,persisted
         newest=next(q for q in persisted if q['title']=='اختبار ثان جديد')
         first=next(q for q in persisted if q['title']=='اختبار تجريبي بتصميم مبسط')
         assert len(newest['questions'])==1 and len(first['questions'])==2
@@ -118,7 +123,7 @@ with sync_playwright() as p:
         page.reload(wait_until='domcontentloaded')
         page.locator('#quizTitle').wait_for(state='visible',timeout=15000)
         page.evaluate("go('library')")
-        assert page.locator('#view-library .bo-library-quiz').count()==2
+        assert page.locator('#view-library .bo-library-quiz').count()==initial_count+2
         assert not errors,errors
         page.screenshot(path=str(artifacts/('creator-mobile.png' if mobile else 'creator-desktop.png')),full_page=True)
         ctx.close()
