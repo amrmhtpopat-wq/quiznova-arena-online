@@ -68,13 +68,35 @@ function questionUI(q){
   if(q.type==='match'){session.answer={};return `<div class="match">${(q.lefts||[]).map((l,i)=>`<div class="match-row"><div>${esc(l)}</div><select onchange="setMatch(${i},this.value)"><option value="">اختر المطابقة...</option>${(q.rights||[]).map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('')}</select></div>`).join('')}</div>`}
   return '';
 }
+function fitQuestionToViewport(){
+  const card=$('#gameView .question-card');
+  if(!card)return;
+  const title=card.querySelector('h2');
+  if(title){
+    const length=(title.textContent||'').length;
+    const preferred=length>250?17:length>150?20:26;
+    for(let size=preferred;size>=12;size--){
+      title.style.setProperty('font-size',size+'px','important');
+      if(title.clientHeight>0 && title.scrollHeight<=title.clientHeight+2)break;
+    }
+  }
+  for(const option of card.querySelectorAll('.answers .answer')){
+    const length=(option.textContent||'').length;
+    const preferred=length>145?13:length>80?16:20;
+    for(let size=preferred;size>=12;size--){
+      option.style.setProperty('font-size',size+'px','important');
+      if(option.clientHeight>0 && option.scrollHeight<=option.clientHeight+2)break;
+    }
+  }
+}
+window.addEventListener('resize',()=>requestAnimationFrame(fitQuestionToViewport));
 function renderQuestion(r){clearInterval(session.timer);session.currentRoomState=r;const q=r.question,pct=((r.index)/Math.max(1,r.total))*100;const doubleAvail=r.powerupsEnabled&&session.powerups?.double&&q.type!=='poll'&&r.gameMode!=='zen';$('#gameView').innerHTML=`
   <div class="game-top"><div class="player-pill"><img class="pill-avatar" src="${avatarPath(session.avatar)}" alt=""> ${esc(session.name)}</div>${session.team?`<div class="team-pill">👥 ${esc(session.team)}</div>`:''}${session.model?`<div class="model-pill">🔀 ${esc(session.model)}</div>`:''}${r.examMode?'<div class="score-pill">🛡️ امتحان رسمي • النتائج في النهاية</div>':`<div class="streak-pill">🔥 Combo ×${session.streak}</div><div class="score-pill">🏆 ${session.score} نقطة</div>`}<div class="timer" id="timer">${q.time||20}</div></div>
   <div class="progress"><div style="width:${pct}%"></div></div>
   <div class="question-card ${q._boss?'boss':''}" data-type="${q.type}">${q._boss?'<div class="boss-banner">👑 سؤال الزعيم — نقاط مضاعفة</div>':''}${q.image?`<img class="question-image" src="${esc(q.image)}" alt="صورة السؤال">`:''}<h2>${esc(q.text)}</h2>${questionUI(q)}
   <div class="game-tools">${doubleAvail?'<button class="power-btn" id="doubleBtn">⚡ استخدم ×2 لهذا السؤال</button>':''}</div>
   <button class="primary submit ${['single','tf','poll'].includes(q.type)?'hidden v105-instant-submit':''}" id="submitBtn">${q.type==='poll'?'إرسال الرأي':'تأكيد الإجابة'}</button>${['single','tf','poll'].includes(q.type)?'<div class="v105-answer-hint" role="status">⚡ اضغط على الإجابة مرة واحدة لإرسالها مباشرة</div>':''}<div id="feedback"></div></div>`;
-  $('#submitBtn').onclick=()=>submitAnswer(r);if($('#doubleBtn'))$('#doubleBtn').onclick=()=>{session.useDouble=!session.useDouble;$('#doubleBtn').classList.toggle('active',session.useDouble);$('#doubleBtn').textContent=session.useDouble?'⚡ ×2 مفعّل':'⚡ استخدم ×2 لهذا السؤال'};session.timer=setInterval(()=>updateTimer(r),350)
+  $('#submitBtn').onclick=()=>submitAnswer(r);if($('#doubleBtn'))$('#doubleBtn').onclick=()=>{session.useDouble=!session.useDouble;$('#doubleBtn').classList.toggle('active',session.useDouble);$('#doubleBtn').textContent=session.useDouble?'⚡ ×2 مفعّل':'⚡ استخدم ×2 لهذا السؤال'};session.timer=setInterval(()=>updateTimer(r),350);requestAnimationFrame(fitQuestionToViewport)
 }
 function updateTimer(r){if(!r.question)return;const max=r.roundDurationMs||(r.question.time||20)*1000,elapsed=Date.now()-session.questionStarted,left=Math.max(0,Math.ceil((max-elapsed)/1000));const el=$('#timer');if(el){el.textContent=left;if(left<=5)el.style.transform=`scale(${1+(5-left)*.025})`}if(left<=0&&$('#submitBtn')&&!$('#submitBtn').disabled){$('#submitBtn').disabled=true;$('#submitBtn').textContent='⏱ انتهى الوقت — عرض الترتيب قريبًا'}}
 window.choose=(val,el)=>{const type=currentType();const submit=$('#submitBtn');if(submit?.disabled)return;if(type==='multi'){if(!Array.isArray(session.answer))session.answer=[];const i=session.answer.indexOf(val);if(i>=0){session.answer.splice(i,1);el.classList.remove('selected')}else{session.answer.push(val);el.classList.add('selected')}}else{session.answer=val;$$('.answer').forEach(x=>x.classList.remove('selected'));el.classList.add('selected');if(['single','tf','poll'].includes(type)&&session.currentRoomState){$$('.answer').forEach(b=>b.disabled=true);void submitAnswer(session.currentRoomState)}}};
