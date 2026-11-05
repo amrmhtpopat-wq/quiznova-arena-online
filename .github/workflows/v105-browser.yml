@@ -12,6 +12,7 @@ on:
       - portal.css
       - v106-contrast.css
       - v107-prelaunch.css
+      - booyah-classroom.css
       - platform_store.py
       - tests/browser_smoke_v105.py
       - .github/workflows/v105-browser.yml
