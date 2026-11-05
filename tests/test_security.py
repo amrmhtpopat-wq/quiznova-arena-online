@@ -19,9 +19,9 @@ class QuizNovaSecurityTests(unittest.TestCase):
 
     def test_authentication_and_school_avatar_policy(self):
         self.assertEqual(store.teacher_for_token(self.token)['id'],self.teacher)
-        self.assertEqual(len(store.avatar_pool('boys')),40)
+        self.assertEqual(len(store.avatar_pool('boys')),32)
         self.assertEqual(len(store.avatar_pool('girls')),16)
-        self.assertEqual(len(store.avatar_pool('mixed')),56)
+        self.assertEqual(len(store.avatar_pool('mixed')),48)
 
     def test_optimistic_sync(self):
         self.assertEqual(sec.snapshot_with_revision(self.teacher)['revision'],0)
