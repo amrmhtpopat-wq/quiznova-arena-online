@@ -14,6 +14,9 @@ on:
       - v107-prelaunch.css
       - booyah-classroom.css
       - booyah-contrast-v109.css
+      - booyah-builder-v110.css
+      - tests/browser_builder_v110.py
+      - studio-auth.js
       - tests/browser_contrast_v109.py
       - platform_store.py
       - tests/browser_smoke_v105.py
@@ -39,6 +42,7 @@ jobs:
         run: |
           python tests/browser_smoke_v105.py
           python tests/browser_contrast_v109.py
+          python tests/browser_builder_v110.py
       - name: Upload visual QA screenshots
         if: always()
         uses: actions/upload-artifact@v4
