@@ -34,3 +34,4 @@ jobs:
           python -m unittest discover -s tests -p 'test_reference_v105.py' -v
           python -m unittest discover -s tests -p 'test_v105_final.py' -v
           python -m unittest discover -s tests -p 'test_booyah_xp.py' -v
+          python -m unittest discover -s tests -p 'test_mascot_badge_v112.py' -v
