@@ -495,7 +495,7 @@ class Handler(SimpleHTTPRequestHandler):
                     leaders=team_leaders(room) if room['playType']=='teams' else individual_leaders(room)[:10]
                     return self.send_json({'ok':True,'room':{
                         'status':room['status'],'index':idx,'total':total,'playType':room['playType'],'gameMode':room['gameMode'],'variantMode':room.get('variantMode','options'),'model':p.get('model',''),
-                        'question':q,'review':({'explanation':room['quiz']['questions'][player_question_index(room,p,idx)].get('explanation',''),'image':room['quiz']['questions'][player_question_index(room,p,idx)].get('image',''),'correctAnswer':correct_display(room['quiz']['questions'][player_question_index(room,p,idx)])} if room['status']=='results' and room.get('showFeedback',True) and not room.get('examMode') and 0<=idx<total else None),'startedAt':room.get('startedAt',0),'answeredCurrent':str(idx) in p['answers'],'lastResult':(result if room.get('showFeedback',True) and not room.get('examMode') else ({'index':idx,'correct':None,'earned':0} if result else None)),
+                        'question':q,'review':({'explanation':room['quiz']['questions'][player_question_index(room,p,idx)].get('explanation',''),'image':room['quiz']['questions'][player_question_index(room,p,idx)].get('image',''),'correctAnswer':correct_display(room['quiz']['questions'][player_question_index(room,p,idx)])} if room['status']=='results' and room.get('showFeedback',True) and not room.get('examMode') and 0<=idx<total else None),'startedAt':room.get('startedAt',0),'answeredCurrent':str(idx) in p['answers'],'lastResult':((dict(result,correct=None) if result and not room.get('showFeedback',True) else result) if not room.get('examMode') else ({'index':idx,'correct':None,'earned':0} if result else None)),
                         'playerScore':(p['score'] if not room.get('examMode') or room['status']=='finished' else 0),'playerCorrect':(p['correct'] if not room.get('examMode') or room['status']=='finished' else 0),'playerStreak':(p['streak'] if not room.get('examMode') else 0),'team':p.get('team',''),
                         'powerups':p.get('powerups',{}),'leaders':(leaders if not room.get('examMode') or room['status']=='finished' else []),'examMode':bool(room.get('examMode')),'level':p.get('level',1),'xp':p.get('xp',0),'xpGain':p.get('xpGain',0),'quizTitle':room['quiz'].get('title',''),
                         'showFeedback':(room['showFeedback'] and not room.get('examMode')),'powerupsEnabled':(room['powerupsEnabled'] and not room.get('examMode')),'background':room.get('background','cartoon'),'cooperative':bool(room.get('cooperative')),'roundDurationMs':room.get('roundDurationMs',20000),'avatar':p.get('avatar','01')
@@ -643,7 +643,7 @@ class Handler(SimpleHTTPRequestHandler):
                 if room['status']!='question' or room['index']!=idx: return self.send_json({'ok':False,'error':'question_changed'},409)
                 key=str(idx)
                 if key in p['answers']:
-                    result=({'index':idx,'correct':None,'earned':0,'streak':0} if room.get('examMode') or not room.get('showFeedback',True) else p['lastResult'])
+                    result=({'index':idx,'correct':None,'earned':0,'streak':0} if room.get('examMode') else (dict(p['lastResult'],correct=None) if not room.get('showFeedback',True) else p['lastResult']))
                     return self.send_json({'ok':True,'duplicate':True,'result':result,'score':0 if room.get('examMode') else p['score']})
                 # The server clock is authoritative; the client-provided elapsedMs can be forged.
                 elapsed=max(0,now_ms()-room.get('startedAt',now_ms()))
@@ -669,8 +669,8 @@ class Handler(SimpleHTTPRequestHandler):
                 p['answers'][key]={'correct':correct,'earned':earned,'pendingTeamBonus':bonus,'answer':ans,'elapsedMs':elapsed,'power':used_power,'questionIndex':qidx}
                 p['lastResult']={'index':idx,'correct':correct,'earned':earned,'streak':p['streak'],'power':used_power}
                 maybe_end_round(room)
-                shown=({'index':idx,'correct':None,'earned':0,'streak':0} if room.get('examMode') or not room.get('showFeedback',True) else p['lastResult'])
-                score=p['score'] if not room.get('examMode') and room.get('showFeedback',True) else 0
+                shown=({'index':idx,'correct':None,'earned':0,'streak':0} if room.get('examMode') else (dict(p['lastResult'],correct=None) if not room.get('showFeedback',True) else p['lastResult']))
+                score=p['score'] if not room.get('examMode') else 0
                 snapshot_room(room)
             return self.send_json({'ok':True,'result':shown,'score':score,'powerups':p['powerups']})
         if u.path=='/api/room/react':
