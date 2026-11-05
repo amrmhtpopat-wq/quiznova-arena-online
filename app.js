@@ -330,9 +330,30 @@ $('#createLiveRoom').onclick=async()=>{
   const quiz=DB.quizzes.find(q=>q.id===$('#liveQuizSelect').value); if(!quiz)return toast('اختر اختبارًا أولًا');
   try{
     const payload={quiz,examMode:$('#liveExamMode').checked,maxAttempts:Number($('#liveMaxAttempts').value||1),requireCard:$('#liveRequireCard').checked,cooperative:$('#liveCooperative').checked,playType:$('#liveMode').value,gameMode:$('#liveGameMode').value,variantMode:$('#liveVariantMode').value,teamCount:+$('#liveTeamCount').value,teamAssignment:$('#liveTeamAssignment').value,section:$('#liveSection').value.trim(),background:$('#liveBackground').value,showFeedback:$('#liveShowFeedback').checked,powerups:$('#livePowerups').checked};
-    const r=await fetch('/api/room/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); const d=await r.json(); if(!d.ok)throw 0;
+    const teacherToken=window.QN9_TOKEN||localStorage.getItem('qn9_teacher_token')||'';
+    if(!teacherToken)throw Object.assign(new Error('login_required'),{status:401});
+    const r=await fetch('/api/room/start',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+teacherToken},
+      body:JSON.stringify(payload)
+    });
+    const d=await r.json().catch(()=>({ok:false,error:'invalid_response'}));
+    if(!r.ok||!d.ok)throw Object.assign(new Error(d.error||'room_start_failed'),{status:r.status});
     liveRoom=d.code; liveHostToken=d.hostToken||''; liveStageToken=d.stageToken||'';sessionStorage.setItem('qn9_live_'+window.QN9_TEACHER?.id,JSON.stringify({code:d.code,hostToken:liveHostToken,stageToken:liveStageToken,quizId:quiz.id})); liveSaved=false; liveAutoRevealIndex=-1; $('#liveSetup').classList.add('hidden'); $('#liveHost').classList.remove('hidden'); renderLiveHost(d,quiz); startLivePolling();
-  }catch{toast('تعذر إنشاء الغرفة. تحقق من اتصال الخادم بالإنترنت ثم حاول مرة أخرى')}
+  }catch(e){
+    if(e.status===401||e.message==='login_required'){
+      toast('جلسة المعلم غير صالحة على نسخة المعاينة. ارجع للصفحة الرئيسية وسجّل الدخول من جديد.');
+    }else if(e.message==='invalid_quiz'){
+      toast('تعذر إنشاء الغرفة: يجب أن يحتوي الاختبار على سؤال واحد على الأقل.');
+    }else if(e.status===403){
+      toast('ليس لديك صلاحية إنشاء غرفة بهذا الحساب.');
+    }else if(e.status>=500){
+      toast('حدث خطأ في الخادم أثناء إنشاء الغرفة. يرجى المحاولة مجددًا.');
+    }else{
+      toast('تعذر إنشاء الغرفة: '+(e.message==='Failed to fetch'?'تحقق من اتصال الإنترنت.':e.message||'تحقق من الاختبار وحاول مجددًا.'));
+    }
+    console.warn('Room creation failed:',e.message||e);
+  }
 };
 function renderLiveHost(data,quiz){
   const join=data.join_url||`${data.student_url}?code=${encodeURIComponent(data.code)}`;
