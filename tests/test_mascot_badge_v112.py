@@ -55,6 +55,9 @@ class MascotsAndBadgeTests(unittest.TestCase):
         self.assertIn('bo-badge-access-id',portal)
         self.assertIn('bo-badge-meter',portal)
         self.assertIn('bo-badge-qr',portal)
+        self.assertIn("img.loading='eager'",portal)
+        self.assertIn("await Promise.all(images.map(img=>",portal)
+        self.assertIn('window.print()',portal)
         # BADJ-TH42 is design version, NOT a shared student login credential.
         self.assertIn('title="إصدار تصميم البطاقة"',portal)
         self.assertIn("code=new_card_code()",read('platform_store.py'))
