@@ -129,6 +129,10 @@
       +'<a href="'+loginTarget+'" style="color:#fff;text-decoration:underline;margin-inline:12px">تسجيل الدخول من جديد</a>'
       +'</section>';
     document.querySelector('#qnRetryStudio')?.addEventListener('click',()=>location.reload());
+    main.querySelector('a[href^="/?next="]')?.addEventListener('click',()=>{
+      // Explicitly signing in again clears this local token; a temporary failure does not.
+      localStorage.removeItem('qn9_teacher_token');
+    });
     console.warn('Studio session initialization failed',e.message||e);
   }
 })();
