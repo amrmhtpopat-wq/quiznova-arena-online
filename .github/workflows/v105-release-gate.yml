@@ -20,18 +20,22 @@ jobs:
         run: python -m pip install -r requirements.txt
       - name: Python and JavaScript syntax validation
         run: |
-          python -m compileall -q server.py platform_store.py platform_api.py platform_security.py
+          python -m compileall -q server.py platform_store.py platform_api.py platform_security.py xlsx_report.py tests
           node --check app.js
           node --check student.js
           node --check stage.js
           node --check portal.js
           node --check studio-auth.js
           node --check portal-security.js
+          node --check curriculum_bank.js
+          node --check curriculum_plus.js
+          node --check media_library.js
       - name: Security, legacy games, typography, card XP and release regression tests
         run: |
           python -m unittest discover -s tests -p 'test_security.py' -v
           python -m unittest discover -s tests -p 'test_feature_v104.py' -v
           python -m unittest discover -s tests -p 'test_reference_v105.py' -v
           python -m unittest discover -s tests -p 'test_v105_final.py' -v
+          python -m unittest discover -s tests -p 'test_prelaunch_v105.py' -v
           python -m unittest discover -s tests -p 'test_booyah_xp.py' -v
           python -m unittest discover -s tests -p 'test_mascot_badge_v112.py' -v
