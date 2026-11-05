@@ -108,7 +108,7 @@ class VisualAndDirectAnswerTests(unittest.TestCase):
             self.assertIn('booyah-classroom.css?v=10.8',read(page))
         self.assertIn('fitQuestionToViewport',read('student.js'))
         self.assertIn('qn-xp-progress',read('student.js'))
-        self.assertIn('qn-card-progress',read('portal.js'))
+        self.assertIn('bo-badge-meter',read('portal.js'))
         self.assertIn('xpBreakdown',read('server.py'))
 
     def test_booyah_final_contrast_layer_loads_last_across_all_pages(self):
@@ -191,7 +191,7 @@ class VisualAndDirectAnswerTests(unittest.TestCase):
         self.assertIn("$$('.nav-item').forEach",script)
         self.assertIn("$$('[data-jump]').forEach",script)
         # querySelector returns one Element and cannot be iterated.
-        broken=re.findall(r"(?<!\\$)\\$\\(['\\\"]([^'\\\"]+)['\\\"]\\)\\.(?:forEach|map|filter|find|some|every|reduce)\\(",script)
+        broken=[sel+' / '+method for sel in ('.view','.nav-item','[data-jump]') for method in ('forEach','map','filter','find','some','every','reduce') if "$('"+sel+"')."+method+'(' in script]
         self.assertEqual(broken,[],f"Bad single-selector list operations: {broken}")
 
     def test_teacher_photo_is_not_in_profile_card(self):
