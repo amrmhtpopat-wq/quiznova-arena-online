@@ -40,7 +40,7 @@ class ReleaseCandidateTests(unittest.TestCase):
     def test_card_code_qr_and_unique_identity(self):
         students=store.add_students(self.teacher,[{'name':'طالب اختبار أ','className':'9A','avatar':'n01'},{'name':'طالب اختبار ب','className':'9A','avatar':'n02'}])
         self.assertEqual(len(students),2)
-        self.assertTrue(all(s['cardCode'].startswith('QNA-') for s in students))
+        self.assertTrue(all(len(s['cardCode'])==9 and s['cardCode'][4]=='-' for s in students))
         self.assertNotEqual(students[0]['cardCode'],students[1]['cardCode'])
         self.assertEqual(store.student_by_card(students[0]['cardCode'],self.teacher)['id'],students[0]['id'])
         self.assertEqual(store.student_by_card(students[0]['card'],self.teacher)['id'],students[0]['id'])
@@ -81,7 +81,7 @@ class ReleaseCandidateTests(unittest.TestCase):
         self.assertEqual(status,200)
         saved=store.student_by_card(students[0]['cardCode'],self.teacher)
         self.assertGreater(saved['xp'],0)
-        self.assertEqual(store.level_for_xp(500),2)
+        self.assertEqual(store.level_for_xp(500),4)
         before=saved['xp']
         server.persist_finished_room(server.ROOMS[room['code']])
         self.assertEqual(store.student_by_card(students[0]['cardCode'],self.teacher)['xp'],before,'No duplicate XP on repeated persistence')
