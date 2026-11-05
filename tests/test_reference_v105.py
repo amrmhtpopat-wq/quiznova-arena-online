@@ -96,8 +96,8 @@ class VisualAndDirectAnswerTests(unittest.TestCase):
         self.assertIn("if(!r.ok||!d.ok)throw Object.assign",source)
         self.assertIn("e.status===401||e.message==='login_required'",source)
         self.assertNotIn("تعذر إنشاء الغرفة. تحقق من اتصال الخادم بالإنترنت ثم حاول مرة أخرى",source)
-        self.assertIn("script.src='/app.js?v=10.5.2'",read('studio-auth.js'))
-        self.assertIn("studio-auth.js?v=10.5.2",read('studio.html'))
+        self.assertIn("script.src='/app.js?v=10.8'",read('studio-auth.js'))
+        self.assertIn("studio-auth.js?v=10.8",read('studio.html'))
 
     def test_booyah_classroom_viewport_and_progress_contract(self):
         css=read('booyah-classroom.css')
@@ -110,6 +110,23 @@ class VisualAndDirectAnswerTests(unittest.TestCase):
         self.assertIn('qn-xp-progress',read('student.js'))
         self.assertIn('qn-card-progress',read('portal.js'))
         self.assertIn('xpBreakdown',read('server.py'))
+
+    def test_booyah_final_contrast_layer_loads_last_across_all_pages(self):
+        css=read('booyah-contrast-v109.css')
+        for selector in ('#view-live','#view-builder','#view-bank','#view-results','#view-play',
+                         '.toggle-line','.bank-item','.summary-chip','.insight-card',
+                         '.game-card','.answer-btn','.feedback','.leader',
+                         'v105-student','v105-stage'):
+            self.assertIn(selector,css)
+        for name in ('index.html','studio.html','student.html','stage.html'):
+            html=read(name)
+            self.assertIn('/booyah-contrast-v109.css?v=10.9',html)
+            self.assertGreater(html.index('booyah-contrast-v109.css'),html.index('booyah-classroom.css'))
+            self.assertEqual(html.count('booyah-contrast-v109.css'),1)
+        self.assertIn('body.v105-studio #view-play #gameArea .game-card h3',css)
+        self.assertIn('body.v105-studio #view-results .insight-card strong',css)
+        self.assertIn('body.v105-studio #view-bank .bank-item h4',css)
+        self.assertIn('body.v105-studio :is(#view-live,#view-builder,#view-generator,#view-settings) .toggle-line',css)
 
     def test_teacher_photo_is_not_in_profile_card(self):
         dashboard=read('index.html')
