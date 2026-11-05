@@ -2,6 +2,8 @@ name: QuizNova V10.5 release gate
 on:
   push:
     branches: [v10-5-final-candidate]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
