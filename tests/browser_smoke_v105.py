@@ -43,8 +43,16 @@ def check_colored_input(page):
     val=box.evaluate("""el=>{
       const x=getComputedStyle(el);return {color:x.color,background:x.backgroundColor,font:x.fontSize}
     }""")
-    assert 'rgb(12, 37, 72)' in val['color'],val
-    assert 'rgb(247, 251, 255)' in val['background'],val
+    # Assert accessible contrast rather than an exact CSS RGB (the palette evolves).
+    import re
+    def luminance(rgb):
+        channels=[int(x)/255 for x in re.findall(r'\\d+',rgb)[:3]]
+        linear=[c/12.92 if c<=0.04045 else ((c+0.055)/1.055)**2.4 for c in channels]
+        return sum(c*w for c,w in zip(linear,(.2126,.7152,.0722)))
+    fg,bg=luminance(val['color']),luminance(val['background'])
+    ratio=(max(fg,bg)+.05)/(min(fg,bg)+.05)
+    assert ratio>=4.5,(ratio,val)
+    assert float(val['font'].removesuffix('px'))>=15,val
 
 with sync_playwright() as p:
     browser=p.chromium.launch(headless=True,args=['--no-sandbox'])
