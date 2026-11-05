@@ -40,11 +40,10 @@ function teacherEntryRequested(){
   return params.get('teacher')==='1'||!!params.get('next');
 }
 async function boot(){
-  if(!token()){
-    if(teacherEntryRequested())showTeacherAuth();
-    else showStudentWelcome();
-    return;
-  }
+  // The public domain always opens the student's gateway, even if this browser
+  // previously had a teacher session. Teachers enter intentionally via ?teacher=1.
+  if(!teacherEntryRequested()){showStudentWelcome();return}
+  if(!token()){showTeacherAuth();return}
   let profile=null;
   // Transient 401s can happen during a deployment; do not clear the token on one bad reply.
   for(let attempt=0;attempt<3;attempt++){
