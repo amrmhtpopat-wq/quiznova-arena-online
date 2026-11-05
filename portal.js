@@ -31,6 +31,17 @@ async function loadAll(){const [d,s,h]=await Promise.all([api('/api/teacher/dash
 async function saveStudents(students){const r=await api('/api/teacher/students',{method:'POST',body:JSON.stringify({students})});notify('تمت إضافة '+r.count+' طالب');await loadAll()}
 $('#addStudentForm').onsubmit=async e=>{e.preventDefault();try{await saveStudents([{name:$('#newStudentName').value,className:$('#newStudentClass').value,avatar:$('#newStudentAvatar').value}]);$('#newStudentName').value=''}catch(ex){notify(err(ex))}};
 $('#bulkImport').onclick=async()=>{let names=$('#bulkNames').value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);let cl=$('#bulkClass').value.trim();if(!names.length||!cl)return notify('أدخل الشعبة وأسماء الطلاب أولًا');try{await saveStudents(names.map(name=>({name,className:cl,avatar:avatarIds()[Math.floor(Math.random()*avatarIds().length)]})));$('#bulkNames').value=''}catch(ex){notify(err(ex))}};
+$('#shortenCards').onclick=async()=>{
+  if(!cache.students.some(s=>String(s.cardCode||'').startsWith('QNA-')))return notify('كل الطلاب لديهم رموز مختصرة بالفعل.');
+  if(!confirm('سيتم إصدار رموز أقصر للبطاقات القديمة. ستبقى الرموز المطبوعة ورموز QR السابقة صالحة. هل تريد المتابعة؟'))return;
+  const btn=$('#shortenCards');btn.disabled=true;
+  try{
+    const result=await api('/api/teacher/students/shorten-codes',{method:'POST',body:'{}'});
+    await loadAll();
+    notify('تم إصدار رموز مختصرة لـ '+result.updated+' طالب. الرموز القديمة ما زالت تعمل.');
+  }catch(e){notify(err(e))}
+  finally{btn.disabled=false}
+};
 $('#printCards').onclick=()=>{if(!cache.students.length)return notify('أضف الطلاب أولًا');window.print()};
 boot();
 })();
