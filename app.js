@@ -484,7 +484,7 @@ async function checkServer(){
   try{const r=await fetch('/api/status',{cache:'no-store'});if(!r.ok)throw 0;serverInfo=await r.json();$('#serverBadge').textContent='● الصف المباشر جاهز';$('#serverBadge').classList.add('live');return true}
   catch{serverInfo=null;return false}
 }
-async function renderLiveLanding(){
+async function renderLiveLanding(preferredQuizId=null){
   clearInterval(livePollTimer); livePollTimer=null;
   liveRoom=null; liveHostToken=''; liveStageToken=''; liveCurrentStatus=null;
   const ok=await checkServer();
@@ -511,7 +511,13 @@ async function renderLiveLanding(){
         sessionStorage.removeItem(roomKey);
       }
     }catch(err){console.warn('تعذر استعادة الغرفة السابقة',err);sessionStorage.removeItem('qn9_live_'+window.QN9_TEACHER?.id)}
-    $('#liveQuizSelect').innerHTML=DB.quizzes.map(q=>`<option value="${q.id}">${escapeHtml(q.title)} — ${q.questions.length} سؤال</option>`).join('');
+    const available=newestQuizzes();
+    $('#liveQuizSelect').innerHTML=available.length
+      ?available.map(q=>`<option value="${q.id}">${escapeHtml(q.title)} — ${(q.questions||[]).length} سؤال</option>`).join('')
+      :'<option value="">لا توجد اختبارات — أنشئ اختبارًا أولًا</option>';
+    const preferred=available.find(q=>q.id===preferredQuizId);
+    if(preferred)$('#liveQuizSelect').value=preferred.id;
+    $('#createLiveRoom').disabled=!available.length;
     $('#serverAddress').textContent=serverInfo.student_url||location.origin+'/student.html';
     const teamSel=$('#liveTeamCount'); const modeSel=$('#liveMode'); const assignmentSel=$('#liveTeamAssignment');
     $('#liveQuizSelect').onchange=()=>{const selected=DB.quizzes.find(x=>x.id===$('#liveQuizSelect').value);$('#liveSection').value=selected?.section||''};$('#liveQuizSelect').onchange();$('#liveBackground').value=DB.settings?.scene||'cartoon';
