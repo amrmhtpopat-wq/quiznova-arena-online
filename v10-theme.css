@@ -1,0 +1,26 @@
+/* QuizNova V10 • 3D character system and refined sky-blue identity */
+.auth-card select{background:#051b48c9;border:1px solid #69bde877;border-radius:12px;padding:12px;color:#f6ffff;width:100%;outline:none}
+.v10-avatar-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:10px;margin-top:14px}
+.v10-avatar-gallery img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:16px;border:2px solid #31d6ff;box-shadow:0 6px 22px #001d4788}
+.v10-avatar-preview{display:block;margin:9px auto 13px;width:115px;height:115px;object-fit:cover;border:3px solid #5beaff;border-radius:22px;box-shadow:0 10px 30px #007ed555}
+.avatar-choice{overflow:hidden;isolation:isolate;box-shadow:0 8px 20px #00446a33;transition:transform .17s ease,border-color .17s ease}
+.avatar-choice:hover{transform:translateY(-3px) scale(1.035)}
+.avatar-choice img{width:100%;height:100%;object-fit:cover}
+.avatar-choice.selected{border-color:#12cffa!important;box-shadow:0 0 0 3px #84efff,0 12px 30px #046eaf88!important}
+.lobby-avatar img,.pill-avatar,.stage-avatar,.player-avatar img,.sky-leader-avatar,.sky-podium-avatar{object-fit:cover}
+.idcard img.avatar-pic{width:70px;height:70px;border-radius:15px;object-fit:cover}
+@media(max-width:600px){.avatar-picker{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:8px}.avatar-choice{aspect-ratio:1}.v10-avatar-gallery{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
+/* V10.1 live student roster */
+#view-live .player-chip{display:flex;align-items:center;gap:10px;min-width:0}
+#view-live .player-avatar{width:44px;height:44px;flex:0 0 44px;overflow:hidden;border-radius:50%}
+#view-live .player-avatar img{width:100%!important;height:100%!important;object-fit:cover!important}
+#view-live .player-information strong{display:block;overflow-wrap:anywhere}
+#view-live #liveJoinMessage{font-size:13px;color:#9beeff;font-weight:700}
+.stage-roster-title{font-size:22px;font-weight:850;color:#c2faff;margin:20px 0}
+.stage-active-roster{color:#dcfaff;font-size:14px;margin:10px auto}
+.stage-avatar{width:44px!important;height:44px!important;border-radius:50%;object-fit:cover}
+
+/* V10.2 — discreet professional teacher identity, not a student cartoon avatar */
+.teacher-card .teacher-avatar-pro{background:linear-gradient(145deg,#effaff,#c6eafd)!important;border:1px solid rgba(174,234,255,.55);border-radius:14px!important;box-shadow:0 6px 20px rgba(0,39,80,.22);overflow:hidden;padding:0!important;width:43px;height:43px;flex:0 0 43px}
+.teacher-card .teacher-avatar-pro svg{width:100%;height:100%;display:block}

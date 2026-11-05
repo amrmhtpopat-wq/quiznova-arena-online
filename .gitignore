@@ -1,0 +1,16 @@
+# QuizNova private local data
+*.db
+*.sqlite
+*.sqlite3
+.env
+.env.*
+!.env.example
+__pycache__/
+*.pyc
+.venv/
+venv/
+.idea/
+.vscode/
+.DS_Store
+*.log
+*.bak

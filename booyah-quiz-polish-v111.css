@@ -1,0 +1,261 @@
+/* BOOYAH! Quiz experience polish v11.1.
+   Calm, accessible classroom colors. Scoped: quiz library, live, solo and student.
+   Load after prior themes so light surfaces keep dark text. */
+body.v105-studio :is(#view-library,#view-play,#view-live) {
+  --bo-quiz-ink:#173454;
+  --bo-quiz-muted:#3e5b78;
+  --bo-quiz-ice:#f2f8fe;
+  --bo-quiz-line:#a9cbe2;
+  --bo-quiz-deep:#0b2c53;
+  font-family:Cairo,Tahoma,Arial,sans-serif!important;
+}
+body.v105-studio #view-library .quiz-cards {
+  display:grid!important;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,275px),1fr))!important;
+  gap:18px!important;
+  align-items:stretch;
+}
+body.v105-studio #view-library .bo-library-quiz {
+  display:flex!important;
+  flex-direction:column;
+  gap:10px!important;
+  background:linear-gradient(160deg,#f5fbff,#dbeef9)!important;
+  border:1.5px solid #92beda!important;
+  border-radius:19px!important;
+  padding:14px!important;
+  color:#143352!important;
+  box-shadow:0 9px 26px #00182f2b!important;
+  transition:border-color .16s,box-shadow .16s,transform .16s;
+}
+body.v105-studio #view-library .bo-library-quiz:hover {
+  border-color:#379fda!important;
+  box-shadow:0 16px 32px #001c3339!important;
+  transform:translateY(-2px);
+}
+body.v105-studio #view-library .bo-library-quiz.bo-just-saved {
+  outline:3px solid #74dfd0!important;
+  outline-offset:0;
+}
+body.v105-studio #view-library .bo-library-quiz .quiz-cover {
+  background:linear-gradient(135deg,#264e85,#5377ac)!important;
+  color:#fff!important;
+  border-radius:13px!important;
+  min-height:100px;
+  font-size:35px!important;
+  box-shadow:none!important;
+}
+body.v105-studio #view-library .bo-library-quiz h4 {
+  color:#102e4d!important;
+  -webkit-text-fill-color:#102e4d!important;
+  font-size:clamp(17px,1.6vw,21px)!important;
+  line-height:1.65!important;
+  font-weight:900!important;
+  overflow-wrap:anywhere;
+}
+body.v105-studio #view-library .bo-library-quiz p {
+  color:#385975!important;
+  -webkit-text-fill-color:#385975!important;
+  font-size:clamp(12px,1vw,14px)!important;
+  line-height:1.7!important;
+  font-weight:700!important;
+  opacity:1!important;
+}
+body.v105-studio #view-library .bo-library-quiz .card-meta {
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+body.v105-studio #view-library .bo-library-quiz .chip {
+  background:#e4f2fc!important;
+  color:#254565!important;
+  -webkit-text-fill-color:#254565!important;
+  border:1px solid #a5cae4!important;
+  font-size:12px!important;
+  font-weight:850!important;
+  line-height:1.4!important;
+  padding:7px 10px!important;
+}
+body.v105-studio #view-library .bo-library-quiz .bo-saved-chip {
+  background:#e2f9ee!important;
+  color:#13573f!important;
+  -webkit-text-fill-color:#13573f!important;
+  border-color:#94c9b1!important;
+}
+body.v105-studio #view-library .bo-library-actions {
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px!important;
+  margin-top:auto!important;
+  padding-top:9px;
+}
+body.v105-studio #view-library .bo-library-actions button {
+  display:inline-flex!important;
+  justify-content:center;
+  align-items:center;
+  white-space:normal;
+  min-width:0!important;
+  min-height:45px!important;
+  padding:8px 9px!important;
+  line-height:1.5!important;
+  font-size:clamp(12px,1vw,14px)!important;
+  font-weight:850!important;
+  border-radius:10px!important;
+  opacity:1!important;
+}
+body.v105-studio #view-library .bo-library-actions .btn-primary {
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  background:#264a92!important;
+  border:1px solid #406fbe!important;
+}
+body.v105-studio #view-library .bo-library-actions .btn-secondary {
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  background:#175577!important;
+  border:1px solid #327fa5!important;
+}
+body.v105-studio #view-library .bo-library-actions .icon-btn {
+  color:#19405e!important;
+  -webkit-text-fill-color:#19405e!important;
+  background:#e3f1fd!important;
+  border:1px solid #99bfda!important;
+}
+body.v105-studio #view-library .bo-library-actions .icon-btn.danger {
+  color:#9a2943!important;
+  -webkit-text-fill-color:#9a2943!important;
+  background:#fff0f4!important;
+  border-color:#dcb5c0!important;
+}
+body.v105-studio #view-library .bo-library-empty {
+  color:#e5f4ff!important;
+  font-size:16px!important;
+  font-weight:700!important;
+  padding:25px!important;
+  text-align:center;
+  grid-column:1/-1;
+}
+body.v105-studio #view-library .search-row input {
+  color:#163653!important;
+  -webkit-text-fill-color:#163653!important;
+  background:#f5fbff!important;
+  font-size:15px!important;
+  font-weight:700!important;
+}
+/* Dark live panels: accessible cool white labels without glaring neon.
+   White toggle chips continue to use dark text via contrast-v109. */
+body.v105-studio #view-live :is(.live-launch-card,.live-info) {
+  background:linear-gradient(145deg,#0a2b53,#102c4a)!important;
+  border:1.5px solid #387ba6!important;
+  box-shadow:0 12px 25px #00142855!important;
+}
+body.v105-studio #view-live :is(.live-launch-card,.live-info) :is(h3,h4) {
+  color:#ecf7ff!important;
+  -webkit-text-fill-color:#ecf7ff!important;
+  font-size:clamp(18px,1.6vw,23px)!important;
+  font-weight:850!important;
+}
+body.v105-studio #view-live :is(.live-launch-card,.live-info) p {
+  color:#c8e4f7!important;
+  -webkit-text-fill-color:#c8e4f7!important;
+  font-size:clamp(12px,1vw,15px)!important;
+  line-height:1.75!important;
+  opacity:1!important;
+}
+body.v105-studio #view-live .live-config-grid label {
+  color:#e8f4ff!important;
+  -webkit-text-fill-color:#e8f4ff!important;
+  font-size:14px!important;
+  font-weight:800!important;
+}
+body.v105-studio #view-live .live-config-grid :is(input,select) {
+  background:#f4faff!important;
+  color:#173653!important;
+  -webkit-text-fill-color:#173653!important;
+  border:1.5px solid #93bbd9!important;
+  font-size:15px!important;
+  font-weight:750!important;
+  min-height:45px!important;
+}
+/* Solo questions: calm paper background, strong ink, non-neon option colors. */
+body.v105-studio #view-play #gameArea .game-card {
+  background:linear-gradient(165deg,#f8fbff,#e5f1fc)!important;
+  background-color:#f8fbff!important;
+  border:1.5px solid #94bed9!important;
+  box-shadow:0 15px 34px #03182b38!important;
+  color:#163451!important;
+}
+body.v105-studio #view-play #gameArea .game-card h3 {
+  color:#14304c!important;
+  -webkit-text-fill-color:#14304c!important;
+  font-size:clamp(20px,2.3vw,29px)!important;
+  line-height:1.65!important;
+  font-weight:850!important;
+  text-wrap:pretty;
+}
+body.v105-studio #view-play #gameArea .game-card .answer-btn {
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  border:2px solid #fff8!important;
+  border-radius:14px!important;
+  font-size:clamp(16px,1.6vw,21px)!important;
+  line-height:1.55!important;
+  font-weight:800!important;
+  min-height:74px!important;
+  text-shadow:0 1px 1px #001d3366!important;
+  box-shadow:inset 0 -3px 0 #001c383c!important;
+}
+body.v105-studio #view-play #gameArea .game-card .answer-btn:nth-child(4n+1){background:#9e3955!important}
+body.v105-studio #view-play #gameArea .game-card .answer-btn:nth-child(4n+2){background:#2e559b!important}
+body.v105-studio #view-play #gameArea .game-card .answer-btn:nth-child(4n+3){background:#795707!important}
+body.v105-studio #view-play #gameArea .game-card .answer-btn:nth-child(4n){background:#16634b!important}
+body.v105-studio #view-play #gameArea .game-card .answer-btn.correct{background:#145b43!important}
+body.v105-studio #view-play #gameArea .game-card .answer-btn.wrong{background:#962c48!important}
+body.v105-studio #view-play #gameArea .game-card .answer-btn:focus-visible {
+  outline:3px solid #ffd87a!important;
+  outline-offset:2px!important;
+}
+/* Student UI: keep full-screen layout, improve calm eye-friendly contrast. */
+body.v105-student #gameView .question-card {
+  background:linear-gradient(155deg,#102c4c,#132f53)!important;
+  border-color:#4697c0!important;
+}
+body.v105-student #gameView .question-card h2 {
+  color:#f1f8ff!important;
+  -webkit-text-fill-color:#f1f8ff!important;
+  font-weight:850!important;
+  line-height:1.5!important;
+  text-shadow:none!important;
+}
+body.v105-student #gameView .question-card .answer {
+  background:linear-gradient(145deg,#1b4572,#245483)!important;
+  border-color:#508dbb!important;
+  color:#f4faff!important;
+  -webkit-text-fill-color:#f4faff!important;
+  font-weight:800!important;
+  line-height:1.5!important;
+  text-shadow:none!important;
+  box-shadow:0 5px 14px #000d2830!important;
+}
+body.v105-student #gameView .question-card .answer:hover,
+body.v105-student #gameView .question-card .answer:focus-visible {
+  border-color:#afebff!important;
+  box-shadow:0 0 0 2px #b1edff64!important;
+}
+body.v105-student #gameView .question-card .answer.selected {
+  background:linear-gradient(145deg,#17644e,#207858)!important;
+  border-color:#a4f3c9!important;
+}
+@media (max-width:640px) {
+  body.v105-studio #view-library .bo-library-actions {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  body.v105-studio #view-library .bo-library-quiz {
+    padding:12px!important;
+  }
+}
+@media(prefers-reduced-motion:reduce) {
+  body.v105-studio #view-library .bo-library-quiz {
+    transition:none!important;
+    transform:none!important;
+  }
+}

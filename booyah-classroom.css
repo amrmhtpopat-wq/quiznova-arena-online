@@ -1,0 +1,156 @@
+/* BOOYAH! classroom polish – unified readable Arabic typography and true answer viewport. */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap');
+
+:is(body.v105-studio,body.v105-portal,body.v105-student,body.v105-stage){
+  font-family:Cairo,Tahoma,Arial,sans-serif!important;
+  text-rendering:optimizeLegibility;
+}
+:is(body.v105-studio,body.v105-portal,body.v105-student,body.v105-stage)
+  :is(button,input,textarea,select,label,option,table,th,td){
+  font-family:inherit!important;
+}
+:is(body.v105-studio,body.v105-portal,body.v105-student)
+  :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),textarea,select){
+  color:#102b49!important;
+  -webkit-text-fill-color:#102b49!important;
+  background-color:#f8fbff!important;
+  border-color:#719fca!important;
+  font-size:clamp(14px,1vw + 9px,17px)!important;
+  font-weight:650!important;
+  line-height:1.6!important;
+}
+:is(body.v105-studio,body.v105-portal,body.v105-student)
+  :is(input,textarea)::placeholder{
+  color:#4c6180!important;
+  -webkit-text-fill-color:#4c6180!important;
+  opacity:1!important;
+  font-weight:600!important;
+}
+:is(body.v105-studio,body.v105-portal)
+  :is(input,textarea,select):focus-visible{
+  outline:3px solid #4fdfff!important;
+  outline-offset:1px!important;
+}
+:is(body.v105-studio,body.v105-portal)
+  :is(td,th,.table-wrap,.table-wrap *, .modal-list, .modal-list *){
+  font-size:inherit;
+}
+:is(body.v105-studio,body.v105-portal) :is(td,th) {
+  line-height:1.55!important;
+  font-weight:600;
+}
+:is(body.v105-studio,body.v105-portal) :is(.form-stack label,.form-grid label,.student-form label,.auth-card label){
+  font-weight:750!important;
+  font-size:15px!important;
+}
+body.v105-portal .qn-card-code{
+  display:inline-block;
+  direction:ltr;
+  unicode-bidi:isolate;
+  letter-spacing:1.5px!important;
+  font-size:17px!important;
+  font-weight:900!important;
+  padding:2px 6px;
+  border-radius:7px;
+  background:#09254b;
+  color:#bafaff!important;
+}
+body.v105-portal .qn-card-progress{
+  width:100%;height:9px;overflow:hidden;
+  background:#203e6e;border-radius:50px;
+  margin:5px 0;
+}
+body.v105-portal .qn-card-progress i{
+  display:block;height:100%;
+  background:linear-gradient(90deg,#a358fa,#3ee7f5);
+  border-radius:50px;
+}
+body.v105-student .qn-profile-avatar + div{
+  display:grid;gap:5px;
+}
+body.v105-student #cardProfile .qn-xp-progress{
+  width:100%;max-width:270px;
+  background:#123c71;
+}
+body.v105-student .qn-level-up{
+  color:#a7ffde!important;
+  font-size:clamp(16px,3vw,22px)!important;
+}
+body.v105-student .qn-xp-final small{
+  color:#d7e8ff;
+  font-size:12px;
+  line-height:1.65;
+}
+body.v105-student:has(#gameView:not(.hidden) .question-card){
+  overflow:hidden!important;overscroll-behavior:none;
+}
+body.v105-student:has(#gameView:not(.hidden) .question-card) .student-shell{
+  height:100dvh!important;
+  max-height:100dvh!important;
+  min-height:0!important;
+  overflow:hidden!important;
+  padding-bottom:max(4px,env(safe-area-inset-bottom))!important;
+}
+body.v105-student:has(#gameView:not(.hidden) .question-card) #gameView{
+  overflow:hidden!important;
+  min-height:0!important;
+}
+body.v105-student:has(#gameView:not(.hidden) .question-card) .question-card{
+  min-height:0!important;
+  overflow:hidden!important;
+}
+body.v105-student:has(#gameView:not(.hidden) .question-card) .question-card h2{
+  max-height:25dvh!important;
+  overflow:hidden!important;
+  font-size:clamp(14px,2.5vw,27px)!important;
+  text-wrap:pretty;
+}
+body.v105-student:has(#gameView:not(.hidden) .question-card) .answers{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  grid-template-rows:repeat(2,minmax(0,1fr))!important;
+  min-height:0!important;
+  max-height:52dvh!important;
+  overflow:hidden!important;
+}
+body.v105-student:has(#gameView:not(.hidden) .question-card) .answers:not(:has(.answer:nth-child(3))){
+  grid-template-rows:minmax(0,1fr)!important;
+}
+body.v105-student:has(#gameView:not(.hidden) .question-card) .answers .answer{
+  min-width:0!important;min-height:0!important;
+  overflow:hidden!important;overflow-wrap:anywhere!important;
+  font-weight:800!important;
+  line-height:1.45!important;
+  touch-action:manipulation;
+}
+@media(max-height:620px){
+  body.v105-student:has(#gameView:not(.hidden) .question-card) .student-brand{
+    height:32px!important;min-height:32px!important;flex-basis:32px!important;
+  }
+  body.v105-student:has(#gameView:not(.hidden) .question-card) .question-card{
+    padding:7px!important;gap:4px!important;
+  }
+  body.v105-student:has(#gameView:not(.hidden) .question-card) .question-card h2{
+    max-height:21dvh!important;line-height:1.32!important;
+  }
+  body.v105-student:has(#gameView:not(.hidden) .question-card) .question-image{
+    max-height:10dvh!important;
+  }
+  body.v105-student:has(#gameView:not(.hidden) .question-card) .answers{
+    max-height:48dvh!important;gap:5px!important;
+  }
+}
+@media(max-width:380px){
+  body.v105-student:has(#gameView:not(.hidden) .question-card) .game-top{
+    min-height:35px!important;gap:3px!important;
+  }
+  body.v105-student:has(#gameView:not(.hidden) .question-card) .answers{
+    gap:5px!important;
+  }
+  body.v105-student:has(#gameView:not(.hidden) .question-card) .answers .answer{
+    padding:5px!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  body.v105-student .qn-answer-wait *{animation-duration:.01ms!important}
+}

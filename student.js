@@ -1,56 +1,144 @@
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-let session={code:'',playerId:'',name:'',avatar:'01',team:'',model:'',variantMode:'options',playType:'individual',lastIndex:-99,lastResultView:-99,answer:null,questionStarted:0,timer:null,poll:null,useDouble:false,powerups:{double:true},score:0,streak:0};
+let session={code:'',playerId:'',name:'',avatar:'b01',team:'',model:'',variantMode:'options',playType:'individual',lastIndex:-99,lastResultView:-99,answer:null,questionStarted:0,timer:null,poll:null,useDouble:false,powerups:{double:true},score:0,streak:0};
 const shapes=['▲','◆','●','■'];
-let pickedAvatar='01';
-$('#avatarPicker').innerHTML=Array.from({length:12},(_,i)=>{const id=String(i+1).padStart(2,'0');return `<button type="button" class="avatar-choice ${id==='01'?'selected':''}" data-avatar="${id}" aria-label="شخصية ${i+1}"><img src="/assets/avatars/${id}.svg" alt="شخصية كرتونية"></button>`}).join('');
+let pickedAvatar='b01';
+let roomAvatarPool=[];let lastAvatarCode='';let avatarRequest=0;
+const avatarPath=id=>/^m0[1-8]$/.test(id)?'/assets/avatars-game/'+(id==='m08'?'m07':id)+'.svg':/^n0[1-8]$/.test(id)?'/assets/avatars3d/'+id+'.webp':/^[bg](0[1-9]|1[0-6])$/.test(id)?'/assets/avatars3d/'+id+'.webp':'/assets/avatars/'+(/^\d{2}$/.test(id)?id:'01')+'.svg';
+let selectedCard=(new URLSearchParams(location.search)).get('card')||'';
+let cardName='';
+const booyahMascotNames={m01:'شرارة',m02:'روبوك',m03:'فوكسو',m04:'نينزو',m05:'درعو',m06:'بيكسو',m07:'زومي',m08:'زومي'};
+const avatarDisplayName=id=>booyahMascotNames[id]||(id?.startsWith('b')?'بطل اللعبة':id?.startsWith('g')?'بطلة اللعبة':'شخصية اللعبة');
+function showAvatars(ids){
+ roomAvatarPool=ids.filter(id=>/^(?:[bg](?:0[1-9]|1[0-6])|[mn]0[1-8])$/.test(id)&&id!=='m08');
+ if(!roomAvatarPool.length)roomAvatarPool=['b01','g01'];
+ if(!roomAvatarPool.includes(pickedAvatar))pickedAvatar=roomAvatarPool[0];
+ $('#avatarPicker').innerHTML=roomAvatarPool.map(id=>`<button type="button" class="avatar-choice ${id===pickedAvatar?'selected':''}" data-avatar="${id}" aria-label="اختر ${avatarDisplayName(id)}" title="${avatarDisplayName(id)}"><img src="${avatarPath(id)}" loading="lazy" alt="${avatarDisplayName(id)}"><span class="bo-avatar-name">${avatarDisplayName(id)}</span></button>`).join('');
+}
+showAvatars(['m01','m02','m03','m04','m05','m06','m07','b01','b02']);
+async function loadRoomAvatarPool(){
+ const code=$('#roomCode').value.replace(/\D/g,'').slice(0,6);if(code.length!==6)return;
+ if(code===lastAvatarCode&&roomAvatarPool.length)return;
+ const request=++avatarRequest;
+ try{const d=await api('/api/room/config?code='+encodeURIComponent(code));if(!d.ok)throw d;if(request!==avatarRequest)return;
+ lastAvatarCode=code;showAvatars(d.avatars||[]);
+ const mode=d.schoolType==='boys'?'مدرسة بنين':d.schoolType==='girls'?'مدرسة بنات':'مدرسة مختلطة';
+ $('#joinHint').textContent=`${mode} • ${d.subject||'مادة تعليمية'} • ${d.section||'صف مباشر'}: اختر شخصية واكتب اسمك.`;
+ }catch(e){lastAvatarCode='';err('تعذر جلب إعدادات الغرفة. تأكد من الرمز.');}
+}
 $('#avatarPicker').addEventListener('click',e=>{const button=e.target.closest('[data-avatar]');if(!button)return;pickedAvatar=button.dataset.avatar;document.querySelectorAll('.avatar-choice').forEach(x=>x.classList.toggle('selected',x===button))});
 
 function esc(v=''){return String(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function api(path,opt){return fetch(path,opt).then(async r=>{const d=await r.json().catch(()=>({}));if(!r.ok&&!d.ok)throw d;return d})}
 function err(msg){$('#joinError').textContent=msg||''}
-function setCodeFromUrl(){const p=new URLSearchParams(location.search),code=(p.get('code')||'').replace(/\D/g,'').slice(0,6);if(code){$('#roomCode').value=code;$('#joinHint').textContent='تم التقاط رمز اللعبة من QR. اكتب اسمك فقط ثم اضغط دخول.';setTimeout(()=>$('#playerName').focus(),150)}}
+async function showCardProfile(){
+ const code=($('#cardCode').value||'').trim().toUpperCase(),panel=$('#cardProfile');
+ if(!code){panel.hidden=true;panel.textContent='';return}
+ try{
+  const d=await api('/api/card/profile?card='+encodeURIComponent(code));
+  if(!d.ok)throw d;
+  selectedCard=code;cardName=d.name;pickedAvatar=d.avatar;
+  $('#playerName').value=d.name;$('#playerName').readOnly=true;
+  panel.hidden=false;
+  panel.innerHTML='<div class="qn-profile-avatar"><img alt="" src="'+avatarPath(d.avatar)+'"></div><div><b>'+esc(d.name)+'</b><small>'+esc(d.className)+'</small><span>⭐ المستوى '+d.level+' • '+esc(d.progress?.title||'مبتدئ')+' • '+d.xp+' XP</span><div class="qn-xp-progress" role="progressbar" aria-valuenow="'+(d.progress?.percent||0)+'" aria-valuemin="0" aria-valuemax="100"><i style="width:'+(d.progress?.percent||0)+'%"></i></div><span>متبقي '+(d.progress?.xpToNext??100)+' XP للمستوى التالي</span><span>🏆 '+d.played+' مشاركة • '+d.correct+' إجابة صحيحة</span></div>';
+  $('#joinHint').textContent='بطاقتك جاهزة. أدخل رمز الغرفة للانضمام للمسابقة.';
+  err('');
+ }catch(e){panel.hidden=true;cardName='';$('#playerName').readOnly=false;err('رمز البطاقة غير صالح، تأكد من الحروف والأرقام.')}
+}
+function setCodeFromUrl(){const p=new URLSearchParams(location.search),code=(p.get('code')||'').replace(/\D/g,'').slice(0,6);if(code){$('#roomCode').value=code;$('#joinHint').textContent='تم التقاط رمز اللعبة من QR. اكتب اسمك ثم اضغط دخول.';setTimeout(()=>$('#playerName').focus(),150)}if(selectedCard){$('#cardCode').value=selectedCard;setTimeout(showCardProfile,80);$('#joinHint').textContent='🪪 بطاقة الطالب جاهزة. اكتب رمز الغرفة للتعرف على اسمك وشعبتك تلقائيًا.';if(code)resolveCard();}if(code)loadRoomAvatarPool();}
 function beep(ok=true){try{const C=window.AudioContext||window.webkitAudioContext,a=new C(),o=a.createOscillator(),g=a.createGain();o.connect(g);g.connect(a.destination);o.type='sine';o.frequency.value=ok?660:210;g.gain.setValueAtTime(.06,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+.22);o.start();o.stop(a.currentTime+.23)}catch{}}
 function confetti(){const wrap=document.createElement('div');wrap.className='confetti';const cols=['#ff4d69','#2d7fe7','#f0b529','#28aa66','#6d3eff','#18c6d5'];for(let i=0;i<34;i++){const x=document.createElement('i');x.style.left=Math.random()*100+'vw';x.style.background=cols[i%cols.length];x.style.animationDelay=Math.random()*.35+'s';x.style.transform=`rotate(${Math.random()*180}deg)`;wrap.appendChild(x)}document.body.appendChild(wrap);setTimeout(()=>wrap.remove(),2400)}
 
-$('#joinBtn').onclick=async()=>{const code=$('#roomCode').value.replace(/\D/g,'').trim(),name=$('#playerName').value.trim();err('');if(code.length!==6)return err('اكتب رمز اللعبة المكوّن من 6 أرقام');if(!name)return err('اكتب اسمك الحقيقي');try{const d=await api('/api/room/join',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code,name,avatar:pickedAvatar})});if(!d.ok)throw d;session={...session,code,playerId:d.playerId,name,avatar:d.avatar||pickedAvatar,team:d.team||'',model:d.model||'',variantMode:d.variantMode||'options',playType:d.playType||'individual'};$('#joinView').classList.add('hidden');$('#gameView').classList.remove('hidden');startPoll()}catch(e){const map={room_not_found:'رمز اللعبة غير صحيح أو انتهت الجلسة',name_taken:'هذا الاسم مستخدم بالفعل، أضف اسم العائلة',finished:'هذه اللعبة انتهت',name_required:'اكتب اسمك'};err(map[e?.error]||'تعذر الدخول إلى اللعبة')}};
-$('#roomCode').addEventListener('input',e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,6)});$('#playerName').addEventListener('keydown',e=>{if(e.key==='Enter')$('#joinBtn').click()});
+async function resolveCard(){
+ selectedCard=($('#cardCode').value||'').trim().toUpperCase();
+ if(!selectedCard||$('#roomCode').value.length!==6){cardName='';$('#playerName').readOnly=false;return}
+ try{const d=await api('/api/card/resolve?code='+$('#roomCode').value+'&card='+encodeURIComponent(selectedCard));if(d.ok){cardName=d.name;$('#playerName').value=d.name;$('#playerName').readOnly=true;pickedAvatar=d.avatar;$('#joinHint').textContent='✅ بطاقتك: '+d.name+' • '+d.className+' • المستوى '+d.level+' • '+d.xp+' XP'}}catch(e){cardName='';$('#playerName').readOnly=false;err('رمز البطاقة غير صالح لهذه الغرفة. تأكد من الرمز أو امسح QR.')}}
+$('#joinBtn').onclick=async()=>{await loadRoomAvatarPool();const code=$('#roomCode').value.replace(/\D/g,'').trim();let name=$('#playerName').value.trim();err('');if(code.length!==6)return err('اكتب رمز اللعبة المكوّن من 6 أرقام');if(selectedCard&&!cardName){await resolveCard();name=$('#playerName').value.trim()}if(!name&&!selectedCard)return err('اكتب اسمك الحقيقي');try{const d=await api('/api/room/join',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code,name,avatar:pickedAvatar,card:selectedCard})});if(!d.ok)throw d;session={...session,code,playerId:d.playerId,name:d.name||name,avatar:d.avatar||pickedAvatar,team:d.team||'',model:d.model||'',variantMode:d.variantMode||'options',playType:d.playType||'individual',xp:d.xp||0,level:d.level||1};sessionStorage.setItem('qn9_student_'+code,JSON.stringify({playerId:session.playerId,name:session.name,avatar:session.avatar,team:session.team,model:session.model}));$('#joinView').classList.add('hidden');$('#gameView').classList.remove('hidden');startPoll()}catch(e){const map={room_not_found:'رمز اللعبة غير صحيح أو انتهت الجلسة',name_taken:'هذا الاسم مستخدم بالفعل، أضف اسم العائلة',finished:'هذه اللعبة انتهت',name_required:'اكتب اسمك',card_required:'المعلم فعّل شرط بطاقة الطالب لهذه الغرفة؛ اطلب منه إلغاء الشرط أو استخدام بطاقتك',invalid_card:'بطاقة الطالب غير صالحة',card_already_joined:'الطالب يستخدم هذه البطاقة بالفعل في الغرفة',attempt_limit:'لقد استنفدت عدد المحاولات المحدد لهذا الامتحان',wrong_class:'البطاقة لا تتبع هذه الشعبة',exam_started:'بدأ الامتحان بالفعل ولا يمكن الانضمام الآن',team_assignment_closed:'انتهى توزيع الفرق اليدوي. اطلب من المعلم إنشاء غرفة جديدة.'};err(map[e?.error]||'تعذر الدخول إلى اللعبة')}};
+$('#showCardProfile').onclick=showCardProfile;
+$('#cardCode').addEventListener('input',e=>{cardName='';$('#playerName').readOnly=false;e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9_-]/g,'').slice(0,24);selectedCard=e.target.value;if($('#roomCode').value.length===6&&selectedCard.length>=12)resolveCard()});
+$('#roomCode').addEventListener('input',e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,6);if(e.target.value.length===6){resolveCard();loadRoomAvatarPool()}else{lastAvatarCode='';avatarRequest++}});$('#playerName').addEventListener('keydown',e=>{if(e.key==='Enter')$('#joinBtn').click()});
 
 function startPoll(){clearInterval(session.poll);const run=async()=>{try{const d=await api(`/api/room/state?code=${encodeURIComponent(session.code)}&player=${encodeURIComponent(session.playerId)}`);if(d.ok)renderState(d.room)}catch{}};run();session.poll=setInterval(run,650)}
-function renderState(r){document.body.dataset.scene=r.background||'cartoon';session.team=r.team||session.team;session.avatar=r.avatar||session.avatar;session.model=r.model||session.model;session.variantMode=r.variantMode||session.variantMode;session.score=r.playerScore||0;session.streak=r.playerStreak||0;session.powerups=r.powerups||session.powerups;if(r.status==='lobby'){showLobby(r);return}if(r.status==='finished'){showFinish(r);return}if(r.status==='results'){showRoundLeaderboard(r);return}if(r.status==='question'){if(r.index!==session.lastIndex){session.lastIndex=r.index;session.lastResultView=-99;session.answer=null;session.useDouble=false;session.questionStarted=r.startedAt||Date.now();renderQuestion(r)}else updateTimer(r);if(r.answeredCurrent&&r.lastResult)showAnswered(r)}}
-function showLobby(r){clearInterval(session.timer);$('#gameView').innerHTML=`<div class="lobby-card"><div class="lobby-avatar"><img src="/assets/avatars/${session.avatar}.svg" alt="صورتك الشخصية"></div><div class="pulse">◉</div><span class="eyebrow">تم الدخول بنجاح</span><h1>${esc(session.name)}</h1>${session.team?`<div class="team-hero">فريقك: ${esc(session.team)}</div>`:''}${session.model?`<div class="model-hero">نموذجك: ${esc(session.model)}</div>`:''}<p>بانتظار الأستاذ لبدء <b>${esc(r.quizTitle||'الاختبار')}</b>.<br>ابقَ في هذه الصفحة.</p><small>رمز اللعبة: ${esc(session.code)}</small></div>`}
+function renderState(r){document.body.dataset.scene=r.background||'cartoon';session.team=r.team||'';session.avatar=r.avatar||session.avatar;session.model=r.model||session.model;session.variantMode=r.variantMode||session.variantMode;session.score=r.playerScore||0;session.streak=r.playerStreak||0;session.powerups=r.powerups||session.powerups;if(r.status==='lobby'){showLobby(r);return}if(r.status==='finished'){showFinish(r);return}if(r.status==='results'){showRoundLeaderboard(r);return}if(r.status==='question'){if(r.index!==session.lastIndex){session.lastIndex=r.index;session.lastResultView=-99;session.answer=null;session.useDouble=false;session.questionStarted=r.startedAt||Date.now();renderQuestion(r)}else if(!r.answeredCurrent)updateTimer(r);if(r.answeredCurrent&&r.lastResult)showAnswered(r)}}
+function showLobby(r){clearInterval(session.timer);$('#gameView').innerHTML=`<div class="lobby-card"><div class="lobby-avatar"><img src="${avatarPath(session.avatar)}" alt="صورتك الشخصية"></div><div class="pulse">◉</div><span class="eyebrow">تم الدخول بنجاح</span><h1>${esc(session.name)}</h1><div class="level-stamp" style="display:inline-flex;padding:5px 12px;border-radius:12px;background:#06519d; color:#d8faff;margin:9px">⭐ LEVEL ${r.level||1}</div>${session.team?`<div class="team-hero">فريقك: ${esc(session.team)}</div>`:r.playType==='teams'?'<div class="team-hero">⏳ الأستاذ يحدد فريقك الآن</div>':''}${session.model?`<div class="model-hero">نموذجك: ${esc(session.model)}</div>`:''}<p>بانتظار الأستاذ لبدء <b>${esc(r.quizTitle||'الاختبار')}</b>.<br>ابقَ في هذه الصفحة.</p><small>رمز اللعبة: ${esc(session.code)}</small></div>`}
 function currentType(){return $('#gameView .question-card')?.dataset?.type||''}
 function questionUI(q){
   if(q.type==='single'||q.type==='multi'||q.type==='poll')return `<div class="answers">${(q.options||[]).map((o,i)=>`<button class="answer" data-shape="${shapes[i%4]}" onclick="choose(${i},this)">${esc(o)}</button>`).join('')}</div>`;
   if(q.type==='tf')return `<div class="answers"><button class="answer" data-shape="✓" onclick="choose(true,this)">صح</button><button class="answer" data-shape="✕" onclick="choose(false,this)">خطأ</button></div>`;
+  if(q.type==='estimate')return `<input class="short" id="estimateAnswer" type="number" step="any" placeholder="اكتب الرقم الذي تقدّره" inputmode="decimal">`;
   if(q.type==='short')return `<input class="short" id="shortAnswer" placeholder="اكتب الإجابة هنا..." autocomplete="off">`;
   if(q.type==='order'){session.answer=(q.items||[]).map((text,i)=>({text,key:'k'+i+Math.random()}));return `<div class="order" id="orderBox">${orderHtml()}</div>`}
   if(q.type==='match'){session.answer={};return `<div class="match">${(q.lefts||[]).map((l,i)=>`<div class="match-row"><div>${esc(l)}</div><select onchange="setMatch(${i},this.value)"><option value="">اختر المطابقة...</option>${(q.rights||[]).map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('')}</select></div>`).join('')}</div>`}
   return '';
 }
-function renderQuestion(r){clearInterval(session.timer);const q=r.question,pct=((r.index)/Math.max(1,r.total))*100;const doubleAvail=r.powerupsEnabled&&session.powerups?.double&&q.type!=='poll'&&r.gameMode!=='zen';$('#gameView').innerHTML=`
-  <div class="game-top"><div class="player-pill"><img class="pill-avatar" src="/assets/avatars/${session.avatar}.svg" alt=""> ${esc(session.name)}</div>${session.team?`<div class="team-pill">👥 ${esc(session.team)}</div>`:''}${session.model?`<div class="model-pill">🔀 ${esc(session.model)}</div>`:''}<div class="streak-pill">🔥 Combo ×${session.streak}</div><div class="score-pill">🏆 ${session.score} نقطة</div><div class="timer" id="timer">${q.time||20}</div></div>
+function fitQuestionToViewport(){
+  const card=$('#gameView .question-card');
+  if(!card)return;
+  const title=card.querySelector('h2');
+  if(title){
+    const length=(title.textContent||'').length;
+    const preferred=length>250?17:length>150?20:26;
+    for(let size=preferred;size>=12;size--){
+      title.style.setProperty('font-size',size+'px','important');
+      if(title.clientHeight>0 && title.scrollHeight<=title.clientHeight+2)break;
+    }
+  }
+  for(const option of card.querySelectorAll('.answers .answer')){
+    const length=(option.textContent||'').length;
+    const preferred=length>145?13:length>80?16:20;
+    for(let size=preferred;size>=12;size--){
+      option.style.setProperty('font-size',size+'px','important');
+      if(option.clientHeight>0 && option.scrollHeight<=option.clientHeight+2)break;
+    }
+  }
+}
+window.addEventListener('resize',()=>requestAnimationFrame(fitQuestionToViewport));
+function renderQuestion(r){clearInterval(session.timer);session.currentRoomState=r;const q=r.question,pct=((r.index)/Math.max(1,r.total))*100;const doubleAvail=r.powerupsEnabled&&session.powerups?.double&&q.type!=='poll'&&r.gameMode!=='zen';$('#gameView').innerHTML=`
+  <div class="game-top"><div class="player-pill"><img class="pill-avatar" src="${avatarPath(session.avatar)}" alt=""> ${esc(session.name)}</div>${session.team?`<div class="team-pill">👥 ${esc(session.team)}</div>`:''}${session.model?`<div class="model-pill">🔀 ${esc(session.model)}</div>`:''}${r.examMode?'<div class="score-pill">🛡️ امتحان رسمي • النتائج في النهاية</div>':`<div class="streak-pill">🔥 Combo ×${session.streak}</div><div class="score-pill">🏆 ${session.score} نقطة</div>`}<div class="timer" id="timer">${q.time||20}</div></div>
   <div class="progress"><div style="width:${pct}%"></div></div>
-  <div class="question-card ${q._boss?'boss':''}" data-type="${q.type}">${q._boss?'<div class="boss-banner">👑 سؤال الزعيم — نقاط مضاعفة</div>':''}${q.image?`<img class="question-image" src="${q.image}" alt="صورة السؤال">`:''}<h2>${esc(q.text)}</h2>${questionUI(q)}
+  <div class="question-card ${q._boss?'boss':''}" data-type="${q.type}">${q._boss?'<div class="boss-banner">👑 سؤال الزعيم — نقاط مضاعفة</div>':''}${q.image?`<img class="question-image" src="${esc(q.image)}" alt="صورة السؤال">`:''}<h2>${esc(q.text)}</h2>${questionUI(q)}
   <div class="game-tools">${doubleAvail?'<button class="power-btn" id="doubleBtn">⚡ استخدم ×2 لهذا السؤال</button>':''}</div>
-  <button class="primary submit" id="submitBtn">${q.type==='poll'?'إرسال الرأي':'تأكيد الإجابة'}</button><div id="feedback"></div></div>`;
-  $('#submitBtn').onclick=()=>submitAnswer(r);if($('#doubleBtn'))$('#doubleBtn').onclick=()=>{session.useDouble=!session.useDouble;$('#doubleBtn').classList.toggle('active',session.useDouble);$('#doubleBtn').textContent=session.useDouble?'⚡ ×2 مفعّل':'⚡ استخدم ×2 لهذا السؤال'};session.timer=setInterval(()=>updateTimer(r),350)
+  <button class="primary submit ${['single','tf','poll'].includes(q.type)?'hidden v105-instant-submit':''}" id="submitBtn">${q.type==='poll'?'إرسال الرأي':'تأكيد الإجابة'}</button>${['single','tf','poll'].includes(q.type)?'<div class="v105-answer-hint" role="status">⚡ اضغط على الإجابة مرة واحدة لإرسالها مباشرة</div>':''}<div id="feedback"></div></div>`;
+  $('#submitBtn').onclick=()=>submitAnswer(r);if($('#doubleBtn'))$('#doubleBtn').onclick=()=>{session.useDouble=!session.useDouble;$('#doubleBtn').classList.toggle('active',session.useDouble);$('#doubleBtn').textContent=session.useDouble?'⚡ ×2 مفعّل':'⚡ استخدم ×2 لهذا السؤال'};session.timer=setInterval(()=>updateTimer(r),350);requestAnimationFrame(fitQuestionToViewport)
 }
 function updateTimer(r){if(!r.question)return;const max=r.roundDurationMs||(r.question.time||20)*1000,elapsed=Date.now()-session.questionStarted,left=Math.max(0,Math.ceil((max-elapsed)/1000));const el=$('#timer');if(el){el.textContent=left;if(left<=5)el.style.transform=`scale(${1+(5-left)*.025})`}if(left<=0&&$('#submitBtn')&&!$('#submitBtn').disabled){$('#submitBtn').disabled=true;$('#submitBtn').textContent='⏱ انتهى الوقت — عرض الترتيب قريبًا'}}
-window.choose=(val,el)=>{const type=currentType();if(type==='multi'){if(!Array.isArray(session.answer))session.answer=[];const i=session.answer.indexOf(val);if(i>=0){session.answer.splice(i,1);el.classList.remove('selected')}else{session.answer.push(val);el.classList.add('selected')}}else{session.answer=val;$$('.answer').forEach(x=>x.classList.remove('selected'));el.classList.add('selected')}};
+window.choose=(val,el)=>{const type=currentType();const submit=$('#submitBtn');if(submit?.disabled)return;if(type==='multi'){if(!Array.isArray(session.answer))session.answer=[];const i=session.answer.indexOf(val);if(i>=0){session.answer.splice(i,1);el.classList.remove('selected')}else{session.answer.push(val);el.classList.add('selected')}}else{session.answer=val;$$('.answer').forEach(x=>x.classList.remove('selected'));el.classList.add('selected');if(['single','tf','poll'].includes(type)&&session.currentRoomState){$$('.answer').forEach(b=>b.disabled=true);void submitAnswer(session.currentRoomState)}}};
 function orderHtml(){return session.answer.map((x,i)=>`<div class="order-item"><span>⠿ ${esc(x.text)}</span><button onclick="moveOrder(${i},-1)">↑</button><button onclick="moveOrder(${i},1)">↓</button></div>`).join('')}
 window.moveOrder=(i,d)=>{const n=i+d;if(n<0||n>=session.answer.length)return;[session.answer[i],session.answer[n]]=[session.answer[n],session.answer[i]];$('#orderBox').innerHTML=orderHtml()};window.setMatch=(i,v)=>session.answer[i]=v;
-async function submitAnswer(r,timeout=false){const q=r.question,btn=$('#submitBtn');if(btn?.disabled)return;let ans=session.answer;if(q.type==='short')ans=$('#shortAnswer').value.trim();if(!timeout&&q.type==='short'&&!ans)return;if(!timeout&&['single','multi','tf','poll'].includes(q.type)&&(ans===null||(Array.isArray(ans)&&!ans.length)))return;if(q.type==='order')ans=session.answer.map(x=>x.text);btn.disabled=true;clearInterval(session.timer);try{const d=await api('/api/room/answer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:session.code,playerId:session.playerId,index:r.index,answer:ans,elapsedMs:Date.now()-session.questionStarted,power:session.useDouble?'double':''})});if(d.ok){session.powerups=d.powerups||session.powerups;showResult(d.result,q,r.showFeedback)}}catch(e){btn.disabled=false;$('#feedback').innerHTML='<div class="feedback wrong">تغير السؤال قبل وصول الإجابة. انتظر السؤال التالي.</div>'}}
+async function submitAnswer(r,timeout=false){const q=r.question,btn=$('#submitBtn');if(btn?.disabled)return;let ans=session.answer;if(q.type==='short')ans=$('#shortAnswer').value.trim();if(q.type==='estimate')ans=$('#estimateAnswer')?.value??'';if(!timeout&&q.type==='estimate'&&ans==='')return;if(!timeout&&q.type==='short'&&!ans)return;if(!timeout&&['single','multi','tf','poll'].includes(q.type)&&(ans===null||(Array.isArray(ans)&&!ans.length)))return;if(q.type==='order')ans=session.answer.map(x=>x.text);btn.disabled=true;clearInterval(session.timer);try{const d=await api('/api/room/answer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:session.code,playerId:session.playerId,index:r.index,answer:ans,elapsedMs:Date.now()-session.questionStarted,power:session.useDouble?'double':''})});if(!d.ok)throw new Error(d.error||'answer_not_saved');session.powerups=d.powerups||session.powerups;session.score=Number(d.score)||0;showResult(d.result,q,r.showFeedback,r.examMode)}catch(e){btn.disabled=false;$$('.answer').forEach(b=>b.disabled=false);clearInterval(session.timer);session.timer=setInterval(()=>updateTimer(r),350);const box=$('#feedback');if(box)box.innerHTML='<div class="feedback wrong">تعذر إرسال الإجابة. حاول ثانية إذا بقي الوقت.</div>'}}
 function reactionBar(){return `<div class="reactions"><button class="react" onclick="react('🔥')">🔥</button><button class="react" onclick="react('🤩')">🤩</button><button class="react" onclick="react('😅')">😅</button><button class="react" onclick="react('🤔')">🤔</button></div>`}
 window.react=async emoji=>{try{await api('/api/room/react',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:session.code,playerId:session.playerId,index:session.lastIndex,emoji})});$$('.react').forEach(b=>b.disabled=true)}catch{}};
-function showResult(res,q,showFeedback=true){const box=$('#feedback');if(!box)return;session.score+=res?.earned||0;session.streak=res?.streak||0;const poll=q.type==='poll';let title=poll?'📊 تم تسجيل رأيك':showFeedback?(res.correct?'✅ إجابة صحيحة':'❌ إجابة غير صحيحة'):'✅ تم إرسال إجابتك';let cls=poll||!showFeedback?'':(res.correct?'correct':'wrong');if(res?.correct){beep(true);confetti()}else if(res?.correct===false)beep(false);box.innerHTML=`<div class="feedback ${cls}"><h3>${title}</h3>${poll?'':`<b>+${res.earned||0} نقطة</b>${res.power==='double'?'<div>⚡ Power‑Up ×2 استُخدم</div>':''}`}<p>بانتظار السؤال التالي...</p>${reactionBar()}</div>`}
-function showAnswered(r){if(!$('#feedback')?.innerHTML&&r.question)showResult(r.lastResult,r.question,r.showFeedback)}
+function showResult(res,q,showFeedback=true,examMode=false){
+ session.streak=res?.streak||0;
+ const poll=q?.type==='poll';
+ const reveal=!!showFeedback&&!examMode&&!poll;
+ const title=examMode?'🛡️ تم حفظ إجابتك بسرية':poll?'📊 تم تسجيل رأيك':
+   reveal?(res?.correct===true?'✅ إجابة صحيحة':res?.correct===false?'❌ إجابة غير صحيحة':'✅ تم تسجيل الإجابة'):'✅ تم تسجيل إجابتك';
+ const earned=!examMode&&!poll?Math.max(0,Number(res?.earned)||0):0;
+ if(reveal){if(res?.correct===true){beep(true);confetti()}else if(res?.correct===false)beep(false)}
+ if($('#qnAnswerWait'))return;
+ clearInterval(session.timer);
+ $('#gameView').innerHTML=`<div class="qn-answer-wait" id="qnAnswerWait" role="status" aria-live="polite">
+ <div class="qn-wait-glow">⚡</div><span class="eyebrow">الإجابة أُرسلت بنجاح</span>
+ <h1>${title}</h1>
+ ${examMode?'<p>ستظهر نتائج الامتحان في النهاية.</p>':!reveal?'<p>سيُعلن الرصيد بعد انتهاء السؤال؛ استعد للجولة التالية.</p>':`<div class="qn-points-live"><span>رصيد الجولة</span><strong id="qnLiveScore">${Number(session.score)||0}</strong> نقطة</div>
+ ${earned?'<div class="qn-earned">+'+earned+' نقطة من هذه الإجابة</div>':''}`}
+ <div class="qn-wait-ring" aria-hidden="true"></div><p>استعد للسؤال التالي، انتهى دورك في هذا السؤال.</p>
+ </div>`;
+}
+function showAnswered(r){
+ if($('#qnAnswerWait')){if(r.showFeedback){const n=$('#qnLiveScore');if(n)n.textContent=Number(r.playerScore)||0}return}
+ if(r.lastResult&&r.question)showResult(r.lastResult,r.question,r.showFeedback,r.examMode)
+}
 
 function showRoundLeaderboard(r){
   clearInterval(session.timer); if(session.lastResultView===r.index)return; session.lastResultView=r.index;
+  if(r.examMode){$('#gameView').innerHTML='<div class="round-screen"><span class="eyebrow">EXAM MODE</span><h1>🛡️ انتهى هذا السؤال</h1><p>إجاباتك محفوظة. لن يظهر التصحيح أو الترتيب حتى انتهاء الامتحان.</p><p class="waiting-next">بانتظار المعلم للانتقال...</p></div>';return}
   const leaders=r.leaders||[],meIndex=leaders.findIndex(x=>x.name===session.name||x.name===session.team),myPlace=meIndex>=0?meIndex+1:null;
+  const review=r.showFeedback?r.review:null;
   const top=leaders.slice(0,8).map((p,i)=>`<div class="leader ${i<3?'top-'+(i+1):''}"><div class="rank">${i+1}</div><div><b>${esc(p.name)}</b><small>${esc(p.team||'')}${p.correct!=null?` • ${p.correct} صحيحة`:''}</small></div><b>${p.score}</b></div>`).join('');
-  $('#gameView').innerHTML=`<div class="round-screen"><div class="round-trophy">🏆</div><span class="eyebrow">نتائج الجولة ${r.index+1}</span><h1>${myPlace?`ترتيبك الآن #${myPlace}`:'الترتيب الحالي'}</h1>${session.model?`<div class="model-hero">نموذج ${esc(session.model)}</div>`:''}<div class="round-score">${r.playerScore||0}<small>نقطة</small></div><div class="leaderboard">${top}</div><p class="waiting-next">بانتظار الأستاذ لبدء السؤال التالي...</p></div>`;
+  $('#gameView').innerHTML=`<div class="round-screen"><div class="round-trophy">🏆</div><span class="eyebrow">نتائج الجولة ${r.index+1}</span><h1>${myPlace?`ترتيبك الآن #${myPlace}`:'الترتيب الحالي'}</h1>${session.model?`<div class="model-hero">نموذج ${esc(session.model)}</div>`:''}<div class="round-score">${r.playerScore||0}<small>نقطة</small></div><div class="leaderboard">${top}</div>${review?`<div class="round-review" style="padding:15px;border:1px solid #6bdcfb99;border-radius:17px;background:#043e78b5;margin:18px auto;max-width:650px;text-align:right"><b>💡 شرح السؤال</b><p>${esc(review.explanation||review.correctAnswer||'')}</p>${review.image?`<img src="${esc(review.image)}" style="max-height:120px;width:auto;max-width:100%;border-radius:10px" alt="شرح">`:''}</div>`:''}<p class="waiting-next">بانتظار الأستاذ لبدء السؤال التالي...</p></div>`;
   if(myPlace&&myPlace<=3)confetti();
 }
-function showFinish(r){clearInterval(session.timer);clearInterval(session.poll);confetti();const leaders=r.leaders||[];$('#gameView').innerHTML=`<div class="finish-card"><span class="eyebrow">انتهت اللعبة</span><h1>أحسنت ${esc(session.name)} 👏</h1>${session.team?`<div class="team-hero">${esc(session.team)}</div>`:''}<div class="final-score">${r.playerScore||0}</div><p>نقطة في هذه الجولة</p><div class="leaderboard">${leaders.slice(0,10).map((p,i)=>`<div class="leader"><div class="rank">${i+1}</div><div><b>${esc(p.name)}</b><small>${esc(p.team||'')}</small></div><b>${p.score}</b></div>`).join('')}</div></div>`}
+function showFinish(r){clearInterval(session.timer);clearInterval(session.poll);confetti();const leaders=r.leaders||[];const place=leaders.findIndex(x=>x.name===session.name||x.name===session.team);const medal=place===0?'🥇':place===1?'🥈':place===2?'🥉':'🏅';$('#gameView').innerHTML=`<div class="finish-card"><span class="eyebrow">🏆 ليلة الأبطال</span><div class="v104-student-medal">${medal}</div><h1>أحسنت ${esc(session.name)} 👏</h1>${place>=0?`<p>مركزك في التحدي: ${place+1}</p>`:''}${session.team?`<div class="team-hero">${esc(session.team)}</div>`:''}<div class="final-score">${r.playerScore||0}</div><p>نقطة في هذا الاختبار</p><div class="qn-xp-final"><strong>⭐ +${Number(r.xpGain)||0} XP</strong><span>إجمالي الخبرة: ${Number(r.xp)||0} XP</span><b>المستوى ${r.level||1} • ${esc(r.progress?.title||'مبتدئ')}</b>${r.levelUp?'<strong class="qn-level-up">🎉 ارتفع مستواك!</strong>':''}<div class="qn-xp-progress" role="progressbar" aria-valuenow="${Number(r.progress?.percent)||0}" aria-valuemin="0" aria-valuemax="100"><i style="width:${Math.max(0,Math.min(100,Number(r.progress?.percent)||0))}%"></i></div><span>تبقى ${Number(r.progress?.xpToNext)||0} XP للوصول للمستوى التالي</span>${r.xpBreakdown?.total?'<small>الصحيحة +'+r.xpBreakdown.correct+' • السرعة +'+r.xpBreakdown.fastest+' • الإكمال +'+r.xpBreakdown.completion+' • المركز الأول +'+r.xpBreakdown.firstPlace+'</small>':''}</div><div class="leaderboard">${leaders.slice(0,10).map((p,i)=>`<div class="leader"><div class="rank">${i+1}</div><div><b>${esc(p.name)}</b><small>${esc(p.team||'')}</small></div><b>${p.score}</b></div>`).join('')}</div></div>`}
 setCodeFromUrl();
+(async()=>{const code=$('#roomCode').value.trim(),remembered=sessionStorage.getItem('qn9_student_'+code);if(!code||!remembered)return;try{const old=JSON.parse(remembered);const r=await api('/api/room/state?code='+code+'&player='+encodeURIComponent(old.playerId));if(r.ok){session={...session,...old,code,score:r.room.playerScore||0};$('#joinView').classList.add('hidden');$('#gameView').classList.remove('hidden');startPoll()}}catch(e){sessionStorage.removeItem('qn9_student_'+code)}})();

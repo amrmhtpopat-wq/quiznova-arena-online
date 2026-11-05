@@ -1,235 +1,91 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#0099d5" />
-  <title>QuizNova Arena</title>
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="arena.css" />
-  <link rel="stylesheet" href="v7-theme.css" />
-  <link rel="stylesheet" href="v8-theme.css?v=8.2" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#073a80">
+<meta name="description" content="QuizNova Arena — منصة ألعاب تعليمية متعددة المعلمين والمواد">
+<title>QuizNova Arena | لوحة المعلم</title>
+<link rel="stylesheet" href="/portal.css?v=10.4">
+<link rel="stylesheet" href="/v10-theme.css?v=10.2">
+<link rel="stylesheet" href="/v104-theme.css?v=10.4">
+<link rel="stylesheet" href="/v105-reference.css?v=10.4.1"><link rel="stylesheet" href="/v106-contrast.css?v=10.4.2">
+<link rel="stylesheet" href="/v107-prelaunch.css?v=10.5">
+<link rel="stylesheet" href="/booyah-classroom.css?v=10.8">
+<link rel="stylesheet" href="/booyah-contrast-v109.css?v=10.9">
+<link rel="stylesheet" href="/booyah-badge-v112.css?v=11.3">
 </head>
-<body>
-<div class="ambient ambient-a"></div><div class="ambient ambient-b"></div>
-<div id="app">
-  <aside class="sidebar" id="sidebar">
-    <div class="brand">
-      <div class="brand-logo"><span>🏆</span></div>
-      <div><h1>QuizNova</h1><p>ARENA</p></div>
-    </div>
-    <div class="edition-badge"><span class="dot-live"></span> ARENA • مختبر المدرسة</div>
-    <nav class="nav">
-      <button class="nav-item active" data-view="dashboard"><span class="nav-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></svg></span><span>لوحة التحكم</span></button>
-      <button class="nav-item accent" data-view="generator"><span class="nav-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.1 6.9L21 12l-6.9 2.1L12 21l-2.1-6.9L3 12l6.9-2.1Z"/></svg></span><span>المولّد الذكي</span><b>NEW</b></button>
-      <button class="nav-item" data-view="builder"><span class="nav-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9M3 17.5V21h3.5L19 8.5 15.5 5 3 17.5ZM14 6.5l3.5 3.5"/></svg></span><span>إنشاء اختبار</span></button>
-      <button class="nav-item" data-view="bank"><span class="nav-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg></span><span>بنك الأسئلة</span></button>
-      <button class="nav-item" data-view="media"><span class="nav-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.6"/><path d="m3 16 5-5 4 4 3-3 6 5"/></svg></span><span>مكتبة الصور</span></button>
-      <button class="nav-item" data-view="library"><span class="nav-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h7v8H4zM13 3h7v8h-7zM4 13h7v8H4zM13 13h7v8h-7z"/></svg></span><span>مكتبة الاختبارات</span></button>
-      <button class="nav-item" data-view="live"><span class="nav-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 1v2M12 21v2M1 12h2M21 12h2"/></svg></span><span>صف مباشر</span></button>
-      <button class="nav-item" data-view="play"><span class="nav-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7V5Z"/></svg></span><span>تشغيل فردي</span></button>
-      <button class="nav-item" data-view="results"><span class="nav-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17l6-6 4 4 8-9M15 6h6v6"/></svg></span><span>النتائج والتحليل</span></button>
-      <button class="nav-item" data-view="settings"><span class="nav-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.5 3 .6-1h3.8l.6 1 1 1.7 2 .5 1.6-1.1 2.7 2.7-1.1 1.6.5 2L23 12l-1.1 1.6-.5 2 1.1 1.6-2.7 2.7-1.6-1.1-2 .5-1 1.7-.6 1h-3.8l-.6-1-1-1.7-2-.5-1.6 1.1-2.7-2.7 1.1-1.6-.5-2L1 12l1.1-1.6.5-2-1.1-1.6 2.7-2.7 1.6 1.1 2-.5Z"/><circle cx="12" cy="12" r="3"/></svg></span><span>الإعدادات</span></button>
-    </nav>
-    <div class="teacher-card">
-      <div class="teacher-avatar"><img src="/assets/avatars/02.svg" alt="المعلم"></div>
-      <div><strong>الأستاذ عكرمة التوبات</strong><small>المهارات الرقمية</small></div>
-    </div>
-  </aside>
-
-  <main class="main">
-    <header class="topbar">
-      <button class="icon-btn mobile-only" id="menuBtn">☰</button>
-      <div><h2 id="pageTitle">لوحة التحكم</h2><p id="pageSubtitle">اختبارات صفية أكثر تنوعًا وتحكمًا</p></div>
-      <div class="top-actions"><span class="local-badge" id="serverBadge">● Online / Local</span><button class="btn btn-primary" id="quickGenerate">✦ اختبار تلقائي</button></div>
-    </header>
-
-    <section class="view active" id="view-dashboard">
-      <div class="hero game-hero">
-        <div class="hero-copy">
-          <div class="hero-kicker"><span class="pulse-dot"></span> تجربة ألعاب تعليمية مباشرة داخل الصف</div>
-          <h3>حوّل كتاب المهارات الرقمية إلى <em>تحدّي حي</em> داخل الصف.</h3>
-          <p>الطلاب يدخلون بـ QR أو رمز قصير، يجيبون من شاشاتهم، وأنت تتابع الترتيب والدقة والأخطاء لحظة بلحظة.</p>
-          <div class="hero-actions"><button class="btn btn-white" data-jump="live">▶ ابدأ لعبة صفية</button><button class="btn btn-glass" data-jump="generator">✦ أنشئ اختبارًا من الكتاب</button></div>
-          <div class="hero-mini-badges"><span>QR دخول سريع</span><span>فردي / فرق</span><span>Power‑Ups</span><span>نتائج مباشرة</span></div>
-        </div>
-        <div class="hero-stage game-stage" aria-hidden="true">
-          <div class="stage-pin"><small>GAME PIN</small><strong>428 731</strong><span>امسح أو اكتب الرمز</span></div>
-          <div class="answer-demo a1"><i>▲</i><span>الخيار الأول</span></div>
-          <div class="answer-demo a2"><i>◆</i><span>الخيار الثاني</span></div>
-          <div class="answer-demo a3"><i>●</i><span>الخيار الثالث</span></div>
-          <div class="answer-demo a4"><i>■</i><span>الخيار الرابع</span></div>
-          <div class="combo-pop">🔥 COMBO <b>×4</b></div>
-        </div>
+<body class="v105-portal">
+<div class="glow g1"></div><div class="glow g2"></div>
+<section id="authWall" class="authwall">
+  <div class="auth-art">
+    <div class="brandmark" aria-hidden="true">🏆</div>
+    <div class="kicker">QUIZNOVA ARENA • THE NEXT LEVEL</div>
+    <h1>تعليم يشعل <span>روح التحدي</span> ويصنع التميز</h1>
+    <p>حساب خاص لكل معلم، ألعاب مباشرة، بطاقات طلاب ذكية، تنافس بين الشعب، وتحليلات تكشف مهارات طلابك.</p>
+    <div class="auth-icons"><span>⚔️ حرب الشعب</span><span>🛡️ امتحانات متعددة النماذج</span><span>✨ مستويات ومكافآت</span><span>📈 إتقان المهارات</span></div>
+  </div>
+  <div class="auth-card">
+    <div class="auth-brand">🏆 QuizNova <span>ARENA</span></div>
+    <div class="kicker">TEACHER PORTAL</div>
+    <h2 id="authTitle">دخول المعلمين</h2>
+    <p id="authIntro">سجّل دخولك للوصول إلى لوحة القيادة الخاصة بك.</p>
+    <form id="authForm">
+      <div id="signupFields" class="hidden">
+        <label for="fullName">اسم المعلم</label><input id="fullName" autocomplete="name" maxlength="100" placeholder="الاسم الكامل">
+        <label for="school">المدرسة</label><input id="school" maxlength="120" placeholder="اسم المدرسة">
+        <label for="subject">المادة</label><input id="subject" maxlength="100" placeholder="المهارات الرقمية، العلوم، الرياضيات...">
+        <label for="schoolType">نوع المدرسة والشخصيات المتاحة</label><select id="schoolType" required><option value="boys">مدرسة للبنين — 16 شخصية أولاد</option><option value="girls">مدرسة للبنات — 16 شخصية بنات</option><option value="mixed" selected>مدرسة مختلطة — جميع الشخصيات</option></select>
       </div>
-      <div class="curriculum-ribbon">
-        <div><span>📘</span><b>بنك الكتاب جاهز</b><small>أسئلة مصنفة من كتب الطالب</small></div>
-        <button class="book-chip" data-jump="generator" data-grade="السابع">السابع</button>
-        <button class="book-chip" data-jump="generator" data-grade="الثامن">الثامن</button>
-        <button class="book-chip" data-jump="generator" data-grade="التاسع">التاسع</button>
-        <div class="ribbon-note">اختر الصف ← الوحدة ← الصعوبة ← عدد الأسئلة</div>
-      </div>
-
-      <div class="stats-grid">
-        <div class="stat-card glow"><div class="stat-icon">✦</div><div><span>أسئلة البنك</span><strong id="statBank">0</strong><small>جاهزة للتوليد</small></div></div>
-        <div class="stat-card"><div class="stat-icon">▦</div><div><span>الاختبارات</span><strong id="statQuizzes">0</strong><small>محفوظة محليًا</small></div></div>
-        <div class="stat-card"><div class="stat-icon">◎</div><div><span>المحاولات</span><strong id="statAttempts">0</strong><small>نتائج الطلاب</small></div></div>
-        <div class="stat-card"><div class="stat-icon">↗</div><div><span>متوسط الأداء</span><strong id="statAverage">0%</strong><small>كل الاختبارات</small></div></div>
-      </div>
-
-      <div class="dashboard-grid">
-        <div class="panel span-2">
-          <div class="panel-head"><div><div class="overline">ابدأ بسرعة</div><h3>اختر طريقة اللعب</h3></div></div>
-          <div class="mode-grid mode-grid-6">
-            <button class="mode-card mc-purple" data-modejump="classic"><i>🎯</i><strong>كلاسيكي</strong><small>نقاط وترتيب مباشر</small></button>
-            <button class="mode-card mc-yellow" data-modejump="speed"><i>⚡</i><strong>تحدي السرعة</strong><small>السرعة ترفع النقاط</small></button>
-            <button class="mode-card mc-red" data-modejump="boss"><i>👑</i><strong>Boss</strong><small>السؤال الأخير ×2</small></button>
-            <button class="mode-card mc-blue" data-modejump="teams"><i>👥</i><strong>فرق</strong><small>تنافس جماعي</small></button>
-            <button class="mode-card mc-green" data-modejump="focus"><i>🧠</i><strong>تركيز</strong><small>بدون عدّاد زمني</small></button>
-            <button class="mode-card mc-gray" data-modejump="zen"><i>☁</i><strong>بدون ترتيب</strong><small>تقييم هادئ بلا منافسة</small></button>
-          </div>
-        </div>
-        <div class="panel">
-          <div class="panel-head"><div><div class="overline">آخر نشاط</div><h3>آخر الاختبارات</h3></div><button class="text-btn" data-jump="library">عرض الكل</button></div>
-          <div id="recentQuizzes" class="list"></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="view" id="view-generator">
-      <div class="generator-layout">
-        <div class="panel generator-panel">
-          <div class="generator-title"><div class="magic-logo">✦</div><div><div class="overline">SMART QUIZ MAKER</div><h3>مولّد الاختبارات من بنك الأسئلة</h3><p>حدد المطلوب وسيبني لك اختبارًا متوازنًا تلقائيًا دون تكرار.</p></div></div>
-          <div class="generator-grid">
-            <label>عنوان الاختبار<input id="genTitle" placeholder="مثال: مراجعة الوحدة الثانية" /></label>
-            <label>المادة<select id="genSubject"></select></label>
-            <label>الصف<select id="genGrade"><option value="all">كل الصفوف</option><option>السابع</option><option>الثامن</option><option>التاسع</option><option>العاشر</option><option>الحادي عشر</option><option>الثاني عشر</option></select></label>
-            <label>الوحدة / الموضوع<select id="genUnit"><option value="all">كل الوحدات والموضوعات</option></select></label>
-            <label>عدد الأسئلة<div class="number-stepper"><button type="button" id="genMinus">−</button><input id="genCount" type="number" min="1" max="120" value="10"><button type="button" id="genPlus">+</button></div></label>
-            <label>مستوى الصعوبة<select id="genDifficulty"><option value="mixed">متنوع تلقائيًا</option><option value="easy">سهل</option><option value="medium">متوسط</option><option value="hard">صعب</option></select></label>
-          </div>
-          <div class="generator-subtitle"><b>أنواع الأسئلة</b><span>اختر الأنواع المسموحة وسيتم توزيعها قدر الإمكان</span></div>
-          <div class="type-picks" id="genTypes">
-            <label class="type-pick active"><input type="checkbox" value="single" checked><span>🔘</span><b>اختيار واحد</b></label>
-            <label class="type-pick active"><input type="checkbox" value="multi" checked><span>☑️</span><b>متعدد</b></label>
-            <label class="type-pick active"><input type="checkbox" value="tf" checked><span>✅</span><b>صح / خطأ</b></label>
-            <label class="type-pick active"><input type="checkbox" value="short" checked><span>⌨️</span><b>قصير</b></label>
-            <label class="type-pick active"><input type="checkbox" value="order" checked><span>↕</span><b>ترتيب</b></label>
-            <label class="type-pick active"><input type="checkbox" value="match" checked><span>🔗</span><b>مطابقة</b></label>
-          </div>
-          <div class="difficulty-plan" id="difficultyPlan"></div>
-          <div class="generator-actions"><button class="btn btn-primary xl" id="generateQuiz">✦ أنشئ الاختبار الآن</button><button class="btn btn-secondary" id="previewPool">معاينة الأسئلة المتاحة</button></div>
-        </div>
-        <aside class="panel generator-side">
-          <div class="ai-orb">✦</div><h4>كيف يعمل؟</h4>
-          <div class="mini-step"><b>1</b><div><strong>يفلتر البنك</strong><small>حسب المادة والصف والصعوبة</small></div></div>
-          <div class="mini-step"><b>2</b><div><strong>يوازن الأنواع</strong><small>حتى لا يكون الاختبار مكررًا</small></div></div>
-          <div class="mini-step"><b>3</b><div><strong>يتجنب التكرار</strong><small>ولا يعيد السؤال داخل الاختبار</small></div></div>
-          <div class="pool-card"><span>المتاح الآن</span><strong id="poolCount">0</strong><small>سؤال مطابق للفلاتر</small></div>
-          <div class="tip-box"><strong>💡 أفضل نتيجة</strong><p>أضف لكل سؤال صعوبة ووحدة واضحة. كلما كبر البنك أصبحت الاختبارات التلقائية أفضل وأكثر تنوعًا.</p></div>
-        </aside>
-      </div>
-    </section>
-
-    <section class="view" id="view-builder">
-      <div class="builder-layout">
-        <div class="panel builder-main">
-          <div class="section-title"><div><div class="overline">QUIZ STUDIO</div><h3>استوديو إنشاء الاختبار</h3><p>أنشئ أسئلة تقليدية، عملية، بصرية، ترتيب ومطابقة.</p></div><div class="inline-actions"><button class="btn btn-secondary" id="loadDemo">نموذج جاهز</button><button class="btn btn-soft" id="addFromBank">+ من البنك</button></div></div>
-          <div class="form-grid">
-            <label>عنوان الاختبار<input id="quizTitle" placeholder="مثال: تحدي الوحدة الأولى" /></label>
-            <label>المادة<input id="quizSubject" value="المهارات الرقمية" /></label>
-            <label>الصف<select id="quizGrade"><option>السابع</option><option>الثامن</option><option>التاسع</option><option>العاشر</option><option>الحادي عشر</option><option>الثاني عشر</option></select></label>
-            <label>الشعبة / المجموعة<input id="quizSection" placeholder="أ، ب، ج" /></label>
-          </div>
-          <div class="settings-row">
-            <label class="toggle-line"><input type="checkbox" id="randomQuestions" checked><span>خلط الأسئلة</span></label>
-            <label class="toggle-line"><input type="checkbox" id="randomOptions" checked><span>خلط الخيارات</span></label>
-            <label class="toggle-line"><input type="checkbox" id="showFeedback" checked><span>إظهار التصحيح</span></label>
-            <label class="toggle-line"><input type="checkbox" id="speedBonus" checked><span>مكافأة السرعة</span></label>
-            <label class="toggle-line"><input type="checkbox" id="bossEnabled"><span>آخر سؤال Boss ×2</span></label>
-          </div>
-          <div class="divider"></div>
-          <div class="section-title"><div><h3>الأسئلة</h3><p>اضغط إضافة أو اسحب من بنك الأسئلة.</p></div><span class="pill" id="questionCount">0 سؤال</span></div>
-          <div id="questionsEditor" class="questions-editor"></div>
-          <div class="add-question-wrap"><button class="add-question" id="addQuestion">+ إضافة سؤال</button><div class="quick-types" id="quickTypes"><button data-addtype="single">اختيار</button><button data-addtype="tf">صح/خطأ</button><button data-addtype="order">ترتيب</button><button data-addtype="match">مطابقة</button></div></div>
-          <div class="builder-actions"><button class="btn btn-secondary" id="resetBuilder">مسح النموذج</button><button class="btn btn-primary" id="saveQuiz">حفظ الاختبار</button></div>
-        </div>
-        <aside class="panel builder-side">
-          <h4>أنواع مدعومة</h4>
-          <div class="type-list">
-            <div><span>🔘</span><b>اختيار واحد</b><small>إجابة واحدة صحيحة</small></div><div><span>☑️</span><b>اختيارات متعددة</b><small>أكثر من إجابة</small></div><div><span>✅</span><b>صح / خطأ</b><small>سريع وواضح</small></div><div><span>⌨️</span><b>إجابة قصيرة</b><small>مطابقة نصية</small></div><div><span>↕</span><b>ترتيب وسحب</b><small>خطوات عملية</small></div><div><span>🔗</span><b>مطابقة</b><small>اربط المصطلح بوظيفته</small></div><div><span>📊</span><b>استطلاع</b><small>بدون إجابة صحيحة</small></div>
-          </div>
-          <div class="tip-box"><strong>🖼 صور داخل السؤال</strong><p>يمكنك رفع صورة لأي سؤال من جهازك. تُحفظ داخل الاختبار نفسه وتعمل دون إنترنت.</p></div>
-        </aside>
-      </div>
-    </section>
-
-    <section class="view" id="view-bank">
-      <div class="panel">
-        <div class="panel-head"><div><div class="overline">QUESTION VAULT</div><h3>بنك الأسئلة</h3><p>مستقل عن الاختبارات، مصنف حسب الصف والوحدة والصعوبة.</p></div><div class="inline-actions"><button class="btn btn-secondary" id="importFromQuizzes">استيراد من الاختبارات</button><button class="btn btn-primary" id="openBankAdd">+ إضافة سؤال</button></div></div>
-        <div class="bank-toolbar"><input id="bankSearch" placeholder="ابحث في نص السؤال أو الوسوم..."><select id="bankDifficulty"><option value="all">كل الصعوبات</option><option value="easy">سهل</option><option value="medium">متوسط</option><option value="hard">صعب</option></select><select id="bankGrade"><option value="all">كل الصفوف</option><option>السابع</option><option>الثامن</option><option>التاسع</option></select><select id="bankUnit"><option value="all">كل الوحدات</option></select><select id="bankType"><option value="all">كل الأنواع</option><option value="single">اختيار</option><option value="multi">متعدد</option><option value="tf">صح/خطأ</option><option value="short">قصير</option><option value="order">ترتيب</option><option value="match">مطابقة</option></select></div>
-        <div class="bank-summary" id="bankSummary"></div>
-        <div id="questionBank" class="bank-grid"></div>
-      </div>
-    </section>
-
-    <section class="view" id="view-media">
-      <div class="panel">
-        <div class="sky-media-hero"><span class="sky-media-icon">🖼</span><div><h3>مكتبة صور QuizNova</h3><p>صور توضيحية أصلية لمكونات الحاسوب والشبكات والبرمجة والأمن الرقمي، ورسومات جاهزة للاختبارات.</p></div><strong class="sky-count" id="mediaCount">—</strong></div>
-        <div class="sky-media-toolbar"><input id="mediaSearch" type="search" placeholder="ابحث عن CPU أو ذاكرة أو شبكة أو أمن رقمي..." oninput="renderMediaLibrary()"><select id="mediaCategory" onchange="renderMediaLibrary()"><option value="all">جميع التصنيفات</option><option>مكونات الحاسوب</option><option>الشبكات</option><option>الأمن الرقمي</option><option>البرمجة</option><option>الملفات</option><option>التقنيات الحديثة</option><option>الصيانة</option><option>رسومات عامة</option><option>صوري المضافة</option></select><label class="sky-upload-btn">⬆ إضافة صور من جهازك<input type="file" accept="image/png,image/jpeg,image/webp" multiple hidden onchange="uploadCustomMedia(this)"></label><button class="btn btn-secondary" onclick="clearCustomMedia()">حذف الصور المضافة</button></div>
-        <p class="sky-media-help">اضغط على أي صورة لاستخدامها في سؤال جديد، أو افتح السؤال واضغط «مكتبة الصور» لاختيار صورة له. الصور التي تضيفها تُحفظ في هذا المتصفح فقط، لكنها تُرسل إلى الطالب عند تشغيل الاختبار.</p>
-        <div class="sky-media-grid" id="mediaGallery"></div>
-      </div>
-    </section>
-
-    <section class="view" id="view-library">
-      <div class="panel"><div class="panel-head"><div><div class="overline">MY QUIZZES</div><h3>مكتبة الاختبارات</h3><p>اختباراتك المحفوظة على هذا الجهاز.</p></div><div class="inline-actions"><button class="btn btn-secondary" id="importQuiz">استيراد JSON</button><button class="btn btn-primary" data-jump="builder">+ جديد</button></div></div><input type="file" id="importFile" accept="application/json" hidden><div class="search-row"><input id="librarySearch" placeholder="ابحث باسم الاختبار أو المادة..."></div><div id="quizLibrary" class="quiz-cards"></div></div>
-    </section>
-
-    <section class="view" id="view-live">
-      <div id="liveOffline" class="panel live-offline hidden"><div class="live-icon">◉</div><h3>الخادم المباشر غير متصل</h3><p>في النسخة المنشورة على الإنترنت يجب أن يكون خادم QuizNova Online يعمل. بعد النشر لا يحتاج المعلم إلى تشغيل ملف BAT على جهازه.</p><div class="steps-inline"><span><b>1</b> افتح الموقع</span><span><b>2</b> اختر الاختبار</span><span><b>3</b> شارك QR أو PIN</span></div></div>
-      <div id="liveSetup" class="live-layout hidden">
-        <div class="panel live-launch-card">
-          <div class="section-title"><div><div class="overline">LIVE GAME</div><h3>أنشئ غرفة لعب مباشرة</h3><p>بعد الضغط سيظهر لك QR ورمز من 6 أرقام ليدخل الطلاب فورًا.</p></div></div>
-          <div class="live-config-grid">
-            <label>الاختبار<select id="liveQuizSelect"></select></label>
-            <label>الشعبة (تظهر في Excel)<input id="liveSection" maxlength="75" placeholder="مثال: التاسع أ"></label>
-            <label>خلفية اللعبة<select id="liveBackground"><option value="cartoon">☁️ عالم كرتوني سماوي</option><option value="anime">🌸 عالم أنمي وسحب</option><option value="cinematic">🌌 أجواء سينمائية</option></select></label>
-            <label>طريقة المنافسة<select id="liveMode"><option value="individual">👤 فردي — كل طالب لنفسه</option><option value="teams">👥 مجموعات — نقاط الفريق مجمّعة</option></select></label>
-            <label>أسلوب اللعبة<select id="liveGameMode"><option value="classic">🎯 كلاسيكي</option><option value="speed">⚡ سرعة + نقاط زمن</option><option value="boss">👑 Boss — السؤال الأخير ×2</option><option value="zen">🧠 تقييم هادئ بدون نقاط</option></select></label>
-            <label>حماية من النقل<select id="liveVariantMode"><option value="options" selected>🛡️ متزامن آمن — نفس السؤال وخيارات مختلفة</option><option value="models4">🔀 نماذج A/B/C/D — ترتيب أسئلة وخيارات مختلف</option><option value="same">📺 موحّد — نفس السؤال ونفس الخيارات</option></select></label>
-            <label>عدد الفرق<select id="liveTeamCount"><option value="2">فريقان</option><option value="3">3 فرق</option><option value="4" selected>4 فرق</option><option value="5">5 فرق</option><option value="6">6 فرق</option></select></label>
-          </div>
-          <div class="live-switches">
-            <label class="toggle-line"><input type="checkbox" id="liveShowFeedback" checked><span>إظهار صح/خطأ للطالب بعد الإجابة</span></label>
-            <label class="toggle-line"><input type="checkbox" id="livePowerups" checked><span>تفعيل Power‑Up ×2 وCombo</span></label>
-          </div>
-          <button class="btn btn-primary xl launch-game" id="createLiveRoom">🚀 إنشاء الغرفة وإظهار QR</button>
-        </div>
-        <div class="panel live-info"><div class="signal-ring">⌁</div><h4>دخول من أي مكان</h4><p>الطالب لا يحتاج حسابًا ولا تثبيت تطبيق؛ يكفي الإنترنت وQR أو PIN.</p><div class="server-address" id="serverAddress">—</div><div class="join-methods"><span>📷 QR</span><span>🔢 PIN</span><span>🔗 رابط مباشر</span></div></div>
-      </div>
-      <div id="liveHost" class="hidden"></div>
-    </section>
-
-    <section class="view" id="view-play">
-      <div id="playSetup" class="panel play-setup"><div class="section-title"><div><div class="overline">SOLO / STATION</div><h3>تشغيل فردي أو محطة تعلم</h3><p>مناسب لجهاز واحد أو مرور الطلاب بالتتابع.</p></div></div><div class="play-form"><label>الاختبار<select id="playQuizSelect"></select></label><label>اسم الطالب<input id="studentName" placeholder="اكتب اسم الطالب"></label><label>الفريق (اختياري)<input id="studentTeam" placeholder="مثال: الفريق الأزرق"></label><label>الوضع<select id="playMode"><option value="classic">كلاسيكي</option><option value="speed">تحدي السرعة</option><option value="boss">Boss - الأخير ×2</option><option value="focus">تركيز بدون وقت</option><option value="zen">بدون ترتيب أو نقاط ظاهرة</option></select></label><button class="btn btn-primary xl" id="startQuiz">ابدأ التحدي 🚀</button></div></div><div id="gameArea" class="game hidden"></div>
-    </section>
-
-    <section class="view" id="view-results">
-      <div class="panel"><div class="panel-head"><div><div class="overline">INSIGHTS</div><h3>النتائج والتحليل</h3><p>قراءة سريعة للأداء مع أصعب الأسئلة.</p></div><div class="inline-actions"><button class="btn btn-secondary" id="exportResults">تصدير CSV</button><button class="btn btn-danger-soft" id="clearResults">مسح النتائج</button></div></div><div id="resultsSummary" class="stats-grid compact"></div><div class="analysis-grid"><div class="insight-card"><span>أصعب سؤال</span><strong id="hardestQuestion">—</strong><small id="hardestRate">لا توجد بيانات</small></div><div class="insight-card"><span>أفضل طالب</span><strong id="bestStudent">—</strong><small id="bestStudentRate">لا توجد بيانات</small></div></div><div class="table-wrap"><table><thead><tr><th>الطالب</th><th>الاختبار</th><th>الفريق</th><th>النقاط</th><th>النسبة</th><th>الوقت</th><th>التاريخ</th></tr></thead><tbody id="resultsTable"></tbody></table></div></div>
-    </section>
-
-    <section class="view" id="view-settings">
-      <div class="grid-2"><div class="panel"><div class="overline">BRANDING</div><h3>الهوية</h3><div class="form-stack"><label>اسم المعلم<input id="teacherName" value="الأستاذ عكرمة التوبات"></label><label>اسم المدرسة<input id="schoolName" value="مدرسة الطيبة الأساسية للبنين"></label><label>اسم المنصة<input id="platformName" value="QuizNova"></label><label>خلفية لوحة المعلم<select id="teacherBackground"><option value="cartoon">☁️ كرتونية سماوية</option><option value="anime">🌸 أنمي</option><option value="cinematic">🌌 سينمائية</option></select></label><button class="btn btn-primary" id="saveSettings">حفظ الإعدادات</button></div></div><div class="panel"><div class="overline">BACKUP</div><h3>النسخ الاحتياطي</h3><p>يحفظ الاختبارات وبنك الأسئلة والنتائج والإعدادات في ملف واحد.</p><div class="form-stack"><button class="btn btn-secondary" id="exportBackup">تصدير نسخة احتياطية</button><button class="btn btn-secondary" id="importBackup">استعادة نسخة احتياطية</button><input type="file" id="backupFile" accept="application/json" hidden></div><div class="tip-box"><strong>🔒 الخصوصية</strong><p>الاختبارات والنتائج الدائمة محفوظة في متصفح جهاز المعلم. الجلسة المباشرة تمر عبر خادم QuizNova أثناء اللعب؛ لا يحتاج الطالب إلى حساب.</p></div></div></div>
-    </section>
-  </main>
+      <label for="email">البريد الإلكتروني</label><input id="email" type="email" autocomplete="email" required placeholder="teacher@example.com">
+      <label for="password">كلمة المرور</label><input id="password" type="password" required minlength="10" autocomplete="current-password" placeholder="10 أحرف على الأقل">
+      <div id="authError" class="error hidden" role="alert"></div>
+      <button id="authSubmit" class="primary wide" type="submit">دخول إلى لوحة القيادة</button>
+    </form>
+    <button id="authToggle" type="button" class="text-action">ليس لديك حساب؟ أنشئ حساب معلم جديد</button>
+    <small>بيانات حسابك محفوظة بصورة مستقلة عن حسابات المعلمين الآخرين.</small>
+  </div>
+</section>
+<div id="workspace" class="workspace hidden">
+ <aside class="sidebar" aria-label="قائمة المنصة">
+  <div class="sidebar-brand"><span class="brand-icon">🏆</span><div><strong>QuizNova</strong><small>ARENA MULTI-TEACHER</small></div></div>
+  <div class="workspace-tag">✦ مساحتك التعليمية الخاصة</div>
+  <nav aria-label="أقسام لوحة المعلم">
+    <button type="button" class="nav active" data-panel="home"><span>▦</span> لوحة القيادة <b>الرئيسية</b></button>
+    <button type="button" class="nav" data-panel="classes"><span>⚔️</span> حرب الشعب</button>
+    <button type="button" class="nav" data-panel="mastery"><span>◈</span> خريطة إتقان المهارات</button>
+    <button type="button" class="nav" data-panel="students"><span>🪪</span> الطلاب والبطاقات</button>
+    <button type="button" class="nav" data-panel="history"><span>▤</span> سجل النتائج</button>
+    <button type="button" class="nav" data-panel="school"><span>⚙</span> إعدادات المدرسة</button>
+  </nav>
+  <a class="secondary wide" href="/studio.html">🎮 افتح استوديو الاختبارات</a>
+  <div class="sidebar-bottom"><div class="teacher-card"><div><b id="teacherSideName">المعلم</b><small id="teacherSubject">المادة</small></div></div><button id="logout" class="logout" type="button">تسجيل الخروج</button></div>
+ </aside>
+ <main class="main">
+   <header class="topbar"><div><span class="kicker">YOUR QUIZNOVA WORKSPACE</span><h1 id="pageTitle">لوحة القيادة</h1><p id="pageDesc">نظرة شاملة على فصولك وتقدم طلابك</p></div><div class="topbar-actions"><span class="status" id="storageStatus">◉ جاري الاتصال...</span><button type="button" id="downloadBackup" class="minibtn" title="تنزيل نسخة احتياطية خاصة بحسابك">⬇ نسخة بياناتي</button><button type="button" id="refresh" class="icon" title="تحديث البيانات">↻</button><a href="/studio.html" class="primary">＋ اختبار جديد</a></div></header>
+   <section id="panel-home" class="panel-view active">
+     <div class="hero"><div><div class="kicker">LEVEL UP EDUCATION</div><h2>مرحبًا في عالم<br><em>QuizNova Arena</em></h2><p id="welcome">لوحة القيادة لجميع موادك وشعبك.</p><div class="hero-buttons"><a class="primary" href="/studio.html#live">▶ ابدأ تحديًا مباشرًا</a><a class="ghost" href="/studio.html#generator">✦ أنشئ أسئلة</a></div></div><div class="hero-illustration"><img class="v107-educational-hero" src="/assets/backgrounds/quiznova-learning.webp" alt="طلاب يتعاونون في منافسة رقمية تعليمية" loading="lazy"><div class="trophy">🏆</div><div class="float f1">✧ MULTI-TEACHER</div><div class="float f2">🎮 LIVE ARENA</div><div class="float f3">⚡ XP & LEVELS</div></div></div>
+     <div class="metric-grid"><div class="metric"><span>🎯</span><small>جلسات مكتملة</small><strong id="metSessions">0</strong></div><div class="metric"><span>👥</span><small>الطلاب المسجلون</small><strong id="metStudents">0</strong></div><div class="metric"><span>📈</span><small>متوسط الدقة</small><strong id="metAverage">0%</strong></div><div class="metric"><span>📝</span><small>محاولات الطلاب</small><strong id="metAttempts">0</strong></div></div>
+     <div class="grid-two"><div class="pane"><div class="pane-head"><h3>🏆 ترتيب الشعب</h3><button class="minibtn" type="button" data-jump="classes">كل الشعب</button></div><div id="homeClasses"></div></div><div class="pane"><div class="pane-head"><h3>💡 المهارات التي تحتاج دعمًا</h3><button class="minibtn" type="button" data-jump="mastery">الخريطة الكاملة</button></div><div id="homeMastery"></div></div></div>
+     <div class="pane"><div class="pane-head"><h3>🕘 أحدث الجلسات</h3><button class="minibtn" type="button" data-jump="history">السجل الكامل</button></div><div id="homeHistory"></div></div>
+   </section>
+   <section id="panel-classes" class="panel-view"><div class="page-hero"><span class="kicker">CLASS WARS</span><h2>⚔️ حرب الشعب</h2><p>قارن أداء الشعب في مادّتك بعد انتهاء الجلسات؛ يحصل كل صف على تقييم عادل من 100.</p></div><div class="pane"><div class="pane-head"><h3>تصنيف الشعب</h3></div><div id="classesBoard"></div></div></section>
+   <section id="panel-mastery" class="panel-view"><div class="page-hero"><span class="kicker">MASTERY MAP</span><h2>◈ خريطة إتقان المهارات</h2><p>اكتشف أي مهارة أتقنها الطلاب وأين تحتاج إلى إعادة الشرح.</p></div><div class="pane"><div class="pane-head"><h3>إتقان نتاجات التعلم</h3></div><div id="masteryBoard"></div></div></section>
+   <section id="panel-students" class="panel-view"><div class="page-hero"><span class="kicker">SMART SCHOOL ID</span><h2>🪪 بطاقات الطلاب الذكية</h2><p>أضف الطالب مرة واحدة، وامنحه بطاقة QR ثابتة وشخصية ثلاثية الأبعاد ومستوى خبرة.</p></div>
+      <div class="grid-two"><div class="pane"><h3>➕ إضافة طالب</h3><form id="addStudentForm" class="student-form"><label for="newStudentName">اسم الطالب</label><input id="newStudentName" required maxlength="120" placeholder="اكتب اسم الطالب"><label for="newStudentClass">الصف والشعبة</label><input id="newStudentClass" required maxlength="80" placeholder="مثال: التاسع أ"><label for="newStudentAvatar">الصورة الشخصية</label><select id="newStudentAvatar"></select><img id="studentAvatarPreview" class="v10-avatar-preview" alt="معاينة الشخصية المختارة"><button class="primary" type="submit">إنشاء البطاقة</button></form></div>
+      <div class="pane"><h3>📥 إضافة شعبة كاملة</h3><label for="bulkClass">الصف والشعبة</label><input id="bulkClass" maxlength="80" placeholder="مثال: التاسع ب"><label for="bulkNames">أسماء الطلاب (كل اسم في سطر)</label><textarea id="bulkNames" rows="5" placeholder="أحمد محمد&#10;سارة خالد&#10;..." ></textarea><button class="secondary" id="bulkImport" type="button">إضافة جميع الطلاب</button></div></div>
+      <div class="pane"><div class="pane-head"><h3>بطاقات الطلاب <small>(<span id="studentCount">0</span>)</small></h3><button class="minibtn" id="shortenCards" type="button">🔑 تقصير الرموز القديمة</button><button class="minibtn" id="printCards" type="button">🖨 طباعة بطاقات QR</button></div><div class="cards-board" id="studentsBoard"></div></div>
+   </section>
+   <section id="panel-history" class="panel-view"><div class="page-hero"><span class="kicker">SESSION ARCHIVE</span><h2>▤ سجل الاختبارات</h2><p>نتائج الجلسات المكتملة محفوظة في قاعدة بيانات حساب المعلم.</p></div><div class="pane"><div class="pane-head"><h3>الجلسات السابقة</h3></div><div id="historyBoard"></div></div></section>
+   <section id="panel-school" class="panel-view"><div class="page-hero"><span class="kicker">SCHOOL IDENTITY</span><h2>⚙ إعدادات المدرسة والشخصيات</h2><p>يمكن للمعلم ضبط قائمة شخصيات الطلاب حسب نوع مدرسته. لا يؤثر ذلك على سجلاتهم القديمة.</p></div>
+      <div class="pane"><h3>نوع المدرسة</h3><label for="schoolModeEditor">الشخصيات التي تظهر للطلاب في غرفك الجديدة</label><select id="schoolModeEditor"><option value="boys">مدرسة بنين — شخصيات أولاد فقط</option><option value="girls">مدرسة بنات — شخصيات بنات فقط</option><option value="mixed">مدرسة مختلطة — الجميع</option></select><p>هذا الإعداد لا يغيّر اسم المادة أو نتائج الطلاب السابقة. افتح غرفة جديدة لتطبيق الاختيار.</p><button type="button" class="primary" id="saveSchoolMode">حفظ إعدادات المدرسة</button><h3 style="margin-top:24px">معرض شخصيات الألعاب المعتمد</h3><div class="v10-avatar-gallery" id="schoolAvatarGallery"></div></div>
+   </section>
+   <div class="foot">QuizNova Arena V10 • Multi-Teacher Edition • <span id="schoolFoot">المدرسة</span></div>
+ </main>
 </div>
+<div id="notification" class="toast hidden" role="status" aria-live="polite"></div>
 
-<div id="toast" class="toast"></div>
-<div id="modal" class="modal hidden"><div class="modal-backdrop" data-closemodal></div><div class="modal-card"><button class="modal-close" data-closemodal>×</button><div id="modalContent"></div></div></div>
-<script src="curriculum_bank.js"></script>
-<script src="curriculum_plus.js"></script>
-<script src="media_library.js"></script>
-<script src="app.js?v=8.2"></script>
+<script src="/portal.js?v=11.3" defer></script>
+<script src="/portal-security.js?v=10.4" defer></script>
 </body>
 </html>

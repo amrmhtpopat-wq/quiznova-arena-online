@@ -1,0 +1,155 @@
+/* QuizNova V10.5 final candidate — single viewport question stage */
+body.v105-student{font-family:Cairo,system-ui,Tahoma,Arial,sans-serif}
+body.v105-student:has(#gameView:not(.hidden) .question-card){overflow:hidden!important}
+body.v105-student:has(#gameView:not(.hidden) .question-card) .student-shell{
+ width:min(1240px,98vw)!important;
+ height:100dvh!important;min-height:0!important;
+ padding:5px 0 7px!important;display:flex;flex-direction:column
+}
+body.v105-student:has(#gameView:not(.hidden) .question-card) .student-brand{
+ height:43px!important;min-height:43px!important;flex:0 0 43px;margin:0 6px 4px
+}
+body.v105-student:has(#gameView:not(.hidden) .question-card) #gameView{
+ flex:1;min-height:0;display:flex;flex-direction:column;gap:5px;
+}
+body.v105-student:has(#gameView:not(.hidden) .question-card) .game-top{
+ flex:0 0 auto;min-height:43px!important;padding:5px 10px!important;
+ flex-wrap:nowrap!important;overflow:hidden!important;margin:0!important;
+ border-radius:13px!important;gap:5px!important;
+}
+body.v105-student:has(#gameView:not(.hidden) .question-card) .game-top :is(.player-pill,.score-pill,.streak-pill,.team-pill,.model-pill,.timer){
+ padding:4px 8px!important;font-size:clamp(10px,1.8vw,13px)!important;
+ overflow:hidden;white-space:nowrap;text-overflow:ellipsis;flex-shrink:1
+}
+body.v105-student:has(#gameView:not(.hidden) .question-card) .game-top .timer{
+ flex-shrink:0!important
+}
+body.v105-student:has(#gameView:not(.hidden) .question-card) .pill-avatar{
+ width:28px!important;height:28px!important
+}
+body.v105-student:has(#gameView:not(.hidden) .question-card) .progress{
+ height:6px!important;min-height:6px!important;margin:0 3px!important;flex:0 0 6px
+}
+body.v105-student:has(#gameView:not(.hidden) .question-card) .question-card{
+ flex:1;min-height:0!important;max-height:calc(100dvh - 106px)!important;
+ margin:0!important;padding:clamp(10px,1.5vh,19px)!important;
+ display:flex!important;flex-direction:column!important;gap:clamp(4px,1vh,11px);
+ justify-content:center;overflow:hidden
+}
+body.v105-student:has(#gameView:not(.hidden) .question-card) .question-card h2{
+ font-size:clamp(17px,2.7vw,29px)!important;
+ line-height:1.43!important;max-height:24dvh!important;overflow:auto!important;
+ margin:0!important;flex:0 1 auto
+}
+body.v105-student:has(#gameView:not(.hidden) .question-card) .question-image{
+ max-height:min(16dvh,135px)!important;max-width:100%!important;
+ width:auto!important;object-fit:contain!important;margin:0 auto!important;
+ flex-shrink:1!important
+}
+body.v105-student:has(#gameView:not(.hidden) .question-card) .answers{
+ display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ grid-template-rows:repeat(2,minmax(0,1fr))!important;
+ gap:clamp(6px,1vh,13px)!important;
+ flex:1!important;min-height:0!important;max-height:min(49dvh,460px);
+ align-content:stretch!important;
+}
+body.v105-student:has(#gameView:not(.hidden) .question-card) .answers .answer{
+ min-width:0!important;min-height:0!important;
+ height:100%!important;padding:clamp(7px,1.4vh,15px)!important;
+ font-size:clamp(13px,2vw,20px)!important;line-height:1.4!important;
+ overflow-wrap:anywhere!important;word-break:normal!important;
+ display:flex!important;align-items:center!important;justify-content:center!important;
+}
+body.v105-student:has(#gameView:not(.hidden) .question-card) .game-tools{
+ flex:0 0 auto;margin:0!important;min-height:0!important;
+}
+body.v105-student:has(#gameView:not(.hidden) .question-card) .v105-answer-hint{
+ font-size:clamp(9px,1.3vw,12px)!important;line-height:1.25!important;
+ padding:3px 10px!important;margin:0 auto!important;flex-shrink:0
+}
+body.v105-student:has(#gameView:not(.hidden) .question-card) #submitBtn:not(.hidden){
+ flex:0 0 auto!important;min-height:42px;margin:0!important
+}
+body.v105-student #gameView .qn-answer-wait{
+ min-height:calc(100dvh - 80px)!important;display:flex;flex-direction:column;
+ justify-content:center;align-items:center;text-align:center;
+ gap:clamp(6px,2vh,19px);padding:clamp(16px,3vh,32px);
+ border-radius:25px;border:2px solid #57dfffaa;
+ color:#f3faff;background:radial-gradient(ellipse at 50% 30%,#1c66c180,transparent 55%),linear-gradient(155deg,#0b2c61,#080d2e);
+ box-shadow:0 12px 65px #000927ba,0 0 28px #139fff40
+}
+body.v105-student .qn-answer-wait .qn-wait-glow{
+ display:grid;place-items:center;width:clamp(76px,16vw,135px);
+ height:clamp(76px,16vw,135px);font-size:clamp(40px,9vw,76px);
+ border-radius:50%;background:linear-gradient(135deg,#3e22af,#0c8ed9);
+ box-shadow:0 0 44px #45c6ff7c,0 0 19px #9d54ff7c;
+ animation:qnWaitPulse 2s infinite alternate
+}
+body.v105-student .qn-answer-wait h1{font-size:clamp(26px,5vw,48px);line-height:1.35;color:#fff;margin:0}
+body.v105-student .qn-answer-wait p{font-size:clamp(12px,2vw,17px);color:#d4ecff;margin:0}
+body.v105-student .qn-answer-wait .qn-points-live{
+ display:flex;justify-content:center;align-items:center;gap:12px;
+ border-radius:17px;padding:10px 25px;background:#ffffff19;border:1px solid #6fe4ff99;
+ font-size:clamp(13px,2vw,19px)
+}
+body.v105-student .qn-points-live strong{font-size:clamp(26px,5vw,43px);color:#fff3a5}
+body.v105-student .qn-earned{font-size:clamp(17px,2.3vw,25px);font-weight:900;color:#68ffd2}
+body.v105-student .qn-wait-ring{width:45px;height:45px;border-radius:50%;border:4px solid #78dfff44;border-top-color:#6aeaff;animation:qnSpin 1.2s linear infinite}
+body.v105-student .qn-xp-final{max-width:460px;margin:12px auto;display:grid;gap:7px;text-align:center;
+ border:1px solid #76e5ff88;background:#102f63;padding:13px;border-radius:16px;color:#eaf9ff}
+body.v105-student .qn-xp-final strong{font-size:23px;color:#f7da84}
+body.v105-student .qn-xp-progress{height:9px;background:#183b72;border-radius:20px;overflow:hidden}
+body.v105-student .qn-xp-progress i{display:block;height:100%;border-radius:20px;background:linear-gradient(90deg,#742df9,#31ebff)}
+body.v105-portal .qn-card-code{direction:ltr;unicode-bidi:embed;font-size:12px;letter-spacing:1px;color:#78f6ff}
+body.v105-portal .idcard{page-break-inside:avoid;break-inside:avoid}
+body.v105-portal .idcard .id-info small{line-height:1.6!important;color:#d4efff!important}
+body.v105-studio .form-grid label,body.v105-studio .live-config-grid label{font-size:13px!important;color:#d9f3ff!important}
+@keyframes qnWaitPulse{to{transform:scale(1.05);filter:brightness(1.3)}}
+@keyframes qnSpin{to{transform:rotate(360deg)}}
+@media(max-height:660px){
+ body.v105-student:has(#gameView:not(.hidden) .question-card) .student-brand{height:34px!important;min-height:34px!important;flex-basis:34px!important}
+ body.v105-student:has(#gameView:not(.hidden) .question-card) .question-card{max-height:calc(100dvh - 88px)!important}
+ body.v105-student:has(#gameView:not(.hidden) .question-card) .question-card h2{font-size:clamp(15px,2vw,23px)!important;max-height:19dvh!important}
+ body.v105-student:has(#gameView:not(.hidden) .question-card) .question-image{max-height:11dvh!important}
+ body.v105-student:has(#gameView:not(.hidden) .question-card) .answers{max-height:46dvh!important}
+}
+@media(prefers-reduced-motion:reduce){body.v105-student .qn-wait-ring,body.v105-student .qn-answer-wait .qn-wait-glow{animation:none}}
+
+/* V10.5 original educational art — no personal avatar on teacher's homepage */
+body.v105-portal .hero-illustration,body.v105-studio .hero-stage{position:relative!important}
+body.v105-portal .v107-educational-hero{
+ display:block!important;width:min(36vw,370px)!important;height:clamp(150px,24vw,265px)!important;
+ max-width:100%!important;object-fit:cover!important;border-radius:18px!important;
+ border:1px solid #62e3ffb5;box-shadow:0 0 30px #00aefc5f,0 12px 36px #0011268c
+}
+body.v105-studio .v107-educational-hero{
+ position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
+ object-fit:cover!important;object-position:center!important;
+ opacity:.35!important;border-radius:22px!important;z-index:0!important
+}
+body.v105-studio .hero-stage>:not(.v107-educational-hero){position:relative;z-index:1}
+body.v105-studio .stage-pin{z-index:2!important}
+body.v105-portal .v105-portal-hero-portrait,body.v105-studio .v105-game-hero-portrait{display:none!important}
+body.v105-student .qn-profile-action{
+ margin:7px 0 12px;padding:10px 15px;width:100%;
+ border:1px solid #6cf6ff;background:linear-gradient(135deg,#193b89,#4423a9);
+ border-radius:11px;color:white;font-size:14px;font-weight:900
+}
+body.v105-student .qn-card-profile{
+ margin:8px 0 16px;padding:12px;display:flex;gap:12px;align-items:center;
+ border:1px solid #60e6ffc0;background:linear-gradient(120deg,#102f63,#102049);
+ border-radius:15px;box-shadow:0 0 18px #18bfff30
+}
+body.v105-student .qn-card-profile[hidden]{display:none!important}
+body.v105-student .qn-card-profile img{width:74px;height:92px;object-fit:cover;border-radius:11px;border:2px solid #81ebff}
+body.v105-student .qn-card-profile b{font-size:17px;display:block;color:white}
+body.v105-student .qn-card-profile small,body.v105-student .qn-card-profile span{font-size:12px;display:block;color:#d4efff;margin-top:2px}
+body.v105-student .qn-card-profile span{font-weight:800}
+body.v105-student:has(#gameView:not(.hidden) .question-card) .question-card[data-type="order"],
+body.v105-student:has(#gameView:not(.hidden) .question-card) .question-card[data-type="match"]{
+ overflow-y:auto!important;justify-content:flex-start!important
+}
+@media(max-width:750px){
+ body.v105-portal .v107-educational-hero{width:100%!important;height:165px!important}
+ body.v105-studio .v107-educational-hero{object-position:left center!important}
+}

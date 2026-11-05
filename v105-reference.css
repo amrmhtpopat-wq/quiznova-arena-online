@@ -1,0 +1,284 @@
+/*
+ QuizNova Arena — V10.4.1 reference design system.
+ Visual language adopted from the teacher-provided neon blue/purple concept art.
+ Shared across Portal, Studio, Student and Projector, including responsive devices.
+*/
+:root {
+  --qn-midnight:#041029;
+  --qn-night:#061735;
+  --qn-panel:#0a214a;
+  --qn-panel-alt:#0c2b5b;
+  --qn-violet:#7a29e9;
+  --qn-purple:#a43cfa;
+  --qn-cyan:#00cafa;
+  --qn-sky:#53e6ff;
+  --qn-electric:#1686ff;
+  --qn-gold:#ffda83;
+  --qn-ice:#eefaff;
+  --qn-muted:#c5dcf1;
+  --qn-border:#41d9ff88;
+  --qn-sheen:0 0 0 1px #53eaff34,0 15px 45px #01091f80,0 0 24px #008ce930;
+  --qn-face-glow:0 0 15px #53e8ff65;
+}
+body.v105-studio,body.v105-portal,body.v105-student,body.v105-stage{
+  background:
+    radial-gradient(ellipse at 98% 6%,#1468c54d,transparent 34%),
+    radial-gradient(ellipse at 2% 85%,#6930ef35,transparent 32%),
+    radial-gradient(ellipse at 64% 13%,#00a8d21d,transparent 40%),
+    linear-gradient(150deg,#03102a,#062150 52%,#020e2e) fixed!important;
+  color:var(--qn-ice);
+  font-family:Cairo,"Segoe UI",Tahoma,Arial,sans-serif;
+}
+body.v105-studio:before,body.v105-portal:before,body.v105-student:before{
+  background:repeating-linear-gradient(125deg,transparent 0,transparent 87px,#62e9ff05 88px,transparent 90px)!important;
+  opacity:1!important
+}
+body.v105-studio ::selection,body.v105-portal ::selection,body.v105-student ::selection{background:#7450f4;color:white}
+body.v105-studio button,body.v105-portal button,body.v105-student button{transition:transform .18s ease,filter .18s ease,box-shadow .18s ease,border-color .18s ease}
+body.v105-studio button:not(:disabled):hover,body.v105-portal button:not(:disabled):hover{filter:brightness(1.16)}
+body.v105-studio button:focus-visible,body.v105-student button:focus-visible,body.v105-portal button:focus-visible{outline:3px solid #74f8ff;outline-offset:2px}
+body.v105-studio button:disabled,body.v105-student button:disabled{cursor:not-allowed;opacity:.67}
+body.v105-studio .sidebar,body.v105-portal .sidebar{
+  background:linear-gradient(173deg,#04132f 0%,#06234f 53%,#100f39 100%)!important;
+  border-inline-end:1px solid #38c8ff8a;
+  box-shadow:0 0 25px #00abfd25,inset -2px 0 0 #7f3aff44!important
+}
+body.v105-studio .nav-item,body.v105-portal .nav{
+  color:#d5e9ff!important;
+  border:1px solid transparent;
+  border-radius:13px!important;
+}
+body.v105-studio .nav-item.active,body.v105-studio .nav-item:hover,
+body.v105-portal .nav.active,body.v105-portal .nav:hover{
+  background:linear-gradient(95deg,#8127ebed,#303adcc9)!important;
+  color:#fff!important;border-color:#a74dffbd!important;
+  box-shadow:0 6px 25px #7c30fa5a,0 0 16px #8a51ff4a!important
+}
+body.v105-portal .sidebar-brand,body.v105-studio .brand{border-bottom:1px solid #6acbff35;padding-bottom:17px}
+body.v105-portal .sidebar-bottom .teacher-card,body.v105-studio .teacher-card{
+  background:#0a2c5a!important;
+  border:1px solid #3bcfff77!important;
+  box-shadow:inset 0 0 20px #00d8ff0c;
+  border-radius:15px!important;
+  padding:12px 14px!important;
+  color:#fff!important
+}
+body.v105-studio .main,body.v105-portal .main{background:transparent!important;color:#eafaff!important}
+body.v105-studio .topbar,body.v105-portal .topbar{
+  background:linear-gradient(105deg,#092654d8,#091a42db)!important;
+  border:1px solid #32bdff77!important;
+  border-radius:20px!important;
+  box-shadow:var(--qn-sheen)!important;
+  padding:17px 22px!important;
+  margin-bottom:19px!important
+}
+body.v105-studio .topbar h2,body.v105-portal .topbar h1{color:#f6faff!important;text-shadow:0 1px 18px #24baff2a}
+body.v105-studio .topbar p,body.v105-portal .topbar p{color:#bddff9!important}
+body.v105-portal .hero,body.v105-studio .game-hero{
+  background:
+    radial-gradient(ellipse at 82% 25%,#792cfa45,transparent 52%),
+    linear-gradient(130deg,#092754 0%,#07132e 68%,#0a2657 100%)!important;
+  border:2px solid #34d5ffb5!important;
+  box-shadow:0 0 25px #20cfff46,0 18px 70px #01082599!important;
+  overflow:hidden!important;
+  position:relative
+}
+body.v105-studio .game-hero:after,body.v105-portal .hero:after{
+  content:"";position:absolute;bottom:0;left:12%;right:12%;height:2px;
+  background:linear-gradient(90deg,transparent,#64ecff,transparent);box-shadow:0 0 15px #55eaff;pointer-events:none
+}
+body.v105-studio .hero h3,body.v105-portal .hero h2{
+  color:#fff!important;text-shadow:0 4px 25px #011839;
+  font-size:clamp(23px,2.8vw,39px)
+}
+body.v105-studio .hero p,body.v105-portal .hero p{color:#d8ebff!important;line-height:1.85}
+body.v105-studio .hero em,body.v105-portal .hero em{color:#67efff!important;font-style:normal}
+body.v105-studio .btn-primary,body.v105-studio .btn-white,
+body.v105-portal .primary,body.v105-portal .logout,
+body.v105-student .primary{
+  background:linear-gradient(112deg,#7227d5,#a738f5 49%,#6738ea)!important;
+  color:white!important;
+  border:1px solid #b56dff!important;
+  box-shadow:0 7px 23px #842cfe52,inset 0 1px 0 #ffffff69!important;
+  border-radius:14px!important
+}
+body.v105-studio .btn-glass,body.v105-studio .btn-soft,
+body.v105-portal .secondary,body.v105-portal .minibtn,
+body.v105-student .secondary{
+  background:linear-gradient(115deg,#092d60,#10468a)!important;
+  color:#eafaff!important;border:1px solid #39ccff88!important;
+  box-shadow:inset 0 1px 0 #aeefff30,0 0 13px #00aaff22!important;
+  border-radius:12px!important
+}
+body.v105-studio .stats-grid .stat-card,body.v105-studio .stats-grid>div,
+body.v105-portal .metric{
+  background:linear-gradient(142deg,#0b386f,#061c47)!important;
+  border:1px solid #45caffba!important;
+  box-shadow:0 9px 23px #01091d99,0 0 15px #17baff3a!important;
+  border-radius:17px!important;color:#fff!important
+}
+body.v105-studio .stats-grid>div:nth-child(2),body.v105-portal .metric:nth-child(2){background:linear-gradient(145deg,#432486,#1a155e)!important;border-color:#b660ffba!important}
+body.v105-studio .stats-grid>div:nth-child(3),body.v105-portal .metric:nth-child(3){background:linear-gradient(145deg,#7a3c17,#2b2454)!important;border-color:#ffc66dba!important}
+body.v105-studio .stats-grid>div:nth-child(4),body.v105-portal .metric:nth-child(4){background:linear-gradient(145deg,#055f60,#06264c)!important;border-color:#53f7d1ba!important}
+body.v105-studio .stats-grid strong,body.v105-portal .metric strong{font-size:clamp(23px,2.8vw,36px)!important;color:#fff!important;text-shadow:0 0 15px #a0e9ff78}
+body.v105-studio .stats-grid small,body.v105-portal .metric small{color:#d8eaff!important}
+body.v105-studio .pane,body.v105-studio .panel,body.v105-studio .section-card,
+body.v105-studio .curriculum-ribbon,body.v105-studio .builder-panel,
+body.v105-portal .pane,body.v105-portal .page-hero,
+body.v105-portal .auth-card,body.v105-studio .v104-idea-lab{
+  background:linear-gradient(152deg,#0a2b58f5,#06183df7)!important;
+  border:1px solid #43caff88!important;
+  box-shadow:var(--qn-sheen)!important;
+  color:#edfaff!important;border-radius:19px!important
+}
+body.v105-studio :is(.pane,.panel,.section-card,.builder-panel,.curriculum-ribbon,.question-card) h2,
+body.v105-studio :is(.pane,.panel,.section-card,.builder-panel,.curriculum-ribbon,.question-card) h3,
+body.v105-portal :is(.pane,.page-hero) h2,body.v105-portal :is(.pane,.page-hero) h3{
+  color:#f8fbff!important
+}
+body.v105-studio :is(.pane,.panel,.builder-panel,.curriculum-ribbon,.question-card) p,
+body.v105-portal :is(.pane,.page-hero) p{color:#c2ddf6}
+body.v105-studio .kicker,body.v105-studio .overline,body.v105-portal .kicker{color:#6befff!important}
+body.v105-studio .type-pick.active{background:linear-gradient(125deg,#7231ef,#304bcf)!important;color:#fff!important;box-shadow:0 0 14px #7339ec66}
+body.v105-studio .type-pick{background:linear-gradient(120deg,#082554,#113368)!important;border:1px solid #47bcff6b!important;color:#e5faff!important}
+body.v105-studio .v104-idea-grid button{
+  background:linear-gradient(135deg,#072b5b,#122862)!important;
+  border-color:#6f61ffb5!important;box-shadow:inset 0 1px 0 #88f3ff1c
+}
+body.v105-studio #view-builder .question-card{
+  background:linear-gradient(148deg,#102f60,#071b40)!important;
+  border:1px solid #4fcfffaa!important;box-shadow:0 0 23px #29baff23!important;
+  color:#eaf7ff!important
+}
+body.v105-studio #view-builder .question-top{background:linear-gradient(110deg,#163a73,#33266e)!important;border-color:#7ee9ff3d!important}
+body.v105-studio :is(.v104-question-meta,.v104-question-support,.v104-estimate) label{
+  color:#e9f6ff!important;font-weight:800
+}
+body.v105-studio :is(.v104-question-meta,.v104-question-support,.v104-estimate) input,
+body.v105-studio :is(.v104-question-meta,.v104-question-support,.v104-estimate) textarea,
+body.v105-studio :is(.v104-question-meta,.v104-question-support,.v104-estimate) select,
+body.v105-studio #view-builder .options-editor input{
+  background:#051937!important;color:#f0faff!important;
+  border:1px solid #41ceffa3!important;box-shadow:inset 0 0 15px #1475d623!important
+}
+body.v105-studio :is(.v104-question-meta,.v104-question-support) input::placeholder,
+body.v105-studio .v104-question-meta textarea::placeholder{color:#9db4d1!important}
+body.v105-studio .v104-builder-progress{background:linear-gradient(130deg,#071f4e,#17316f)!important;border-color:#75e9ff99!important;color:#f2faff!important}
+body.v105-studio .v104-builder-progress small{color:#bce9ff!important}
+body.v105-studio .v104-guide{color:#aeeaff!important}
+body.v105-studio .add-question-wrap,body.v105-studio .question-media-row{background:transparent!important}
+body.v105-studio .v104-idea-lab{border-color:#a04affaf!important}
+body.v105-studio .page-hero h2{color:white!important}
+body.v105-studio .table-wrap,body.v105-portal table{max-width:100%}
+body.v105-studio .v104-shuffle{background:linear-gradient(100deg,#622dda,#1643ac)!important;border-color:#8b74ff!important}
+body.v105-portal .authwall{background:transparent}
+body.v105-portal .auth-art h1{color:#fff!important}
+body.v105-portal .auth-art h1 span{color:#69eaff!important}
+body.v105-portal .auth-card input,body.v105-portal .auth-card select,
+body.v105-portal .student-form input,body.v105-portal .student-form select{
+  background:#041a3f!important;border:1px solid #4dc4ff8a!important;
+  color:#f5fbff!important
+}
+body.v105-portal .auth-card label,body.v105-portal .student-form label{color:#d9f4ff!important}
+body.v105-portal .page-hero{padding:22px!important}
+body.v105-portal .pane table,body.v105-studio table{color:#e6f5ff}
+body.v105-portal .pane th,body.v105-studio th{background:#123569!important;color:#c0efff!important}
+body.v105-portal .pane tr:nth-child(even),body.v105-studio tr:nth-child(even){background:#1660a016!important}
+.v105-portal-hero-portrait,.v105-game-hero-portrait{
+  width:clamp(130px,18vw,240px);aspect-ratio:80/108;object-fit:cover;
+  border-radius:20px;border:2px solid #64e5ffb8;
+  box-shadow:0 0 40px #00d0ff87,0 15px 50px #020c27aa;
+  transform:rotate(-3deg);
+}
+body.v105-portal .hero-illustration,body.v105-studio .hero-stage{position:relative}
+body.v105-studio .v105-game-hero-portrait{position:absolute;left:12%;top:8%;z-index:4;max-height:250px;width:115px}
+body.v105-portal .hero-illustration .trophy{font-size:58px;position:absolute;inset:auto 10% -8px auto;filter:drop-shadow(0 0 16px #f4db9e)}
+body.v105-portal .float{z-index:5}
+body.v105-student .student-shell{position:relative;z-index:1}
+body.v105-student .student-brand b{color:#fff;font-size:19px}
+body.v105-student .student-brand small{color:#8deaff}
+body.v105-student .student-brand .logo{background:linear-gradient(135deg,#6828e8,#a63bff 55%,#20c5ef)}
+body.v105-student .join-card,body.v105-student .lobby-card,
+body.v105-student .question-card,body.v105-student .result-card,
+body.v105-student .finish-card,body.v105-student .game-top{
+  color:#f4fbff!important;
+  background:linear-gradient(144deg,#0a2854,#071733 72%,#0b2560)!important;
+  border:2px solid #35cfff99!important;
+  box-shadow:0 12px 52px #000d29bd,0 0 25px #00bbff2b!important;
+  border-radius:23px!important
+}
+body.v105-student .game-top{padding:12px!important;gap:9px!important}
+body.v105-student .lobby-card h1,body.v105-student .question-card h2,
+body.v105-student .join-card h1,body.v105-student .finish-card h1{color:#fff!important}
+body.v105-student :is(.join-card,.question-card,.lobby-card) p{color:#c4eaff!important}
+body.v105-student .join-card :is(input,select),body.v105-student .question-card :is(input,select){
+  color:#fff!important;background:#071c43!important;
+  border:1px solid #51d8ffc9!important;
+  border-radius:13px!important
+}
+body.v105-student .join-card input::placeholder,body.v105-student .question-card input::placeholder{color:#a9cae4!important}
+body.v105-student .question-card .answer{
+  min-height:74px!important;
+  padding:15px 16px!important;
+  background:linear-gradient(126deg,#092c65,#104783)!important;
+  border:2px solid #30b6fcd4!important;
+  border-radius:17px!important;
+  color:#fff!important;
+  box-shadow:inset 0 2px 0 #f1ffff1c,0 7px 18px #010a2888!important;
+  font-weight:950!important;
+  font-size:clamp(15px,2vw,19px)!important
+}
+body.v105-student .question-card .answer:hover,body.v105-student .question-card .answer:focus-visible{
+  border-color:#79edff!important;box-shadow:0 0 25px #33d8ff81!important;transform:translateY(-2px)
+}
+body.v105-student .question-card .answer.selected{
+  background:linear-gradient(120deg,#00725a,#14b37a)!important;
+  border-color:#86ffc9!important;
+  box-shadow:0 0 28px #20ffaf84,inset 0 0 23px #52ffb045!important
+}
+body.v105-student .game-top :is(.player-pill,.team-pill,.timer,.score-pill,.streak-pill){
+  background:#0b3565!important;border:1px solid #7bdaffb3!important;color:#e2f9ff!important
+}
+body.v105-student .progress{background:#16325e!important}
+body.v105-student .progress>div{background:linear-gradient(90deg,#7c2df5,#1dd2ff)!important;box-shadow:0 0 18px #10c7ff}
+body.v105-student .lobby-avatar img,body.v105-student .pill-avatar{border:2px solid #63e9ff!important;box-shadow:var(--qn-face-glow)}
+body.v105-student .v104-student-medal{filter:drop-shadow(0 0 20px #ffd46bb0)}
+body.v105-student .question-card .game-tools{margin:8px auto 10px}
+body.v105-student .question-card .submit:not(.hidden){background:linear-gradient(110deg,#7d36f8,#9d26f5)!important}
+body.v105-student .team-hero{background:linear-gradient(100deg,#0c4b93,#6d29b8)!important;border:1px solid #8be7ff8a!important}
+.v105-answer-hint{display:block;text-align:center;margin:10px auto 0;font-size:12px;font-weight:900;color:#64f4dc;background:#0c625e33;padding:7px 10px;border-radius:12px;border:1px solid #2afcc455;width:fit-content}
+body.v105-studio .v105-instant-submit,body.v105-student .v105-instant-submit{display:none!important}
+body.v105-stage .stage-wrap{position:relative;background:radial-gradient(ellipse at 50% 50%,#172b7255,transparent 70%)}
+body.v105-stage .stage-head .logo{background:linear-gradient(130deg,#652dec,#8722d9 55%,#12bafb)!important}
+body.v105-stage .stage-wrap .pin,body.v105-stage .stage-wrap .player{
+  background:linear-gradient(130deg,#0a2f68,#0d1e4b)!important;
+  border:1px solid #52d5ff8a!important;
+  box-shadow:0 0 18px #1eafff30!important
+}
+body.v105-stage .stage-wrap :is(.qr-card,.question,.finished,.round-stage) {
+  border:1px solid #66dcffaa;border-radius:23px;box-shadow:0 0 28px #059aff3a;
+}
+body.v105-stage .stage-wrap .qr-card{background:#f6fbff!important;color:#072653!important;border-width:3px}
+body.v105-stage .stage-wrap .v104-stage-pod{box-shadow:0 0 32px #31eaff5f,0 20px 55px #010818!important}
+body.v105-stage .stage-wrap .v104-stage-pod.place-1{box-shadow:0 0 45px #ffd2578a,0 20px 55px #010818!important}
+@media(max-width:860px){
+ body.v105-studio .v105-game-hero-portrait{max-height:160px;width:95px;opacity:.75}
+ body.v105-portal .hero-illustration{max-width:140px}
+ body.v105-portal .v105-portal-hero-portrait{max-width:120px}
+ body.v105-studio .topbar,body.v105-portal .topbar{padding:13px!important}
+ body.v105-studio .hero h3,body.v105-portal .hero h2{font-size:26px!important}
+}
+@media(max-width:540px){
+ body.v105-studio .hero-stage .v105-game-hero-portrait{display:none}
+ body.v105-portal .hero-illustration{display:none}
+ body.v105-student .question-card .answer{min-height:63px!important}
+ body.v105-studio .v104-idea-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ body.v105-studio .v104-question-meta{grid-template-columns:1fr 1fr}
+ body.v105-stage .stage-wrap{padding:16px}
+ body.v105-stage .v104-stage-podium{gap:4px}
+}
+@media(prefers-reduced-motion:reduce){
+ body.v105-student *,body.v105-studio *,body.v105-portal *,body.v105-stage *{
+   animation-duration:.001ms!important;transition-duration:.001ms!important;scroll-behavior:auto!important
+ }
+}

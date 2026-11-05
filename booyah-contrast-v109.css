@@ -1,0 +1,333 @@
+/* BOOYAH! high-contrast reconciliation v10.9.
+   A light surface must use dark ink, even when nested inside a dark panel.
+   Keep dark game/teacher/projector surfaces with light ink.
+   Load last on every page to resolve legacy !important theme collisions. */
+
+:root {
+  --bo-ink:#102d4e;
+  --bo-ink-soft:#345571;
+  --bo-muted:#45637d;
+  --bo-light:#f3faff;
+  --bo-light-muted:#c8e4f8;
+  --bo-focus:#0879c3;
+}
+
+/* WHITE/LIGHT TOGGLES: teacher switches were inheriting white text from .panel. */
+body.v105-studio :is(#view-live,#view-builder,#view-generator,#view-settings) label.toggle-line,
+body.v105-studio :is(#view-live,#view-builder,#view-generator,#view-settings) .toggle-line {
+  background:#f2f9ff!important;
+  border:1.5px solid #8fb7d7!important;
+  color:var(--bo-ink)!important;
+  text-shadow:none!important;
+  font-size:clamp(12px,1vw,15px)!important;
+  font-weight:800!important;
+  line-height:1.55!important;
+  opacity:1!important;
+}
+body.v105-studio :is(#view-live,#view-builder,#view-generator,#view-settings) .toggle-line :is(span,b,strong,small,em) {
+  color:var(--bo-ink)!important;
+  -webkit-text-fill-color:var(--bo-ink)!important;
+  opacity:1!important;
+  text-shadow:none!important;
+}
+body.v105-studio :is(#view-live,#view-builder) .toggle-line input[type="checkbox"] {
+  flex:0 0 18px;
+  accent-color:#6535dc!important;
+}
+/* The exam settings OUTSIDE the white toggles remain readable on their dark parent. */
+body.v105-studio #view-live .v9-live-settings > :is(strong,p,label:not(.toggle-line)),
+body.v105-studio #view-live .v9-live-settings #examCardHint {
+  color:#e4f5ff!important;
+  opacity:1!important;
+}
+
+/* LIGHT INNER CARDS: make bank question text, tags, summary pills and
+   quiz-library cards readable independently of the outer navy panel. */
+body.v105-studio :is(#view-bank,#view-library) :is(.bank-item,.quiz-card),
+body.v105-studio #view-bank .bank-summary .summary-chip {
+  color:var(--bo-ink)!important;
+  text-shadow:none!important;
+}
+body.v105-studio #view-bank .bank-summary .summary-chip,
+body.v105-studio #view-builder .pill,
+body.v105-studio #view-bank .bank-item .tag,
+body.v105-studio :is(#view-library,#view-builder) .quiz-card .tag {
+  background:#eaf3fc!important;
+  color:#153a5e!important;
+  border:1px solid #aac7e2!important;
+  opacity:1!important;
+  font-size:clamp(11px,.9vw,13px)!important;
+  font-weight:800!important;
+  text-shadow:none!important;
+}
+body.v105-studio #view-bank .bank-item :is(h3,h4,p,small,span,b,strong),
+body.v105-studio #view-library .quiz-card :is(h3,h4,p,small,span,b,strong),
+body.v105-studio #view-bank .bank-item .bank-tags .tag {
+  color:var(--bo-ink)!important;
+  -webkit-text-fill-color:var(--bo-ink)!important;
+  text-shadow:none!important;
+  opacity:1!important;
+}
+body.v105-studio #view-bank .bank-item :is(p,small),
+body.v105-studio #view-library .quiz-card :is(p,small) {
+  color:var(--bo-ink-soft)!important;
+  -webkit-text-fill-color:var(--bo-ink-soft)!important;
+  font-size:clamp(11px,.9vw,13px)!important;
+  font-weight:650!important;
+}
+body.v105-studio #view-bank .bank-item h4 {
+  font-size:clamp(14px,1.1vw,17px)!important;
+  line-height:1.6!important;
+}
+body.v105-studio #view-bank .bank-item .card-actions :is(button,.btn),
+body.v105-studio #view-library .quiz-card :is(button,.btn) {
+  color:#f6fbff!important;
+  -webkit-text-fill-color:#f6fbff!important;
+  background:linear-gradient(120deg,#0b3971,#105195)!important;
+  border:1px solid #57bffc!important;
+  opacity:1!important;
+  font-weight:800!important;
+}
+body.v105-studio #view-bank .bank-item .card-actions .danger {
+  color:#233f5c!important;
+  -webkit-text-fill-color:#233f5c!important;
+  background:#f0f7ff!important;
+  border:1px solid #9cbed9!important;
+}
+body.v105-studio #view-bank .bank-item .card-actions button:focus-visible,
+body.v105-studio #view-library .quiz-card button:focus-visible {
+  outline:3px solid #ffcf48!important;
+  outline-offset:2px!important;
+}
+
+/* RESULTS: navy metric tiles have light text, white insight panels dark text. */
+body.v105-studio :is(#view-results,#view-dashboard) .stats-grid .stat-card,
+body.v105-studio :is(#view-results,#view-dashboard) .stats-grid .stat-card :is(span,strong,small,b,p) {
+  color:#f0faff!important;
+  -webkit-text-fill-color:#f0faff!important;
+  opacity:1!important;
+  text-shadow:none!important;
+}
+body.v105-studio :is(#view-results,#view-dashboard) .stats-grid .stat-card :is(span,small) {
+  color:#d1eaff!important;
+  -webkit-text-fill-color:#d1eaff!important;
+  font-size:clamp(11px,1vw,14px)!important;
+  font-weight:750!important;
+}
+body.v105-studio #view-results .analysis-grid .insight-card {
+  background:#f3faff!important;
+  border:1px solid #8db8d8!important;
+  color:var(--bo-ink)!important;
+}
+body.v105-studio #view-results .insight-card :is(span,strong,small,b,p) {
+  color:var(--bo-ink)!important;
+  -webkit-text-fill-color:var(--bo-ink)!important;
+  opacity:1!important;
+  text-shadow:none!important;
+  line-height:1.6!important;
+}
+body.v105-studio #view-results .insight-card strong {
+  font-size:clamp(13px,1.05vw,17px)!important;
+  font-weight:850!important;
+  overflow-wrap:anywhere;
+}
+body.v105-studio #view-results .insight-card :is(span,small) {
+  color:var(--bo-ink-soft)!important;
+  -webkit-text-fill-color:var(--bo-ink-soft)!important;
+  font-size:clamp(11px,.9vw,14px)!important;
+  font-weight:700!important;
+}
+body.v105-studio :is(#view-results,#view-dashboard) .table-wrap th {
+  background:#143b6c!important;
+  color:#f0fbff!important;
+  -webkit-text-fill-color:#f0fbff!important;
+}
+body.v105-studio :is(#view-results,#view-dashboard) .table-wrap td {
+  color:#effaff!important;
+  -webkit-text-fill-color:#effaff!important;
+  font-size:clamp(11px,1vw,14px)!important;
+  font-weight:650!important;
+}
+
+/* SOLO/STATION: unlike the online student's dark question card,
+   the solo game question card is WHITE. Its inherited text was WHITE too. */
+body.v105-studio #view-play #gameArea .game-card {
+  background:#f5fbff!important;
+  color:var(--bo-ink)!important;
+  border:2px solid #8ebad9!important;
+  text-shadow:none!important;
+}
+body.v105-studio #view-play #gameArea .game-card :is(h2,h3,h4,p,small,b,strong,span) {
+  color:var(--bo-ink)!important;
+  -webkit-text-fill-color:var(--bo-ink)!important;
+  opacity:1!important;
+  text-shadow:none!important;
+}
+body.v105-studio #view-play #gameArea .game-card h3 {
+  color:#0a2442!important;
+  -webkit-text-fill-color:#0a2442!important;
+  font-weight:900!important;
+  font-size:clamp(20px,2.2vw,30px)!important;
+  line-height:1.65!important;
+  overflow-wrap:anywhere!important;
+}
+body.v105-studio #view-play #gameArea .game-card .answers .answer-btn {
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  opacity:1!important;
+  text-shadow:0 1px 1px #00112690!important;
+  font-size:clamp(16px,1.65vw,22px)!important;
+  font-weight:900!important;
+  line-height:1.5!important;
+  overflow-wrap:anywhere!important;
+  white-space:normal!important;
+  min-height:72px!important;
+  border:2px solid #ffffff70!important;
+}
+body.v105-studio #view-play #gameArea .game-card .answer-btn:nth-child(4n+1) {
+  background:#a52b4e!important;
+}
+body.v105-studio #view-play #gameArea .game-card .answer-btn:nth-child(4n+2) {
+  background:#234db0!important;
+}
+body.v105-studio #view-play #gameArea .game-card .answer-btn:nth-child(4n+3) {
+  background:#825000!important;
+}
+body.v105-studio #view-play #gameArea .game-card .answer-btn:nth-child(4n) {
+  background:#116044!important;
+}
+body.v105-studio #view-play #gameArea .game-card .answer-btn:is(:disabled,.selected) {
+  opacity:1!important;
+}
+body.v105-studio #view-play #gameArea .game-card .answer-btn.selected {
+  outline:4px solid #ffda66!important;
+  outline-offset:1px!important;
+  box-shadow:0 0 0 2px #18345399!important;
+}
+body.v105-studio #view-play #gameArea .game-card .answer-btn.correct {
+  background:#116544!important;
+}
+body.v105-studio #view-play #gameArea .game-card .answer-btn.wrong {
+  background:#a42a4b!important;
+}
+body.v105-studio #view-play #gameArea .game-card .feedback,
+body.v105-studio #view-play #gameArea .game-card .order-item,
+body.v105-studio #view-play #gameArea .game-card .match-row {
+  background:#e7f2fc!important;
+  border:1px solid #aac5df!important;
+  color:#123657!important;
+  -webkit-text-fill-color:#123657!important;
+}
+body.v105-studio #view-play #gameArea .game-card :is(.order-item,.match-row,.feedback) :is(span,p,b,strong,small) {
+  color:#123657!important;
+  -webkit-text-fill-color:#123657!important;
+}
+body.v105-studio #view-play #gameArea .game-card .boss-banner {
+  color:#5b3e00!important;
+  -webkit-text-fill-color:#5b3e00!important;
+  background:#ffeeb7!important;
+}
+body.v105-studio #view-play #gameArea .game-top,
+body.v105-studio #view-play #gameArea .game-top :is(b,small,strong,span) {
+  color:#e5f7ff!important;
+}
+body.v105-studio #view-play #gameArea .game-top .timer {
+  background:#103d76!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+}
+
+/* Forms: controls are pale, labels on navy panels must remain light.
+   Checkboxes were fixed separately above so they can be dark on white pills. */
+:is(body.v105-studio,body.v105-portal,body.v105-student)
+  :is(input:not([type=checkbox]):not([type=radio]),textarea,select) {
+  background-color:#f7fbff!important;
+  color:#102e4e!important;
+  -webkit-text-fill-color:#102e4e!important;
+  border-color:#6d9dc6!important;
+  opacity:1!important;
+}
+:is(body.v105-studio,body.v105-portal,body.v105-student)
+  :is(input,textarea)::placeholder {
+  color:#4c617a!important;
+  -webkit-text-fill-color:#4c617a!important;
+  opacity:1!important;
+}
+:is(body.v105-studio,body.v105-portal,body.v105-student) :is(select,option,optgroup) {
+  color:#102e4e!important;
+  -webkit-text-fill-color:#102e4e!important;
+  background-color:#f7fbff!important;
+}
+
+/* White dialog surfaces in question builders and card management. */
+body.v105-studio #modal .modal-card {
+  color:#112f4c!important;
+  background:linear-gradient(160deg,#f4fbff,#dcf1ff)!important;
+}
+body.v105-studio #modal .modal-card :is(h2,h3,h4,p,small,label,b,strong,span) {
+  color:#112f4c!important;
+  -webkit-text-fill-color:#112f4c!important;
+  opacity:1!important;
+}
+/* Buttons have their own saturated backgrounds: avoid overriding their light captions. */
+body.v105-studio #modal .modal-card .btn-primary,
+body.v105-studio #modal .modal-card .btn-primary :is(b,span) {
+  color:white!important;
+  -webkit-text-fill-color:white!important;
+}
+body.v105-studio #modal .modal-card .modal-close {
+  color:#153654!important;
+  background:#e4f2ff!important;
+}
+
+/* Teacher portal: fields light/dark text, keep navy navigation and stats light. */
+body.v105-portal .idcard .level,
+body.v105-portal .idcard :is(strong,small) {
+  opacity:1!important;
+}
+body.v105-portal .auth-card :is(input,textarea,select),
+body.v105-portal .student-form :is(input,textarea,select) {
+  color:#102e4e!important;
+  -webkit-text-fill-color:#102e4e!important;
+}
+body.v105-portal :is(.pane,.metric,.page-hero) :is(h2,h3,h4) {
+  color:#f4fbff!important;
+}
+
+/* Student/projector: light review rows must not inherit white captions. */
+body.v105-student :is(.leader,.order-item,.match-row,.feedback) {
+  color:#123657!important;
+}
+body.v105-student :is(.leader,.order-item,.match-row,.feedback) :is(b,strong,span,small,p) {
+  color:#123657!important;
+  -webkit-text-fill-color:#123657!important;
+}
+body.v105-student .question-card h2,
+body.v105-student .question-card .answer {
+  color:#f8fdff!important;
+  -webkit-text-fill-color:#f8fdff!important;
+}
+body.v105-stage .qr-card,
+body.v105-stage .qr-card :is(b,strong,span,p,small) {
+  color:#10365c!important;
+  -webkit-text-fill-color:#10365c!important;
+}
+
+/* Never sacrifice keyboard navigation or selected-answer clarity. */
+:is(body.v105-studio,body.v105-portal,body.v105-student) :is(button,input,select,textarea):focus-visible {
+  outline:3px solid #ffd76e!important;
+  outline-offset:2px!important;
+}
+@media(max-width:650px) {
+  body.v105-studio #view-play #gameArea .game-card {
+    padding:14px!important;
+  }
+  body.v105-studio #view-play #gameArea .game-card .answers .answer-btn {
+    font-size:clamp(15px,4.1vw,19px)!important;
+    min-height:66px!important;
+  }
+  body.v105-studio :is(#view-live,#view-builder) .toggle-line {
+    border-radius:14px!important;
+    padding:10px!important;
+  }
+}

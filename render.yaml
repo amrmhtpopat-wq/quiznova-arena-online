@@ -1,9 +1,13 @@
 services:
   - type: web
-    name: quiznova-arena-online
+    name: quiznova-arena-v10-staging
     runtime: python
     plan: free
+    region: frankfurt
     buildCommand: "pip install -r requirements.txt"
     startCommand: "python server.py"
     healthCheckPath: /api/health
     autoDeploy: true
+    envVars:
+      - key: DATABASE_URL
+        sync: false

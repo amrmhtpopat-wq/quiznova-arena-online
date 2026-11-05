@@ -1,1 +1,5 @@
-# QuizNova uses Python standard library and a vendored SVG QR encoder.
+# Local mode uses Python standard library and SQLite (no packages required).
+# Cloud mode with PostgreSQL requires psycopg 3:
+psycopg[binary]>=3.2,<4
+# Reliable server-side QR generation on Render; no Pillow required.
+qrcode>=8.0,<9
