@@ -18,7 +18,7 @@ def check_rate(handler,route,identity=""):
         if len(RATES)>2000:RATES.clear()
     return True
 from platform_store import (DATABASE_KIND,create_teacher,login,teacher_for_token,signout,snapshot,save_snapshot,
-                             add_students,list_students,history,dashboard,class_wars,mastery,update_school_type,avatar_pool)
+                             add_students,list_students,shorten_student_codes,history,dashboard,class_wars,mastery,update_school_type,avatar_pool)
 
 MAX_POST=1_850_000
 
@@ -53,7 +53,7 @@ def handle_get(h,u):
     return True
 
 def handle_post(h,u,data):
-    if u.path not in ('/api/auth/register','/api/auth/login','/api/auth/forgot','/api/auth/reset','/api/auth/logout','/api/auth/password','/api/teacher/snapshot','/api/teacher/students','/api/teacher/school-type','/api/teacher/backups/create','/api/teacher/backups/restore'):return False
+    if u.path not in ('/api/auth/register','/api/auth/login','/api/auth/forgot','/api/auth/reset','/api/auth/logout','/api/auth/password','/api/teacher/snapshot','/api/teacher/students','/api/teacher/students/shorten-codes','/api/teacher/school-type','/api/teacher/backups/create','/api/teacher/backups/restore'):return False
     try:
         if u.path in ('/api/auth/register','/api/auth/login','/api/auth/forgot','/api/auth/reset') and not check_rate(h,u.path,data.get("email") or data.get("token") or ""):
             h.send_json({'ok':False,'error':'rate_limited'},429);return True
@@ -82,6 +82,8 @@ def handle_post(h,u,data):
         if u.path=='/api/teacher/school-type':
             typ=update_school_type(t['id'],str(data.get('schoolType','mixed')))
             h.send_json({'ok':True,'schoolType':typ,'avatars':avatar_pool(typ)});return True
+        if u.path=='/api/teacher/students/shorten-codes':
+            h.send_json({'ok':True,'updated':shorten_student_codes(t['id'])});return True
         if u.path=='/api/teacher/students':
             items=data.get('students',[])
             if not isinstance(items,list):return h.send_json({'ok':False,'error':'invalid_students'},400) or True
