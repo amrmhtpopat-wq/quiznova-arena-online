@@ -44,7 +44,7 @@ class VisualAndDirectAnswerTests(unittest.TestCase):
         for name in ('app.js','student.js','stage.js','portal.js'):
             self.assertIn("id+'.webp'",read(name))
         store=read('platform_store.py')
-        self.assertIn("AVATAR_3D_IDS = [f'm{i:02}'",store)
+        self.assertIn("AVATAR_3D_IDS = [f'n{i:02}'",store)
 
     def test_high_contrast_inputs_and_fresh_client_assets(self):
         css=read('v106-contrast.css')
@@ -64,6 +64,24 @@ class VisualAndDirectAnswerTests(unittest.TestCase):
         self.assertIn('void submitGameAnswer()',offline)
         studio=read('studio.html')
         self.assertIn('<option value="speed" selected>',studio)
+
+    def test_original_career_and_jordanian_avatars_and_educational_hero(self):
+        for i in range(1,9):
+            asset=ROOT/f'assets/avatars3d/n{i:02d}.webp'
+            self.assertTrue(asset.is_file(),str(asset))
+            raw=asset.read_bytes()
+            self.assertGreater(len(raw),5000)
+            self.assertTrue(raw[:4]==b'RIFF' and raw[8:12]==b'WEBP')
+        hero=ROOT/'assets/backgrounds/quiznova-learning.webp'
+        self.assertTrue(hero.is_file())
+        self.assertGreater(hero.stat().st_size,40000)
+        for page in ('index.html','studio.html'):
+            self.assertIn('/assets/backgrounds/quiznova-learning.webp',read(page))
+        self.assertIn('v107-prelaunch.css?v=10.5',read('student.html'))
+        self.assertIn('100dvh',read('v107-prelaunch.css'))
+        self.assertIn('grid-template-columns:repeat(2,minmax(0,1fr))',read('v107-prelaunch.css'))
+        self.assertIn('id="cardCode"',read('student.html'))
+        self.assertIn('id="cardProfile"',read('student.html'))
 
     def test_teacher_photo_is_not_in_profile_card(self):
         dashboard=read('index.html')

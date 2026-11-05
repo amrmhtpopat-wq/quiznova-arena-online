@@ -1,0 +1,35 @@
+name: QuizNova V10.5 release gate
+on:
+  push:
+    branches: [v10-5-final-candidate]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Python packages
+        run: python -m pip install -r requirements.txt
+      - name: Python and JavaScript syntax validation
+        run: |
+          python -m compileall -q server.py platform_store.py platform_api.py platform_security.py
+          node --check app.js
+          node --check student.js
+          node --check stage.js
+          node --check portal.js
+          node --check studio-auth.js
+          node --check portal-security.js
+      - name: Security, legacy games, typography, card XP and release regression tests
+        run: |
+          python -m unittest discover -s tests -p 'test_security.py' -v
+          python -m unittest discover -s tests -p 'test_feature_v104.py' -v
+          python -m unittest discover -s tests -p 'test_reference_v105.py' -v
+          python -m unittest discover -s tests -p 'test_v105_final.py' -v
