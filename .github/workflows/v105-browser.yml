@@ -16,6 +16,10 @@ on:
       - booyah-contrast-v109.css
       - booyah-builder-v110.css
       - booyah-quiz-polish-v111.css
+      - booyah-badge-v112.css
+      - booyah-mascots-v112.css
+      - assets/avatars-game/**
+      - tests/browser_mascot_badge_v112.py
       - tests/browser_builder_v110.py
       - tests/browser_studio_routing_v112.py
       - portal.js
@@ -48,6 +52,7 @@ jobs:
           python tests/browser_contrast_v109.py
           python tests/browser_builder_v110.py
           python tests/browser_studio_routing_v112.py
+          python tests/browser_mascot_badge_v112.py
       - name: Upload visual QA screenshots
         if: always()
         uses: actions/upload-artifact@v4
