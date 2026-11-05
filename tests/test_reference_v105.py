@@ -83,10 +83,11 @@ class VisualAndDirectAnswerTests(unittest.TestCase):
         self.assertIn('id="cardCode"',read('student.html'))
         self.assertIn('id="cardProfile"',read('student.html'))
 
-    def test_no_singular_query_selector_for_answer_buttons(self):
+    def test_multiple_choice_uses_all_button_selector(self):
         student=read('student.js')
-        self.assertGreaterEqual(student.count("$(\'.answer\').forEach"),2)
-        self.assertIn("$('.answer').forEach(b=>b.disabled=true)",student)
+        self.assertGreaterEqual(student.count("$$('.answer').forEach"),2)
+        self.assertIn("$$('.answer').forEach(b=>b.disabled=true)",student)
+        self.assertIn("$$('.answer').forEach(b=>b.disabled=false)",student)
 
     def test_teacher_photo_is_not_in_profile_card(self):
         dashboard=read('index.html')
