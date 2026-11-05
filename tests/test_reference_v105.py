@@ -191,7 +191,7 @@ class VisualAndDirectAnswerTests(unittest.TestCase):
         self.assertIn("$$('.nav-item').forEach",script)
         self.assertIn("$$('[data-jump]').forEach",script)
         # querySelector returns one Element and cannot be iterated.
-        broken=[sel+' / '+method for sel in ('.view','.nav-item','[data-jump]') for method in ('forEach','map','filter','find','some','every','reduce') if "$('"+sel+"')."+method+'(' in script]
+        broken=re.findall(r"(?<!\$)\$\(['\"]([^'\"]+)['\"]\)\.(?:forEach|map|filter|find|some|every|reduce)\(",script)
         self.assertEqual(broken,[],f"Bad single-selector list operations: {broken}")
 
     def test_teacher_photo_is_not_in_profile_card(self):
