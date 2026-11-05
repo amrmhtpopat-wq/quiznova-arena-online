@@ -447,6 +447,7 @@ class Handler(SimpleHTTPRequestHandler):
             return self.send_json({'ok':True,'name':student['name'],'className':student['class_name'],
                 'avatar':student['avatar'],'xp':student['xp'],
                 'level':platform_store.level_for_xp(student['xp']),
+                'progress':platform_store.xp_progress(student['xp']),
                 'correct':student['correct_count'],'played':student['played_count']})
         if u.path=='/api/room/config':
             qs=parse_qs(u.query); code=(qs.get('code') or [''])[0]
@@ -464,7 +465,7 @@ class Handler(SimpleHTTPRequestHandler):
                 if not room:return self.send_json({'ok':False,'error':'room_not_found'},404)
                 s=platform_store.student_by_card(card,room.get('teacherId',''))
                 if not s:return self.send_json({'ok':False,'error':'invalid_card'},403)
-                return self.send_json({'ok':True,'name':s['name'],'avatar':s['avatar'],'className':s['class_name'],'level':platform_store.level_for_xp(s['xp']),'xp':s['xp']})
+                return self.send_json({'ok':True,'name':s['name'],'avatar':s['avatar'],'className':s['class_name'],'level':platform_store.level_for_xp(s['xp']),'xp':s['xp'],'progress':platform_store.xp_progress(s['xp'])})
         if u.path=='/api/room/export.xlsx':
             qs=parse_qs(u.query); code=(qs.get('code') or [''])[0]; token=(qs.get('host') or [''])[0]
             with LOCK:
@@ -497,7 +498,7 @@ class Handler(SimpleHTTPRequestHandler):
                         'status':room['status'],'index':idx,'total':total,'playType':room['playType'],'gameMode':room['gameMode'],'variantMode':room.get('variantMode','options'),'model':p.get('model',''),
                         'question':q,'review':({'explanation':room['quiz']['questions'][player_question_index(room,p,idx)].get('explanation',''),'image':room['quiz']['questions'][player_question_index(room,p,idx)].get('image',''),'correctAnswer':correct_display(room['quiz']['questions'][player_question_index(room,p,idx)])} if room['status']=='results' and room.get('showFeedback',True) and not room.get('examMode') and 0<=idx<total else None),'startedAt':room.get('startedAt',0),'answeredCurrent':str(idx) in p['answers'],'lastResult':((dict(result,correct=None) if result and not room.get('showFeedback',True) else result) if not room.get('examMode') else ({'index':idx,'correct':None,'earned':0} if result else None)),
                         'playerScore':(p['score'] if not room.get('examMode') or room['status']=='finished' else 0),'playerCorrect':(p['correct'] if not room.get('examMode') or room['status']=='finished' else 0),'playerStreak':(p['streak'] if not room.get('examMode') else 0),'team':p.get('team',''),
-                        'powerups':p.get('powerups',{}),'leaders':(leaders if not room.get('examMode') or room['status']=='finished' else []),'examMode':bool(room.get('examMode')),'level':p.get('level',1),'xp':p.get('xp',0),'xpGain':p.get('xpGain',0),'quizTitle':room['quiz'].get('title',''),
+                        'powerups':p.get('powerups',{}),'leaders':(leaders if not room.get('examMode') or room['status']=='finished' else []),'examMode':bool(room.get('examMode')),'level':p.get('level',1),'xp':p.get('xp',0),'xpGain':p.get('xpGain',0),'xpBreakdown':p.get('xpBreakdown',{}),'levelUp':bool(p.get('levelUp',False)),'progress':platform_store.xp_progress(p.get('xp',0)),'quizTitle':room['quiz'].get('title',''),
                         'showFeedback':(room['showFeedback'] and not room.get('examMode')),'powerupsEnabled':(room['powerupsEnabled'] and not room.get('examMode')),'background':room.get('background','cartoon'),'cooperative':bool(room.get('cooperative')),'roundDurationMs':room.get('roundDurationMs',20000),'avatar':p.get('avatar','01')
                     }})
                 is_host = bool(host) and host == room.get('hostToken')
@@ -598,7 +599,7 @@ class Handler(SimpleHTTPRequestHandler):
                     model=['A','B','C','D'][len(room['players'])%4]; order=model_order(code,model,total)
                 room['players'][pid]={'id':pid,'name':name,'studentId':student['id'] if student else None,'level':platform_store.level_for_xp(student['xp']) if student else 1,'xp':int(student['xp']) if student else 0,'xpGain':0,'avatar':avatar,'team':team,'model':model,'questionOrder':order,'optionMaps':{},'score':0,'correct':0,'wrong':0,'streak':0,'answers':{},'lastResult':{},'powerups':{'double':True}}
             snapshot_room(room)
-            return self.send_json({'ok':True,'playerId':pid,'name':name,'quizTitle':room['quiz'].get('title',''),'team':team,'playType':room['playType'],'model':model,'variantMode':room.get('variantMode','options'),'avatar':avatar,'background':room.get('background','cartoon'),'examMode':room.get('examMode',False),'level':room['players'][pid]['level'],'xp':room['players'][pid]['xp']})
+            return self.send_json({'ok':True,'playerId':pid,'name':name,'quizTitle':room['quiz'].get('title',''),'team':team,'playType':room['playType'],'model':model,'variantMode':room.get('variantMode','options'),'avatar':avatar,'background':room.get('background','cartoon'),'examMode':room.get('examMode',False),'level':room['players'][pid]['level'],'xp':room['players'][pid]['xp'],'progress':platform_store.xp_progress(room['players'][pid]['xp'])})
         if u.path=='/api/room/control':
             code=str(data.get('code','')); action=data.get('action'); host_token=str(data.get('hostToken',''))
             with LOCK:
