@@ -3,13 +3,48 @@ const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const TOKEN_KEY='qn9_teacher_token';let teacher=null,mode='login',cache={dashboard:null,students:[],sessions:[]};
 const esc=x=>String(x??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const token=()=>localStorage.getItem(TOKEN_KEY)||'';
+function pendingStudioDestination(){
+  const raw=new URLSearchParams(location.search).get('next');
+  if(!raw)return '';
+  try{
+    const url=new URL(raw,location.origin);
+    const allowed=['dashboard','generator','builder','bank','media','library','live','play','results','settings'];
+    const target=url.hash.slice(1);
+    return url.origin===location.origin&&url.pathname==='/studio.html'&&allowed.includes(target)
+      ?'/studio.html#'+target:'';
+  }catch{return ''}
+}
+function resumeStudioAfterLogin(){
+  const target=pendingStudioDestination();
+  if(target){location.replace(target);return true}
+  return false;
+}
 const notify=msg=>{const e=$('#notification');e.textContent=msg;e.classList.remove('hidden');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.add('hidden'),3200)};
 async function api(path,options={}){const headers={'Authorization':'Bearer '+token(),...(options.body?{'Content-Type':'application/json'}:{}),...(options.headers||{})};let r=await fetch(path,{...options,headers,cache:'no-store'});let d=await r.json();if(!r.ok||!d.ok)throw Error(d.error||'network');return d}
 function err(e){const map={email_taken:'هذا البريد مستخدم سابقًا',invalid_email:'تأكد من البريد الإلكتروني',weak_password:'استخدم كلمة مرور لا تقل عن 10 أحرف',wrong_credentials:'البريد أو كلمة المرور غير صحيحة',login_required:'انتهت الجلسة، سجّل الدخول مجددًا',server_error:'خطأ في الخادم',too_many_students:'العدد كبير جدًا'};return map[e.message]||'تعذر إكمال العملية: '+e.message}
 function toggleAuth(){mode=mode==='login'?'register':'login';$('#signupFields').classList.toggle('hidden',mode==='login');$('#authTitle').textContent=mode==='login'?'دخول المعلمين':'إنشاء حساب معلم';$('#authIntro').textContent=mode==='login'?'سجّل دخولك للوصول إلى لوحة القيادة الخاصة بك.':'حساب مستقل مع المادة والطلاب والاختبارات الخاصة بك.';$('#authSubmit').textContent=mode==='login'?'دخول إلى لوحة القيادة':'إنشاء الحساب والدخول';$('#authToggle').textContent=mode==='login'?'ليس لديك حساب؟ أنشئ حساب معلم جديد':'لديك حساب بالفعل؟ تسجيل الدخول';$('#authError').classList.add('hidden');}
 $('#authToggle').onclick=toggleAuth;
-$('#authForm').onsubmit=async ev=>{ev.preventDefault();$('#authError').classList.add('hidden');const btn=$('#authSubmit');btn.disabled=true;try{let d=await api('/api/auth/'+(mode==='login'?'login':'register'),{method:'POST',body:JSON.stringify({email:$('#email').value,password:$('#password').value,name:$('#fullName').value,school:$('#school').value,subject:$('#subject').value||'عام',schoolType:$('#schoolType').value})});localStorage.setItem(TOKEN_KEY,d.token);teacher=d.teacher;showWorkspace();await loadAll()}catch(e){$('#authError').textContent=err(e);$('#authError').classList.remove('hidden')}finally{btn.disabled=false}}
-async function boot(){if(!token())return;try{const d=await api('/api/auth/me');teacher=d.teacher;showWorkspace();await loadAll()}catch(e){localStorage.removeItem(TOKEN_KEY);$('#authWall').classList.remove('hidden');$('#workspace').classList.add('hidden');notify(err(e))}}
+$('#authForm').onsubmit=async ev=>{ev.preventDefault();$('#authError').classList.add('hidden');const btn=$('#authSubmit');btn.disabled=true;try{let d=await api('/api/auth/'+(mode==='login'?'login':'register'),{method:'POST',body:JSON.stringify({email:$('#email').value,password:$('#password').value,name:$('#fullName').value,school:$('#school').value,subject:$('#subject').value||'عام',schoolType:$('#schoolType').value})});localStorage.setItem(TOKEN_KEY,d.token);teacher=d.teacher;if(resumeStudioAfterLogin())return;showWorkspace();await loadAll()}catch(e){$('#authError').textContent=err(e);$('#authError').classList.remove('hidden')}finally{btn.disabled=false}}
+async function boot(){
+  if(!token())return;
+  let profile=null;
+  // Transient 401s can happen during a deployment; do not clear the token on one bad reply.
+  for(let attempt=0;attempt<3;attempt++){
+    try{profile=await api('/api/auth/me');break}
+    catch(e){if(attempt===2)break;await new Promise(resolve=>setTimeout(resolve,350*(attempt+1)))}
+  }
+  if(!profile){
+    localStorage.removeItem(TOKEN_KEY);
+    $('#authWall').classList.remove('hidden');
+    $('#workspace').classList.add('hidden');
+    notify('تحتاج إلى تسجيل الدخول مجددًا.');
+    return;
+  }
+  teacher=profile.teacher;
+  if(resumeStudioAfterLogin())return;
+  showWorkspace();
+  try{await loadAll()}catch(e){notify('تعذر تحديث بيانات لوحة القيادة مؤقتًا. جرّب زر التحديث.')}
+}
 function showWorkspace(){$('#authWall').classList.add('hidden');$('#workspace').classList.remove('hidden');$('#teacherSideName').textContent=teacher.name;$('#teacherSubject').textContent=teacher.subject;$('#schoolFoot').textContent=teacher.school;$('#schoolModeEditor').value=teacher.school_type||'mixed';renderAvatarChoices();$('#welcome').textContent='أهلًا '+teacher.name+'، المادة: '+teacher.subject+' • '+teacher.school}
 $('#downloadBackup').onclick=async()=>{try{const data=await api('/api/teacher/backup');const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='QuizNova_V10_Backup_'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);notify('تم تنزيل نسخة البيانات. احتفظ بها في مكان آمن.')}catch(e){notify(err(e))}};
 $('#logout').onclick=async()=>{try{await api('/api/auth/logout',{method:'POST',body:'{}'})}catch(e){}localStorage.removeItem(TOKEN_KEY);location.reload()};
