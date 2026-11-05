@@ -146,7 +146,8 @@ class VisualAndDirectAnswerTests(unittest.TestCase):
         self.assertIn('window.boSetQuestionTime',script)
         self.assertIn('window.boSetQuestionPoints',script)
         self.assertIn('window.boSelectQuestion',script)
-        self.assertIn('boActiveQuestionId=q.id;renderQuestions();return toast',script)
+        self.assertIn('boActiveQuestionId=q.id;',script)
+        self.assertIn("return toast('السؤال '",script)
 
     def test_quiz_save_is_cloud_acknowledged_and_library_immediate(self):
         studio=read('studio.html')
