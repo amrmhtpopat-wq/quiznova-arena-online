@@ -17,13 +17,12 @@
     function keepDraft(patch){localStorage.setItem(pendingKey,JSON.stringify({date:new Date().toISOString(),patch}));}
     function downloadDraft(){const txt=localStorage.getItem(pendingKey);if(!txt)return;const link=document.createElement('a');const url=URL.createObjectURL(new Blob([txt],{type:'application/json'}));link.href=url;link.download='QuizNova_unsynced_changes.json';link.click();URL.revokeObjectURL(url)}
     if(pending&&confirm('هناك تعديلات محلية من جلسة سابقة لم يتم حفظها في السحابة. هل تريد تنزيل نسخة احتياطية منها؟'))downloadDraft();
-    let debounce=null;const dirty=new Set();let saving=false;
+    let debounce=null;const dirty=new Set();let savingPromise=null;
     const readLocal=k=>{try{return JSON.parse(localStorage.getItem(prefix+k)||'null')}catch{return null}};
     const warn=message=>{console.warn(message);if(window.toast)window.toast(message)};
-    function queueSave(){clearTimeout(debounce);debounce=setTimeout(flush,700)}
-    async function flush(){
-      if(saving||!dirty.size)return;
-      saving=true;
+    function queueSave(){clearTimeout(debounce);debounce=setTimeout(()=>{void flush()},700)}
+    async function commitDirty(){
+      if(!dirty.size)return true;
       const changed=keys.filter(k=>dirty.has(k));
       const patch=Object.fromEntries(changed.map(k=>[k,readLocal(k)]));
       try{
@@ -32,19 +31,52 @@
           const fresh=await fetch('/api/teacher/snapshot',{headers:authHeader,cache:'no-store'});
           if(!fresh.ok)throw Error('conflict_refresh_failed');
           const remote=await fresh.json();
+          if(!remote.ok)throw Error('conflict_refresh_failed');
           const clashes=changed.filter(k=>JSON.stringify(remote.data[k])!==JSON.stringify(baseline[k]));
-          if(clashes.length){keepDraft(patch);warn('⚠️ تعارض بين جهازين. حفظنا نسخة آمنة من تعديلاتك محليًا؛ لن نستبدل بيانات السحابة.');return}
+          if(clashes.length){
+            keepDraft(patch);
+            warn('⚠️ تعارض بين جهازين. حفظنا نسخة آمنة من تعديلاتك محليًا؛ لن نستبدل بيانات السحابة.');
+            return false;
+          }
           for(const k of keys)if(!dirty.has(k))localStorage.setItem(prefix+k,JSON.stringify(remote.data[k]));
           baseline=JSON.parse(JSON.stringify(remote.data));revision=remote.revision;
           r=await fetch('/api/teacher/snapshot',{method:'POST',headers:{...authHeader,'Content-Type':'application/json'},body:JSON.stringify({revision,patch})});
         }
         if(!r.ok)throw Error('save_failed_'+r.status);
-        const answer=await r.json();revision=answer.revision;
-        for(const k of changed)if(JSON.stringify(readLocal(k))===JSON.stringify(patch[k])){dirty.delete(k);baseline[k]=patch[k]}
+        const answer=await r.json();
+        if(!answer.ok)throw Error('save_rejected');
+        revision=answer.revision;
+        for(const k of changed){
+          if(JSON.stringify(readLocal(k))===JSON.stringify(patch[k])){
+            dirty.delete(k);
+            baseline[k]=patch[k];
+          }
+        }
         if(!dirty.size)localStorage.removeItem(pendingKey);
-      }catch(e){keepDraft(patch);warn('⚠️ تعذر الحفظ على الخادم. محفوظة نسخة من التعديلات في المتصفح.')}
-      finally{saving=false;if(dirty.size&&navigator.onLine!==false){}}
+        return true;
+      }catch(e){
+        keepDraft(patch);
+        warn('⚠️ تعذر الحفظ على الخادم. التعديلات ما زالت موجودة محليًا. حاول الحفظ مجددًا.');
+        return false;
+      }
     }
+    async function flush(){
+      clearTimeout(debounce);debounce=null;
+      if(savingPromise){
+        const previous=await savingPromise;
+        if(!previous)return false;
+        return dirty.size?flush():true;
+      }
+      if(!dirty.size)return true;
+      savingPromise=commitDirty();
+      let ok=false;
+      try{ok=await savingPromise;return ok;}
+      finally{
+        savingPromise=null;
+        if(ok&&dirty.size)queueSave();
+      }
+    }
+    window.QN9_SAVE_NOW=()=>flush();
     window.QN9_ONCHANGE=field=>{if(field&&keys.includes(field))dirty.add(field);else keys.forEach(k=>dirty.add(k));queueSave()};
     window.addEventListener('online',()=>{if(dirty.size)queueSave()});
     window.QN9_KEY=k=>prefix+k;
