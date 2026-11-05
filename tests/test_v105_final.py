@@ -62,6 +62,25 @@ class FinalCandidateTests(unittest.TestCase):
         self.assertIsNone(store.student_by_card(student['cardCode'],self.b))
         self.assertIsNone(store.student_by_card('QNA-XXXX-YYYY-ZZZZ',self.a))
 
+    def test_optional_shortening_preserves_old_printed_codes_and_qr(self):
+        old='QNA-ABCD-EFGH-JKLM'
+        new_student=store.add_students(self.a,[{'name':'طالب بطاقة قديمة','className':'التاسع ب','avatar':'n03'}])[0]
+        store.exec_sql('UPDATE students SET card_code=? WHERE id=?',(old,new_student['id']))
+        self.assertEqual(store.student_by_card(old,self.a)['id'],new_student['id'])
+        code,result=self.api('/api/teacher/students/shorten-codes',{})
+        self.assertEqual(code,401)
+        code,result=self.api('/api/teacher/students/shorten-codes',{},self.token_a)
+        self.assertEqual(code,200,result)
+        updated=next(s for s in store.list_students(self.a) if s['id']==new_student['id'])
+        self.assertEqual(len(updated['cardCode']),9)
+        self.assertEqual(store.student_by_card(updated['cardCode'],self.a)['id'],new_student['id'])
+        self.assertEqual(store.student_by_card(old,self.a)['id'],new_student['id'])
+        self.assertEqual(store.student_by_card(new_student['card'],self.a)['id'],new_student['id'])
+        self.assertIsNone(store.student_by_card(old,self.b))
+        code,profile=self.api('/api/card/profile?card='+old)
+        self.assertEqual(code,200,profile)
+        self.assertEqual(profile['name'],'طالب بطاقة قديمة')
+
     def test_public_card_profile_works_without_joining_room(self):
         import urllib.parse
         code=self.cards_a[0]['cardCode']
