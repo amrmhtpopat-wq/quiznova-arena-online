@@ -96,8 +96,8 @@ class VisualAndDirectAnswerTests(unittest.TestCase):
         self.assertIn("if(!r.ok||!d.ok)throw Object.assign",source)
         self.assertIn("e.status===401||e.message==='login_required'",source)
         self.assertNotIn("تعذر إنشاء الغرفة. تحقق من اتصال الخادم بالإنترنت ثم حاول مرة أخرى",source)
-        self.assertIn("script.src='/app.js?v=11.0'",read('studio-auth.js'))
-        self.assertIn("studio-auth.js?v=11.0",read('studio.html'))
+        self.assertIn("script.src='/app.js?v=11.1'",read('studio-auth.js'))
+        self.assertIn("studio-auth.js?v=11.1",read('studio.html'))
 
     def test_booyah_classroom_viewport_and_progress_contract(self):
         css=read('booyah-classroom.css')
@@ -147,6 +147,26 @@ class VisualAndDirectAnswerTests(unittest.TestCase):
         self.assertIn('window.boSetQuestionPoints',script)
         self.assertIn('window.boSelectQuestion',script)
         self.assertIn('boActiveQuestionId=q.id;renderQuestions();return toast',script)
+
+    def test_quiz_save_is_cloud_acknowledged_and_library_immediate(self):
+        studio=read('studio.html')
+        app=read('app.js')
+        auth=read('studio-auth.js')
+        css=read('booyah-quiz-polish-v111.css')
+        self.assertIn('window.QN9_SAVE_NOW=()=>flush()',auth)
+        self.assertIn("const stored=typeof window.QN9_SAVE_NOW==='function'&&await window.QN9_SAVE_NOW()",app)
+        self.assertIn("$('#librarySearch').value=''",app)
+        self.assertIn("go('library');",app)
+        self.assertIn("function openNewQuiz(){resetBuilder();go('builder')}",app)
+        self.assertIn("window.openLiveQuizById=id=>go('live',{quizId:id})",app)
+        self.assertIn('function renderLiveLanding(preferredQuizId=null)',app)
+        self.assertIn('function newestQuizzes()',app)
+        self.assertIn('bo-saved-chip',app)
+        self.assertIn('booyah-quiz-polish-v111.css?v=11.1',studio)
+        self.assertIn('booyah-quiz-polish-v111.css?v=11.1',read('student.html'))
+        self.assertGreater(studio.index('booyah-quiz-polish-v111.css'),studio.index('booyah-builder-v110.css'))
+        for name in ('bo-library-quiz','bo-library-actions','#view-live','#view-play','v105-student'):
+            self.assertIn(name,css)
 
     def test_teacher_photo_is_not_in_profile_card(self):
         dashboard=read('index.html')
