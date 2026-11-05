@@ -1,0 +1,28 @@
+/* BOOYAH! student-first welcome: scoped to #studentWelcome; teacher layout unchanged. */
+body.v105-portal #studentWelcome.bo-entry{position:relative;isolation:isolate;min-height:100dvh;width:100%;max-width:none;display:flex;flex-direction:column;padding:clamp(16px,3vw,42px);box-sizing:border-box;background:radial-gradient(circle at 10% 15%,#17549a 0,transparent 40%),linear-gradient(130deg,#071d3d,#0b2954 60%,#113c6c);color:#f5fbff;font-family:Cairo,Tahoma,Arial,sans-serif}
+body.v105-portal #studentWelcome.bo-entry.hidden{display:none!important}
+body.v105-portal .bo-entry-head{display:flex;justify-content:space-between;gap:15px;align-items:center;max-width:1180px;width:100%;margin:0 auto}
+body.v105-portal .bo-entry-logo{display:flex;align-items:center;gap:8px;font-size:clamp(19px,2.5vw,28px);color:#fff;font-weight:900}
+body.v105-portal .bo-entry-logo strong{letter-spacing:.6px}
+body.v105-portal .bo-entry-logo span{color:#a8defe;font-weight:700;font-size:clamp(11px,1.1vw,15px)}
+body.v105-portal .bo-entry-teacher{background:#e1f2ff!important;color:#15385b!important;border:1px solid #8dbedd!important;padding:11px 16px;border-radius:13px;font-weight:850;text-decoration:none;white-space:nowrap}
+body.v105-portal .bo-entry-main{flex:1;max-width:1180px;width:100%;margin:auto;display:grid;grid-template-columns:minmax(250px,0.95fr) minmax(0,1.5fr);gap:clamp(24px,4vw,56px);align-items:center;padding:35px 0}
+body.v105-portal .bo-entry-intro .bo-entry-kicker{color:#a9e8ff;font-size:14px;font-weight:850;letter-spacing:.2px}
+body.v105-portal .bo-entry-intro h1{color:#fff!important;font-size:clamp(32px,4.6vw,62px)!important;font-weight:950!important;line-height:1.3;margin:12px 0}
+body.v105-portal .bo-entry-intro h1 span{display:block;color:#67eddd!important}
+body.v105-portal .bo-entry-intro p{color:#d8eafc!important;font-size:clamp(15px,1.3vw,18px);font-weight:650;line-height:1.95;max-width:500px}
+body.v105-portal .bo-entry-mascots{display:flex;gap:9px;margin-top:24px}
+body.v105-portal .bo-entry-mascots img{width:clamp(65px,7.5vw,115px);height:clamp(65px,7.5vw,115px);object-fit:contain;border-radius:19px;background:#163f73;border:2px solid #4da6c9;box-shadow:0 8px 19px #00172b8a}
+body.v105-portal .bo-entry-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+body.v105-portal .bo-entry-option{display:flex;flex-direction:column;gap:10px;min-height:193px;box-sizing:border-box;padding:clamp(16px,1.8vw,23px);background:linear-gradient(155deg,#f8fbff,#e4f1fc)!important;color:#143452!important;text-decoration:none;border:2px solid #a7cee6;border-radius:21px;box-shadow:0 16px 32px #000c255c;transition:transform .2s,border-color .2s}
+body.v105-portal .bo-entry-option:first-child{grid-column:span 2;min-height:160px}
+body.v105-portal .bo-entry-option:hover{transform:translateY(-3px);border-color:#2ecdc9}
+body.v105-portal .bo-entry-option:focus-visible,body.v105-portal .bo-entry-teacher:focus-visible{outline:3px solid #ffcf66;outline-offset:4px}
+body.v105-portal .bo-entry-option-icon{font-size:32px}
+body.v105-portal .bo-entry-option strong{color:#123451!important;-webkit-text-fill-color:#123451!important;font-size:clamp(19px,1.8vw,24px);font-weight:900}
+body.v105-portal .bo-entry-option small{color:#3c5e7a!important;-webkit-text-fill-color:#3c5e7a!important;font-size:clamp(13px,1vw,15px);font-weight:720;line-height:1.7}
+body.v105-portal .bo-entry-cta{margin-top:auto;color:#0d558a!important;-webkit-text-fill-color:#0d558a!important;font-size:14px;font-weight:900}
+body.v105-portal .bo-entry-foot{text-align:center;color:#b6d6eb;font-size:12px;padding:18px 0 4px}
+@media(max-width:860px){body.v105-portal .bo-entry-main{grid-template-columns:1fr;padding-top:24px}.bo-entry-intro{text-align:center}body.v105-portal .bo-entry-intro p{margin-left:auto;margin-right:auto}body.v105-portal .bo-entry-mascots{justify-content:center}}
+@media(max-width:580px){body.v105-portal #studentWelcome.bo-entry{padding:16px}body.v105-portal .bo-entry-main{gap:25px}body.v105-portal .bo-entry-logo{flex-wrap:wrap;gap:4px}body.v105-portal .bo-entry-logo span{font-size:10px}body.v105-portal .bo-entry-options{grid-template-columns:1fr}body.v105-portal .bo-entry-option:first-child{grid-column:span 1}body.v105-portal .bo-entry-option{min-height:135px}body.v105-portal .bo-entry-mascots img{width:66px;height:66px}}
+@media(prefers-reduced-motion:reduce){body.v105-portal .bo-entry-option{transition:none!important}body.v105-portal .bo-entry-option:hover{transform:none}}

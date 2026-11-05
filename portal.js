@@ -25,8 +25,25 @@ function err(e){const map={email_taken:'هذا البريد مستخدم ساب�
 function toggleAuth(){mode=mode==='login'?'register':'login';$('#signupFields').classList.toggle('hidden',mode==='login');$('#authTitle').textContent=mode==='login'?'دخول المعلمين':'إنشاء حساب معلم';$('#authIntro').textContent=mode==='login'?'سجّل دخولك للوصول إلى لوحة القيادة الخاصة بك.':'حساب مستقل مع المادة والطلاب والاختبارات الخاصة بك.';$('#authSubmit').textContent=mode==='login'?'دخول إلى لوحة القيادة':'إنشاء الحساب والدخول';$('#authToggle').textContent=mode==='login'?'ليس لديك حساب؟ أنشئ حساب معلم جديد':'لديك حساب بالفعل؟ تسجيل الدخول';$('#authError').classList.add('hidden');}
 $('#authToggle').onclick=toggleAuth;
 $('#authForm').onsubmit=async ev=>{ev.preventDefault();$('#authError').classList.add('hidden');const btn=$('#authSubmit');btn.disabled=true;try{let d=await api('/api/auth/'+(mode==='login'?'login':'register'),{method:'POST',body:JSON.stringify({email:$('#email').value,password:$('#password').value,name:$('#fullName').value,school:$('#school').value,subject:$('#subject').value||'عام',schoolType:$('#schoolType').value})});localStorage.setItem(TOKEN_KEY,d.token);teacher=d.teacher;if(resumeStudioAfterLogin())return;showWorkspace();await loadAll()}catch(e){$('#authError').textContent=err(e);$('#authError').classList.remove('hidden')}finally{btn.disabled=false}}
+function showTeacherAuth(){
+  $('#studentWelcome').classList.add('hidden');
+  $('#authWall').classList.remove('hidden');
+  $('#workspace').classList.add('hidden');
+}
+function showStudentWelcome(){
+  $('#studentWelcome').classList.remove('hidden');
+  $('#authWall').classList.add('hidden');
+  $('#workspace').classList.add('hidden');
+}
+function teacherEntryRequested(){
+  const params=new URLSearchParams(location.search);
+  return params.get('teacher')==='1'||!!params.get('next');
+}
 async function boot(){
-  if(!token())return;
+  // The public domain always opens the student's gateway, even if this browser
+  // previously had a teacher session. Teachers enter intentionally via ?teacher=1.
+  if(!teacherEntryRequested()){showStudentWelcome();return}
+  if(!token()){showTeacherAuth();return}
   let profile=null;
   // Transient 401s can happen during a deployment; do not clear the token on one bad reply.
   for(let attempt=0;attempt<3;attempt++){
@@ -35,8 +52,7 @@ async function boot(){
   }
   if(!profile){
     localStorage.removeItem(TOKEN_KEY);
-    $('#authWall').classList.remove('hidden');
-    $('#workspace').classList.add('hidden');
+    if(teacherEntryRequested())showTeacherAuth();else showStudentWelcome();
     notify('تحتاج إلى تسجيل الدخول مجددًا.');
     return;
   }
@@ -45,8 +61,8 @@ async function boot(){
   showWorkspace();
   try{await loadAll()}catch(e){notify('تعذر تحديث بيانات لوحة القيادة مؤقتًا. جرّب زر التحديث.')}
 }
-function showWorkspace(){$('#authWall').classList.add('hidden');$('#workspace').classList.remove('hidden');$('#teacherSideName').textContent=teacher.name;$('#teacherSubject').textContent=teacher.subject;$('#schoolFoot').textContent=teacher.school;$('#schoolModeEditor').value=teacher.school_type||'mixed';renderAvatarChoices();$('#welcome').textContent='أهلًا '+teacher.name+'، المادة: '+teacher.subject+' • '+teacher.school}
-$('#downloadBackup').onclick=async()=>{try{const data=await api('/api/teacher/backup');const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='QuizNova_V10_Backup_'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);notify('تم تنزيل نسخة البيانات. احتفظ بها في مكان آمن.')}catch(e){notify(err(e))}};
+function showWorkspace(){$('#studentWelcome').classList.add('hidden');$('#authWall').classList.add('hidden');$('#workspace').classList.remove('hidden');$('#teacherSideName').textContent=teacher.name;$('#teacherSubject').textContent=teacher.subject;$('#schoolFoot').textContent=teacher.school;$('#schoolModeEditor').value=teacher.school_type||'mixed';renderAvatarChoices();$('#welcome').textContent='أهلًا '+teacher.name+'، المادة: '+teacher.subject+' • '+teacher.school}
+$('#downloadBackup').onclick=async()=>{try{const data=await api('/api/teacher/backup');const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='BOOYAH_Backup_'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);notify('تم تنزيل نسخة البيانات. احتفظ بها في مكان آمن.')}catch(e){notify(err(e))}};
 $('#logout').onclick=async()=>{try{await api('/api/auth/logout',{method:'POST',body:'{}'})}catch(e){}localStorage.removeItem(TOKEN_KEY);location.reload()};
 const panels={school:['إعدادات المدرسة','إدارة صور الطلاب حسب نوع المدرسة'],home:['لوحة القيادة','نظرة شاملة على فصولك وتقدم طلابك'],classes:['حرب الشعب','منافسات مميزة بين شعب المادة'],mastery:['إتقان المهارات','تابع نتاجات التعلم بالتفصيل'],students:['الطلاب والبطاقات','إدارة الهويات الرقمية وصور الشخصيات'],history:['سجل الاختبارات','نتائج محفوظة تحت حسابك']};
 function go(name){$$('.panel-view').forEach(e=>e.classList.toggle('active',e.id==='panel-'+name));$$('button.nav').forEach(e=>e.classList.toggle('active',e.dataset.panel===name));$('#pageTitle').textContent=panels[name][0];$('#pageDesc').textContent=panels[name][1];window.scrollTo({top:0,behavior:'smooth'})}$$('button.nav').forEach(b=>b.onclick=()=>go(b.dataset.panel));$$('[data-jump]').forEach(b=>b.onclick=()=>go(b.dataset.jump));$('#refresh').onclick=()=>loadAll().then(()=>notify('تم تحديث البيانات')).catch(e=>notify(err(e)));

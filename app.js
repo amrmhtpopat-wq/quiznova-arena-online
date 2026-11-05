@@ -157,7 +157,7 @@ $('#previewPool').onclick=()=>{ const p=generatorPool(); openModal(`<div class="
 // ---------- Builder ----------
 function openNewQuiz(){resetBuilder();go('builder')}
 window.openNewQuiz=openNewQuiz;
-function resetBuilder(){ editingQuizId=null; $('#quizTitle').value=''; $('#quizSubject').value=window.QN9_TEACHER?.subject||'عام'; $('#quizGrade').value='السابع'; $('#quizSection').value=''; $('#randomQuestions').checked=true; $('#randomOptions').checked=true; $('#showFeedback').checked=true; $('#speedBonus').checked=true; $('#bossEnabled').checked=false; builderQuestions=[blankQuestion('single')]; boActiveQuestionId=builderQuestions[0].id; renderQuestions() }
+function resetBuilder(){ editingQuizId=null; $('#quizTitle').value=''; $('#quizSubject').value=window.QN9_TEACHER?.subject||'عام'; $('#quizGrade').value='السابع'; $('#quizSection').value=''; $('#randomQuestions').checked=true; $('#randomOptions').checked=true; $('#showFeedback').checked=true; $('#speedBonus').checked=true; $('#bossEnabled').checked=false; $('#soloPublish').checked=false; builderQuestions=[blankQuestion('single')]; boActiveQuestionId=builderQuestions[0].id; renderQuestions() }
 function addQuestion(type='single'){ const q=blankQuestion(type); q.subject=$('#quizSubject').value||window.QN9_TEACHER?.subject||'عام';q.grade=$('#quizGrade').value;builderQuestions.push(q);boActiveQuestionId=q.id;renderQuestions() }
 $('#addQuestion').onclick=()=>addQuestion('single'); $('#boRailAddQuestion').onclick=()=>addQuestion('single'); $$('#quickTypes [data-addtype]').forEach(b=>b.onclick=()=>addQuestion(b.dataset.addtype)); $('#resetBuilder').onclick=resetBuilder;
 const ideaPlans={
@@ -335,7 +335,7 @@ async function optimizeImage(file){
   return canvas.toDataURL('image/jpeg',0.76);
 }
 window.attachImage=async(id,input)=>{const f=input.files[0];if(!f)return;try{getQ(id).image=await optimizeImage(f);renderQuestions();toast('تمت إضافة الصورة للسؤال')}catch(e){toast(e.message||'تعذر قراءة الصورة')}}; window.removeImage=id=>{getQ(id).image='';renderQuestions()};
-function fillBuilder(q){$('#quizTitle').value=q.title;$('#quizSubject').value=q.subject||window.QN9_TEACHER?.subject||'عام';$('#quizGrade').value=q.grade||'السابع';$('#quizSection').value=q.section||'';$('#randomQuestions').checked=!!q.settings?.randomQuestions;$('#randomOptions').checked=!!q.settings?.randomOptions;$('#showFeedback').checked=q.settings?.showFeedback!==false;$('#speedBonus').checked=q.settings?.speedBonus!==false;$('#bossEnabled').checked=!!q.settings?.bossEnabled;builderQuestions=clone(q.questions||[]);boActiveQuestionId=builderQuestions[0]?.id||null;renderQuestions()}
+function fillBuilder(q){$('#quizTitle').value=q.title;$('#quizSubject').value=q.subject||window.QN9_TEACHER?.subject||'عام';$('#quizGrade').value=q.grade||'السابع';$('#quizSection').value=q.section||'';$('#randomQuestions').checked=!!q.settings?.randomQuestions;$('#randomOptions').checked=!!q.settings?.randomOptions;$('#showFeedback').checked=q.settings?.showFeedback!==false;$('#speedBonus').checked=q.settings?.speedBonus!==false;$('#bossEnabled').checked=!!q.settings?.bossEnabled;$('#soloPublish').checked=!!q.settings?.publishedSolo;builderQuestions=clone(q.questions||[]);boActiveQuestionId=builderQuestions[0]?.id||null;renderQuestions()}
 function validateQuestion(q){if(!q.text.trim())return 'يوجد سؤال بدون نص'; if((q.type==='single'||q.type==='multi')&&q.options.some(x=>!x.trim()))return 'يوجد خيار فارغ'; if(q.type==='single'&&q.correct.length!==1)return 'سؤال اختيار بدون إجابة صحيحة'; if(q.type==='multi'&&q.correct.length<1)return 'سؤال متعدد بدون إجابة صحيحة'; if(q.type==='short'&&!q.answers.some(x=>x.trim()))return 'سؤال قصير بدون إجابة مقبولة'; if(q.type==='estimate'&&(!Number.isFinite(Number(q.estimateAnswer))||!Number.isFinite(Number(q.tolerance))||Number(q.tolerance)<0))return 'تأكد من قيمة سؤال التقدير وهامش التسامح'; if(q.type==='order'&&q.items.some(x=>!x.trim()))return 'سؤال ترتيب يحتوي خطوة فارغة'; if(q.type==='match'&&q.pairs.some(p=>!p.left.trim()||!p.right.trim()))return 'سؤال مطابقة يحتوي خانة فارغة'; return ''}
 function syncQuestionsToBank(questions,quizMeta){let bank=DB.bank,seen=new Set(bank.map(qSignature)),added=0;questions.filter(q=>q.type!=='poll').forEach(q=>{const x=clone(q);x.id=uid();x.subject=quizMeta.subject;x.grade=quizMeta.grade;if(!seen.has(qSignature(x))){bank.push(x);seen.add(qSignature(x));added++}});DB.bank=bank;return added}
 let boLastSavedQuizId=null;
@@ -364,7 +364,8 @@ $('#saveQuiz').onclick=async()=>{
       randomOptions:$('#randomOptions').checked,
       showFeedback:$('#showFeedback').checked,
       speedBonus:$('#speedBonus').checked,
-      bossEnabled:$('#bossEnabled').checked
+      bossEnabled:$('#bossEnabled').checked,
+      publishedSolo:$('#soloPublish').checked
     },
     questions:clone(builderQuestions)
   };
@@ -410,16 +411,30 @@ function renderLibrary(){
     <div class="quiz-cover">${x.settings?.bossEnabled?'👑':'🎯'}</div>
     <h4>${escapeHtml(x.title)}</h4>
     <p>${escapeHtml(x.subject)} • الصف ${escapeHtml(x.grade||'—')}</p>
-    <div class="card-meta"><span class="chip">${(x.questions||[]).length} سؤال</span><span class="chip">${x.settings?.randomQuestions?'خلط أسئلة':'ترتيب ثابت'}</span>${x.id===boLastSavedQuizId?'<span class="chip bo-saved-chip">✓ تم الحفظ</span>':''}</div>
+    <div class="card-meta"><span class="chip">${(x.questions||[]).length} سؤال</span><span class="chip">${x.settings?.randomQuestions?'خلط أسئلة':'ترتيب ثابت'}</span>${x.id===boLastSavedQuizId?'<span class="chip bo-saved-chip">✓ تم الحفظ</span>':''}${x.settings?.publishedSolo?'<span class="chip bo-saved-chip">🎮 متاح لتدريب الطلاب</span>':''}</div>
     <div class="card-actions bo-library-actions">
       <button type="button" class="btn btn-primary" onclick="openLiveQuizById('${x.id}')">▶ صف مباشر</button>
       <button type="button" class="btn btn-secondary" onclick="playQuizById('${x.id}')">🎮 تحدي فردي</button>
       <button type="button" class="btn btn-secondary" onclick="editQuiz('${x.id}')">✎ تعديل</button>
+      <button type="button" class="btn btn-secondary" onclick="toggleSoloPublish('${x.id}')">${x.settings?.publishedSolo?'🔒 إيقاف تدريب الطلاب':'🎮 إتاحة تدريب الطلاب'}</button>
       <button type="button" class="icon-btn" onclick="exportQuiz('${x.id}')" title="تصدير الاختبار" aria-label="تصدير الاختبار">↥</button>
       <button type="button" class="icon-btn danger" onclick="deleteQuiz('${x.id}')" title="حذف الاختبار" aria-label="حذف الاختبار">✕</button>
     </div>
   </article>`).join('')||'<p class="bo-library-empty">لا توجد اختبارات مطابقة. اضغط «+ جديد» لإنشاء اختبارك الأول.</p>';
 }
+window.toggleSoloPublish=async id=>{
+  const old=DB.quizzes,quiz=old.find(item=>item.id===id);
+  if(!quiz)return toast('الاختبار غير موجود');
+  const next=clone(old),target=next.find(item=>item.id===id);
+  target.settings={...(target.settings||{}),publishedSolo:!quiz.settings?.publishedSolo};
+  DB.quizzes=next;
+  try{
+    if(typeof window.QN9_SAVE_NOW!=='function'||!await window.QN9_SAVE_NOW()){
+      DB.quizzes=old;renderLibrary();return toast('تعذر حفظ صلاحية التدريب. حاول مرة أخرى.');
+    }
+    renderLibrary();toast(target.settings.publishedSolo?'تم إتاحة الاختبار لتدريب الطلاب بالبطاقة':'تم إيقاف إتاحة الاختبار للطلاب');
+  }catch(e){DB.quizzes=old;renderLibrary();toast('تعذر تحديث صلاحية التدريب');}
+};
 $('#librarySearch').oninput=renderLibrary;
 window.editQuiz=id=>{
   const quiz=DB.quizzes.find(x=>x.id===id);
@@ -576,7 +591,7 @@ function renderLiveHost(data,quiz){
   $('#liveHost').innerHTML=`
   <div class="room-shell">
     <div class="sky-room-settings"><h3>⚙ إعدادات الاختبار</h3><div class="sky-setting"><span>نمط اللعب</span><b>${data.playType==='teams'?'👥 مجموعات':'👤 فردي'}</b></div><div class="sky-setting"><span>حماية من النقل</span><b>${data.variantMode==='models4'?'نماذج A/B/C/D':data.variantMode==='options'?'ترتيب خيارات مختلف':'موحّد'}</b></div><div class="sky-setting"><span>الاختبار</span><b>${escapeHtml(quiz.title)}</b></div><div class="sky-setting"><span>الشعبة</span><b>${escapeHtml($('#liveSection').value.trim()||'لم تُحدّد')}</b></div><div class="sky-setting"><span>الخلفية الرسمية</span><b>${$('#liveBackground').selectedOptions[0]?.textContent||'سماوية'}</b></div></div>
-    <div class="room-code-card"><div class="sky-room-title">🎮 غرفة الألعاب — QuizNova Arena</div>
+    <div class="room-code-card"><div class="sky-room-title">🎮 غرفة الألعاب — BOOYAH! QUIZ ARENA</div>
       <div class="host-join-grid">
         <div class="qr-wrap"><img id="roomQr" src="/api/qr?format=png&text=${encodeURIComponent(join)}" alt="QR دخول الطلاب" loading="eager"><div class="qr-fallback" id="qrFallback">تعذر إظهار الرمز. انسخ الرابط بالزر أدناه.</div></div>
         <div class="join-copy"><small>جاهز للدخول</small><div class="room-code">${escapeHtml(data.code)}</div><p>الطالب يمسح QR بالكاميرا أو يفتح الرابط ثم يكتب الرمز.</p><div class="security-badge">${data.variantMode==='models4'?'🔀 نماذج A/B/C/D':data.variantMode==='same'?'📺 نموذج موحّد':'🛡️ خيارات مختلفة لكل جهاز'}</div><b>${escapeHtml(join)}</b></div>
@@ -720,7 +735,7 @@ function saveLiveSession(room){
 function liveReportCsv(room){
   if(!liveRoom||!liveHostToken)return toast('مفتاح الغرفة غير متاح');
   const url='/api/room/export.xlsx?code='+encodeURIComponent(liveRoom)+'&host='+encodeURIComponent(liveHostToken);
-  const a=document.createElement('a');a.href=url;a.download='QuizNova_'+liveRoom+'_report.xlsx';document.body.appendChild(a);a.click();a.remove();
+  const a=document.createElement('a');a.href=url;a.download='BOOYAH_'+liveRoom+'_report.xlsx';document.body.appendChild(a);a.click();a.remove();
   toast('جارٍ تنزيل تقرير Excel الملوّن');
 }
 
@@ -760,8 +775,8 @@ function updateLiveHost(room){
 }
 
 // ---------- Settings ----------
-function loadSettings(){const s=DB.settings;if(!s.teacherName&&window.QN9_TEACHER)$('#teacherName').value=window.QN9_TEACHER.name;if(!s.schoolName&&window.QN9_TEACHER)$('#schoolName').value=window.QN9_TEACHER.school;if(s.teacherName)$('#teacherName').value=s.teacherName;if(s.schoolName)$('#schoolName').value=s.schoolName;if(s.platformName)$('#platformName').value=s.platformName;applySettings();if($('#teacherBackground'))$('#teacherBackground').value=s.scene||'cartoon'}
-function applySettings(){document.body.dataset.scene=DB.settings.scene||'cartoon';const teacher=$('#teacherName').value||window.QN9_TEACHER?.name||'المعلم',platform=$('#platformName').value||'QuizNova';$('.teacher-card strong').textContent=teacher;$('.brand h1').textContent=platform;const sub=$('.teacher-card small');if(sub)sub.textContent=window.QN9_TEACHER?.subject||'مادة دراسية';document.title=platform+' Arena'}
-$('#saveSettings').onclick=()=>{DB.settings={teacherName:$('#teacherName').value,schoolName:$('#schoolName').value,platformName:$('#platformName').value,scene:$('#teacherBackground').value};applySettings();toast('تم حفظ الإعدادات')};$('#exportBackup').onclick=()=>download('quiznova-arena-backup.json',JSON.stringify({quizzes:DB.quizzes,bank:DB.bank,results:DB.results,settings:DB.settings,version:5},null,2));$('#importBackup').onclick=()=>$('#backupFile').click();$('#backupFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.quizzes)||!Array.isArray(d.results))throw 0;DB.quizzes=d.quizzes;DB.results=d.results;DB.bank=Array.isArray(d.bank)?d.bank:DB.bank;DB.settings=d.settings||{};loadSettings();renderDashboard();renderGenerator();toast('تمت استعادة النسخة الاحتياطية')}catch{toast('ملف النسخة غير صالح')}};r.readAsText(f);e.target.value=''};
+function loadSettings(){const s=DB.settings;if(!s.teacherName&&window.QN9_TEACHER)$('#teacherName').value=window.QN9_TEACHER.name;if(!s.schoolName&&window.QN9_TEACHER)$('#schoolName').value=window.QN9_TEACHER.school;if(s.teacherName)$('#teacherName').value=s.teacherName;if(s.schoolName)$('#schoolName').value=s.schoolName;if(s.platformName)$('#platformName').value=s.platformName==='QuizNova'?'BOOYAH! QUIZ ARENA':s.platformName;applySettings();if($('#teacherBackground'))$('#teacherBackground').value=s.scene||'cartoon'}
+function applySettings(){document.body.dataset.scene=DB.settings.scene||'cartoon';const teacher=$('#teacherName').value||window.QN9_TEACHER?.name||'المعلم',platform=($('#platformName').value==='QuizNova'?'BOOYAH! QUIZ ARENA':$('#platformName').value)||'BOOYAH! QUIZ ARENA';$('.teacher-card strong').textContent=teacher;$('.brand h1').textContent=platform;const sub=$('.teacher-card small');if(sub)sub.textContent=window.QN9_TEACHER?.subject||'مادة دراسية';document.title=platform+' | استوديو المعلم'}
+$('#saveSettings').onclick=()=>{DB.settings={teacherName:$('#teacherName').value,schoolName:$('#schoolName').value,platformName:$('#platformName').value,scene:$('#teacherBackground').value};applySettings();toast('تم حفظ الإعدادات')};$('#exportBackup').onclick=()=>download('booyah-quiz-arena-backup.json',JSON.stringify({quizzes:DB.quizzes,bank:DB.bank,results:DB.results,settings:DB.settings,version:5},null,2));$('#importBackup').onclick=()=>$('#backupFile').click();$('#backupFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.quizzes)||!Array.isArray(d.results))throw 0;DB.quizzes=d.quizzes;DB.results=d.results;DB.bank=Array.isArray(d.bank)?d.bank:DB.bank;DB.settings=d.settings||{};loadSettings();renderDashboard();renderGenerator();toast('تمت استعادة النسخة الاحتياطية')}catch{toast('ملف النسخة غير صالح')}};r.readAsText(f);e.target.value=''};
 
 resetBuilder();loadSettings();renderDashboard();renderGenerator();checkServer();

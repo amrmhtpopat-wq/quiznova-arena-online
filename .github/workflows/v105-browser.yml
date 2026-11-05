@@ -1,4 +1,4 @@
-name: QuizNova V10.5 real browser smoke test
+name: BOOYAH student and teacher real browser tests
 on:
   push:
     branches: [v10-5-final-candidate]
@@ -6,6 +6,11 @@ on:
     branches: [main]
     paths:
       - server.py
+      - solo_api.py
+      - solo-student-v120.js
+      - booyah-entry-v120.css
+      - booyah-student-v120.css
+      - tests/browser_student_entry_v120.py
       - student.js
       - student.html
       - app.js
@@ -55,6 +60,7 @@ jobs:
           python tests/browser_builder_v110.py
           python tests/browser_studio_routing_v112.py
           python tests/browser_mascot_badge_v112.py
+          python tests/browser_student_entry_v120.py
       - name: Upload visual QA screenshots
         if: always()
         uses: actions/upload-artifact@v4
