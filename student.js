@@ -3,11 +3,11 @@ let session={code:'',playerId:'',name:'',avatar:'b01',team:'',model:'',variantMo
 const shapes=['▲','◆','●','■'];
 let pickedAvatar='b01';
 let roomAvatarPool=[];let lastAvatarCode='';let avatarRequest=0;
-const avatarPath=id=>/^m0[1-8]$/.test(id)?'/assets/avatars3d/'+id+'.webp':/^[bg](0[1-9]|1[0-6])$/.test(id)?'/assets/avatars3d/'+id+'.webp':'/assets/avatars/'+(/^\d{2}$/.test(id)?id:'01')+'.svg';
+const avatarPath=id=>/^[mn]0[1-8]$/.test(id)?'/assets/avatars3d/'+id+'.webp':/^[bg](0[1-9]|1[0-6])$/.test(id)?'/assets/avatars3d/'+id+'.webp':'/assets/avatars/'+(/^\d{2}$/.test(id)?id:'01')+'.svg';
 let selectedCard=(new URLSearchParams(location.search)).get('card')||'';
 let cardName='';
 function showAvatars(ids){
- roomAvatarPool=ids.filter(x=>/^(?:[bg](?:0[1-9]|1[0-6])|m0[1-8])$/.test(x));
+ roomAvatarPool=ids.filter(x=>/^(?:[bg](?:0[1-9]|1[0-6])|[mn]0[1-8])$/.test(x));
  if(!roomAvatarPool.length)roomAvatarPool=['b01','g01'];
  if(!roomAvatarPool.includes(pickedAvatar))pickedAvatar=roomAvatarPool[0];
  $('#avatarPicker').innerHTML=roomAvatarPool.map((id,i)=>`<button type="button" class="avatar-choice ${id===pickedAvatar?'selected':''}" data-avatar="${id}" aria-label="شخصية ${i+1}"><img src="${avatarPath(id)}" alt="شخصية 3D"></button>`).join('');

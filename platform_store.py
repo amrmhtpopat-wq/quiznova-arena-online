@@ -8,9 +8,9 @@ DATABASE_URL = os.getenv('DATABASE_URL','').strip()
 LOCAL_DB = os.getenv('QUIZNOVA_SQLITE_PATH',str(Path(__file__).resolve().parent/'quiznova_local.db'))
 DATABASE_KIND = 'postgres' if DATABASE_URL else 'sqlite'
 SCHOOL_TYPES = ('boys','girls','mixed')
-AVATAR_3D_IDS = [f'm{i:02}' for i in range(1,9)] + [f'b{i:02}' for i in range(1,17)] + [f'g{i:02}' for i in range(1,17)]
+AVATAR_3D_IDS = [f'n{i:02}' for i in range(1,9)] + [f'm{i:02}' for i in range(1,9)] + [f'b{i:02}' for i in range(1,17)] + [f'g{i:02}' for i in range(1,17)]
 def avatar_pool(school_type):
-    return [a for a in AVATAR_3D_IDS if school_type=='mixed' or (a[0] in ('b','m') if school_type=='boys' else a[0]=='g')]
+    return [a for a in AVATAR_3D_IDS if school_type=='mixed' or (a[0] in ('b','m','n') if school_type=='boys' else a[0]=='g')]
 def inferred_school_type(school):
     school=str(school or '')
     if any(x in school for x in ('للبنين','بنين','boys')):return 'boys'
@@ -183,6 +183,12 @@ def add_students(teacher_id,students):
 def list_students(teacher_id):
     rows=query('SELECT id,name,class_name,avatar,card_token,card_code,xp,correct_count,played_count FROM students WHERE teacher_id=? ORDER BY class_name,name',(teacher_id,),True)
     return [{'id':r['id'],'name':r['name'],'className':r['class_name'],'avatar':r['avatar'],'card':r['card_token'],'cardCode':r['card_code'],'xp':r['xp'],'level':level_for_xp(r['xp']),'correct':r['correct_count'],'played':r['played_count']} for r in rows]
+
+def student_profile_by_card(token):
+    """A physical student card permits access to a limited student profile."""
+    value=str(token or '').strip()
+    if not value or len(value)>90:return None
+    return query('SELECT id,name,class_name,avatar,xp,correct_count,played_count FROM students WHERE card_token=? OR card_code=?',(value,value.upper()))
 
 def student_by_card(token,teacher_id):
     token=str(token or '').strip()

@@ -440,6 +440,14 @@ class Handler(SimpleHTTPRequestHandler):
             except Exception as e:
                 self.log_message('QR generation failure: %s',str(e))
                 return self.send_json({'ok':False,'error':'qr_unavailable'},503)
+        if u.path=='/api/card/profile':
+            qs=parse_qs(u.query);value=(qs.get('card') or [''])[0]
+            student=platform_store.student_profile_by_card(value)
+            if not student:return self.send_json({'ok':False,'error':'invalid_card'},404)
+            return self.send_json({'ok':True,'name':student['name'],'className':student['class_name'],
+                'avatar':student['avatar'],'xp':student['xp'],
+                'level':platform_store.level_for_xp(student['xp']),
+                'correct':student['correct_count'],'played':student['played_count']})
         if u.path=='/api/room/config':
             qs=parse_qs(u.query); code=(qs.get('code') or [''])[0]
             with LOCK:
