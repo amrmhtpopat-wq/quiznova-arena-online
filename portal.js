@@ -138,6 +138,29 @@ $('#shortenCards').onclick=async()=>{
   }catch(e){notify(err(e))}
   finally{btn.disabled=false}
 };
-$('#printCards').onclick=()=>{if(!cache.students.length)return notify('أضف الطلاب أولًا');window.print()};
+$('#printCards').onclick=async()=>{
+  if(!cache.students.length)return notify('أضف الطلاب أولًا');
+  const button=$('#printCards'),original=button.textContent;
+  button.disabled=true;button.textContent='جارٍ تجهيز البطاقات وQR...';
+  try{
+    const images=[...document.querySelectorAll('#studentsBoard .bo-student-id img')];
+    // Image lazy loading can leave off-screen printed QR codes blank.
+    images.forEach(img=>{img.loading='eager'});
+    await Promise.all(images.map(img=>{
+      if(img.complete)return Promise.resolve();
+      return new Promise(resolve=>{
+        const done=()=>{clearTimeout(timer);resolve()};
+        const timer=setTimeout(done,20000);
+        img.addEventListener('load',done,{once:true});
+        img.addEventListener('error',done,{once:true});
+      });
+    }));
+    if(images.some(img=>!img.naturalWidth)){
+      notify('لم يكتمل تحميل بعض الصور أو رموز QR. تأكد من اتصال الخادم ثم أعد الطباعة.');
+      return;
+    }
+    window.print();
+  }finally{button.disabled=false;button.textContent=original}
+};
 boot();
 })();
