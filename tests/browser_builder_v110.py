@@ -58,6 +58,11 @@ with sync_playwright() as p:
         page.locator('#boQuestionRail .bo-rail-question').nth(1).click()
         assert page.locator('#boPropertyPoints').input_value()=='2500'
         page.locator('#saveQuiz').click()
+        # Save is acknowledged by cloud before navigating to the library.
+        page.locator('#view-library.active .bo-library-quiz').first.wait_for(state='visible',timeout=15000)
+        assert page.locator('#view-library .bo-library-quiz').count()==1
+        assert 'اختبار تجريبي بتصميم مبسط' in page.locator('#view-library .bo-library-quiz h4').first.inner_text()
+        assert page.locator('#view-library .bo-saved-chip').count()==1
         quizzes=[]
         for attempt in range(25):
             quizzes=store.snapshot(account['teacher']['id'])['quizzes']
@@ -67,6 +72,53 @@ with sync_playwright() as p:
         assert len(quizzes[0]['questions'])==2,quizzes
         assert [q['points'] for q in quizzes[0]['questions']]==[1000,2500]
         assert [q['time'] for q in quizzes[0]['questions']]==[20,45]
+        # A new quiz must never inherit the previous title/questions.
+        page.locator('#view-library [data-jump="builder"]').click()
+        assert page.locator('#quizTitle').input_value()==''
+        assert page.locator('#boQuestionRail .bo-rail-question').count()==1
+        assert page.locator('.bo-question-prompt textarea').input_value()==''
+        assert page.locator('#boPropertyPoints').input_value()=='1000'
+
+        # Save a different test and verify both remain, newest first.
+        page.locator('#quizTitle').fill('اختبار ثان جديد')
+        page.locator('.bo-question-prompt textarea').fill('ما وظيفة الشاشة؟')
+        inputs=page.locator('.bo-question-editor .option-line > input:not([type=checkbox]):not([type=radio])')
+        for idx,label in enumerate(('عرض النتائج','حفظ الصور','تخزين البيانات','تشغيل الإنترنت')):
+            inputs.nth(idx).fill(label)
+        page.locator('#saveQuiz').click()
+        page.locator('#view-library.active .bo-library-quiz').first.wait_for(state='visible',timeout=15000)
+        assert page.locator('#view-library .bo-library-quiz').count()==2
+        assert page.locator('#view-library .bo-library-quiz h4').first.inner_text()=='اختبار ثان جديد'
+        persisted=store.snapshot(account['teacher']['id'])['quizzes']
+        assert len(persisted)==2,persisted
+        newest=next(q for q in persisted if q['title']=='اختبار ثان جديد')
+        first=next(q for q in persisted if q['title']=='اختبار تجريبي بتصميم مبسط')
+        assert len(newest['questions'])==1 and len(first['questions'])==2
+
+        # Direct launch from the chosen library card selects exactly that quiz.
+        page.locator('#view-library .bo-library-quiz').first.locator('.bo-library-actions .btn-primary').click()
+        page.locator('#liveSetup').wait_for(state='visible',timeout=15000)
+        assert page.locator('#liveQuizSelect').input_value()==newest['id']
+
+        # Return to the library and select solo: it must not use the older test.
+        page.evaluate("go('library')")
+        page.locator('#view-library .bo-library-quiz').first.locator('.bo-library-actions .btn-secondary').first.click()
+        assert page.locator('#playQuizSelect').input_value()==newest['id']
+        page.evaluate("go('library')")
+
+        # Explicit Edit loads an existing quiz; + New clears it again.
+        page.locator('#view-library .bo-library-quiz').nth(1).locator('.bo-library-actions .btn-secondary').nth(1).click()
+        assert page.locator('#quizTitle').input_value()=='اختبار تجريبي بتصميم مبسط'
+        page.evaluate("go('library')")
+        page.locator('#view-library [data-jump="builder"]').click()
+        assert page.locator('#quizTitle').input_value()==''
+        assert page.locator('.bo-question-prompt textarea').input_value()==''
+
+        # Reload from cloud, not stale page state.
+        page.reload(wait_until='domcontentloaded')
+        page.locator('#quizTitle').wait_for(state='visible',timeout=15000)
+        page.evaluate("go('library')")
+        assert page.locator('#view-library .bo-library-quiz').count()==2
         assert not errors,errors
         page.screenshot(path=str(artifacts/('creator-mobile.png' if mobile else 'creator-desktop.png')),full_page=True)
         ctx.close()
