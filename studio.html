@@ -141,21 +141,34 @@
     </section>
 
     <section class="view" id="view-builder">
-      <div class="builder-layout">
+      <div class="builder-layout bo-builder-layout">
+        <aside class="bo-builder-rail" aria-label="قائمة أسئلة الاختبار">
+          <div class="bo-rail-title"><strong>الأسئلة</strong><span id="boRailCount">1 سؤال</span></div>
+          <nav id="boQuestionRail" class="bo-rail-list" aria-label="اختر السؤال لتعديله"></nav>
+          <button type="button" id="boRailAddQuestion" class="bo-rail-add">＋ إضافة سؤال جديد</button>
+          <small class="bo-rail-help">اختر أي سؤال لتعديله، أو أضف سؤالًا جديدًا.</small>
+        </aside>
         <div class="panel builder-main">
           <div class="section-title"><div><div class="overline">QUIZ STUDIO</div><h3>استوديو إنشاء الاختبار</h3><p>أنشئ أسئلة تقليدية، عملية، بصرية، ترتيب ومطابقة.</p></div><div class="inline-actions"><button class="btn btn-secondary" id="loadDemo">نموذج جاهز</button><button class="btn btn-soft" id="addFromBank">+ من البنك</button></div></div>
-          <div class="form-grid">
-            <label>عنوان الاختبار<input id="quizTitle" placeholder="مثال: تحدي الوحدة الأولى" /></label>
-            <label>المادة<input id="quizSubject" value="" /></label>
-            <label>الصف<select id="quizGrade"><option>الأول</option><option>الثاني</option><option>الثالث</option><option>الرابع</option><option>الخامس</option><option>السادس</option><option>السابع</option><option>الثامن</option><option>التاسع</option><option>العاشر</option><option>الحادي عشر</option><option>الثاني عشر</option></select></label>
-            <label>الشعبة / المجموعة<input id="quizSection" placeholder="أ، ب، ج" /></label>
-          </div>
-          <div class="settings-row">
-            <label class="toggle-line"><input type="checkbox" id="randomQuestions" checked><span>خلط الأسئلة</span></label>
-            <label class="toggle-line"><input type="checkbox" id="randomOptions" checked><span>خلط الخيارات</span></label>
-            <label class="toggle-line"><input type="checkbox" id="showFeedback" checked><span>إظهار التصحيح</span></label>
-            <label class="toggle-line"><input type="checkbox" id="speedBonus" checked><span>مكافأة السرعة</span></label>
-            <label class="toggle-line"><input type="checkbox" id="bossEnabled"><span>آخر سؤال Boss ×2</span></label>
+          <div class="bo-quiz-heading">
+            <label class="bo-quiz-title">عنوان الاختبار
+              <input id="quizTitle" placeholder="اكتب عنوان الاختبار هنا..." autocomplete="off" />
+            </label>
+            <details class="bo-quiz-config">
+              <summary>⚙️ إعدادات الاختبار <span>المادة والصف والخلط والتصحيح</span></summary>
+              <div class="form-grid bo-config-grid">
+                <label>المادة<input id="quizSubject" value="" /></label>
+                <label>الصف<select id="quizGrade"><option>الأول</option><option>الثاني</option><option>الثالث</option><option>الرابع</option><option>الخامس</option><option>السادس</option><option>السابع</option><option>الثامن</option><option>التاسع</option><option>العاشر</option><option>الحادي عشر</option><option>الثاني عشر</option></select></label>
+                <label>الشعبة / المجموعة<input id="quizSection" placeholder="أ، ب، ج" /></label>
+              </div>
+              <div class="settings-row">
+                <label class="toggle-line"><input type="checkbox" id="randomQuestions" checked><span>خلط الأسئلة</span></label>
+                <label class="toggle-line"><input type="checkbox" id="randomOptions" checked><span>خلط الخيارات</span></label>
+                <label class="toggle-line"><input type="checkbox" id="showFeedback" checked><span>إظهار التصحيح</span></label>
+                <label class="toggle-line"><input type="checkbox" id="speedBonus" checked><span>مكافأة السرعة</span></label>
+                <label class="toggle-line"><input type="checkbox" id="bossEnabled"><span>آخر سؤال Boss ×2</span></label>
+              </div>
+            </details>
           </div>
           <div class="divider"></div>
           <div class="section-title"><div><h3>الأسئلة</h3><p>اضغط إضافة أو اسحب من بنك الأسئلة.</p></div><span class="pill" id="questionCount">0 سؤال</span></div>
@@ -164,12 +177,14 @@
           <div class="add-question-wrap"><button class="add-question" id="addQuestion">+ إضافة سؤال</button><div class="quick-types" id="quickTypes"><button data-addtype="single">اختيار</button><button data-addtype="tf">صح/خطأ</button><button data-addtype="order">ترتيب</button><button data-addtype="match">مطابقة</button><button data-addtype="estimate">تقدير رقمي</button></div></div>
           <div class="builder-actions"><button class="btn btn-secondary" id="resetBuilder">مسح النموذج</button><button class="btn btn-primary" id="saveQuiz">حفظ الاختبار</button></div>
         </div>
-        <aside class="panel builder-side">
-          <h4>أنواع مدعومة</h4>
-          <div class="type-list">
-            <div><span>🔘</span><b>اختيار واحد</b><small>إجابة واحدة صحيحة</small></div><div><span>☑️</span><b>اختيارات متعددة</b><small>أكثر من إجابة</small></div><div><span>✅</span><b>صح / خطأ</b><small>سريع وواضح</small></div><div><span>🎯</span><b>تقدير رقمي</b><small>رقم ضمن هامش دقة</small></div><div><span>⌨️</span><b>إجابة قصيرة</b><small>مطابقة نصية</small></div><div><span>↕</span><b>ترتيب وسحب</b><small>خطوات عملية</small></div><div><span>🔗</span><b>مطابقة</b><small>اربط المصطلح بوظيفته</small></div><div><span>📊</span><b>استطلاع</b><small>بدون إجابة صحيحة</small></div>
-          </div>
-          <div class="tip-box"><strong>🖼 صور داخل السؤال</strong><p>يمكنك رفع صورة لأي سؤال من جهازك. تُحفظ داخل الاختبار نفسه وتعمل دون إنترنت.</p></div>
+        <aside class="panel builder-side bo-builder-properties" aria-label="خصائص السؤال">
+          <div class="bo-prop-head"><strong>خصائص السؤال</strong><small>لكل سؤال إعداداته الخاصة</small></div>
+          <div id="boQuestionProperties" class="bo-properties-content"></div>
+          <details class="bo-editor-help">
+            <summary>💡 نصائح سريعة</summary>
+            <p>ابدأ بسؤال واضح وأربعة خيارات، ثم ضع علامة أمام الإجابة الصحيحة. الوقت الافتراضي 20 ثانية والنقاط 1000.</p>
+            <p>تستطيع إضافة صورة واختيار أنواع متقدمة دون تعقيد الصفحة.</p>
+          </details>
         </aside>
       </div>
     </section>
