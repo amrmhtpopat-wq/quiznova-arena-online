@@ -15,6 +15,7 @@ on:
       - booyah-classroom.css
       - booyah-contrast-v109.css
       - booyah-builder-v110.css
+      - booyah-quiz-polish-v111.css
       - tests/browser_builder_v110.py
       - studio-auth.js
       - tests/browser_contrast_v109.py
