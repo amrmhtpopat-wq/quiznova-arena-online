@@ -1,10 +1,35 @@
 (async()=>{
-  const tk=localStorage.getItem('qn9_teacher_token');if(!tk){location.replace('/');return}
+  const allowedViews=['dashboard','generator','builder','bank','media','library','live','play','results','settings'];
+  const requestedView=location.hash.slice(1);
+  const safeView=allowedViews.includes(requestedView)?requestedView:'dashboard';
+  const loginTarget='/?next='+encodeURIComponent('/studio.html#'+safeView);
+  const tk=localStorage.getItem('qn9_teacher_token');
+  if(!tk){location.replace(loginTarget);return}
   try{
     const authHeader={'Authorization':'Bearer '+tk};
-    const [me,snap]=await Promise.all([fetch('/api/auth/me',{headers:authHeader}),fetch('/api/teacher/snapshot',{headers:authHeader})]);
-    if(!me.ok||!snap.ok)throw Error('login_required');
-    const m=await me.json(), s=await snap.json();if(!m.ok||!s.ok)throw Error('login_required');
+    let m=null,s=null,lastStatus=[];
+    for(let attempt=0;attempt<3;attempt++){
+      try{
+        const [me,snap]=await Promise.all([
+          fetch('/api/auth/me',{headers:authHeader,cache:'no-store'}),
+          fetch('/api/teacher/snapshot',{headers:authHeader,cache:'no-store'})
+        ]);
+        lastStatus=[me.status,snap.status];
+        if(me.ok&&snap.ok){
+          const teacherData=await me.json(),snapshotData=await snap.json();
+          if(teacherData.ok&&snapshotData.ok){
+            m=teacherData;s=snapshotData;break;
+          }
+        }
+      }catch(e){lastStatus=['network','network']}
+      if(attempt<2)await new Promise(resolve=>setTimeout(resolve,350*(attempt+1)));
+    }
+    if(!m||!s){
+      // Only both endpoints consistently rejecting an invalid session justify relogin.
+      // Mixed 200/401, 429 or 5xx must NOT silently delete a valid teacher session.
+      if(lastStatus.length===2&&lastStatus.every(code=>code===401))throw Error('login_required');
+      throw Error('temporary_auth_unavailable');
+    }
     window.QN9_TEACHER=m.teacher; window.QN9_TOKEN=tk;
     let revision=Number(s.revision||0),baseline=JSON.parse(JSON.stringify(s.data));
     const teacherName=document.getElementById('studioTeacherName'),teacherSubject=document.getElementById('studioTeacherSubject');
@@ -88,5 +113,22 @@
     };
     document.documentElement.style.visibility='visible';
     let script=document.createElement('script');script.src='/app.js?v=11.1';script.onload=()=>{const view=location.hash.slice(1);if(view&&window.go)window.go(['dashboard','generator','builder','bank','media','library','live','play','results','settings'].includes(view)?view:'dashboard')};document.body.appendChild(script);
-  }catch(e){localStorage.removeItem('qn9_teacher_token');location.replace('/')}
+  }catch(e){
+    if(e.message==='login_required'){
+      localStorage.removeItem('qn9_teacher_token');
+      location.replace(loginTarget);
+      return;
+    }
+    // A temporary server problem should never kick the teacher to the dashboard.
+    document.documentElement.style.visibility='visible';
+    const main=document.querySelector('main')||document.body;
+    main.innerHTML='<section style="max-width:650px;margin:12vh auto;padding:30px;border-radius:20px;background:#102e53;border:1px solid #55a7ce;color:#f2faff;font:600 17px/1.8 Cairo,Tahoma,Arial;text-align:center" dir="rtl">'
+      +'<h2 style="color:#fff">تعذر التحقق من الجلسة مؤقتًا</h2>'
+      +'<p style="color:#d0e9fa">الخادم لم يستجب بشكل ثابت. لم نحذف جلسة المعلم أو بيانات الاختبارات.</p>'
+      +'<button id="qnRetryStudio" type="button" style="padding:12px 24px;border:0;border-radius:12px;background:#a5e9f8;color:#092d48;font-weight:900;cursor:pointer">إعادة المحاولة</button> '
+      +'<a href="'+loginTarget+'" style="color:#fff;text-decoration:underline;margin-inline:12px">تسجيل الدخول من جديد</a>'
+      +'</section>';
+    document.querySelector('#qnRetryStudio')?.addEventListener('click',()=>location.reload());
+    console.warn('Studio session initialization failed',e.message||e);
+  }
 })();
