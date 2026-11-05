@@ -87,6 +87,18 @@ with sync_playwright() as p:
         assert dims['overflow']=='hidden',dims
         assert dims['bottom']<=dims['height']+5,dims
         page.screenshot(path=str(dest/('question-mobile.png' if mobile else 'question-desktop.png')))
+        # A transient API failure must not trap the student with disabled options.
+        attempts={'count':0}
+        def answer_with_one_failure(route):
+            attempts['count']+=1
+            if attempts['count']==1:
+                route.fulfill(status=503,content_type='application/json',body='{"ok":false,"error":"temporary"}')
+            else:
+                route.continue_()
+        page.route('**/api/room/answer',answer_with_one_failure)
+        page.locator('#gameView .question-card .answer').first.click()
+        page.locator('#feedback .wrong').wait_for(state='visible',timeout=4500)
+        assert page.locator('#gameView .question-card .answer').first.is_enabled()
         page.locator('#gameView .question-card .answer').first.click()
         page.locator('#qnAnswerWait').wait_for(state='visible',timeout=4500)
         wait=page.locator('#qnAnswerWait').inner_text()
