@@ -89,6 +89,16 @@ class VisualAndDirectAnswerTests(unittest.TestCase):
         self.assertIn("$$('.answer').forEach(b=>b.disabled=true)",student)
         self.assertIn("$$('.answer').forEach(b=>b.disabled=false)",student)
 
+    def test_live_room_request_uses_teacher_token_and_actionable_errors(self):
+        source=read('app.js')
+        self.assertIn("const teacherToken=window.QN9_TOKEN||localStorage.getItem('qn9_teacher_token')||''",source)
+        self.assertIn("'Authorization':'Bearer '+teacherToken",source)
+        self.assertIn("if(!r.ok||!d.ok)throw Object.assign",source)
+        self.assertIn("e.status===401||e.message==='login_required'",source)
+        self.assertNotIn("تعذر إنشاء الغرفة. تحقق من اتصال الخادم بالإنترنت ثم حاول مرة أخرى",source)
+        self.assertIn("script.src='/app.js?v=10.5.2'",read('studio-auth.js'))
+        self.assertIn("studio-auth.js?v=10.5.2",read('studio.html'))
+
     def test_teacher_photo_is_not_in_profile_card(self):
         dashboard=read('index.html')
         studio=read('studio.html')
