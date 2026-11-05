@@ -6,13 +6,15 @@ let roomAvatarPool=[];let lastAvatarCode='';let avatarRequest=0;
 const avatarPath=id=>/^m0[1-8]$/.test(id)?'/assets/avatars-game/'+(id==='m08'?'m07':id)+'.svg':/^n0[1-8]$/.test(id)?'/assets/avatars3d/'+id+'.webp':/^[bg](0[1-9]|1[0-6])$/.test(id)?'/assets/avatars3d/'+id+'.webp':'/assets/avatars/'+(/^\d{2}$/.test(id)?id:'01')+'.svg';
 let selectedCard=(new URLSearchParams(location.search)).get('card')||'';
 let cardName='';
+const booyahMascotNames={m01:'شرارة',m02:'روبوك',m03:'فوكسو',m04:'نينزو',m05:'درعو',m06:'بيكسو',m07:'زومي',m08:'زومي'};
+const avatarDisplayName=id=>booyahMascotNames[id]||(id?.startsWith('b')?'بطل اللعبة':id?.startsWith('g')?'بطلة اللعبة':'شخصية اللعبة');
 function showAvatars(ids){
- roomAvatarPool=ids.filter(x=>/^(?:[bg](?:0[1-9]|1[0-6])|[mn]0[1-8])$/.test(x));
+ roomAvatarPool=ids.filter(id=>/^(?:[bg](?:0[1-9]|1[0-6])|[mn]0[1-8])$/.test(id)&&id!=='m08');
  if(!roomAvatarPool.length)roomAvatarPool=['b01','g01'];
  if(!roomAvatarPool.includes(pickedAvatar))pickedAvatar=roomAvatarPool[0];
- $('#avatarPicker').innerHTML=roomAvatarPool.map((id,i)=>`<button type="button" class="avatar-choice ${id===pickedAvatar?'selected':''}" data-avatar="${id}" aria-label="شخصية ${i+1}"><img src="${avatarPath(id)}" alt="شخصية 3D"></button>`).join('');
+ $('#avatarPicker').innerHTML=roomAvatarPool.map(id=>`<button type="button" class="avatar-choice ${id===pickedAvatar?'selected':''}" data-avatar="${id}" aria-label="اختر ${avatarDisplayName(id)}" title="${avatarDisplayName(id)}"><img src="${avatarPath(id)}" loading="lazy" alt="${avatarDisplayName(id)}"><span class="bo-avatar-name">${avatarDisplayName(id)}</span></button>`).join('');
 }
-showAvatars(['b01','b02','b03','b04']);
+showAvatars(['m01','m02','m03','m04','m05','m06','m07','b01','b02']);
 async function loadRoomAvatarPool(){
  const code=$('#roomCode').value.replace(/\D/g,'').slice(0,6);if(code.length!==6)return;
  if(code===lastAvatarCode&&roomAvatarPool.length)return;
