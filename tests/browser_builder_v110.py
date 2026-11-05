@@ -1,5 +1,5 @@
 """Interactive Chrome regression for BOOYAH question creator v11.0."""
-import os,sys,tempfile,threading,uuid
+import os,sys,tempfile,threading,uuid,time
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from playwright.sync_api import sync_playwright
@@ -58,7 +58,11 @@ with sync_playwright() as p:
         page.locator('#boQuestionRail .bo-rail-question').nth(1).click()
         assert page.locator('#boPropertyPoints').input_value()=='2500'
         page.locator('#saveQuiz').click()
-        quizzes=store.snapshot(account['teacher']['id'])['quizzes']
+        quizzes=[]
+        for attempt in range(25):
+            quizzes=store.snapshot(account['teacher']['id'])['quizzes']
+            if len(quizzes)==1:break
+            time.sleep(0.25)
         assert len(quizzes)==1,quizzes
         assert len(quizzes[0]['questions'])==2,quizzes
         assert [q['points'] for q in quizzes[0]['questions']]==[1000,2500]
