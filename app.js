@@ -66,8 +66,8 @@ function go(view,options={}){
   if(view==='dashboard')renderDashboard(); if(view==='generator')renderGenerator(); if(view==='library')renderLibrary(); if(view==='play')renderPlaySelect(options.quizId); if(view==='results')renderResults(); if(view==='bank')renderBank(); if(view==='media')renderMediaLibrary(); if(view==='live')renderLiveLanding(options.quizId);
 }
 window.go=go;
-$('.nav-item').forEach(b=>b.onclick=()=>b.dataset.view==='builder'?openNewQuiz():go(b.dataset.view));
-$('[data-jump]').forEach(b=>b.onclick=()=>b.dataset.jump==='builder'?openNewQuiz():go(b.dataset.jump));
+$$('.nav-item').forEach(b=>b.onclick=()=>b.dataset.view==='builder'?openNewQuiz():go(b.dataset.view));
+$$('[data-jump]').forEach(b=>b.onclick=()=>b.dataset.jump==='builder'?openNewQuiz():go(b.dataset.jump));
 $('#menuBtn').onclick=()=>$('#sidebar').classList.toggle('open');
 $('#quickGenerate').onclick=()=>go('generator');
 $$('[data-modejump]').forEach(b=>b.onclick=()=>{ go('play'); setTimeout(()=>$('#playMode').value=b.dataset.modejump,0) });
