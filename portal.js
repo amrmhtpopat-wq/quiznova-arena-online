@@ -115,7 +115,7 @@ function renderStudents(){
     return `<article class="idcard bo-student-id" dir="rtl" aria-label="بطاقة الطالب ${name}">
       <header class="bo-badge-header">
         <span class="bo-badge-icon" aria-hidden="true">🎮</span>
-        <div class="bo-badge-brand"><strong>BOOYAH!</strong><small>QUIZ ARENA · بطاقة الطالب الذكية</small></div>
+        <div class="bo-badge-brand"><strong>BOOYAHJO</strong><small>QUIZ ARENA · بطاقة الطالب الذكية</small></div>
         <span class="bo-badge-edition" title="إصدار تصميم البطاقة">BADJ-TH42</span>
       </header>
       <div class="bo-badge-content">
