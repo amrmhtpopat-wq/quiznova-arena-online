@@ -82,7 +82,46 @@ function renderAvatarChoices(){
 function updateAvatarPreview(){const p=$('#studentAvatarPreview');if(p)p.src=avatarPath($('#newStudentAvatar').value)}
 $('#newStudentAvatar').addEventListener('change',updateAvatarPreview);
 $('#saveSchoolMode').onclick=async()=>{try{const res=await api('/api/teacher/school-type',{method:'POST',body:JSON.stringify({schoolType:$('#schoolModeEditor').value})});teacher.school_type=res.schoolType;renderAvatarChoices();notify('تم حفظ نوع المدرسة. سيتم تطبيقه في الغرف الجديدة.')}catch(e){notify(err(e))}};
-function renderStudents(){const list=cache.students;$('#studentCount').textContent=list.length;let base=location.origin+'/student.html?card=';$('#studentsBoard').innerHTML=list.map(s=>{let link=base+encodeURIComponent(s.card);let qr='/api/qr?text='+encodeURIComponent(link);return `<div class="idcard"><img class="avatar-pic" src="${avatarPath(s.avatar)}" alt=""><div class="id-info"><strong>${esc(s.name)}</strong><small>الشعبة: ${esc(s.className)}</small><span class="level">⭐ المستوى ${s.level} • ${esc(s.progress?.title||'مبتدئ')} • ${s.xp} XP</span><div class="qn-card-progress" role="progressbar" aria-valuenow="${Number(s.progress?.percent)||0}" aria-valuemin="0" aria-valuemax="100"><i style="width:${Math.max(0,Math.min(100,Number(s.progress?.percent)||0))}%"></i></div><small>المتبقي للمستوى التالي: ${Number(s.progress?.xpToNext)||0} XP</small><small>🔑 رمز البطاقة: <b class="qn-card-code" dir="ltr">${esc(s.cardCode||'—')}</b></small><small>${s.correct} صحيحة • ${s.played} مشاركة</small></div><img class="qr" src="${qr}" alt="رمز بطاقة الطالب"></div>`}).join('')||'<div class="empty">ابدأ بإضافة الطلاب لتوليد بطاقاتهم.</div>'}
+function renderStudents(){
+  const list=cache.students;
+  $('#studentCount').textContent=list.length;
+  const base=location.origin+'/student.html?card=';
+  $('#studentsBoard').innerHTML=list.map(student=>{
+    const link=base+encodeURIComponent(student.card);
+    const qr='/api/qr?text='+encodeURIComponent(link);
+    const percent=Math.max(0,Math.min(100,Number(student.progress?.percent)||0));
+    const level=Math.max(1,Number(student.level)||1);
+    const xp=Math.max(0,Number(student.xp)||0);
+    const name=esc(student.name);
+    const className=esc(student.className);
+    const cardCode=esc(student.cardCode||'—');
+    const characterName=esc(avatarDisplayName(student.avatar));
+    return `<article class="idcard bo-student-id" dir="rtl" aria-label="بطاقة الطالب ${name}">
+      <header class="bo-badge-header">
+        <span class="bo-badge-icon" aria-hidden="true">🎮</span>
+        <div class="bo-badge-brand"><strong>BOOYAH!</strong><small>QUIZ ARENA · بطاقة الطالب الذكية</small></div>
+        <span class="bo-badge-edition" title="إصدار تصميم البطاقة">BADJ-TH42</span>
+      </header>
+      <div class="bo-badge-content">
+        <div class="bo-badge-avatar"><img class="avatar-pic" loading="lazy" src="${avatarPath(student.avatar)}" alt="شخصية ${characterName}"><span>${characterName}</span></div>
+        <div class="bo-badge-identity">
+          <span class="bo-badge-field-label">اسم الطالب</span>
+          <strong class="bo-badge-student-name">${name}</strong>
+          <div class="bo-badge-class"><span>الصف / الشعبة</span><b>${className}</b></div>
+          <div class="bo-badge-code"><span>رمز الدخول</span><b class="bo-badge-access-id" dir="ltr">${cardCode}</b></div>
+        </div>
+      </div>
+      <div class="bo-badge-bottom">
+        <div class="bo-badge-progress">
+          <div class="bo-badge-level"><span>⭐ المستوى ${level}</span><b>${esc(student.progress?.title||'مبتدئ')}</b></div>
+          <div class="bo-badge-xp"><strong>${xp.toLocaleString('en-US')} XP</strong><small>تبقى ${Number(student.progress?.xpToNext)||0} XP للمستوى التالي</small></div>
+          <div class="bo-badge-meter" role="progressbar" aria-valuenow="${percent}" aria-valuemin="0" aria-valuemax="100"><span style="width:${percent}%"></span></div>
+        </div>
+        <div class="bo-badge-qr"><img class="qr" src="${qr}" loading="lazy" alt="رمز QR لبطاقة ${name}"><small>امسح للانضمام</small></div>
+      </div>
+    </article>`;
+  }).join('')||'<div class="empty">ابدأ بإضافة الطلاب لتوليد بطاقاتهم.</div>';
+}
 function renderHistory(){const sessions=cache.sessions;$('#historyBoard').innerHTML=sessions.map(s=>`<div class="history-row"><div><b>📘 ${esc(s.quiz_title)}</b><small>${esc(s.section)} • ${new Date(s.played_at*1000).toLocaleDateString('ar-JO')} • ${s.report.length} مشارك</small></div><b>${s.report.length?Math.round(s.report.reduce((a,r)=>a+r.percent,0)/s.report.length):0}%</b></div>`).join('')||'<div class="empty">لا توجد نتائج محفوظة بعد.</div>'}
 async function loadAll(){const [d,s,h]=await Promise.all([api('/api/teacher/dashboard'),api('/api/teacher/students'),api('/api/teacher/history')]);cache={dashboard:d.dashboard,students:s.students,sessions:h.sessions};renderHome();renderStudents();renderHistory()}
 async function saveStudents(students){const r=await api('/api/teacher/students',{method:'POST',body:JSON.stringify({students})});notify('تمت إضافة '+r.count+' طالب');await loadAll()}
