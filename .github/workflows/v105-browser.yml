@@ -13,6 +13,8 @@ on:
       - v106-contrast.css
       - v107-prelaunch.css
       - booyah-classroom.css
+      - booyah-contrast-v109.css
+      - tests/browser_contrast_v109.py
       - platform_store.py
       - tests/browser_smoke_v105.py
       - .github/workflows/v105-browser.yml
@@ -34,7 +36,9 @@ jobs:
           python -m pip install playwright
           python -m playwright install chromium
       - name: Test actual browser on desktop and mobile
-        run: python tests/browser_smoke_v105.py
+        run: |
+          python tests/browser_smoke_v105.py
+          python tests/browser_contrast_v109.py
       - name: Upload visual QA screenshots
         if: always()
         uses: actions/upload-artifact@v4
