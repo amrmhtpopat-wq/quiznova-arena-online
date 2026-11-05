@@ -50,6 +50,7 @@ with sync_playwright() as playwright:
     assert all(c.strip()!='BADJ-TH42' for c in codes)
     assert page.locator('.bo-badge-edition').first.inner_text()=='BADJ-TH42'
     assert page.locator('.bo-badge-student-name').first.inner_text()=='طالب اختبار 1'
+    page.eval_on_selector_all('.bo-student-id img','images=>images.forEach(img=>img.loading="eager")')
     page.wait_for_function(
       'Array.from(document.querySelectorAll(".bo-badge-qr img,.bo-badge-avatar img")).every(img=>img.complete && img.naturalWidth>0)',
       timeout=15000
