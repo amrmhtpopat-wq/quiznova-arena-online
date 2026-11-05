@@ -34,7 +34,7 @@ function mode(which,update=true){
 }
 buttons.forEach(b=>b.addEventListener('click',()=>mode(b.dataset.studentMode)));
 async function resume(token){
- try{const d=await api('state',{token});current.token=token;current.state=d.state;el('soloQuizList').innerHTML='';render(d.state)}
+ try{const d=await api('state',{token});current.token=token;current.state=d.state;el('soloQuizList').innerHTML='';el('soloCardForm').classList.add('hidden');render(d.state)}
  catch{sessionStorage.removeItem('booyah_solo_token');current.token='';current.state=null}
 }
 async function catalog(event){
