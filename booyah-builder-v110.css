@@ -619,3 +619,26 @@ body.v105-studio #view-builder #saveQuiz {
     min-height:140px;
   }
 }
+
+/* Optional educational templates stay accessible, not visually overwhelming. */
+body.v105-studio #view-builder .bo-optional-tools {
+  margin-top:16px;
+  padding:12px 15px;
+  border:1px solid #5a9dc7!important;
+  border-radius:13px;
+  background:#0e325c!important;
+  color:#eafaff!important;
+}
+body.v105-studio #view-builder .bo-optional-tools > summary {
+  cursor:pointer;
+  color:#ecf8ff!important;
+  font-size:14px!important;
+  font-weight:850!important;
+  line-height:1.7;
+}
+body.v105-studio #view-builder .bo-optional-tools .v104-idea-lab {
+  margin:12px 0 0!important;
+}
+body.v105-studio #view-builder .bo-optional-tools:not([open]) .v104-idea-lab {
+  display:none!important;
+}
