@@ -138,7 +138,7 @@ def _cookie(handler, name):
 def _admin_cookie(handler, key, value, max_age=SESSION_SECONDS, http_only=True):
     # Localhost is a secure context in browsers; local HTTP tests may omit Secure.
     secure = '; Secure' if os.getenv('RENDER') or os.getenv('RENDER_EXTERNAL_URL') else ''
-    return f'{key}={value}; Path=/api/admin; Max-Age={max_age}; SameSite=Strict{secure}' + ('; HttpOnly' if http_only else '')
+    return f'{key}={value}; Path={"/api/admin" if http_only else "/"}; Max-Age={max_age}; SameSite=Strict{secure}' + ('; HttpOnly' if http_only else '')
 
 
 def _reply(handler, data, code=200, cookies=()):
