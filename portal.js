@@ -72,6 +72,7 @@ function sessionRow(s){let date=new Date(s.played_at*1000).toLocaleString('ar-JO
 function renderHome(){let d=cache.dashboard||{};$('#metSessions').textContent=d.sessions||0;$('#metStudents').textContent=d.students||0;$('#metAverage').textContent=(d.average||0)+'%';$('#metAttempts').textContent=d.attempts||0;$('#homeClasses').innerHTML=(d.classes||[]).slice(0,4).map(rateRow).join('')||'<div class="empty">لا توجد منافسات بعد.</div>';$('#homeMastery').innerHTML=(d.mastery||[]).filter(s=>s.needsReview).slice(0,5).map(skillRow).join('')||'<div class="empty">لا توجد مهارات تحتاج دعمًا بعد.</div>';$('#homeHistory').innerHTML=(d.recent||[]).slice(0,5).map(sessionRow).join('')||'<div class="empty">لا توجد جلسات محفوظة بعد.</div>';$('#classesBoard').innerHTML=(d.classes||[]).map(rateRow).join('')||'<div class="empty">الترتيب سيظهر بعد إنهاء جلسات شعب مختلفة.</div>';$('#masteryBoard').innerHTML=(d.mastery||[]).sort((a,b)=>a.rate-b.rate).map(skillRow).join('')||'<div class="empty">أنهِ مسابقة ذات أسئلة مصنفة حسب المهارات.</div>';$('#storageStatus').textContent=d.dbKind==='postgres'?'◉ قاعدة بيانات سحابية':'◉ تخزين محلي (ليس دائمًا على Render)';}
 const booyahMascotNames={m01:'شرارة',m02:'روبوك',m03:'فوكسو',m04:'نينزو',m05:'درعو',m06:'بيكسو',m07:'زومي',m08:'زومي'};
 function avatarDisplayName(id){
+  if(window.booyahAvatarLabel)return window.booyahAvatarLabel(id);
   if(booyahMascotNames[id])return booyahMascotNames[id];
   if(/^n0[1-8]$/.test(id))return ['التراث الأردني','الشرطة','الهندسة','الطيران','كرة القدم','الكلية العسكرية','النينجا الأصلي','البطل التقني'][Number(id.slice(1))-1];
   return id.startsWith('b')?'بطل اللعبة':id.startsWith('g')?'بطلة اللعبة':'شخصية اللعبة';
@@ -102,7 +103,9 @@ function renderStudents(){
   const list=cache.students;
   $('#studentCount').textContent=list.length;
   const base=location.origin+'/student.html?card=';
-  $('#studentsBoard').innerHTML=list.map(student=>{
+  const folders=[...new Set(list.map(s=>s.className||'شعبة غير محددة'))].sort((a,b)=>a.localeCompare(b,'ar'));
+  $('#studentsBoard').innerHTML=folders.map((cls,i)=>{
+  const group=list.filter(s=>(s.className||'شعبة غير محددة')===cls).map(student=>{
     const link=base+encodeURIComponent(student.card);
     const qr='/api/qr?text='+encodeURIComponent(link);
     const percent=Math.max(0,Math.min(100,Number(student.progress?.percent)||0));
@@ -135,9 +138,63 @@ function renderStudents(){
         </div>
         <div class="bo-badge-qr"><img class="qr" src="${qr}" loading="lazy" alt="رمز QR لبطاقة ${name}"><small>امسح للانضمام</small></div>
       </div>
+    <div class="bo-card-actions bo-no-print"><button type="button" data-edit-student="${esc(student.id)}">✏️ تعديل البطاقة</button><button type="button" class="bo-card-danger" data-remove-student="${esc(student.id)}">🗑 حذف البطاقة</button></div>
     </article>`;
+  }).join('');
+  return `<details class="bo-class-folder" open data-class-folder="${esc(cls)}"><summary>📁 ${esc(cls)} <span>${list.filter(s=>s.className===cls).length} بطاقات</span></summary><div class="bo-folder-toolbar bo-no-print"><button type="button" data-print-class="${esc(cls)}">🖨 طباعة بطاقات هذه الشعبة فقط</button></div><div class="bo-folder-cards">${group}</div></details>`;
   }).join('')||'<div class="empty">ابدأ بإضافة الطلاب لتوليد بطاقاتهم.</div>';
 }
+
+function editCardModal(student){
+ let box=$('#boCardEditor');
+ if(!box){box=document.createElement('div');box.id='boCardEditor';box.className='bo-card-dialog';document.body.appendChild(box)}
+ const ids=avatarIds();
+ box.innerHTML='<div class="bo-card-shade" data-close-card></div><section class="bo-card-dialog-box" role="dialog" aria-modal="true" aria-label="تعديل بطاقة الطالب">'
+  +'<div class="bo-card-dialog-head"><h2>✏️ تعديل بطاقة الطالب</h2><button type="button" data-close-card aria-label="إغلاق">✕</button></div>'
+  +'<form id="boCardEditForm"><label>اسم الطالب<input name="name" required maxlength="90" value="'+esc(student.name)+'"></label>'
+  +'<label>الصف والشعبة<input name="className" required maxlength="65" value="'+esc(student.className)+'"></label>'
+  +'<label>الشخصية / الصورة<select name="avatar">'+ids.map(id=>'<option value="'+esc(id)+'"'+(id===student.avatar?' selected':'')+'>'+esc(avatarDisplayName(id))+'</option>').join('')+'</select></label>'
+  +'<div class="bo-avatar-dialog-preview"><img id="boEditAvatarImage" src="'+avatarPath(student.avatar)+'" alt="معاينة الشخصية"><span>رمز QR ورقم البطاقة سيبقيان كما هما</span></div>'
+  +'<div class="bo-card-dialog-actions"><button type="button" data-close-card>إلغاء</button><button type="submit" class="primary" id="boCardSave">حفظ التعديل</button></div></form></section>';
+ box.classList.add('open');
+ box.querySelectorAll('[data-close-card]').forEach(b=>b.onclick=()=>box.classList.remove('open'));
+ box.querySelector('select[name=avatar]').onchange=e=>$('#boEditAvatarImage').src=avatarPath(e.target.value);
+ $('#boCardEditForm').onsubmit=async e=>{
+  e.preventDefault();const form=new FormData(e.target),btn=$('#boCardSave');btn.disabled=true;
+  try{
+   await api('/api/teacher/students/edit',{method:'POST',body:JSON.stringify({
+    id:student.id,name:form.get('name'),className:form.get('className'),avatar:form.get('avatar')})});
+   box.classList.remove('open');await loadAll();notify('تم تعديل البطاقة دون تغيير رمز QR');
+  }catch(ex){notify(err(ex))}finally{btn.disabled=false}
+ };
+}
+$('#studentsBoard').addEventListener('click',async e=>{
+ const edit=e.target.closest('[data-edit-student]');
+ if(edit){
+  const s=cache.students.find(x=>x.id===edit.dataset.editStudent);
+  if(s)editCardModal(s);return;
+ }
+ const remove=e.target.closest('[data-remove-student]');
+ if(remove){
+  const s=cache.students.find(x=>x.id===remove.dataset.removeStudent);
+  if(!s||!confirm('حذف بطاقة '+s.name+'؟ سيتوقف رمز QR ورمز الدخول عن العمل، وستبقى النتائج السابقة محفوظة.'))return;
+  try{
+   await api('/api/teacher/students/delete',{method:'POST',body:JSON.stringify({id:s.id,confirm:true})});
+   await loadAll();notify('تم إلغاء البطاقة مع الاحتفاظ بالنتائج السابقة');
+  }catch(ex){notify(err(ex))}return;
+ }
+ const print=e.target.closest('[data-print-class]');
+ if(print){
+  const folder=print.closest('.bo-class-folder');if(!folder)return;
+  const all=$$('#studentsBoard .bo-class-folder');
+  all.forEach(f=>f.classList.toggle('bo-print-other',f!==folder));
+  folder.open=true;
+  await $('#printCards').click();
+  // A print-dialog can be asynchronous. Keep only this group targeted until after printing.
+  setTimeout(()=>all.forEach(f=>f.classList.remove('bo-print-other')),1400);
+ }
+});
+
 function renderHistory(){const sessions=cache.sessions;$('#historyBoard').innerHTML=sessions.map(s=>`<div class="history-row"><div><b>📘 ${esc(s.quiz_title)}</b><small>${esc(s.section)} • ${new Date(s.played_at*1000).toLocaleDateString('ar-JO')} • ${s.report.length} مشارك</small></div><b>${s.report.length?Math.round(s.report.reduce((a,r)=>a+r.percent,0)/s.report.length):0}%</b></div>`).join('')||'<div class="empty">لا توجد نتائج محفوظة بعد.</div>'}
 async function loadAll(){const [d,s,h]=await Promise.all([api('/api/teacher/dashboard'),api('/api/teacher/students'),api('/api/teacher/history')]);cache={dashboard:d.dashboard,students:s.students,sessions:h.sessions};renderHome();renderStudents();renderHistory()}
 async function saveStudents(students){const r=await api('/api/teacher/students',{method:'POST',body:JSON.stringify({students})});notify('تمت إضافة '+r.count+' طالب');await loadAll()}
