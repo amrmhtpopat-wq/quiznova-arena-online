@@ -1,0 +1,259 @@
+/* BOOYAHJO V12.2 — native 100% zoom, readable live-room layout and complete student avatars.
+   Scoped rules only: no transformations/zoom hacks, no changes to quiz or card logic. */
+body.v105-studio .sidebar{
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior-y:contain;
+  scrollbar-width:thin;
+  scrollbar-color:#51d2eb88 transparent;
+}
+body.v105-studio .sidebar .nav{min-height:0}
+body.v105-studio .sidebar .nav-item{flex-shrink:0;min-width:0}
+body.v105-studio .main{min-width:0;max-width:none}
+body.v105-studio #view-live,
+body.v105-studio #liveHost,
+body.v105-studio #liveHost .room-shell,
+body.v105-studio #liveHost .room-shell>*,
+body.v105-studio #liveHost .live-game-grid,
+body.v105-studio #liveHost .live-game-grid>*{
+  min-width:0;max-width:100%;
+}
+body.v105-studio #liveHost .room-shell{
+  display:grid!important;
+  width:100%;
+  align-items:start;
+  grid-template-columns:minmax(0,1.22fr) minmax(0,.78fr)!important;
+  grid-template-areas:
+    "scene scene"
+    "join players"
+    "settings settings";
+  gap:14px;
+}
+body.v105-studio #liveHost .room-shell>.bo-live-scene-control{grid-area:scene;margin:0!important}
+body.v105-studio #liveHost .room-shell>.room-code-card{grid-area:join}
+body.v105-studio #liveHost .room-shell>.players-panel{grid-area:players}
+body.v105-studio #liveHost .room-shell>.sky-room-settings{grid-area:settings}
+body.v105-studio #view-live .room-code-card{
+  min-width:0;
+  width:100%;
+  min-height:0;
+  padding:clamp(15px,2vw,23px)!important;
+  border-radius:22px!important;
+}
+body.v105-studio #view-live .room-code-card .sky-room-title{
+  font-size:clamp(15px,1.35vw,19px)!important;
+  line-height:1.55!important;
+  font-weight:900;
+  margin-bottom:12px;
+}
+body.v105-studio #view-live .host-join-grid{
+  display:grid!important;
+  grid-template-columns:minmax(150px,190px) minmax(0,1fr)!important;
+  gap:clamp(12px,2vw,25px)!important;
+  align-items:center!important;
+  min-width:0;
+  width:100%;
+}
+body.v105-studio #view-live .qr-wrap{
+  width:100%;
+  max-width:190px;
+  min-width:0;
+  margin-inline:auto;
+  box-sizing:border-box!important;
+  padding:clamp(7px,1vw,12px)!important;
+}
+body.v105-studio #view-live .qr-wrap img{
+  display:block;
+  width:100%!important;
+  height:auto!important;
+  min-width:0;
+  aspect-ratio:1;
+  max-width:170px!important;
+  object-fit:contain;
+}
+body.v105-studio #view-live .join-copy{
+  min-width:0!important;
+  max-width:100%;
+  overflow-wrap:anywhere;
+}
+body.v105-studio #view-live .join-copy .room-code{
+  font-family:Consolas,'Segoe UI',Arial,sans-serif!important;
+  font-size:clamp(35px,3.7vw,59px)!important;
+  font-weight:900!important;
+  letter-spacing:clamp(2px,.26vw,6px)!important;
+  font-variant-numeric:tabular-nums;
+  direction:ltr;
+  unicode-bidi:isolate;
+  white-space:nowrap;
+  max-width:100%;
+  line-height:1.32;
+}
+body.v105-studio #view-live .join-copy :is(small,p,b),
+body.v105-studio #view-live .qr-fallback,
+body.v105-studio #view-live .sky-room-settings .sky-setting :is(span,b){
+  font-size:clamp(12px,1vw,14px)!important;
+  line-height:1.6!important;
+}
+body.v105-studio #view-live .join-copy>b{
+  display:block;
+  overflow-wrap:anywhere!important;
+  white-space:normal!important;
+}
+body.v105-studio #view-live .security-badge{
+  font-size:12px!important;
+  line-height:1.5!important;
+  white-space:normal;
+}
+body.v105-studio #view-live .host-actions{
+  display:grid!important;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr))!important;
+  gap:9px!important;
+  margin-top:18px!important;
+}
+body.v105-studio #view-live .host-actions .btn{
+  min-height:43px;
+  min-width:0;
+  max-width:100%;
+  padding:10px 12px!important;
+  font-size:13px!important;
+  font-weight:850!important;
+  line-height:1.5!important;
+  white-space:normal!important;
+  overflow-wrap:anywhere;
+  text-align:center;
+}
+body.v105-studio #view-live .bo-live-scene-control{min-width:0!important;gap:10px;padding:12px 15px!important}
+body.v105-studio #view-live .bo-live-scene-control label{font-size:14px!important;line-height:1.5}
+body.v105-studio #view-live .bo-live-scene-control select{font-size:13px!important;min-width:150px;max-width:100%}
+body.v105-studio #view-live .bo-live-scene-control button{font-size:13px!important;min-height:40px}
+body.v105-studio #view-live .sky-room-settings{
+  padding:15px!important;
+  max-width:100%;
+  overflow-wrap:anywhere;
+}
+body.v105-studio #view-live .sky-room-settings h3{
+  font-size:17px!important;
+  line-height:1.6;
+}
+body.v105-studio #view-live :is(.live-question-header,.panel-head){
+  flex-wrap:wrap;
+  row-gap:10px;
+}
+body.v105-studio #view-live .live-question-text{
+  font-size:clamp(18px,1.5vw,24px)!important;
+  line-height:1.65!important;
+  overflow-wrap:anywhere;
+}
+body.v105-studio #view-live :is(.live-kpi span,.answer-bar label,.answer-bar b,.mini-list p,.mini-list b,.leader-row strong,.leader-row small,.player-chip strong,.player-chip small,.round-rank-row,.next-round-note){
+  font-size:clamp(12px,1vw,14px)!important;
+  line-height:1.55!important;
+}
+body.v105-studio #view-live .answer-bar{
+  grid-template-columns:minmax(0,1.15fr) minmax(0,2fr) minmax(35px,.15fr)!important;
+  font-size:13px!important;
+}
+body.v105-studio #view-live .answer-bar label{
+  white-space:normal!important;
+  overflow-wrap:anywhere;
+}
+body.v105-studio #view-live .leader-row{min-width:0}
+body.v105-studio #view-live .leader-row :is(b,strong){overflow-wrap:anywhere}
+body.v105-studio #view-live .players-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,165px),1fr))}
+body.v105-studio #view-live .live-game-grid{
+  display:grid!important;
+  grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr)!important;
+  gap:14px!important;
+}
+
+/* At the ordinary desktop 100% setting, show PIN+QR at full, uncropped width first. */
+@media(max-width:1620px){
+ body.v105-studio #liveHost .room-shell{
+   grid-template-columns:minmax(0,1fr)!important;
+   grid-template-areas:"scene" "join" "players" "settings"!important;
+ }
+ body.v105-studio #view-live .live-game-grid{grid-template-columns:minmax(0,1fr)!important}
+ body.v105-studio #view-live .room-code-card{min-height:0!important}
+ body.v105-studio #view-live .host-join-grid{grid-template-columns:minmax(155px,200px) minmax(0,1fr)!important}
+}
+@media(max-width:900px){
+ body.v105-studio .topbar{flex-wrap:wrap!important}
+ body.v105-studio #view-live .bo-live-scene-control{flex-wrap:wrap}
+ body.v105-studio #view-live .bo-live-scene-control select{flex:1 1 180px}
+}
+@media(max-width:580px){
+ body.v105-studio #view-live .host-join-grid{
+   grid-template-columns:minmax(0,1fr)!important;
+   justify-items:center;
+   gap:12px!important;
+ }
+ body.v105-studio #view-live .join-copy{text-align:center}
+ body.v105-studio #view-live .join-copy .room-code{
+   text-align:center;
+   font-size:clamp(35px,10vw,50px)!important;
+   margin-inline:auto;
+ }
+ body.v105-studio #view-live .host-actions{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ body.v105-studio #view-live .room-code-card{padding:14px!important}
+ body.v105-studio #view-live .qr-wrap{max-width:178px}
+ body.v105-studio #view-live .sky-room-settings{padding:12px!important}
+}
+
+/* No nested 360px scrollbar: every permitted mascot is present and reachable in the page.
+   Student joins still use the server's boys/girls/mixed room policy. */
+body.v105-student #avatarPicker{
+  display:grid!important;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,108px),1fr))!important;
+  align-items:stretch;
+  width:100%;
+  min-width:0;
+  max-height:none!important;
+  height:auto!important;
+  overflow:visible!important;
+  overflow-y:visible!important;
+  gap:10px!important;
+  padding:9px!important;
+}
+body.v105-student #avatarPicker .avatar-choice{
+  min-height:117px!important;
+  height:auto!important;
+  padding:8px 5px 9px!important;
+  grid-template-rows:87px minmax(0,auto)!important;
+}
+body.v105-student #avatarPicker .avatar-choice img{
+  display:block!important;
+  width:100%!important;
+  max-width:102px!important;
+  height:83px!important;
+  object-fit:contain!important;
+}
+body.v105-student #avatarPicker .bo-avatar-name{
+  font-size:13px!important;
+  font-weight:900!important;
+  line-height:1.5!important;
+  color:#f5fbff!important;
+  overflow-wrap:anywhere;
+}
+body.v105-student #avatarPickerCount{
+  margin:8px 0 13px;
+  padding:10px 14px;
+  border:1px solid #68bedb;
+  background:#0c345b;
+  border-radius:12px;
+  color:#d7faff;
+  font:850 13px/1.6 Cairo,Tahoma,Arial,sans-serif;
+}
+body.v105-student .avatar-picker-title{
+  font-size:clamp(15px,1.4vw,19px)!important;
+  font-weight:900;
+  line-height:1.6;
+}
+@media(max-width:600px){
+ body.v105-student #avatarPicker{
+   grid-template-columns:repeat(3,minmax(0,1fr))!important;
+   gap:8px!important;
+   padding:5px!important;
+ }
+ body.v105-student #avatarPicker .avatar-choice{min-height:110px!important;grid-template-rows:72px minmax(0,auto)!important}
+ body.v105-student #avatarPicker .avatar-choice img{height:70px!important}
+ body.v105-student #avatarPicker .bo-avatar-name{font-size:12px!important}
+}
