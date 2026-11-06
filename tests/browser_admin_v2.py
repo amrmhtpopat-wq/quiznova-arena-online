@@ -134,6 +134,8 @@ with sync_playwright() as p:
 
         if not mobile:
             tab('teachers')
+            page.locator('#teacherActivityFilter').select_option('all')
+            page.locator('#teachersBody [data-status]').first.wait_for(timeout=10000)
             # Confirm + reason dialogs are required for any administrative write.
             def confirm_and_reason(dialog):
                 if dialog.type=='prompt':
