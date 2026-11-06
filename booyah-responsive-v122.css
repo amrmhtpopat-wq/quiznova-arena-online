@@ -18,21 +18,19 @@ body.v105-studio #liveHost .live-game-grid,
 body.v105-studio #liveHost .live-game-grid>*{
   min-width:0;max-width:100%;
 }
+/* Do not use CSS grid placement here: some legacy themes generate implicit columns
+   even at 1280px, making the PIN zero-width. Native flex is predictable at every zoom. */
 body.v105-studio #liveHost .room-shell{
-  display:grid!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
   width:100%;
-  align-items:start;
-  grid-template-columns:minmax(0,1.22fr) minmax(0,.78fr)!important;
-  grid-template-areas:
-    "scene scene"
-    "join players"
-    "settings settings";
-  gap:14px;
+  gap:14px!important;
 }
-body.v105-studio #liveHost .room-shell>.bo-live-scene-control{grid-area:scene;margin:0!important}
-body.v105-studio #liveHost .room-shell>.room-code-card{grid-area:join}
-body.v105-studio #liveHost .room-shell>.players-panel{grid-area:players}
-body.v105-studio #liveHost .room-shell>.sky-room-settings{grid-area:settings}
+body.v105-studio #liveHost .room-shell>.bo-live-scene-control{order:0;width:100%;margin:0!important}
+body.v105-studio #liveHost .room-shell>.room-code-card{order:1;width:100%}
+body.v105-studio #liveHost .room-shell>.players-panel{order:2;width:100%}
+body.v105-studio #liveHost .room-shell>.sky-room-settings{order:3;width:100%}
 body.v105-studio #view-live .room-code-card{
   min-width:0;
   width:100%;
