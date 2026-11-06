@@ -13,6 +13,9 @@ on:
       - tests/browser_admin_v1.py
       - tests/browser_admin_v2.py
       - tests/browser_v121_features.py
+      - tests/browser_responsive_v122.py
+      - booyah-responsive-v122.css
+      - avatar-names-v121.js
       - solo_api.py
       - solo-student-v120.js
       - booyah-entry-v120.css
@@ -71,6 +74,7 @@ jobs:
           python tests/browser_admin_v1.py
           python tests/browser_admin_v2.py
           python tests/browser_v121_features.py
+          python tests/browser_responsive_v122.py
       - name: Upload visual QA screenshots
         if: always()
         uses: actions/upload-artifact@v4
