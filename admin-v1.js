@@ -232,7 +232,7 @@ function renderSchools(){
  const query=$('schoolSearch').value.trim().toLocaleLowerCase();
  const rows=allSchools.filter(s=>String(s.school||'').toLocaleLowerCase().includes(query));
  $('schoolsBody').innerHTML=rows.length?rows.map(s=>
-  '<tr><td><strong>'+h(s.school||'غير محدد')+'</strong></td><td>'+num(s.teachers)
+  '<tr><td><button class="linklike" type="button" data-school="'+encodeURIComponent(s.school||'')+'">'+h(s.school||'غير محدد')+'</button></td><td>'+num(s.teachers)
   +'</td><td>'+num(s.students)+'</td><td>'+num(s.sessions)+'</td></tr>').join('')
  :'<tr><td colspan="4" class="empty">لا توجد مدارس مطابقة.</td></tr>';
  $('schoolsBody').querySelectorAll('[data-school]').forEach(b=>b.addEventListener('click',()=>openSchool(decodeURIComponent(b.dataset.school))));
@@ -255,10 +255,10 @@ $('auditRefresh').addEventListener('click',loadAudit);
 const fmtDate=v=>v?new Date(Number(v)*1000).toLocaleString('ar-JO',{dateStyle:'medium',timeStyle:'short'}):'لا يوجد نشاط';
 let studentsPage=1,studentsTotal=0,sessionsPage=1,sessionsTotal=0;
 let studentData=[],sessionData=[],searchStudentsTimer,searchSessionsTimer;
-const cleanCsv=v=>'"'+String(v??'').replace(/[\\r\\n]+/g,' ').replace(/"/g,'""').replace(/^[=+@-]/,'\' void start();'.replace(' ',''))+'"';
+const cleanCsv=v=>{let x=String(v??'').replace(/[\r\n]+/g,' ');if(/^[=+@-]/.test(x))x="'"+x;return '"'+x.replace(/"/g,'""')+'"';};
 function csvDownload(filename,columns,rows){
  const lines=[columns.map(cleanCsv).join(','),...rows.map(r=>r.map(cleanCsv).join(','))];
- const blob=new Blob(['\\ufeff'+lines.join('\\r\\n')],{type:'text/csv;charset=utf-8'});
+ const blob=new Blob(['\ufeff'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'});
  const link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download=filename;link.click();
  setTimeout(()=>URL.revokeObjectURL(link.href),1000);
 }
