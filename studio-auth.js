@@ -31,6 +31,7 @@
       throw Error('temporary_auth_unavailable');
     }
     window.QN9_TEACHER=m.teacher; window.QN9_TOKEN=tk;
+    if(typeof window.qnMediaInit==='function')void window.qnMediaInit();
     let revision=Number(s.revision||0),baseline=JSON.parse(JSON.stringify(s.data));
     const teacherName=document.getElementById('studioTeacherName'),teacherSubject=document.getElementById('studioTeacherSubject');
     if(teacherName)teacherName.textContent=m.teacher.name;if(teacherSubject)teacherSubject.textContent=m.teacher.subject;
