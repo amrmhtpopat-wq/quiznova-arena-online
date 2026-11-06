@@ -4,8 +4,8 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#071c39"><meta name="robots" content="noindex,nofollow,noarchive">
 <title>BOOYAHJO CONTROL CENTER | إدارة المنصة</title>
-<link rel="stylesheet" href="/admin-v1.css?v=2.0">
-<script defer src="/admin-v1.js?v=2.0"></script>
+<link rel="stylesheet" href="/admin-v1.css?v=2.1">
+<script defer src="/admin-v1.js?v=2.1"></script>
 </head>
 <body>
 <section id="authentication" class="auth-stage" aria-labelledby="authTitle">
@@ -83,14 +83,19 @@
       </section>
       <section id="teachersView" class="view hidden">
         <div class="page-head"><div><span class="eyebrow">إدارة الحسابات</span><h1>المعلمون</h1><p>استعراض الحسابات والبحث وإيقافها مؤقتًا دون حذف بيانات الاختبارات أو الطلاب.</p></div><span class="chip">سجل جميع الإجراءات</span></div>
-        <div class="panel table-panel"><div class="filters"><label class="search-label"><span>⌕</span><input type="search" id="teacherSearch" placeholder="بحث باسم المعلم أو المدرسة أو البريد" aria-label="البحث عن معلم"></label><button id="teacherRefresh" class="outlined">تحديث</button></div>
-          <div class="table-scroll"><table><thead><tr><th>المعلم</th><th>المدرسة / المادة</th><th>الطلاب</th><th>الجلسات</th><th>الحالة</th><th>إدارة الحساب</th></tr></thead><tbody id="teachersBody"></tbody></table></div>
+        <div class="panel table-panel"><div class="filters filters-wrap"><label class="search-label"><span>⌕</span><input type="search" id="teacherSearch" placeholder="بحث باسم المعلم أو المدرسة أو البريد" aria-label="البحث عن معلم"></label>
+         <select id="teacherActivityFilter" class="admin-select" aria-label="تصفية المعلمين حسب النشاط">
+          <option value="all">جميع الحسابات</option><option value="recent">نشط خلال 7 أيام</option>
+          <option value="idle">آخر نشاط منذ 8–30 يومًا</option><option value="inactive">غير نشط لأكثر من 30 يومًا</option>
+          <option value="disabled">الحسابات الموقوفة</option>
+         </select><button id="teachersExport" class="outlined">تصدير الصفحة CSV</button><button id="teacherRefresh" class="outlined">تحديث</button></div>
+          <div class="table-scroll"><table><thead><tr><th>المعلم</th><th>المدرسة / المادة</th><th>الطلاب</th><th>الجلسات</th><th>آخر نشاط</th><th>الحالة</th><th>إدارة الحساب</th></tr></thead><tbody id="teachersBody"></tbody></table></div>
           <div class="table-footer"><span id="teachersCount">—</span><div class="pager"><button id="prevTeachers" type="button">السابق</button><strong id="teachersPage">1</strong><button id="nextTeachers" type="button">التالي</button></div></div>
         </div>
       </section>
       
       <section id="studentsView" class="view hidden">
-        <div class="page-head"><div><span class="eyebrow">متابعة الحسابات</span><h1>حسابات الطلاب</h1><p>عرض بيانات الطلاب ونشاطهم وآخر مشاركة مع المحافظة على خصوصية رموز البطاقات.</p></div><button class="outlined" id="studentsExport">تصدير CSV</button></div>
+        <div class="page-head"><div><span class="eyebrow">متابعة الحسابات</span><h1>حسابات الطلاب</h1><p>عرض بيانات الطلاب ونشاطهم وآخر مشاركة مع المحافظة على خصوصية رموز البطاقات.</p></div><button class="outlined" id="studentsExport">تصدير الصفحة CSV</button></div>
         <div class="panel table-panel">
           <div class="filters"><label class="search-label"><span>⌕</span><input type="search" id="studentSearch" placeholder="بحث بالطالب أو الشعبة أو المعلم"></label><button class="outlined" id="studentRefresh">تحديث</button></div>
           <div class="table-scroll"><table><thead><tr><th>الطالب</th><th>المعلم / المدرسة</th><th>المشاركات</th><th>النقاط XP</th><th>آخر مشاركة</th></tr></thead><tbody id="studentsBody"></tbody></table></div>
@@ -98,7 +103,7 @@
         </div>
       </section>
       <section id="sessionsView" class="view hidden">
-        <div class="page-head"><div><span class="eyebrow">سجل الاستخدام</span><h1>الجلسات والاختبارات</h1><p>راقب الجلسات المكتملة واستخدام المنصة حسب المعلم والشعبة والتاريخ.</p></div><button class="outlined" id="sessionsExport">تصدير CSV</button></div>
+        <div class="page-head"><div><span class="eyebrow">سجل الاستخدام</span><h1>الجلسات والاختبارات</h1><p>راقب الجلسات المكتملة واستخدام المنصة حسب المعلم والشعبة والتاريخ.</p></div><button class="outlined" id="sessionsExport">تصدير الصفحة CSV</button></div>
         <div class="panel table-panel">
           <div class="filters"><label class="search-label"><span>⌕</span><input type="search" id="sessionSearch" placeholder="بحث بالاختبار أو المعلم أو الشعبة أو الرمز"></label><button class="outlined" id="sessionRefresh">تحديث</button></div>
           <div class="table-scroll"><table><thead><tr><th>الاختبار</th><th>المعلم</th><th>الشعبة / النمط</th><th>المشاركات</th><th>التاريخ</th></tr></thead><tbody id="sessionsBody"></tbody></table></div>
