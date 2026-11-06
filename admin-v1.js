@@ -172,30 +172,34 @@ async function loadOverview(){
 }
 $('refreshBtn').addEventListener('click',loadOverview);
 
+let visibleTeachers=[];
+const activityName={recent:'نشط 7 أيام',idle:'نشاط 8–30 يومًا',inactive:'غير نشط +30 يومًا'};
 async function loadTeachers(){
- $('teachersBody').innerHTML='<tr><td colspan="6" class="empty">جارٍ تحميل المعلمين...</td></tr>';
- const search=$('teacherSearch').value.trim();
+ $('teachersBody').innerHTML='<tr><td colspan="7" class="empty">جارٍ تحميل المعلمين...</td></tr>';
+ const search=$('teacherSearch').value.trim(),status=$('teacherActivityFilter').value;
  try{
-  const data=await request('teachers?'+new URLSearchParams({page:String(teachersPage),search}));
+  const data=await request('teachers?'+new URLSearchParams({page:String(teachersPage),search,status}));
+  visibleTeachers=data.rows;
   teachersTotal=data.total;
   $('teachersCount').textContent='عدد النتائج: '+num(data.total);
   $('teachersPage').textContent=String(teachersPage);
   $('prevTeachers').disabled=teachersPage===1;
   $('nextTeachers').disabled=teachersPage*data.pageSize>=data.total;
-  if(!data.rows.length){$('teachersBody').innerHTML='<tr><td colspan="6" class="empty">لا توجد حسابات مطابقة.</td></tr>';return}
+  if(!data.rows.length){$('teachersBody').innerHTML='<tr><td colspan="7" class="empty">لا توجد حسابات مطابقة.</td></tr>';return}
   $('teachersBody').innerHTML=data.rows.map(t=>
    '<tr><td><strong>'+h(t.name)+'</strong><small>'+h(t.email)+'</small></td>'
    +'<td>'+h(t.school)+'<small>'+h(t.subject)+'</small></td>'
    +'<td>'+num(t.students)+'</td><td>'+num(t.sessions)+'</td>'
-   +'<td><span class="state-tag '+(t.admin_disabled?'off':'')+'">'+(t.admin_disabled?'موقوف':'نشط')+'</span></td>'
+   +'<td>'+h(fmtDate(t.lastActivity))+'<small>آخر دخول: '+h(fmtDate(t.last_login))+'</small></td>'
+   +'<td><span class="state-tag '+(t.admin_disabled?'off':(t.activityStatus||''))+'">'
+   +(t.admin_disabled?'موقوف':h(activityName[t.activityStatus]||'نشط'))+'</span></td>'
    +'<td><button class="action-btn" type="button" data-profile="'+h(t.id)+'">التفاصيل</button> <button class="action-btn '+(t.admin_disabled?'':'danger')+'" type="button" data-status="'+h(t.id)
    +'" data-disabled="'+(t.admin_disabled?'0':'1')+'">'+(t.admin_disabled?'إعادة تفعيل':'إيقاف الحساب')+'</button></td></tr>').join('');
   $('teachersBody').querySelectorAll('[data-profile]').forEach(b=>b.addEventListener('click',()=>openTeacher(b.dataset.profile)));
   $('teachersBody').querySelectorAll('[data-status]').forEach(b=>b.addEventListener('click',()=>changeTeacher(b)));
  }catch(e){
-  $('teachersBody').innerHTML='<tr><td colspan="6" class="empty">تعذر تحميل حسابات المعلمين.</td></tr>';
-  if(e.status===401)showLogin(errorLabel(e));
-  else toast(errorLabel(e),true);
+  $('teachersBody').innerHTML='<tr><td colspan="7" class="empty">تعذر تحميل حسابات المعلمين.</td></tr>';
+  if(e.status===401)showLogin(errorLabel(e));else toast(errorLabel(e),true);
  }
 }
 async function changeTeacher(button){
@@ -216,6 +220,11 @@ async function changeTeacher(button){
  finally{button.disabled=false}
 }
 $('teacherRefresh').addEventListener('click',loadTeachers);
+$('teacherActivityFilter').addEventListener('change',()=>{teachersPage=1;void loadTeachers()});
+$('teachersExport').addEventListener('click',()=>csvDownload('booyahjo-teachers-page-'+teachersPage+'.csv',
+ ['المعلم','البريد','المدرسة','المادة','الطلاب','الجلسات','آخر دخول','آخر نشاط','الحالة','خطة الوصول'],
+ visibleTeachers.map(t=>[t.name,t.email,t.school,t.subject,t.students,t.sessions,fmtDate(t.last_login),
+ fmtDate(t.lastActivity),t.admin_disabled?'موقوف':(activityName[t.activityStatus]||'نشط'),t.access_plan||'free'])));
 $('teacherSearch').addEventListener('input',()=>{
  clearTimeout(searchTimer);teachersPage=1;
  searchTimer=setTimeout(loadTeachers,350);
@@ -265,10 +274,13 @@ function csvDownload(filename,columns,rows){
 async function loadInsights(){
  try{
   const r=await request('insights');
-  $('insightBanner').innerHTML='<div><small>متابعة الحسابات</small><strong>موقوفون: '+num(r.disabledTeachers)+'</strong><span>من '+num(r.summary.teachers)+' معلم</span></div>'
-  +'<div><small>المدارس</small><strong>'+num(r.totalSchools)+'</strong><span>مدارس مسجلة</span></div>'
-  +'<div><small>أحدث المعلمين</small><strong>'+h(r.recentTeachers[0]?.name||'—')+'</strong><span>'+h(r.recentTeachers[0]?.school||'—')+'</span></div>'
-  +'<div><small>أحدث اختبار مكتمل</small><strong>'+h(r.recentSessions[0]?.quiz_title||'—')+'</strong><span>'+fmtDate(r.recentSessions[0]?.played_at)+'</span></div>';
+  $('insightBanner').innerHTML=
+   '<div><small>حسابات موقوفة</small><strong>'+num(r.disabledTeachers)+'</strong><span>من '+num(r.summary.teachers)+' معلم</span></div>'
+  +'<div><small>حسابات خاملة لأكثر من 30 يومًا</small><strong>'+num(r.inactiveTeachers30d)+'</strong><span>لم يظهر عليها نشاط حديث</span></div>'
+  +'<div><small>دخول المعلمين خلال 7 أيام</small><strong>'+num(r.recentLogins7d)+'</strong><span>يسجل النظام تاريخ الدخول بدءًا من هذا الإصدار</span></div>'
+  +'<div><small>المدارس المسجلة</small><strong>'+num(r.totalSchools)+'</strong><span>مدارس</span></div>'
+  +'<div><small>أحدث معلم</small><strong>'+h(r.recentTeachers[0]?.name||'—')+'</strong><span>'+h(r.recentTeachers[0]?.school||'—')+'</span></div>'
+  +'<div><small>أحدث جلسة مكتملة</small><strong>'+h(r.recentSessions[0]?.quiz_title||'—')+'</strong><span>'+fmtDate(r.recentSessions[0]?.played_at)+'</span></div>';
  }catch(e){$('insightBanner').textContent='تعذر تحميل مؤشرات الحسابات الإضافية.'}
 }
 async function loadStudents(){
@@ -357,7 +369,7 @@ async function openTeacher(id){
   const sessions=(t.recentSessions||[]).map(x=>'<tr><td>'+h(x.quiz_title||'اختبار')+'</td><td>'+h(x.section||'—')+'</td><td>'+h(fmtDate(x.played_at))+'</td></tr>').join('');
   const html='<div class="identity"><div class="avatar-circle">'+h((t.name||'م').slice(0,1))+'</div><div><h3>'+h(t.name)+'</h3><p dir="ltr">'+h(t.email)+'</p><span class="state-tag '+(t.admin_disabled?'off':'')+'">'+(t.admin_disabled?'موقوف':'نشط')+'</span></div></div>'
    +'<p class="detail-meta"><b>المدرسة:</b> '+h(t.school||'—')+'<br><b>المادة:</b> '+h(t.subject||'—')+'<br><b>نوع المدرسة:</b> '+h(t.school_type||'—')
-   +'<br><b>تاريخ التسجيل:</b> '+h(fmtDate(t.created_at))+'<br><b>آخر جلسة:</b> '+h(fmtDate(t.last_session))+'</p>'
+   +'<br><b>تاريخ التسجيل:</b> '+h(fmtDate(t.created_at))+'<br><b>آخر دخول:</b> '+h(fmtDate(t.last_login))+'<br><b>آخر نشاط:</b> '+h(fmtDate(t.lastActivity))+'<br><b>خطة الوصول:</b> '+h(t.access_plan==='free'?'مجانية (دون اشتراك مدفوع)':t.access_plan||'غير محددة')+'<br><b>آخر جلسة:</b> '+h(fmtDate(t.last_session))+'</p>'
    +'<div class="detail-stats">'+detailStat('الطلاب',num(t.students))+detailStat('الاختبارات',num(t.quizzes))
    +detailStat('الجلسات المكتملة',num(t.sessions))+detailStat('محاولات الطلاب',num(t.attempts))
    +detailStat('متوسط النتائج',t.averagePercent+'%')+detailStat('نتائج 80% فأعلى',num(t.highScores))+'</div>'
