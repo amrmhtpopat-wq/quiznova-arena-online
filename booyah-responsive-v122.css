@@ -167,10 +167,18 @@ body.v105-studio #view-live .live-game-grid{
 
 /* At the ordinary desktop 100% setting, show PIN+QR at full, uncropped width first. */
 @media(max-width:1620px){
+ /* Flex avoids implicit grid columns caused by old theme's auto-placement rules.
+    PIN/QR always take the entire available content width at 100% browser zoom. */
  body.v105-studio #liveHost .room-shell{
-   grid-template-columns:minmax(0,1fr)!important;
-   grid-template-areas:"scene" "join" "players" "settings"!important;
+   display:flex!important;
+   flex-direction:column!important;
+   align-items:stretch!important;
+   gap:14px!important;
  }
+ body.v105-studio #liveHost .room-shell>.bo-live-scene-control{order:0;width:100%}
+ body.v105-studio #liveHost .room-shell>.room-code-card{order:1;width:100%}
+ body.v105-studio #liveHost .room-shell>.players-panel{order:2;width:100%}
+ body.v105-studio #liveHost .room-shell>.sky-room-settings{order:3;width:100%}
  body.v105-studio #view-live .live-game-grid{grid-template-columns:minmax(0,1fr)!important}
  body.v105-studio #view-live .room-code-card{min-height:0!important}
  body.v105-studio #view-live .host-join-grid{grid-template-columns:minmax(155px,200px) minmax(0,1fr)!important}
