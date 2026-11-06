@@ -1,31 +1,118 @@
 /* QuizNova Sky — on-device image library with reusable, tagged illustrations. */
 window.QN_MEDIA = [{"id":"cpu","label":"المعالج","file":"/assets/media/cpu.svg","category":"مكونات الحاسوب"},{"id":"ram","label":"الذاكرة العشوائية","file":"/assets/media/ram.svg","category":"مكونات الحاسوب"},{"id":"motherboard","label":"اللوحة الأم","file":"/assets/media/motherboard.svg","category":"مكونات الحاسوب"},{"id":"hdd","label":"القرص الصلب","file":"/assets/media/hdd.svg","category":"مكونات الحاسوب"},{"id":"ssd","label":"وحدة التخزين SSD","file":"/assets/media/ssd.svg","category":"مكونات الحاسوب"},{"id":"keyboard","label":"لوحة المفاتيح","file":"/assets/media/keyboard.svg","category":"مكونات الحاسوب"},{"id":"mouse","label":"الفأرة","file":"/assets/media/mouse.svg","category":"مكونات الحاسوب"},{"id":"monitor","label":"الشاشة","file":"/assets/media/monitor.svg","category":"مكونات الحاسوب"},{"id":"printer","label":"الطابعة","file":"/assets/media/printer.svg","category":"مكونات الحاسوب"},{"id":"network","label":"شبكات الحاسوب","file":"/assets/media/network.svg","category":"الشبكات"},{"id":"star","label":"الشبكة النجمية","file":"/assets/media/star.svg","category":"الشبكات"},{"id":"ring","label":"الشبكة الحلقية","file":"/assets/media/ring.svg","category":"الشبكات"},{"id":"wifi","label":"الاتصال اللاسلكي","file":"/assets/media/wifi.svg","category":"الشبكات"},{"id":"router","label":"الموجّه","file":"/assets/media/router.svg","category":"الشبكات"},{"id":"firewall","label":"جدار الحماية","file":"/assets/media/firewall.svg","category":"الأمن الرقمي"},{"id":"cloud","label":"الحوسبة السحابية","file":"/assets/media/cloud.svg","category":"التقنيات الحديثة"},{"id":"programming","label":"البرمجة","file":"/assets/media/programming.svg","category":"البرمجة"},{"id":"scratch","label":"سكراتش","file":"/assets/media/scratch.svg","category":"البرمجة"},{"id":"folder","label":"الملفات والمجلدات","file":"/assets/media/folder.svg","category":"الملفات"},{"id":"backup","label":"النسخ الاحتياطي","file":"/assets/media/backup.svg","category":"الملفات"},{"id":"spreadsheet","label":"جداول البيانات","file":"/assets/media/spreadsheet.svg","category":"الملفات"},{"id":"email","label":"البريد الإلكتروني","file":"/assets/media/email.svg","category":"الملفات"},{"id":"privacy","label":"الخصوصية الرقمية","file":"/assets/media/privacy.svg","category":"الأمن الرقمي"},{"id":"web","label":"المواقع الإلكترونية","file":"/assets/media/web.svg","category":"التقنيات الحديثة"},{"id":"device","label":"صيانة الأجهزة","file":"/assets/media/device.svg","category":"الصيانة"},{"id":"device_manager","label":"مدير الأجهزة","file":"/assets/media/device_manager.svg","category":"الصيانة"},{"id":"robot","label":"الروبوتات","file":"/assets/media/robot.svg","category":"التقنيات الحديثة"},{"id":"ai","label":"الذكاء الاصطناعي","file":"/assets/media/ai.svg","category":"التقنيات الحديثة"},{"id":"algorithm","label":"الخوارزميات","file":"/assets/media/algorithm.svg","category":"البرمجة"},{"id":"password","label":"كلمات المرور","file":"/assets/media/password.svg","category":"الأمن الرقمي"},{"id":"q1","label":"رسم تعليمي رقم 1","file":"/assets/questions/01.svg","category":"رسومات عامة"},{"id":"q2","label":"رسم تعليمي رقم 2","file":"/assets/questions/02.svg","category":"رسومات عامة"},{"id":"q3","label":"رسم تعليمي رقم 3","file":"/assets/questions/03.svg","category":"رسومات عامة"},{"id":"q4","label":"رسم تعليمي رقم 4","file":"/assets/questions/04.svg","category":"رسومات عامة"},{"id":"q5","label":"رسم تعليمي رقم 5","file":"/assets/questions/05.svg","category":"رسومات عامة"},{"id":"q6","label":"رسم تعليمي رقم 6","file":"/assets/questions/06.svg","category":"رسومات عامة"},{"id":"q7","label":"رسم تعليمي رقم 7","file":"/assets/questions/07.svg","category":"رسومات عامة"},{"id":"q8","label":"رسم تعليمي رقم 8","file":"/assets/questions/08.svg","category":"رسومات عامة"},{"id":"q9","label":"رسم تعليمي رقم 9","file":"/assets/questions/09.svg","category":"رسومات عامة"},{"id":"q10","label":"رسم تعليمي رقم 10","file":"/assets/questions/10.svg","category":"رسومات عامة"},{"id":"q11","label":"رسم تعليمي رقم 11","file":"/assets/questions/11.svg","category":"رسومات عامة"},{"id":"q12","label":"رسم تعليمي رقم 12","file":"/assets/questions/12.svg","category":"رسومات عامة"},{"id":"q13","label":"رسم تعليمي رقم 13","file":"/assets/questions/13.svg","category":"رسومات عامة"},{"id":"q14","label":"رسم تعليمي رقم 14","file":"/assets/questions/14.svg","category":"رسومات عامة"},{"id":"q15","label":"رسم تعليمي رقم 15","file":"/assets/questions/15.svg","category":"رسومات عامة"},{"id":"q16","label":"رسم تعليمي رقم 16","file":"/assets/questions/16.svg","category":"رسومات عامة"},{"id":"q17","label":"رسم تعليمي رقم 17","file":"/assets/questions/17.svg","category":"رسومات عامة"},{"id":"q18","label":"رسم تعليمي رقم 18","file":"/assets/questions/18.svg","category":"رسومات عامة"},{"id":"q19","label":"رسم تعليمي رقم 19","file":"/assets/questions/19.svg","category":"رسومات عامة"},{"id":"q20","label":"رسم تعليمي رقم 20","file":"/assets/questions/20.svg","category":"رسومات عامة"},{"id":"q21","label":"رسم تعليمي رقم 21","file":"/assets/questions/21.svg","category":"رسومات عامة"},{"id":"q22","label":"رسم تعليمي رقم 22","file":"/assets/questions/22.svg","category":"رسومات عامة"},{"id":"q23","label":"رسم تعليمي رقم 23","file":"/assets/questions/23.svg","category":"رسومات عامة"},{"id":"q24","label":"رسم تعليمي رقم 24","file":"/assets/questions/24.svg","category":"رسومات عامة"},{"id":"q25","label":"رسم تعليمي رقم 25","file":"/assets/questions/25.svg","category":"رسومات عامة"},{"id":"q26","label":"رسم تعليمي رقم 26","file":"/assets/questions/26.svg","category":"رسومات عامة"},{"id":"q27","label":"رسم تعليمي رقم 27","file":"/assets/questions/27.svg","category":"رسومات عامة"},{"id":"q28","label":"رسم تعليمي رقم 28","file":"/assets/questions/28.svg","category":"رسومات عامة"},{"id":"q29","label":"رسم تعليمي رقم 29","file":"/assets/questions/29.svg","category":"رسومات عامة"},{"id":"q30","label":"رسم تعليمي رقم 30","file":"/assets/questions/30.svg","category":"رسومات عامة"},{"id":"q31","label":"رسم تعليمي رقم 31","file":"/assets/questions/31.svg","category":"رسومات عامة"},{"id":"q32","label":"رسم تعليمي رقم 32","file":"/assets/questions/32.svg","category":"رسومات عامة"},{"id":"q33","label":"رسم تعليمي رقم 33","file":"/assets/questions/33.svg","category":"رسومات عامة"},{"id":"q34","label":"رسم تعليمي رقم 34","file":"/assets/questions/34.svg","category":"رسومات عامة"},{"id":"q35","label":"رسم تعليمي رقم 35","file":"/assets/questions/35.svg","category":"رسومات عامة"},{"id":"q36","label":"رسم تعليمي رقم 36","file":"/assets/questions/36.svg","category":"رسومات عامة"},{"id":"q37","label":"رسم تعليمي رقم 37","file":"/assets/questions/37.svg","category":"رسومات عامة"},{"id":"q38","label":"رسم تعليمي رقم 38","file":"/assets/questions/38.svg","category":"رسومات عامة"},{"id":"q39","label":"رسم تعليمي رقم 39","file":"/assets/questions/39.svg","category":"رسومات عامة"},{"id":"q40","label":"رسم تعليمي رقم 40","file":"/assets/questions/40.svg","category":"رسومات عامة"},{"id":"q41","label":"رسم تعليمي رقم 41","file":"/assets/questions/41.svg","category":"رسومات عامة"},{"id":"q42","label":"رسم تعليمي رقم 42","file":"/assets/questions/42.svg","category":"رسومات عامة"},{"id":"q43","label":"رسم تعليمي رقم 43","file":"/assets/questions/43.svg","category":"رسومات عامة"},{"id":"q44","label":"رسم تعليمي رقم 44","file":"/assets/questions/44.svg","category":"رسومات عامة"},{"id":"q45","label":"رسم تعليمي رقم 45","file":"/assets/questions/45.svg","category":"رسومات عامة"},{"id":"q46","label":"رسم تعليمي رقم 46","file":"/assets/questions/46.svg","category":"رسومات عامة"},{"id":"q47","label":"رسم تعليمي رقم 47","file":"/assets/questions/47.svg","category":"رسومات عامة"},{"id":"q48","label":"رسم تعليمي رقم 48","file":"/assets/questions/48.svg","category":"رسومات عامة"},{"id":"q49","label":"رسم تعليمي رقم 49","file":"/assets/questions/49.svg","category":"رسومات عامة"},{"id":"q50","label":"رسم تعليمي رقم 50","file":"/assets/questions/50.svg","category":"رسومات عامة"},{"id":"q51","label":"رسم تعليمي رقم 51","file":"/assets/questions/51.svg","category":"رسومات عامة"},{"id":"q52","label":"رسم تعليمي رقم 52","file":"/assets/questions/52.svg","category":"رسومات عامة"},{"id":"q53","label":"رسم تعليمي رقم 53","file":"/assets/questions/53.svg","category":"رسومات عامة"},{"id":"q54","label":"رسم تعليمي رقم 54","file":"/assets/questions/54.svg","category":"رسومات عامة"},{"id":"q55","label":"رسم تعليمي رقم 55","file":"/assets/questions/55.svg","category":"رسومات عامة"},{"id":"q56","label":"رسم تعليمي رقم 56","file":"/assets/questions/56.svg","category":"رسومات عامة"},{"id":"q57","label":"رسم تعليمي رقم 57","file":"/assets/questions/57.svg","category":"رسومات عامة"},{"id":"q58","label":"رسم تعليمي رقم 58","file":"/assets/questions/58.svg","category":"رسومات عامة"},{"id":"q59","label":"رسم تعليمي رقم 59","file":"/assets/questions/59.svg","category":"رسومات عامة"},{"id":"q60","label":"رسم تعليمي رقم 60","file":"/assets/questions/60.svg","category":"رسومات عامة"},{"id":"q61","label":"رسم تعليمي رقم 61","file":"/assets/questions/61.svg","category":"رسومات عامة"},{"id":"q62","label":"رسم تعليمي رقم 62","file":"/assets/questions/62.svg","category":"رسومات عامة"},{"id":"q63","label":"رسم تعليمي رقم 63","file":"/assets/questions/63.svg","category":"رسومات عامة"},{"id":"q64","label":"رسم تعليمي رقم 64","file":"/assets/questions/64.svg","category":"رسومات عامة"},{"id":"q65","label":"رسم تعليمي رقم 65","file":"/assets/questions/65.svg","category":"رسومات عامة"},{"id":"q66","label":"رسم تعليمي رقم 66","file":"/assets/questions/66.svg","category":"رسومات عامة"},{"id":"q67","label":"رسم تعليمي رقم 67","file":"/assets/questions/67.svg","category":"رسومات عامة"},{"id":"q68","label":"رسم تعليمي رقم 68","file":"/assets/questions/68.svg","category":"رسومات عامة"},{"id":"q69","label":"رسم تعليمي رقم 69","file":"/assets/questions/69.svg","category":"رسومات عامة"},{"id":"q70","label":"رسم تعليمي رقم 70","file":"/assets/questions/70.svg","category":"رسومات عامة"},{"id":"q71","label":"رسم تعليمي رقم 71","file":"/assets/questions/71.svg","category":"رسومات عامة"},{"id":"q72","label":"رسم تعليمي رقم 72","file":"/assets/questions/72.svg","category":"رسومات عامة"},{"id":"q73","label":"رسم تعليمي رقم 73","file":"/assets/questions/73.svg","category":"رسومات عامة"},{"id":"q74","label":"رسم تعليمي رقم 74","file":"/assets/questions/74.svg","category":"رسومات عامة"},{"id":"q75","label":"رسم تعليمي رقم 75","file":"/assets/questions/75.svg","category":"رسومات عامة"},{"id":"q76","label":"رسم تعليمي رقم 76","file":"/assets/questions/76.svg","category":"رسومات عامة"},{"id":"q77","label":"رسم تعليمي رقم 77","file":"/assets/questions/77.svg","category":"رسومات عامة"},{"id":"q78","label":"رسم تعليمي رقم 78","file":"/assets/questions/78.svg","category":"رسومات عامة"},{"id":"q79","label":"رسم تعليمي رقم 79","file":"/assets/questions/79.svg","category":"رسومات عامة"},{"id":"q80","label":"رسم تعليمي رقم 80","file":"/assets/questions/80.svg","category":"رسومات عامة"},{"id":"q81","label":"رسم تعليمي رقم 81","file":"/assets/questions/81.svg","category":"رسومات عامة"},{"id":"q82","label":"رسم تعليمي رقم 82","file":"/assets/questions/82.svg","category":"رسومات عامة"},{"id":"q83","label":"رسم تعليمي رقم 83","file":"/assets/questions/83.svg","category":"رسومات عامة"},{"id":"q84","label":"رسم تعليمي رقم 84","file":"/assets/questions/84.svg","category":"رسومات عامة"},{"id":"q85","label":"رسم تعليمي رقم 85","file":"/assets/questions/85.svg","category":"رسومات عامة"},{"id":"q86","label":"رسم تعليمي رقم 86","file":"/assets/questions/86.svg","category":"رسومات عامة"},{"id":"q87","label":"رسم تعليمي رقم 87","file":"/assets/questions/87.svg","category":"رسومات عامة"},{"id":"q88","label":"رسم تعليمي رقم 88","file":"/assets/questions/88.svg","category":"رسومات عامة"},{"id":"q89","label":"رسم تعليمي رقم 89","file":"/assets/questions/89.svg","category":"رسومات عامة"},{"id":"q90","label":"رسم تعليمي رقم 90","file":"/assets/questions/90.svg","category":"رسومات عامة"},{"id":"q91","label":"رسم تعليمي رقم 91","file":"/assets/questions/91.svg","category":"رسومات عامة"},{"id":"q92","label":"رسم تعليمي رقم 92","file":"/assets/questions/92.svg","category":"رسومات عامة"},{"id":"q93","label":"رسم تعليمي رقم 93","file":"/assets/questions/93.svg","category":"رسومات عامة"},{"id":"q94","label":"رسم تعليمي رقم 94","file":"/assets/questions/94.svg","category":"رسومات عامة"},{"id":"q95","label":"رسم تعليمي رقم 95","file":"/assets/questions/95.svg","category":"رسومات عامة"},{"id":"q96","label":"رسم تعليمي رقم 96","file":"/assets/questions/96.svg","category":"رسومات عامة"},{"id":"q97","label":"رسم تعليمي رقم 97","file":"/assets/questions/97.svg","category":"رسومات عامة"},{"id":"q98","label":"رسم تعليمي رقم 98","file":"/assets/questions/98.svg","category":"رسومات عامة"},{"id":"q99","label":"رسم تعليمي رقم 99","file":"/assets/questions/99.svg","category":"رسومات عامة"}];
+
 let _qnMediaCallback=null;
-function qnMediaCustom(){try{return JSON.parse(localStorage.getItem('qn8_media')||'[]')}catch{return []}}
+let _qnMediaCloud=[], _qnMediaLoaded=false, _qnMediaLoading=null;
+function qnMediaLegacy(){
+ try{return JSON.parse(localStorage.getItem('qn8_media')||'[]').filter(x=>x&&x.file)}catch{return []}
+}
+function qnMediaCustom(){
+ const cloudIds=new Set(_qnMediaCloud.map(x=>x.id));
+ return [..._qnMediaCloud,...qnMediaLegacy().filter(x=>!cloudIds.has(x.id))];
+}
 function qnMediaAll(){return [...window.QN_MEDIA,...qnMediaCustom()]}
-function qnMediaEsc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function qnMediaThumb(item,i,mode){const target=mode==='pick'?'pickMediaIndex':'chooseMediaInLibrary';return `<button type="button" class="sky-media-tile" onclick="${target}(${i})" aria-label="${qnMediaEsc(item.label)}"><img src="${qnMediaEsc(item.file)}" alt="${qnMediaEsc(item.label)}" loading="lazy"><span class="sky-media-meta"><b>${qnMediaEsc(item.label)}</b><small>${qnMediaEsc(item.category)}</small></span><span class="sky-media-action">${mode==='pick'?'اختيار الصورة':'استخدام الصورة'} ↗</span></button>`}
-window.renderMediaLibrary=function(){const el=document.getElementById('mediaGallery');if(!el)return;const all=qnMediaAll();const query=(document.getElementById('mediaSearch')?.value||'').trim().toLowerCase(),cat=document.getElementById('mediaCategory')?.value||'all';const filtered=all.map((x,i)=>({...x,_i:i})).filter(x=>(cat==='all'||cat===x.category)&&(!query||(x.label+' '+x.category).toLowerCase().includes(query)));
- const counter=document.getElementById('mediaCount');if(counter)counter.textContent=`${filtered.length} صورة من أصل ${all.length}`;
+function qnMediaEsc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]))}
+const qnMediaToken=()=>window.QN9_TOKEN||localStorage.getItem('qn9_teacher_token')||'';
+async function qnMediaApi(path,body=null){
+ const r=await fetch(path,{method:body?'POST':'GET',cache:'no-store',
+  headers:{'Authorization':'Bearer '+qnMediaToken(),...(body?{'Content-Type':'application/json'}:{})},
+  ...(body?{body:JSON.stringify(body)}:{})});
+ const data=await r.json();
+ if(!r.ok||!data.ok)throw Error(data.error||'media_sync_failed');
+ return data;
+}
+window.qnMediaInit=async function(force=false){
+ if(_qnMediaLoading&&!force)return _qnMediaLoading;
+ if(_qnMediaLoaded&&!force)return _qnMediaCloud;
+ if(!qnMediaToken())return [];
+ _qnMediaLoading=(async()=>{
+  const data=await qnMediaApi('/api/teacher/media');
+  _qnMediaCloud=data.images||[];_qnMediaLoaded=true;
+  window.renderMediaLibrary?.();window.updateMediaPicker?.();
+  return _qnMediaCloud;
+ })();
+ try{return await _qnMediaLoading}
+ catch(e){console.warn('Library cloud sync unavailable',e);return []}
+ finally{_qnMediaLoading=null}
+};
+function qnMediaThumb(item,i,mode){
+ const pick=mode==='pick',target=pick?'pickMediaIndex':'chooseMediaInLibrary';
+ const preview='<button class="sky-media-tile" type="button" onclick="'+target+'('+i+')" aria-label="'+qnMediaEsc(item.label)+'">'
+  +'<img src="'+qnMediaEsc(item.file)+'" alt="'+qnMediaEsc(item.label)+'" loading="lazy">'
+  +'<span class="sky-media-meta"><b>'+qnMediaEsc(item.label)+'</b><small>'+qnMediaEsc(item.category)+'</small></span>'
+  +'<span class="sky-media-action">'+(pick?'اختيار الصورة':'استخدام الصورة')+' ↗</span></button>';
+ if(pick||!item.id||!String(item.id).startsWith('user-')&&!/^[a-f0-9]{32}$/.test(item.id))return preview;
+ return '<div class="qn-media-owned">'+preview+'<button type="button" class="qn-media-remove" onclick="removeCustomMedia('+i+')" title="إزالة الصورة من مكتبتك">حذف من المكتبة</button></div>';
+}
+window.renderMediaLibrary=function(){
+ const el=document.getElementById('mediaGallery');if(!el)return;
+ const all=qnMediaAll(),query=(document.getElementById('mediaSearch')?.value||'').trim().toLowerCase(),cat=document.getElementById('mediaCategory')?.value||'all';
+ const filtered=all.map((x,i)=>({...x,_i:i})).filter(x=>(cat==='all'||cat===x.category)&&(!query||(x.label+' '+x.category).toLowerCase().includes(query)));
+ const counter=document.getElementById('mediaCount');if(counter)counter.textContent=filtered.length+' صورة من أصل '+all.length;
  el.innerHTML=filtered.map(x=>qnMediaThumb(x,x._i,'library')).join('')||'<div class="sky-media-empty">لا توجد صور مطابقة للبحث.</div>';
-}
-window.chooseMediaInLibrary=function(index){const x=qnMediaAll()[index];if(!x)return;if(typeof builderQuestions==='undefined') return;
- const q=blankQuestion('single');q.text='';q.image=x.file;builderQuestions.push(q);renderQuestions();go('builder');toast('تمت إضافة الصورة إلى سؤال جديد؛ اكتب السؤال والإجابات');}
-window.openMediaPicker=function(callback){_qnMediaCallback=callback;let overlay=document.getElementById('skyPicker');if(!overlay){overlay=document.createElement('div');overlay.id='skyPicker';overlay.className='sky-picker';document.body.appendChild(overlay)}overlay.classList.add('open');overlay.innerHTML=`<div class="sky-picker-shade" onclick="closeMediaPicker()"></div><section class="sky-picker-dialog" role="dialog" aria-modal="true" aria-label="مكتبة الصور"><div class="sky-picker-header"><div><span>مكتبة QuizNova</span><h2>اختر صورة للسؤال</h2><p>رسومات مصنفة قابلة للاستخدام داخل الاختبار أو ارفع صورتك الخاصة.</p></div><button class="sky-picker-close" onclick="closeMediaPicker()" aria-label="إغلاق">✕</button></div><div class="sky-media-toolbar"><input id="pickerMediaSearch" placeholder="ابحث عن معالج، شبكة، ذاكرة..." oninput="updateMediaPicker()"><select id="pickerMediaCat" onchange="updateMediaPicker()"><option value="all">كل التصنيفات</option>${[...new Set(qnMediaAll().map(x=>x.category))].map(x=>`<option>${qnMediaEsc(x)}</option>`).join('')}</select><label class="sky-upload-btn">⬆ ارفع صورة<input id="pickerMediaUpload" type="file" accept="image/png,image/jpeg,image/webp" hidden onchange="uploadCustomMedia(this, true)"></label></div><div class="sky-media-grid" id="pickerMediaList"></div></section>`;updateMediaPicker();}
-window.updateMediaPicker=function(){const host=document.getElementById('pickerMediaList');if(!host)return;const query=(document.getElementById('pickerMediaSearch').value||'').toLowerCase(),cat=document.getElementById('pickerMediaCat').value;host.innerHTML=qnMediaAll().map((x,i)=>({...x,_i:i})).filter(x=>(cat==='all'||x.category===cat)&&(!query||(x.label+' '+x.category).toLowerCase().includes(query))).map(x=>qnMediaThumb(x,x._i,'pick')).join('')||'<p>لا توجد نتائج.</p>'}
-window.pickMediaIndex=function(i){const item=qnMediaAll()[i];if(!item)return;const cb=_qnMediaCallback;closeMediaPicker();if(typeof cb==='function')cb(item.file)}
-window.closeMediaPicker=function(){const o=document.getElementById('skyPicker');if(o)o.classList.remove('open');_qnMediaCallback=null}
-window.uploadCustomMedia=async function(input,inPicker=false){const files=[...(input.files||[])];if(!files.length)return;let saved=qnMediaCustom();let added=0;
- for(const file of files.slice(0,12)){
-  if(!file.type.startsWith('image/')||file.size>10*1024*1024){alert('الصورة يجب أن تكون PNG أو JPG أو WebP وبحجم أقل من 10MB');continue}
+};
+window.chooseMediaInLibrary=function(index){
+ const x=qnMediaAll()[index];if(!x||typeof builderQuestions==='undefined')return;
+ const q=blankQuestion('single');q.text='';q.image=x.file;builderQuestions.push(q);renderQuestions();go('builder');toast('تمت إضافة الصورة إلى سؤال جديد؛ اكتب السؤال والإجابات');
+};
+window.openMediaPicker=function(callback){
+ _qnMediaCallback=callback;
+ let overlay=document.getElementById('skyPicker');
+ if(!overlay){overlay=document.createElement('div');overlay.id='skyPicker';overlay.className='sky-picker';document.body.appendChild(overlay)}
+ overlay.classList.add('open');
+ overlay.innerHTML='<div class="sky-picker-shade" onclick="closeMediaPicker()"></div><section class="sky-picker-dialog" role="dialog" aria-modal="true" aria-label="مكتبة الصور"><div class="sky-picker-header"><div><span>مكتبة BOOYAHJO</span><h2>اختر صورة للسؤال</h2><p>صور محفوظة في حسابك، وتظهر عند الدخول من جهاز آخر.</p></div><button class="sky-picker-close" onclick="closeMediaPicker()" aria-label="إغلاق">✕</button></div><div class="sky-media-toolbar"><input id="pickerMediaSearch" placeholder="ابحث عن الصور..." oninput="updateMediaPicker()"><select id="pickerMediaCat" onchange="updateMediaPicker()"><option value="all">كل التصنيفات</option>'+[...new Set(qnMediaAll().map(x=>x.category))].map(x=>'<option>'+qnMediaEsc(x)+'</option>').join('')+'</select><label class="sky-upload-btn">⬆ ارفع صورة<input id="pickerMediaUpload" type="file" accept="image/png,image/jpeg,image/webp" hidden onchange="uploadCustomMedia(this,true)"></label></div><div class="sky-media-grid" id="pickerMediaList"></div></section>';
+ updateMediaPicker();void qnMediaInit();
+};
+window.updateMediaPicker=function(){
+ const host=document.getElementById('pickerMediaList');if(!host)return;
+ const query=(document.getElementById('pickerMediaSearch')?.value||'').toLowerCase(),cat=document.getElementById('pickerMediaCat')?.value||'all';
+ host.innerHTML=qnMediaAll().map((x,i)=>({...x,_i:i})).filter(x=>(cat==='all'||x.category===cat)&&(!query||(x.label+' '+x.category).toLowerCase().includes(query))).map(x=>qnMediaThumb(x,x._i,'pick')).join('')||'<p>لا توجد نتائج.</p>';
+};
+window.pickMediaIndex=function(i){const item=qnMediaAll()[i];if(!item)return;const cb=_qnMediaCallback;closeMediaPicker();if(typeof cb==='function')cb(item.file)};
+window.closeMediaPicker=function(){document.getElementById('skyPicker')?.classList.remove('open');_qnMediaCallback=null};
+window.uploadCustomMedia=async function(input,inPicker=false){
+ const files=[...(input.files||[])].slice(0,12);if(!files.length)return;
+ input.disabled=true;let added=0;
+ for(const file of files){
+  if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>10*1024*1024){alert('اختر صورة JPG أو PNG أو WebP بحجم أولي أقل من 10MB');continue}
   try{
-    const data=typeof optimizeImage==='function'?await optimizeImage(file):await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file)});
-    if(saved.some(x=>x.label===file.name))continue;
-    saved.push({id:'user-'+Date.now()+'-'+added,label:file.name.replace(/\.[^.]+$/,''),file:data,category:'صوري المضافة',uploadedAt:Date.now()});added++;
-    if(JSON.stringify(saved).length>3_400_000){saved.pop();alert('وصلت سعة الصور المحلية إلى الحد المسموح. احذف صورًا غير مستخدمة أو احتفظ بها على جهازك.');break}
-  }catch(e){console.warn('Could not read image',e)}
+   const data=typeof optimizeImage==='function'?await optimizeImage(file):await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file)});
+   if(data.length>850000){alert('الصورة كبيرة بعد الضغط. جرّب صورة أصغر.');continue}
+   const name=file.name.replace(/\.[^.]+$/,'').slice(0,90)||'صورة تعليمية';
+   const saved=await qnMediaApi('/api/teacher/media/save',{label:name,file:data});
+   _qnMediaCloud.unshift(saved.image);_qnMediaLoaded=true;added++;
+  }catch(e){console.warn('Could not persist uploaded image',e);alert('تعذر حفظ الصورة في حسابك: '+(e.message||'تحقق من الاتصال'))}
  }
- try{localStorage.setItem('qn8_media',JSON.stringify(saved));if(typeof toast==='function')toast(`تمت إضافة ${added} صورة لمكتبتك`)}catch(e){alert('تعذر الحفظ: مساحة المتصفح ممتلئة. جرّب صورة أصغر.');}
- if(inPicker){const select=document.getElementById('pickerMediaCat');if(select)select.insertAdjacentHTML('beforeend','<option>صوري المضافة</option>');updateMediaPicker()}else renderMediaLibrary(); input.value='';
-}
-window.clearCustomMedia=function(){if(!qnMediaCustom().length)return;if(!confirm('مسح الصور التي أضفتها من المكتبة في هذا المتصفح؟ الصور المستخدمة سابقًا في الاختبارات المحفوظة لن تُحذف من الأسئلة.'))return;localStorage.removeItem('qn8_media');renderMediaLibrary()}
+ input.disabled=false;input.value='';
+ if(typeof toast==='function'&&added)toast('تم حفظ '+added+' صورة في مكتبتك السحابية');
+ if(inPicker){const sel=document.getElementById('pickerMediaCat');if(sel&&!Array.from(sel.options).some(o=>o.value==='صوري المضافة'))sel.insertAdjacentHTML('beforeend','<option>صوري المضافة</option>');updateMediaPicker()}
+ else renderMediaLibrary();
+};
+window.removeCustomMedia=async function(i){
+ const x=qnMediaAll()[i];if(!x||!confirm('حذف الصورة من المكتبة؟ الصور الموجودة في اختبارات محفوظة لن تتأثر.'))return;
+ try{
+  if(/^[a-f0-9]{32}$/.test(x.id)){
+   await qnMediaApi('/api/teacher/media/delete',{id:x.id});
+   _qnMediaCloud=_qnMediaCloud.filter(a=>a.id!==x.id);
+  }else{
+   localStorage.setItem('qn8_media',JSON.stringify(qnMediaLegacy().filter(a=>a.id!==x.id)));
+  }
+  renderMediaLibrary();
+ }catch(e){alert('تعذر حذف الصورة: '+e.message)}
+};
+window.qnMediaMigrateLegacy=async function(){
+ const legacy=qnMediaLegacy();if(!legacy.length)return alert('لا توجد صور قديمة على هذا الجهاز.');
+ if(!confirm('نقل '+legacy.length+' صورة قديمة من هذا الجهاز إلى مكتبتك السحابية؟'))return;
+ let added=0,failed=0;
+ for(const item of legacy){
+  try{
+   if(item.file.length>850000)throw Error('الصورة كبيرة');
+   const saved=await qnMediaApi('/api/teacher/media/save',{label:item.label||'صورة قديمة',file:item.file});
+   _qnMediaCloud.unshift(saved.image);added++;
+  }catch{failed++}
+ }
+ if(!failed)localStorage.removeItem('qn8_media');
+ _qnMediaLoaded=true;renderMediaLibrary();
+ alert('تم نقل '+added+' صورة. '+(failed?'تعذر نقل '+failed+' صورة؛ بقيت محفوظة على هذا الجهاز.':'أصبحت صورك محفوظة في الحساب.'));
+};
+window.clearCustomMedia=function(){return window.qnMediaMigrateLegacy()};
