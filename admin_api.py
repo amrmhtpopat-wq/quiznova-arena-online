@@ -302,19 +302,39 @@ def summary():
             'days': days, 'database': store.DATABASE_KIND}
 
 
-def teacher_rows(page, search):
+def teacher_rows(page, search, status='all'):
     term = '%' + str(search or '').strip()[:70].replace('%', '\\%').replace('_', '\\_') + '%'
     where = "(t.name LIKE ? ESCAPE '\\' OR t.email LIKE ? ESCAPE '\\' OR t.school LIKE ? ESCAPE '\\')"
-    args = (term, term, term)
-    total = sql('SELECT COUNT(*) AS n FROM teachers t WHERE ' + where, args)['n']
+    args = [term,term,term]
+    recent, values7 = _active_query(clock()-7*86400)
+    month, values30 = _active_query(clock()-30*86400)
+    if status == 'disabled':
+        where += ' AND t.admin_disabled=1'
+    elif status == 'recent':
+        where += ' AND t.admin_disabled=0 AND '+recent
+        args.extend(values7)
+    elif status == 'idle':
+        where += ' AND t.admin_disabled=0 AND NOT '+recent+' AND '+month
+        args.extend(values7+values30)
+    elif status == 'inactive':
+        where += ' AND t.admin_disabled=0 AND NOT '+month
+        args.extend(values30)
+    total = sql('SELECT COUNT(*) AS n FROM teachers t WHERE '+where, tuple(args))['n']
     rows = sql("""SELECT t.id,t.name,t.email,t.school,t.subject,t.school_type,
-                 t.created_at,t.admin_disabled,
+                 t.created_at,t.admin_disabled,t.last_login,t.access_plan,
+                 (SELECT updated_at FROM datasets d WHERE d.teacher_id=t.id) AS dataset_updated,
+                 (SELECT MAX(played_at) FROM played_sessions p WHERE p.teacher_id=t.id) AS last_session,
+                 (SELECT MAX(created_at) FROM student_attempts a WHERE a.teacher_id=t.id) AS last_attempt,
                  (SELECT COUNT(*) FROM students s WHERE s.teacher_id=t.id) AS students,
                  (SELECT COUNT(*) FROM played_sessions p WHERE p.teacher_id=t.id) AS sessions
-                 FROM teachers t WHERE """ + where +
-               ' ORDER BY t.created_at DESC LIMIT ? OFFSET ?', args + (MAX_ROWS,(page-1)*MAX_ROWS), True)
-    return {'total': int(total), 'page': page, 'pageSize': MAX_ROWS,
-            'rows': [dict(r) for r in rows]}
+                 FROM teachers t WHERE """+where+
+               ' ORDER BY t.created_at DESC LIMIT ? OFFSET ?', tuple(args+[MAX_ROWS,(page-1)*MAX_ROWS]), True)
+    safe=[]
+    for row in rows:
+        value=dict(row)
+        value.update(_activity_info(value))
+        safe.append(value)
+    return {'total':int(total),'page':page,'pageSize':MAX_ROWS,'rows':safe}
 
 
 def school_rows():
@@ -356,11 +376,31 @@ def _quiz_count(teacher_id):
     return len(quizzes) if isinstance(quizzes, list) else 0
 
 
+
+def _activity_info(row):
+    times = [int(row.get(k) or 0) for k in
+             ('created_at','last_login','last_session','last_attempt','dataset_updated')]
+    last = max(times) if times else 0
+    gap = clock() - last
+    state = 'recent' if gap <= 7*86400 else ('idle' if gap <= 30*86400 else 'inactive')
+    return {'lastActivity':last,'activityStatus':state}
+
+
+def _active_query(cutoff):
+    return ("""(t.created_at>=? OR t.last_login>=?
+             OR EXISTS(SELECT 1 FROM played_sessions p WHERE p.teacher_id=t.id AND p.played_at>=?)
+             OR EXISTS(SELECT 1 FROM student_attempts a WHERE a.teacher_id=t.id AND a.created_at>=?)
+             OR EXISTS(SELECT 1 FROM datasets d WHERE d.teacher_id=t.id AND d.updated_at>=?))""",
+            (cutoff,)*5)
+
+
 def teacher_detail(teacher_id):
     if not _id(teacher_id):
         return None
     t = sql("""SELECT id,name,email,school,subject,school_type,created_at,
-                admin_disabled FROM teachers WHERE id=?""", (teacher_id,))
+                admin_disabled,last_login,access_plan,
+                (SELECT updated_at FROM datasets WHERE teacher_id=teachers.id) AS dataset_updated
+                FROM teachers WHERE id=?""", (teacher_id,))
     if not t:
         return None
     counts = sql("""SELECT
@@ -387,6 +427,7 @@ def teacher_detail(teacher_id):
     output['highScores'] = int(attempts['high_scores'] or 0)
     output['classes'] = [dict(x) for x in classes]
     output['recentSessions'] = [dict(x) for x in sessions]
+    output.update(_activity_info(output))
     return output
 
 
@@ -483,7 +524,13 @@ def school_detail(name):
 
 
 def account_overview():
-    return {'summary': summary(), 'recentTeachers': [dict(r) for r in sql(
+    cutoff=clock()-30*86400
+    activity_query, activity_params = _active_query(cutoff)
+    inactive=sql('SELECT COUNT(*) AS n FROM teachers t WHERE NOT '+activity_query,activity_params)['n']
+    recent_login=sql('SELECT COUNT(*) AS n FROM teachers WHERE last_login>=?',(clock()-7*86400,))['n']
+    return {'summary': summary(), 'inactiveTeachers30d':int(inactive),
+            'recentLogins7d':int(recent_login),
+            'recentTeachers': [dict(r) for r in sql(
         """SELECT id,name,school,created_at,admin_disabled FROM teachers
            ORDER BY created_at DESC LIMIT 8""", many=True)],
         'recentSessions': [dict(r) for r in sql(
@@ -519,7 +566,7 @@ def handle_get(h,u):
     elif u.path == '/api/admin/teachers':
         args = parse_qs(u.query)
         page = max(1, min(500, int(args.get('page', ['1'])[0] or 1)))
-        _reply(h, {'ok': True, **teacher_rows(page,args.get('search', [''])[0])})
+        _reply(h, {'ok': True, **teacher_rows(_page(args),args.get('search', [''])[0],args.get('status',['all'])[0])})
     elif u.path == '/api/admin/schools':
         _reply(h, {'ok': True, 'rows': school_rows()})
     elif u.path == '/api/admin/audit':
