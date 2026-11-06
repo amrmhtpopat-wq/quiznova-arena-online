@@ -280,10 +280,11 @@ async function loadStudents(){
   $('studentsCount').textContent='عدد النتائج: '+num(r.total);
   $('prevStudents').disabled=studentsPage===1;
   $('nextStudents').disabled=studentsPage*50>=r.total;
-  $('studentsBody').innerHTML=r.rows.map(x=>'<tr><td><strong>'+h(x.name)+'</strong><small>'+h(x.class_name||'غير محدد')+'</small></td>'
+  $('studentsBody').innerHTML=r.rows.map(x=>'<tr><td><button class="linklike" type="button" data-student="'+h(x.id)+'">'+h(x.name)+'</button><small>'+h(x.class_name||'غير محدد')+'</small></td>'
    +'<td>'+h(x.teacher_name)+'<small>'+h(x.school)+'</small></td><td>'+num(x.attempts)+'</td>'
    +'<td>'+num(x.xp)+'</td><td>'+h(fmtDate(x.last_attempt))+'</td></tr>').join('')
    ||'<tr><td colspan="5" class="empty">لا توجد حسابات مطابقة.</td></tr>';
+  $('studentsBody').querySelectorAll('[data-student]').forEach(b=>b.addEventListener('click',()=>openStudent(b.dataset.student)));
  }catch(e){$('studentsBody').innerHTML='<tr><td colspan="5" class="empty">تعذر تحميل الحسابات.</td></tr>';toast(errorLabel(e),true)}
 }
 async function loadSessions(){
@@ -331,6 +332,23 @@ $('detailClose').addEventListener('click',closeDrawer);
 $('detailBackdrop').addEventListener('click',closeDrawer);
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer()});
 const detailStat=(label,value)=>'<div class="detail-stat"><small>'+h(label)+'</small><strong>'+h(String(value??0))+'</strong></div>';
+
+async function openStudent(id){
+ openDrawer('ملف الطالب','<p class="empty">جارٍ تحميل تفاصيل الطالب...</p>');
+ try{
+  const r=await request('student/detail?'+new URLSearchParams({id})),s=r.student;
+  const attempts=(s.recentAttempts||[]).map(a=>'<tr><td>'+h(fmtDate(a.created_at))+'</td><td>'+num(a.correct_count)+' / '+num(a.question_total)+'</td><td>'+num(a.percent)+'%</td><td>'+num(a.score)+'</td></tr>').join('');
+  openDrawer('الطالب — '+s.name,
+    '<div class="identity"><div class="avatar-circle">'+h((s.name||'ط').slice(0,1))+'</div><div><h3>'+h(s.name)+'</h3><p>'+h(s.class_name||'—')+'</p></div></div>'
+    +'<p class="detail-meta"><b>المعلم:</b> '+h(s.teacher_name)+'<br><b>المدرسة:</b> '+h(s.school||'—')+'<br><b>المادة:</b> '+h(s.subject||'—')+'<br><b>تاريخ التسجيل:</b> '+h(fmtDate(s.created_at))
+    +'<br><b>آخر مشاركة:</b> '+h(fmtDate(s.lastAttempt))+'</p>'
+    +'<div class="detail-stats">'+detailStat('المحاولات',num(s.attempts))+detailStat('متوسط النتيجة',s.averagePercent+'%')
+    +detailStat('XP',num(s.xp))+detailStat('إجابات صحيحة',num(s.correct_count))+detailStat('مرات اللعب',num(s.played_count))+'</div>'
+    +'<h3 class="detail-h">آخر 25 محاولة</h3><div class="table-scroll"><table><thead><tr><th>التاريخ</th><th>الصحيحة / الكلي</th><th>النسبة</th><th>النقاط</th></tr></thead><tbody>'
+    +(attempts||'<tr><td colspan="4">لا توجد مشاركات</td></tr>')+'</tbody></table></div>');
+ }catch(e){openDrawer('تعذر تحميل ملف الطالب','<p class="empty">'+h(errorLabel(e))+'</p>')}
+}
+
 async function openTeacher(id){
  openDrawer('تفاصيل حساب المعلم','<p class="empty">جارٍ تحميل بيانات المعلم من Neon...</p>');
  try{
