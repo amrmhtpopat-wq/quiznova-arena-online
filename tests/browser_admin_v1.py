@@ -69,7 +69,7 @@ with sync_playwright() as p:
         page.screenshot(path=str(screens/('admin-home-phone.png' if mobile else 'admin-home-desktop.png')),full_page=True)
         if mobile:page.locator('#menuToggle').click()
         page.locator('[data-view="teachers"]').click()
-        page.locator('#teachersBody tr').first.wait_for(state='visible',timeout=12000)
+        page.locator('#teachersBody').get_by_text('أستاذ تجريبي').wait_for(state='visible',timeout=12000)
         assert 'أستاذ تجريبي' in page.locator('#teachersBody').inner_text()
         page.locator('#teacherSearch').fill('الملك عبدالله')
         page.locator('#teachersBody tr').first.wait_for(state='visible',timeout=12000)
