@@ -629,12 +629,14 @@ function renderLiveHost(data,quiz){
     }catch(err){toast('تعذر تعيين الفريق. تأكد من عدم بدء اللعبة.');livePlayerSignature=''}
   });
   const shuffleButton=$('#shuffleLiveTeams');if(shuffleButton)shuffleButton.onclick=()=>liveControl('shuffle-teams');
+  const liveSceneSelect=$('#liveRoomBackground');
+  liveSceneSelect.onchange=()=>{liveSceneSelect.dataset.userChoice='1'};
   $('#changeLiveScene').onclick=()=>liveControl('background');
   $('#liveStartBtn').onclick=()=>liveControl('start'); $('#liveNextBtn').onclick=()=>liveControl('next');$('#liveSkipBtn').onclick=()=>{if(confirm('تخطي السؤال الحالي والانتقال مباشرة إلى السؤال التالي؟'))liveControl('skip')}; $('#liveEndBtn').onclick=()=>liveControl('end'); $('#liveNewRoomBtn').onclick=openNewLiveRoom;
   $('#copyJoinBtn').onclick=()=>navigator.clipboard?.writeText(join).then(()=>toast('تم نسخ رابط الدخول')).catch(()=>toast('انسخ الرابط الظاهر يدويًا')); $('#openStageBtn').onclick=()=>window.open('/stage.html?code='+encodeURIComponent(data.code)+'&stage='+encodeURIComponent(liveStageToken),'quiznova_stage','noopener');
 }
 async function liveControl(action){
-  try{const r=await fetch('/api/room/control',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:liveRoom,action,hostToken:liveHostToken,background:$('#liveRoomBackground')?.value})});const d=await r.json();if(!d.ok)throw 0;if(action==='background')toast('تم تغيير الخلفية لجميع شاشات الغرفة');if(action==='end'){
+  try{const r=await fetch('/api/room/control',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:liveRoom,action,hostToken:liveHostToken,background:$('#liveRoomBackground')?.value})});const d=await r.json();if(!d.ok)throw 0;if(action==='background'){if($('#liveRoomBackground'))$('#liveRoomBackground').dataset.userChoice='';toast('تم تغيير الخلفية لجميع شاشات الغرفة')}if(action==='end'){
     toast('تم إنهاء الجلسة؛ يمكنك تنزيل التقرير أو فتح غرفة جديدة');
     // Update the report immediately, without depending on the next polling tick.
     try{const res=await fetch('/api/room/state?code='+encodeURIComponent(liveRoom)+'&host='+encodeURIComponent(liveHostToken),{cache:'no-store'});const data=await res.json();if(data.ok)updateLiveHost(data.room)}catch{}
@@ -755,7 +757,7 @@ function updateLiveHost(room){
   window.booyahLaunchCountdown?.(room,liveRoom);
   $('#liveHost').dataset.liveScene=room.background||'cartoon';
   const sceneEditor=$('#liveRoomBackground');
-  if(sceneEditor&&sceneEditor.value!==room.background)sceneEditor.value=room.background||'cartoon';
+  if(sceneEditor&&!sceneEditor.dataset.userChoice&&sceneEditor.value!==room.background)sceneEditor.value=room.background||'cartoon';
   liveCurrentStatus=room.status;
   liveRosterMode=room.playType;liveRosterStatus=room.status;liveRosterTeams=room.teamNames||[];
   const players=Array.isArray(room.players)?room.players:[];$('#livePlayerCount').textContent=players.length;const sign=JSON.stringify(players.map(p=>[p.name,p.avatar,p.team,p.score]));if(sign!==livePlayerSignature){livePlayerSignature=sign;$('#livePlayers').innerHTML=renderPlayerCards(players)} const msg=document.getElementById('liveJoinMessage');if(msg)msg.textContent=players.length?'انضم '+players.length+' طالب إلى الغرفة':'بانتظار دخول الطلاب...';
