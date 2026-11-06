@@ -586,10 +586,20 @@ $('#createLiveRoom').onclick=async()=>{
     console.warn('Room creation failed:',e.message||e);
   }
 };
+const liveSceneChoices=[
+  ['cartoon','☁️ كرتونية'],['anime','🌸 أنمي'],['cinematic','🌌 سينمائية'],
+  ['cine-stars','✨ فضاء ومجرات'],['cine-aurora','🌈 شفق قطبي'],
+  ['cine-neon','⚡ مدينة النيون'],['cine-desert','🏜️ صحراء أردنية'],
+  ['cine-arena','🏟️ ساحة الأبطال']
+];
+function sceneOptions(selected='cartoon'){
+ return liveSceneChoices.map(([id,label])=>'<option value="'+id+'"'+(id===selected?' selected':'')+'>'+label+'</option>').join('');
+}
 function renderLiveHost(data,quiz){
   const join=data.join_url||`${data.student_url}?code=${encodeURIComponent(data.code)}`;
   $('#liveHost').innerHTML=`
   <div class="room-shell">
+    <div class="bo-live-scene-control"><label for="liveRoomBackground">🎬 تغيير خلفية الصف المباشر</label><select id="liveRoomBackground">${sceneOptions($('#liveBackground')?.value||'cartoon')}</select><button class="btn btn-secondary" type="button" id="changeLiveScene">تطبيق الخلفية الآن</button></div>
     <div class="sky-room-settings"><h3>⚙ إعدادات الاختبار</h3><div class="sky-setting"><span>نمط اللعب</span><b>${data.playType==='teams'?'👥 مجموعات':'👤 فردي'}</b></div><div class="sky-setting"><span>حماية من النقل</span><b>${data.variantMode==='models4'?'نماذج A/B/C/D':data.variantMode==='options'?'ترتيب خيارات مختلف':'موحّد'}</b></div><div class="sky-setting"><span>الاختبار</span><b>${escapeHtml(quiz.title)}</b></div><div class="sky-setting"><span>الشعبة</span><b>${escapeHtml($('#liveSection').value.trim()||'لم تُحدّد')}</b></div><div class="sky-setting"><span>الخلفية الرسمية</span><b>${$('#liveBackground').selectedOptions[0]?.textContent||'سماوية'}</b></div></div>
     <div class="room-code-card"><div class="sky-room-title">🎮 غرفة الألعاب — BOOYAHJO</div>
       <div class="host-join-grid">
@@ -619,11 +629,12 @@ function renderLiveHost(data,quiz){
     }catch(err){toast('تعذر تعيين الفريق. تأكد من عدم بدء اللعبة.');livePlayerSignature=''}
   });
   const shuffleButton=$('#shuffleLiveTeams');if(shuffleButton)shuffleButton.onclick=()=>liveControl('shuffle-teams');
+  $('#changeLiveScene').onclick=()=>liveControl('background');
   $('#liveStartBtn').onclick=()=>liveControl('start'); $('#liveNextBtn').onclick=()=>liveControl('next');$('#liveSkipBtn').onclick=()=>{if(confirm('تخطي السؤال الحالي والانتقال مباشرة إلى السؤال التالي؟'))liveControl('skip')}; $('#liveEndBtn').onclick=()=>liveControl('end'); $('#liveNewRoomBtn').onclick=openNewLiveRoom;
   $('#copyJoinBtn').onclick=()=>navigator.clipboard?.writeText(join).then(()=>toast('تم نسخ رابط الدخول')).catch(()=>toast('انسخ الرابط الظاهر يدويًا')); $('#openStageBtn').onclick=()=>window.open('/stage.html?code='+encodeURIComponent(data.code)+'&stage='+encodeURIComponent(liveStageToken),'quiznova_stage','noopener');
 }
 async function liveControl(action){
-  try{const r=await fetch('/api/room/control',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:liveRoom,action,hostToken:liveHostToken})});const d=await r.json();if(!d.ok)throw 0;if(action==='end'){
+  try{const r=await fetch('/api/room/control',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:liveRoom,action,hostToken:liveHostToken,background:$('#liveRoomBackground')?.value})});const d=await r.json();if(!d.ok)throw 0;if(action==='background')toast('تم تغيير الخلفية لجميع شاشات الغرفة');if(action==='end'){
     toast('تم إنهاء الجلسة؛ يمكنك تنزيل التقرير أو فتح غرفة جديدة');
     // Update the report immediately, without depending on the next polling tick.
     try{const res=await fetch('/api/room/state?code='+encodeURIComponent(liveRoom)+'&host='+encodeURIComponent(liveHostToken),{cache:'no-store'});const data=await res.json();if(data.ok)updateLiveHost(data.room)}catch{}
@@ -741,6 +752,10 @@ function liveReportCsv(room){
 
 function updateLiveHost(room){
   if(!$('#livePlayers'))return;
+  window.booyahLaunchCountdown?.(room,liveRoom);
+  $('#liveHost').dataset.liveScene=room.background||'cartoon';
+  const sceneEditor=$('#liveRoomBackground');
+  if(sceneEditor&&sceneEditor.value!==room.background)sceneEditor.value=room.background||'cartoon';
   liveCurrentStatus=room.status;
   liveRosterMode=room.playType;liveRosterStatus=room.status;liveRosterTeams=room.teamNames||[];
   const players=Array.isArray(room.players)?room.players:[];$('#livePlayerCount').textContent=players.length;const sign=JSON.stringify(players.map(p=>[p.name,p.avatar,p.team,p.score]));if(sign!==livePlayerSignature){livePlayerSignature=sign;$('#livePlayers').innerHTML=renderPlayerCards(players)} const msg=document.getElementById('liveJoinMessage');if(msg)msg.textContent=players.length?'انضم '+players.length+' طالب إلى الغرفة':'بانتظار دخول الطلاب...';
