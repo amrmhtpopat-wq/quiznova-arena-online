@@ -18,6 +18,7 @@
 <link rel="stylesheet" href="/booyah-mascots-v112.css?v=11.3">
 <link rel="stylesheet" href="/booyah-student-v120.css?v=12.0">
 <link rel="stylesheet" href="/booyah-v121.css?v=12.1">
+  <link rel="stylesheet" href="/booyah-responsive-v122.css?v=12.2">
 </head>
 <body class="v105-student">
 <div class="bg-orb orb-a"></div><div class="bg-orb orb-b"></div><div class="bg-orb orb-c"></div>
@@ -61,7 +62,7 @@
       <label>اسم الطالب
         <input id="playerName" autocomplete="off" maxlength="60" placeholder="مثال: أحمد محمد">
       </label>
-      <div class="avatar-picker-title">اختر شخصيتك في اللعبة</div><div id="avatarPicker" class="avatar-picker" aria-label="اختيار الصورة الشخصية"></div>
+      <div class="avatar-picker-title">اختر شخصيتك في اللعبة</div><p id="avatarPickerCount" role="status" aria-live="polite">جارٍ عرض الشخصيات المتاحة...</p><div id="avatarPicker" class="avatar-picker" aria-label="اختيار الصورة الشخصية"></div>
       <div class="join-features"><span>📷 QR</span><span>🪪 Card ID</span><span>🔢 PIN</span><span>👥 فردي أو فرق</span></div>
       <button id="joinBtn" class="primary">دخول اللعبة <span>🚀</span></button>
       <div id="joinError" class="error"></div>
@@ -86,9 +87,9 @@
   </section>
   <section id="gameView" class="hidden"></section>
 </main>
-<script src="/avatar-names-v121.js?v=12.1"></script>
+<script src="/avatar-names-v121.js?v=12.2"></script>
 <script src="/booyah-countdown-v121.js?v=12.1"></script>
-<script src="student.js?v=12.1"></script>
+<script src="student.js?v=12.2"></script>
 <script src="/solo-student-v120.js?v=12.0"></script>
 </body>
 </html>
