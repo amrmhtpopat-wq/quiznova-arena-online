@@ -59,7 +59,7 @@ with sync_playwright() as p:
   page.locator('#workspace').wait_for(state='visible',timeout=15000)
   page.locator('button.nav[data-panel="students"]').click()
   page.locator('#studentsBoard .bo-class-folder').first.wait_for(timeout=15000)
-  assert page.locator('#studentsBoard .bo-class-folder').count()==2
+  assert page.locator('#studentsBoard .bo-class-folder').count()==(1 if mobile else 2)
   original=store.list_students(tid)[0]
   page.locator('#studentsBoard [data-edit-student="'+original['id']+'"]').click()
   page.locator('#boCardEditor').wait_for(state='visible',timeout=8000)
