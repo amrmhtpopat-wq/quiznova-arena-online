@@ -18,7 +18,7 @@ def check_rate(handler,route,identity=""):
         if len(RATES)>2000:RATES.clear()
     return True
 from platform_store import (DATABASE_KIND,create_teacher,login,teacher_for_token,signout,snapshot,save_snapshot,
-                             add_students,list_students,shorten_student_codes,history,dashboard,class_wars,mastery,update_school_type,avatar_pool)
+                             add_students,list_students,edit_student_card,archive_student_card,list_teacher_media,save_teacher_media,delete_teacher_media,shorten_student_codes,history,dashboard,class_wars,mastery,update_school_type,avatar_pool)
 
 MAX_POST=1_850_000
 
@@ -37,13 +37,14 @@ def authorized(handler):
 def handle_get(h,u):
     if u.path=='/api/auth/reset-status':
         h.send_json({'ok':True,'enabled':sec.smtp_ready()});return True
-    if u.path not in ('/api/auth/me','/api/teacher/snapshot','/api/teacher/students','/api/teacher/history','/api/teacher/dashboard','/api/teacher/classwars','/api/teacher/mastery','/api/teacher/backup','/api/teacher/backups'):return False
+    if u.path not in ('/api/auth/me','/api/teacher/snapshot','/api/teacher/students','/api/teacher/history','/api/teacher/dashboard','/api/teacher/classwars','/api/teacher/mastery','/api/teacher/backup','/api/teacher/backups','/api/teacher/media'):return False
     t=authorized(h)
     if not t:return True
     tid=t['id']
     if u.path=='/api/auth/me':h.send_json({'ok':True,'teacher':t,'storage':DATABASE_KIND})
     elif u.path=='/api/teacher/snapshot':h.send_json({'ok':True,**sec.snapshot_with_revision(tid)})
     elif u.path=='/api/teacher/students':h.send_json({'ok':True,'students':list_students(tid)})
+    elif u.path=='/api/teacher/media':h.send_json({'ok':True,'images':list_teacher_media(tid)})
     elif u.path=='/api/teacher/history':h.send_json({'ok':True,'sessions':history(tid,150)})
     elif u.path=='/api/teacher/dashboard':h.send_json({'ok':True,'dashboard':dashboard(tid),'teacher':t})
     elif u.path=='/api/teacher/classwars':h.send_json({'ok':True,'classes':class_wars(tid)})
@@ -53,7 +54,7 @@ def handle_get(h,u):
     return True
 
 def handle_post(h,u,data):
-    if u.path not in ('/api/auth/register','/api/auth/login','/api/auth/forgot','/api/auth/reset','/api/auth/logout','/api/auth/password','/api/teacher/snapshot','/api/teacher/students','/api/teacher/students/shorten-codes','/api/teacher/school-type','/api/teacher/backups/create','/api/teacher/backups/restore'):return False
+    if u.path not in ('/api/auth/register','/api/auth/login','/api/auth/forgot','/api/auth/reset','/api/auth/logout','/api/auth/password','/api/teacher/snapshot','/api/teacher/students','/api/teacher/students/shorten-codes','/api/teacher/students/edit','/api/teacher/students/delete','/api/teacher/media/save','/api/teacher/media/delete','/api/teacher/school-type','/api/teacher/backups/create','/api/teacher/backups/restore'):return False
     try:
         if u.path in ('/api/auth/register','/api/auth/login','/api/auth/forgot','/api/auth/reset') and not check_rate(h,u.path,data.get("email") or data.get("token") or ""):
             h.send_json({'ok':False,'error':'rate_limited'},429);return True
@@ -82,6 +83,18 @@ def handle_post(h,u,data):
         if u.path=='/api/teacher/school-type':
             typ=update_school_type(t['id'],str(data.get('schoolType','mixed')))
             h.send_json({'ok':True,'schoolType':typ,'avatars':avatar_pool(typ)});return True
+        if u.path=='/api/teacher/media/save':
+            h.send_json({'ok':True,'image':save_teacher_media(t['id'],data.get('label',''),data.get('file',''))});return True
+        if u.path=='/api/teacher/media/delete':
+            h.send_json({'ok':True,'deletedId':delete_teacher_media(t['id'],data.get('id',''))});return True
+        if u.path=='/api/teacher/students/edit':
+            result=edit_student_card(t['id'],data.get('id'),data.get('name'),data.get('className'),data.get('avatar'))
+            h.send_json({'ok':True,'student':result});return True
+        if u.path=='/api/teacher/students/delete':
+            if data.get('confirm') is not True:
+                h.send_json({'ok':False,'error':'confirmation_required'},400);return True
+            result=archive_student_card(t['id'],data.get('id'))
+            h.send_json({'ok':True,**result});return True
         if u.path=='/api/teacher/students/shorten-codes':
             h.send_json({'ok':True,'updated':shorten_student_codes(t['id'])});return True
         if u.path=='/api/teacher/students':
