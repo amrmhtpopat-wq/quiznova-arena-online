@@ -565,7 +565,7 @@ def handle_get(h,u):
         _reply(h, {'ok': True, 'summary': summary()})
     elif u.path == '/api/admin/teachers':
         args = parse_qs(u.query)
-        page = max(1, min(500, int(args.get('page', ['1'])[0] or 1)))
+        page = _page(args)
         _reply(h, {'ok': True, **teacher_rows(_page(args),args.get('search', [''])[0],args.get('status',['all'])[0])})
     elif u.path == '/api/admin/schools':
         _reply(h, {'ok': True, 'rows': school_rows()})
