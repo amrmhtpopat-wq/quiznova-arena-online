@@ -4,8 +4,8 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#071c39"><meta name="robots" content="noindex,nofollow,noarchive">
 <title>BOOYAHJO CONTROL CENTER | إدارة المنصة</title>
-<link rel="stylesheet" href="/admin-v1.css?v=1.0">
-<script defer src="/admin-v1.js?v=1.0"></script>
+<link rel="stylesheet" href="/admin-v1.css?v=2.0">
+<script defer src="/admin-v1.js?v=2.0"></script>
 </head>
 <body>
 <section id="authentication" class="auth-stage" aria-labelledby="authTitle">
@@ -56,6 +56,8 @@
     <nav class="nav-items" id="adminNav">
       <button class="nav-item selected" data-view="overview"><span>▦</span> نظرة عامة</button>
       <button class="nav-item" data-view="teachers"><span>♙</span> المعلمون</button>
+      <button class="nav-item" data-view="students"><span>♧</span> الطلاب</button>
+      <button class="nav-item" data-view="sessions"><span>◷</span> الجلسات والاختبارات</button>
       <button class="nav-item" data-view="schools"><span>▤</span> المدارس</button>
       <button class="nav-item" data-view="audit"><span>☷</span> سجل الإدارة</button>
     </nav>
@@ -73,6 +75,7 @@
       <section id="overviewView" class="view">
         <div class="page-head"><div><span class="eyebrow">تحكم المنصة</span><h1>نظرة عامة</h1><p>متابعة مستخدمي BOOYAHJO والألعاب والاختبارات من قاعدة البيانات مباشرة.</p></div><button id="refreshBtn" class="outlined">↻ تحديث البيانات</button></div>
         <div class="metrics-grid" id="metricsGrid" aria-live="polite"></div>
+        <div class="insight-banner" id="insightBanner" aria-live="polite"></div>
         <div class="charts-grid">
           <article class="panel chart-panel"><div class="panel-header"><div><h2>نشاط الجلسات</h2><p>آخر 14 يومًا (حسب UTC)</p></div><span class="chip">مباشر من قاعدة البيانات</span></div><div class="activity-chart" id="activityChart"></div></article>
           <article class="panel breakdown"><div class="panel-header"><div><h2>مؤشرات التشغيل</h2><p>أرقام إجمالية للمنصة</p></div></div><div id="operationsGrid" class="operation-grid"></div></article>
@@ -85,6 +88,23 @@
           <div class="table-footer"><span id="teachersCount">—</span><div class="pager"><button id="prevTeachers" type="button">السابق</button><strong id="teachersPage">1</strong><button id="nextTeachers" type="button">التالي</button></div></div>
         </div>
       </section>
+      
+      <section id="studentsView" class="view hidden">
+        <div class="page-head"><div><span class="eyebrow">متابعة الحسابات</span><h1>حسابات الطلاب</h1><p>عرض بيانات الطلاب ونشاطهم وآخر مشاركة مع المحافظة على خصوصية رموز البطاقات.</p></div><button class="outlined" id="studentsExport">تصدير CSV</button></div>
+        <div class="panel table-panel">
+          <div class="filters"><label class="search-label"><span>⌕</span><input type="search" id="studentSearch" placeholder="بحث بالطالب أو الشعبة أو المعلم"></label><button class="outlined" id="studentRefresh">تحديث</button></div>
+          <div class="table-scroll"><table><thead><tr><th>الطالب</th><th>المعلم / المدرسة</th><th>المشاركات</th><th>النقاط XP</th><th>آخر مشاركة</th></tr></thead><tbody id="studentsBody"></tbody></table></div>
+          <div class="table-footer"><span id="studentsCount"></span><div class="pager"><button id="prevStudents">السابق</button><strong id="studentsPage">1</strong><button id="nextStudents">التالي</button></div></div>
+        </div>
+      </section>
+      <section id="sessionsView" class="view hidden">
+        <div class="page-head"><div><span class="eyebrow">سجل الاستخدام</span><h1>الجلسات والاختبارات</h1><p>راقب الجلسات المكتملة واستخدام المنصة حسب المعلم والشعبة والتاريخ.</p></div><button class="outlined" id="sessionsExport">تصدير CSV</button></div>
+        <div class="panel table-panel">
+          <div class="filters"><label class="search-label"><span>⌕</span><input type="search" id="sessionSearch" placeholder="بحث بالاختبار أو المعلم أو الشعبة أو الرمز"></label><button class="outlined" id="sessionRefresh">تحديث</button></div>
+          <div class="table-scroll"><table><thead><tr><th>الاختبار</th><th>المعلم</th><th>الشعبة / النمط</th><th>المشاركات</th><th>التاريخ</th></tr></thead><tbody id="sessionsBody"></tbody></table></div>
+          <div class="table-footer"><span id="sessionsCount"></span><div class="pager"><button id="prevSessions">السابق</button><strong id="sessionsPage">1</strong><button id="nextSessions">التالي</button></div></div>
+        </div>
+      </section>
       <section id="schoolsView" class="view hidden">
         <div class="page-head"><div><span class="eyebrow">شبكة المدارس</span><h1>المدارس</h1><p>المدارس المسجلة وإحصائيات المعلمين والطلاب والجلسات حسب اسم المدرسة.</p></div></div>
         <div class="panel table-panel"><div class="filters"><label class="search-label"><span>⌕</span><input type="search" id="schoolSearch" placeholder="ابحث عن مدرسة" aria-label="البحث عن مدرسة"></label><button id="schoolsRefresh" class="outlined">تحديث</button></div><div class="table-scroll"><table><thead><tr><th>المدرسة</th><th>المعلمون</th><th>الطلاب</th><th>الجلسات المكتملة</th></tr></thead><tbody id="schoolsBody"></tbody></table></div></div>
@@ -93,7 +113,13 @@
         <div class="page-head"><div><span class="eyebrow">المساءلة والأمان</span><h1>سجل الإدارة</h1><p>العمليات الحساسة محفوظة في قاعدة البيانات باسم المدير ووقتها.</p></div><button id="auditRefresh" class="outlined">تحديث السجل</button></div>
         <div class="panel table-panel"><div class="table-scroll"><table><thead><tr><th>التاريخ</th><th>المدير</th><th>الإجراء</th><th>المرجع</th><th>السبب</th></tr></thead><tbody id="auditBody"></tbody></table></div></div>
       </section>
+
       <div class="message toast hidden" id="adminToast" role="alert"></div>
+      <div class="drawer-backdrop hidden" id="detailBackdrop"></div>
+      <aside class="detail-drawer hidden" id="detailDrawer" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+        <div class="drawer-head"><h2 id="detailTitle">تفاصيل الحساب</h2><button type="button" class="outlined" id="detailClose">إغلاق ×</button></div>
+        <div id="detailContent" class="drawer-content"></div>
+      </aside>
     </main>
   </div>
 </div>
