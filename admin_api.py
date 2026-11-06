@@ -332,9 +332,150 @@ def audit_rows():
                   ORDER BY a.created_at DESC LIMIT 100""", many=True)
 
 
+
+def _page(qs, key='page'):
+    try:
+        return max(1, min(1000, int(qs.get(key, ['1'])[0])))
+    except (ValueError, TypeError, OverflowError):
+        return 1
+
+
+def _safe_search(qs):
+    return str(qs.get('search', [''])[0] or '').strip()[:90].replace('%', '\\%').replace('_', '\\_')
+
+
+def _id(value):
+    return bool(re.fullmatch(r'[0-9a-f]{32}', str(value or '')))
+
+
+def _quiz_count(teacher_id):
+    data = sql('SELECT quizzes FROM datasets WHERE teacher_id=?', (teacher_id,))
+    if not data:
+        return 0
+    quizzes = store.jload(data['quizzes'], [])
+    return len(quizzes) if isinstance(quizzes, list) else 0
+
+
+def teacher_detail(teacher_id):
+    if not _id(teacher_id):
+        return None
+    t = sql("""SELECT id,name,email,school,subject,school_type,created_at,
+                admin_disabled FROM teachers WHERE id=?""", (teacher_id,))
+    if not t:
+        return None
+    counts = sql("""SELECT
+        (SELECT COUNT(*) FROM students WHERE teacher_id=?) students,
+        (SELECT COUNT(*) FROM played_sessions WHERE teacher_id=?) sessions,
+        (SELECT COUNT(*) FROM student_attempts WHERE teacher_id=?) attempts,
+        (SELECT MAX(played_at) FROM played_sessions WHERE teacher_id=?) last_session,
+        (SELECT MAX(created_at) FROM student_attempts WHERE teacher_id=?) last_attempt
+    """, (teacher_id,)*5)
+    attempts = sql("""SELECT AVG(percent) AS average_percent,
+                SUM(CASE WHEN percent>=80 THEN 1 ELSE 0 END) AS high_scores
+                FROM student_attempts WHERE teacher_id=?""", (teacher_id,))
+    classes = sql("""SELECT class_name, COUNT(*) AS students
+                     FROM students WHERE teacher_id=?
+                     GROUP BY class_name ORDER BY students DESC,class_name LIMIT 25""",
+                  (teacher_id,), True)
+    sessions = sql("""SELECT id,quiz_title,section,subject,game_mode,played_at
+                     FROM played_sessions WHERE teacher_id=?
+                     ORDER BY played_at DESC LIMIT 12""", (teacher_id,), True)
+    output = dict(t)
+    output.update(dict(counts))
+    output['quizzes'] = _quiz_count(teacher_id)
+    output['averagePercent'] = round(float(attempts['average_percent'] or 0), 1)
+    output['highScores'] = int(attempts['high_scores'] or 0)
+    output['classes'] = [dict(x) for x in classes]
+    output['recentSessions'] = [dict(x) for x in sessions]
+    return output
+
+
+def student_rows(page, search, teacher_id):
+    term = '%' + search + '%'
+    where = """(s.name LIKE ? ESCAPE '\\' OR s.class_name LIKE ? ESCAPE '\\'
+                OR t.name LIKE ? ESCAPE '\\')"""
+    params = [term, term, term]
+    if teacher_id:
+        if not _id(teacher_id):
+            return {'total': 0, 'page': page, 'pageSize': MAX_ROWS, 'rows': []}
+        where += ' AND s.teacher_id=?'
+        params.append(teacher_id)
+    total = sql("""SELECT COUNT(*) AS n FROM students s
+                   JOIN teachers t ON t.id=s.teacher_id WHERE """+where, tuple(params))['n']
+    rows = sql("""SELECT s.id,s.name,s.class_name,s.xp,s.correct_count,s.played_count,
+                 s.created_at,s.teacher_id,t.name AS teacher_name,t.school,
+                 (SELECT COUNT(*) FROM student_attempts a WHERE a.student_id=s.id) AS attempts,
+                 (SELECT MAX(a.created_at) FROM student_attempts a WHERE a.student_id=s.id) AS last_attempt
+                 FROM students s JOIN teachers t ON t.id=s.teacher_id WHERE """+where+
+               ' ORDER BY s.created_at DESC LIMIT ? OFFSET ?',
+               tuple(params + [MAX_ROWS,(page-1)*MAX_ROWS]), True)
+    # No card codes, QR credentials, authentication tokens or answer payloads.
+    return {'total': int(total), 'page': page, 'pageSize': MAX_ROWS,
+            'rows': [dict(x) for x in rows]}
+
+
+def session_rows(page, search, teacher_id):
+    term = '%' + search + '%'
+    where = """(p.quiz_title LIKE ? ESCAPE '\\' OR p.section LIKE ? ESCAPE '\\'
+                OR t.name LIKE ? ESCAPE '\\' OR p.code LIKE ? ESCAPE '\\')"""
+    params = [term]*4
+    if teacher_id:
+        if not _id(teacher_id):
+            return {'total': 0, 'page': page, 'pageSize': MAX_ROWS, 'rows': []}
+        where += ' AND p.teacher_id=?'
+        params.append(teacher_id)
+    total = sql("""SELECT COUNT(*) AS n FROM played_sessions p
+                   JOIN teachers t ON t.id=p.teacher_id WHERE """+where, tuple(params))['n']
+    rows = sql("""SELECT p.id,p.code,p.section,p.subject,p.quiz_title,p.game_mode,
+                 p.played_at,t.name AS teacher_name,t.school,t.id AS teacher_id,
+                 (SELECT COUNT(*) FROM student_attempts a
+                  WHERE a.teacher_id=p.teacher_id AND a.room_code=p.code) AS attempts
+                 FROM played_sessions p JOIN teachers t ON t.id=p.teacher_id WHERE """+where+
+               ' ORDER BY p.played_at DESC LIMIT ? OFFSET ?',
+               tuple(params + [MAX_ROWS,(page-1)*MAX_ROWS]), True)
+    return {'total': int(total), 'page':page,'pageSize':MAX_ROWS,
+            'rows':[dict(x) for x in rows]}
+
+
+def school_detail(name):
+    name = str(name or '').strip()[:150]
+    if not name:
+        return None
+    stats = sql("""SELECT COUNT(DISTINCT t.id) AS teachers,
+                COUNT(DISTINCT s.id) AS students,
+                COUNT(DISTINCT p.id) AS sessions
+                FROM teachers t LEFT JOIN students s ON s.teacher_id=t.id
+                LEFT JOIN played_sessions p ON p.teacher_id=t.id WHERE t.school=?""", (name,))
+    if not stats or not stats['teachers']:
+        return None
+    teachers = sql("""SELECT t.id,t.name,t.subject,t.email,t.admin_disabled,
+                 (SELECT COUNT(*) FROM students s WHERE s.teacher_id=t.id) students,
+                 (SELECT COUNT(*) FROM played_sessions p WHERE p.teacher_id=t.id) sessions
+                 FROM teachers t WHERE t.school=? ORDER BY t.created_at DESC LIMIT 100""",
+                 (name,), True)
+    return {'school':name,**dict(stats),'teachersList':[dict(x) for x in teachers]}
+
+
+def account_overview():
+    return {'summary': summary(), 'recentTeachers': [dict(r) for r in sql(
+        """SELECT id,name,school,created_at,admin_disabled FROM teachers
+           ORDER BY created_at DESC LIMIT 8""", many=True)],
+        'recentSessions': [dict(r) for r in sql(
+        """SELECT p.quiz_title,p.played_at,t.name AS teacher_name,p.section
+           FROM played_sessions p JOIN teachers t ON t.id=p.teacher_id
+           ORDER BY p.played_at DESC LIMIT 8""", many=True)],
+        'disabledTeachers': int(sql(
+            'SELECT COUNT(*) AS n FROM teachers WHERE admin_disabled=1')['n']),
+        'totalSchools': int(sql(
+            "SELECT COUNT(DISTINCT NULLIF(TRIM(school),'')) AS n FROM teachers")['n'])}
+
+
 def handle_get(h,u):
     if u.path not in ('/api/admin/status','/api/admin/me','/api/admin/summary',
-                      '/api/admin/teachers','/api/admin/schools','/api/admin/audit'):
+                      '/api/admin/teachers','/api/admin/schools','/api/admin/audit',
+                      '/api/admin/teacher/detail','/api/admin/students',
+                      '/api/admin/sessions','/api/admin/school/detail',
+                      '/api/admin/insights'):
         return False
     if u.path=='/api/admin/status':
         count=_count('admin_users')
@@ -344,6 +485,7 @@ def handle_get(h,u):
     if not admin:
         _reply(h, {'ok': False, 'error': 'admin_login_required'}, 401)
         return True
+    args = parse_qs(u.query)
     if u.path == '/api/admin/me':
         _reply(h, {'ok': True, 'admin': _safe_account(admin)})
     elif u.path == '/api/admin/summary':
@@ -356,6 +498,18 @@ def handle_get(h,u):
         _reply(h, {'ok': True, 'rows': school_rows()})
     elif u.path == '/api/admin/audit':
         _reply(h, {'ok': True, 'rows': audit_rows()})
+    elif u.path == '/api/admin/teacher/detail':
+        detail = teacher_detail(args.get('id',[''])[0])
+        _reply(h, {'ok': bool(detail), 'teacher': detail} if detail else {'ok':False,'error':'not_found'}, 200 if detail else 404)
+    elif u.path == '/api/admin/students':
+        _reply(h, {'ok':True, **student_rows(_page(args),_safe_search(args),args.get('teacherId',[''])[0])})
+    elif u.path == '/api/admin/sessions':
+        _reply(h, {'ok':True, **session_rows(_page(args),_safe_search(args),args.get('teacherId',[''])[0])})
+    elif u.path == '/api/admin/school/detail':
+        detail = school_detail(args.get('name',[''])[0])
+        _reply(h, {'ok':bool(detail),'school':detail} if detail else {'ok':False,'error':'not_found'}, 200 if detail else 404)
+    elif u.path == '/api/admin/insights':
+        _reply(h, {'ok':True, **account_overview()})
     return True
 
 
