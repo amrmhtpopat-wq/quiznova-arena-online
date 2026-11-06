@@ -3,3 +3,6 @@
 psycopg[binary]>=3.2,<4
 # Reliable server-side QR generation on Render; no Pillow required.
 qrcode>=8.0,<9
+
+# Encrypt the administration TOTP seed (never expose it to JavaScript).
+cryptography>=44,<48
