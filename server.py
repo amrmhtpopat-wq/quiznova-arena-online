@@ -11,6 +11,8 @@ platform_store.init()
 import platform_api
 import solo_api
 solo_api.ensure_schema()
+import admin_api
+admin_api.initialize()
 
 ROOT = Path(__file__).resolve().parent
 sys.path.append(str(ROOT / 'vendor'))
@@ -422,6 +424,7 @@ class Handler(SimpleHTTPRequestHandler):
         return json.loads(raw.decode('utf-8') or '{}')
     def do_GET(self):
         u=urlparse(self.path)
+        if admin_api.handle_get(self,u):return
         if platform_api.handle_get(self,u):return
         if u.path=='/api/health':
             try:
@@ -526,6 +529,7 @@ class Handler(SimpleHTTPRequestHandler):
         u=urlparse(self.path)
         try: data=self.read_json()
         except Exception: return self.send_json({'ok':False,'error':'bad_json'},400)
+        if admin_api.handle_post(self,u,data):return
         if platform_api.handle_post(self,u,data):return
         if solo_api.handle_post(self,u,data):return
         if u.path=='/api/room/start':
