@@ -45,3 +45,4 @@ jobs:
           python -m unittest discover -s tests -p 'test_mascot_badge_v112.py' -v
           python -m unittest discover -s tests -p 'test_student_solo_v120.py' -v
           python -m unittest discover -s tests -p 'test_admin_v1.py' -v
+          python -m unittest discover -s tests -p 'test_admin_v2.py' -v
