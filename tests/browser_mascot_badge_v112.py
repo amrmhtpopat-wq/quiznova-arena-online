@@ -76,7 +76,7 @@ with sync_playwright() as playwright:
     assert images_load(page,'#schoolAvatarGallery .bo-mascot-option img')
 
     page.emulate_media(media='print')
-    printed=page.locator('#studentsBoard').evaluate(
+    printed=page.locator('#studentsBoard .bo-folder-cards').first.evaluate(
       'el=>getComputedStyle(el).gridTemplateColumns.split(" ").filter(Boolean).length')
     assert printed==2,printed
     card_height=page.locator('.bo-student-id').first.evaluate('el=>el.getBoundingClientRect().height')
