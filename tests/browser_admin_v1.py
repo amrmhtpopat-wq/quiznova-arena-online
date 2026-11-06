@@ -76,10 +76,11 @@ with sync_playwright() as p:
         assert page.locator('[data-status]').count()==1
         if mobile:page.locator('#menuToggle').click()
         page.locator('[data-view="schools"]').click()
-        assert 'مدرسة الملك عبدالله' in page.locator('#schoolsBody').inner_text(timeout=12000)
+        page.locator('#schoolsBody').get_by_text('مدرسة الملك عبدالله').wait_for(state='visible',timeout=12000)
+        assert 'مدرسة الملك عبدالله' in page.locator('#schoolsBody').inner_text()
         if mobile:page.locator('#menuToggle').click()
         page.locator('[data-view="audit"]').click()
-        page.locator('#auditBody tr').first.wait_for(state='visible',timeout=12000)
+        page.locator('#auditBody').get_by_text('admin_login').first.wait_for(state='visible',timeout=12000)
         assert 'admin_login' in page.locator('#auditBody').inner_text()
         assert not errors,errors
         page.reload(wait_until='domcontentloaded')
