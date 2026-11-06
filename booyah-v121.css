@@ -1,0 +1,67 @@
+/* BOOYAHJO v12.1: scoped enhancements; the existing UI palette stays intact. */
+body.v105-portal #studentsBoard.cards-board{display:block}
+body.v105-portal .bo-class-folder{margin:0 0 22px;padding:0 0 18px;border:1px solid #6ee7ff66;background:#072f60c7;border-radius:18px;overflow:hidden;break-inside:auto}
+body.v105-portal .bo-class-folder>summary{list-style:none;cursor:pointer;background:linear-gradient(105deg,#075a96,#084275);padding:15px 20px;font-weight:900;font-size:16px;color:#efffff;display:flex;align-items:center;justify-content:space-between;gap:15px}
+body.v105-portal .bo-class-folder>summary::-webkit-details-marker{display:none}
+body.v105-portal .bo-class-folder>summary span{font-size:12px;color:#9deaff;background:#ffffff17;border:1px solid #a2f8ff44;padding:5px 13px;border-radius:50px}
+body.v105-portal .bo-folder-toolbar{display:flex;justify-content:flex-end;padding:11px 16px 0}
+body.v105-portal .bo-folder-toolbar button{border:1px solid #87eeff88;background:#0679b55b;border-radius:10px;color:#eefcff;font-size:12px;font-weight:850;padding:9px 14px}
+body.v105-portal .bo-folder-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));align-items:stretch;gap:15px;padding:17px}
+body.v105-portal .bo-student-id{min-height:0;max-width:100%}
+body.v105-portal .bo-card-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:11px}
+body.v105-portal .bo-card-actions button{color:#e3ffff;background:#0f6eaa;border:1px solid #82e8fd99;border-radius:10px;padding:7px 11px;font-size:11px;font-weight:900}
+body.v105-portal .bo-card-actions button.bo-card-danger{background:#8e3b52a6;border-color:#ff9bb4b3}
+.bo-card-dialog{display:none;position:fixed;inset:0;z-index:20000;align-items:center;justify-content:center;padding:16px}
+.bo-card-dialog.open{display:flex}
+.bo-card-shade{position:absolute;inset:0;background:#020b1cd6;backdrop-filter:blur(6px)}
+.bo-card-dialog-box{position:relative;z-index:1;background:linear-gradient(150deg,#092d5b,#0c4674);color:#f2fcff;border:1px solid #74dffb;border-radius:22px;box-shadow:0 25px 100px #0008;max-width:500px;width:100%;padding:22px;max-height:92vh;overflow:auto;direction:rtl;font-family:Cairo,'Segoe UI',sans-serif}
+.bo-card-dialog-head{display:flex;justify-content:space-between;align-items:center;gap:15px}
+.bo-card-dialog-head h2{margin:0;font-size:18px}
+.bo-card-dialog-head button,.bo-card-dialog-actions button:not(.primary){background:#eafaff12;border:1px solid #90d5f477;color:#f5fcff;border-radius:10px;padding:8px 12px}
+.bo-card-dialog-box label{display:block;margin-top:13px;font-size:12px;font-weight:800}
+.bo-card-dialog-box input,.bo-card-dialog-box select{width:100%;display:block;background:#0b2046;border:1px solid #6cb8dc;color:#fff;padding:11px 12px;border-radius:10px;margin-top:6px;font:inherit}
+.bo-avatar-dialog-preview{display:flex;align-items:center;gap:15px;border:1px solid #78d0e458;background:#ffffff12;border-radius:14px;padding:12px;margin:16px 0;font-size:12px;color:#c7f4ff}
+.bo-avatar-dialog-preview img{width:85px;height:85px;object-fit:contain}
+.bo-card-dialog-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:20px}
+body.v105-studio .qn-media-owned{position:relative;min-width:0}
+body.v105-studio .qn-media-owned .sky-media-tile{width:100%}
+body.v105-studio .qn-media-remove{position:relative;display:block;margin:-2px auto 8px;border:1px solid #ffc2c6;color:#fff;background:#a93955b2;border-radius:9px;padding:5px 12px;font-size:10px;cursor:pointer}
+/* Cinematic scenery uses local SVGs, not an external image service. */
+body.v105-student[data-scene="cine-stars"],body.v105-stage[data-scene="cine-stars"]{background:#030d27 url('/assets/backgrounds/cine-stars.svg') center/cover fixed!important}
+body.v105-student[data-scene="cine-aurora"],body.v105-stage[data-scene="cine-aurora"]{background:#031c27 url('/assets/backgrounds/cine-aurora.svg') center/cover fixed!important}
+body.v105-student[data-scene="cine-neon"],body.v105-stage[data-scene="cine-neon"]{background:#160c26 url('/assets/backgrounds/cine-neon.svg') center/cover fixed!important}
+body.v105-student[data-scene="cine-desert"],body.v105-stage[data-scene="cine-desert"]{background:#44273a url('/assets/backgrounds/cine-desert.svg') center/cover fixed!important}
+body.v105-student[data-scene="cine-arena"],body.v105-stage[data-scene="cine-arena"]{background:#061d33 url('/assets/backgrounds/cine-arena.svg') center/cover fixed!important}
+body.v105-student[data-scene^="cine-"]::before,body.v105-stage[data-scene^="cine-"]::before{opacity:.12!important}
+body.v105-studio #liveHost[data-live-scene^="cine-"]{border-radius:18px;background-size:cover;background-position:center;background-attachment:fixed}
+body.v105-studio #liveHost[data-live-scene="cine-stars"]{background-image:linear-gradient(#00172e9c,#00172e9c),url('/assets/backgrounds/cine-stars.svg')}
+body.v105-studio #liveHost[data-live-scene="cine-aurora"]{background-image:linear-gradient(#00172e9c,#00172e9c),url('/assets/backgrounds/cine-aurora.svg')}
+body.v105-studio #liveHost[data-live-scene="cine-neon"]{background-image:linear-gradient(#00172e9c,#00172e9c),url('/assets/backgrounds/cine-neon.svg')}
+body.v105-studio #liveHost[data-live-scene="cine-desert"]{background-image:linear-gradient(#00172e9c,#00172e9c),url('/assets/backgrounds/cine-desert.svg')}
+body.v105-studio #liveHost[data-live-scene="cine-arena"]{background-image:linear-gradient(#00172e9c,#00172e9c),url('/assets/backgrounds/cine-arena.svg')}
+.bo-live-scene-control{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:13px 19px;background:#05315d;border:1px solid #77dbfa6e;border-radius:14px;margin:12px 0}
+.bo-live-scene-control label{font-weight:850;font-size:12px}
+.bo-live-scene-control select{flex:1;min-width:160px;background:#061d43;color:#f3ffff;border:1px solid #8cd9e4;border-radius:9px;padding:9px}
+.bo-live-scene-control button{font-size:12px;padding:8px 14px}
+.bo-launch-countdown{position:fixed;inset:0;z-index:100000;background:radial-gradient(ellipse at 50% 40%,#193f70e8,#030b23f5 66%);display:grid;align-content:center;justify-items:center;text-align:center;pointer-events:all;overflow:hidden}
+.bo-launch-countdown::before{content:"";position:absolute;width:min(80vw,650px);aspect-ratio:1;border:3px solid #66eeff99;border-radius:50%;box-shadow:0 0 0 30px #13a9ef12,0 0 0 70px #38c6ff09,0 0 90px #40ddff8c}
+.bo-launch-countdown strong{position:relative;color:#fff;font-size:clamp(90px,20vw,220px);font-weight:1000;line-height:1.2;text-shadow:0 0 40px #27ceff,0 0 10px #fff;animation:boLaunchPulse .48s both}
+.bo-launch-countdown small{position:relative;color:#a3f8ff;letter-spacing:5px;font-size:clamp(13px,3vw,20px);font-weight:900}
+.bo-launch-countdown.bo-ready strong{font-size:clamp(70px,15vw,170px);color:#ffe184}
+.bo-launch-countdown.bo-go strong{color:#68ffda;font-size:clamp(100px,19vw,230px)}
+@keyframes boLaunchPulse{from{transform:scale(.65);opacity:.2}to{transform:scale(1);opacity:1}}
+@media(max-width:550px){
+ body.v105-portal .bo-folder-cards{grid-template-columns:1fr;padding:10px}
+ body.v105-portal .bo-class-folder>summary{font-size:14px;padding:12px}
+ body.v105-portal .bo-card-actions button{flex:1}
+ .bo-card-dialog-box{padding:16px}
+}
+@media(prefers-reduced-motion:reduce){.bo-launch-countdown strong{animation:none}}
+@media print{
+ body.v105-portal .bo-no-print,body.v105-portal .bo-folder-toolbar,body.v105-portal .bo-class-folder>summary,.bo-card-dialog{display:none!important}
+ body.v105-portal .bo-class-folder.bo-print-other{display:none!important}
+ body.v105-portal #studentsBoard.cards-board{display:block!important}
+ body.v105-portal .bo-class-folder{display:block!important;background:white!important;border:0!important;padding:0!important;margin:0 0 12mm!important;break-after:page}
+ body.v105-portal .bo-folder-cards{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8mm!important;padding:0!important}
+ body.v105-portal .bo-student-id{break-inside:avoid;color:white!important;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+}
