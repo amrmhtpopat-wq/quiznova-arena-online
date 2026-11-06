@@ -70,6 +70,12 @@ with sync_playwright() as p:
              pinSize:parseFloat(getComputedStyle(code).fontSize),
              qrNatural:document.querySelector('#roomQr').naturalWidth,
              liveColumns:getComputedStyle(document.querySelector('#liveHost .room-shell')).gridTemplateColumns,
+             liveDisplay:getComputedStyle(document.querySelector('#liveHost .room-shell')).display,
+             liveAreas:getComputedStyle(document.querySelector('#liveHost .room-shell')).gridTemplateAreas,
+             bodyClass:document.body.className,
+             responsiveCss:!!document.querySelector('link[href*="booyah-responsive-v122.css"]'),
+             viewportMatch:matchMedia('(max-width:1620px)').matches,
+             responsiveRules:(()=>{const sh=[...document.styleSheets].find(x=>x.href?.includes('booyah-responsive-v122.css'));if(!sh)return 'missing';try{return [...sh.cssRules].filter(x=>x.cssText?.includes('room-shell')).map(x=>x.cssText.slice(0,450)).slice(0,3)}catch(e){return String(e)}})(),
              controls:box('.bo-live-scene-control')};
         }""")
         check(metrics['pinText']==room['code'],f'Wrong visible room PIN at {width}: {metrics}')
