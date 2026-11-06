@@ -3,18 +3,20 @@ let session={code:'',playerId:'',name:'',avatar:'b01',team:'',model:'',variantMo
 const shapes=['▲','◆','●','■'];
 let pickedAvatar='b01';
 let roomAvatarPool=[];let lastAvatarCode='';let avatarRequest=0;
+const defaultBoysAvatars=[...Array.from({length:7},(_,i)=>'m'+String(i+1).padStart(2,'0')),...Array.from({length:8},(_,i)=>'n'+String(i+1).padStart(2,'0')),...Array.from({length:16},(_,i)=>'b'+String(i+1).padStart(2,'0'))];
 const avatarPath=id=>/^m0[1-8]$/.test(id)?'/assets/avatars-game/'+(id==='m08'?'m07':id)+'.svg':/^n0[1-8]$/.test(id)?'/assets/avatars3d/'+id+'.webp':/^[bg](0[1-9]|1[0-6])$/.test(id)?'/assets/avatars3d/'+id+'.webp':'/assets/avatars/'+(/^\d{2}$/.test(id)?id:'01')+'.svg';
 let selectedCard=(new URLSearchParams(location.search)).get('card')||'';
 let cardName='';
 const booyahMascotNames={m01:'شرارة',m02:'روبوك',m03:'فوكسو',m04:'نينزو',m05:'درعو',m06:'بيكسو',m07:'زومي',m08:'زومي'};
-const avatarDisplayName=id=>window.booyahAvatarLabel?.(id)||booyahMascotNames[id]||'شخصية اللعبة';
+const avatarDisplayName=id=>window.booyahAvatarName?.(id)||booyahMascotNames[id]||'شخصية اللعبة';
 function showAvatars(ids){
  roomAvatarPool=ids.filter(id=>/^(?:[bg](?:0[1-9]|1[0-6])|[mn]0[1-8])$/.test(id)&&id!=='m08');
- if(!roomAvatarPool.length)roomAvatarPool=['b01','g01'];
+ if(!roomAvatarPool.length)roomAvatarPool=defaultBoysAvatars;
  if(!roomAvatarPool.includes(pickedAvatar))pickedAvatar=roomAvatarPool[0];
- $('#avatarPicker').innerHTML=roomAvatarPool.map(id=>`<button type="button" class="avatar-choice ${id===pickedAvatar?'selected':''}" data-avatar="${id}" aria-label="اختر ${avatarDisplayName(id)}" title="${avatarDisplayName(id)}"><img src="${avatarPath(id)}" loading="lazy" alt="${avatarDisplayName(id)}"><span class="bo-avatar-name">${avatarDisplayName(id)}</span></button>`).join('');
+ const title=$('#avatarPickerCount');if(title)title.textContent='متاح '+roomAvatarPool.length+' شخصية • اختر الشخصية التي تعجبك';
+ $('#avatarPicker').innerHTML=roomAvatarPool.map(id=>`<button type="button" class="avatar-choice ${id===pickedAvatar?'selected':''}" data-avatar="${id}" aria-label="اختر ${avatarDisplayName(id)}" title="${window.booyahAvatarLabel?.(id)||avatarDisplayName(id)}"><img src="${avatarPath(id)}" loading="lazy" alt="${avatarDisplayName(id)}"><span class="bo-avatar-name">${avatarDisplayName(id)}</span></button>`).join('');
 }
-showAvatars(['m01','m02','m03','m04','m05','m06','m07','b01','b02']);
+showAvatars(defaultBoysAvatars);
 async function loadRoomAvatarPool(){
  const code=$('#roomCode').value.replace(/\D/g,'').slice(0,6);if(code.length!==6)return;
  if(code===lastAvatarCode&&roomAvatarPool.length)return;
