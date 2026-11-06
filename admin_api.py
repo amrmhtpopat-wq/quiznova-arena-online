@@ -390,6 +390,32 @@ def teacher_detail(teacher_id):
     return output
 
 
+
+def student_detail(student_id):
+    if not _id(student_id):
+        return None
+    row = sql("""SELECT s.id,s.name,s.class_name,s.avatar,s.xp,
+                 s.correct_count,s.played_count,s.created_at,
+                 t.name AS teacher_name,t.id AS teacher_id,t.school,t.subject
+                 FROM students s JOIN teachers t ON t.id=s.teacher_id
+                 WHERE s.id=?""", (student_id,))
+    if not row:
+        return None
+    attempts = sql("""SELECT id,quiz_id,room_code,correct_count,question_total,
+                      percent,score,created_at FROM student_attempts
+                      WHERE student_id=? ORDER BY created_at DESC LIMIT 25""",
+                   (student_id,), True)
+    stats = sql("""SELECT COUNT(*) AS attempts,AVG(percent) AS avg_percent,
+                   MAX(created_at) AS last_attempt
+                   FROM student_attempts WHERE student_id=?""", (student_id,))
+    detail = dict(row)
+    detail['attempts'] = int(stats['attempts'])
+    detail['averagePercent'] = round(float(stats['avg_percent'] or 0),1)
+    detail['lastAttempt'] = stats['last_attempt']
+    detail['recentAttempts'] = [dict(a) for a in attempts]
+    return detail
+
+
 def student_rows(page, search, teacher_id):
     term = '%' + search + '%'
     where = """(s.name LIKE ? ESCAPE '\\' OR s.class_name LIKE ? ESCAPE '\\'
@@ -473,7 +499,7 @@ def account_overview():
 def handle_get(h,u):
     if u.path not in ('/api/admin/status','/api/admin/me','/api/admin/summary',
                       '/api/admin/teachers','/api/admin/schools','/api/admin/audit',
-                      '/api/admin/teacher/detail','/api/admin/students',
+                      '/api/admin/teacher/detail','/api/admin/student/detail','/api/admin/students',
                       '/api/admin/sessions','/api/admin/school/detail',
                       '/api/admin/insights'):
         return False
@@ -501,6 +527,9 @@ def handle_get(h,u):
     elif u.path == '/api/admin/teacher/detail':
         detail = teacher_detail(args.get('id',[''])[0])
         _reply(h, {'ok': bool(detail), 'teacher': detail} if detail else {'ok':False,'error':'not_found'}, 200 if detail else 404)
+    elif u.path == '/api/admin/student/detail':
+        detail = student_detail(args.get('id',[''])[0])
+        _reply(h, {'ok':True,'student':detail} if detail else {'ok':False,'error':'not_found'}, 200 if detail else 404)
     elif u.path == '/api/admin/students':
         _reply(h, {'ok':True, **student_rows(_page(args),_safe_search(args),args.get('teacherId',[''])[0])})
     elif u.path == '/api/admin/sessions':
