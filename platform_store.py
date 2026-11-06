@@ -135,6 +135,16 @@ def init():
                 con.execute("ALTER TABLE teachers ADD COLUMN school_type TEXT NOT NULL DEFAULT 'mixed'")
                 con.execute("UPDATE teachers SET school_type='boys' WHERE school LIKE '%بنين%'")
                 con.execute("UPDATE teachers SET school_type='girls' WHERE school LIKE '%بنات%'")
+            # Additive account-activity and access-plan fields; legacy data stays unchanged.
+            if DATABASE_URL:
+                teacher_columns={x[0] for x in con.execute(
+                    "SELECT column_name FROM information_schema.columns WHERE table_schema='public' AND table_name='teachers'").fetchall()}
+            else:
+                teacher_columns={x[1] for x in con.execute('PRAGMA table_info(teachers)').fetchall()}
+            if 'last_login' not in teacher_columns:
+                con.execute('ALTER TABLE teachers ADD COLUMN last_login BIGINT NOT NULL DEFAULT 0')
+            if 'access_plan' not in teacher_columns:
+                con.execute("ALTER TABLE teachers ADD COLUMN access_plan TEXT NOT NULL DEFAULT 'free'")
             if DATABASE_URL:
                 present=bool(con.execute("SELECT 1 FROM information_schema.columns WHERE table_name='students' AND column_name='card_code'").fetchone())
             else:
@@ -177,15 +187,16 @@ def login(email,password):
         password_hash(password,'0'*32)
         raise ValueError('wrong_credentials')
     good=hmac.compare_digest(password_hash(password,row['salt']),row['password_hash'])
-    if not good: raise ValueError('wrong_credentials')
+    if not good or int(row.get('admin_disabled', 0)) == 1: raise ValueError('wrong_credentials')
     token=secrets.token_urlsafe(40)
     exec_sql('INSERT INTO auth_sessions(token_hash,teacher_id,expires_at) VALUES(?,?,?)',(token_hash(token),row['id'],epoch()+14*86400))
+    exec_sql('UPDATE teachers SET last_login=? WHERE id=?',(epoch(),row['id']))
     return {'token':token,'teacher':teacher_public(row)}
 
 def teacher_for_token(token):
     if not token or len(token)>200:return None
     row=query('SELECT t.* FROM auth_sessions a JOIN teachers t ON t.id=a.teacher_id WHERE a.token_hash=? AND a.expires_at>?',(token_hash(token),epoch()))
-    return teacher_public(row) if row else None
+    return teacher_public(row) if row and int(row.get('admin_disabled',0)) == 0 else None
 
 def signout(token):
     if token:exec_sql('DELETE FROM auth_sessions WHERE token_hash=?',(token_hash(token),))

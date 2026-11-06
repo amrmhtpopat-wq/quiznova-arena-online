@@ -6,6 +6,12 @@ on:
     branches: [main]
     paths:
       - server.py
+      - admin_api.py
+      - admin.html
+      - admin-v1.css
+      - admin-v1.js
+      - tests/browser_admin_v1.py
+      - tests/browser_admin_v2.py
       - solo_api.py
       - solo-student-v120.js
       - booyah-entry-v120.css
@@ -61,6 +67,8 @@ jobs:
           python tests/browser_studio_routing_v112.py
           python tests/browser_mascot_badge_v112.py
           python tests/browser_student_entry_v120.py
+          python tests/browser_admin_v1.py
+          python tests/browser_admin_v2.py
       - name: Upload visual QA screenshots
         if: always()
         uses: actions/upload-artifact@v4
