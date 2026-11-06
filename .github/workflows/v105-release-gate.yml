@@ -24,6 +24,12 @@ jobs:
         run: |
           python -m compileall -q server.py platform_store.py platform_api.py platform_security.py solo_api.py admin_api.py xlsx_report.py tests
           node --check admin-v1.js
+          node --check avatar-names-v121.js
+          node --check booyah-countdown-v121.js
+          node --check media_library.js
+          node --check portal.js
+          node --check student.js
+          node --check stage.js
           node --check app.js
           node --check student.js
           node --check solo-student-v120.js
@@ -46,3 +52,6 @@ jobs:
           python -m unittest discover -s tests -p 'test_student_solo_v120.py' -v
           python -m unittest discover -s tests -p 'test_admin_v1.py' -v
           python -m unittest discover -s tests -p 'test_admin_v2.py' -v
+          python -m unittest discover -s tests -p 'test_v121_cards_media_scenes.py' -v
+      - name: Read-only production release smoke (no test users or mutations)
+        run: python tests/hosted_production_readonly.py

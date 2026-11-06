@@ -18,6 +18,7 @@
 <link rel="stylesheet" href="/booyah-contrast-v109.css?v=10.9">
 <link rel="stylesheet" href="/booyah-builder-v110.css?v=11.0">
 <link rel="stylesheet" href="/booyah-quiz-polish-v111.css?v=11.1">
+<link rel="stylesheet" href="/booyah-v121.css?v=12.1">
 </head>
 <body class="v105-studio">
 <div class="ambient ambient-a"></div><div class="ambient ambient-b"></div>
@@ -205,8 +206,8 @@
     <section class="view" id="view-media">
       <div class="panel">
         <div class="sky-media-hero"><span class="sky-media-icon">🖼</span><div><h3>مكتبة صور BOOYAHJO</h3><p>صور توضيحية أصلية لمكونات الحاسوب والشبكات والبرمجة والأمن الرقمي، ورسومات جاهزة للاختبارات.</p></div><strong class="sky-count" id="mediaCount">—</strong></div>
-        <div class="sky-media-toolbar"><input id="mediaSearch" type="search" placeholder="ابحث عن CPU أو ذاكرة أو شبكة أو أمن رقمي..." oninput="renderMediaLibrary()"><select id="mediaCategory" onchange="renderMediaLibrary()"><option value="all">جميع التصنيفات</option><option>مكونات الحاسوب</option><option>الشبكات</option><option>الأمن الرقمي</option><option>البرمجة</option><option>الملفات</option><option>التقنيات الحديثة</option><option>الصيانة</option><option>رسومات عامة</option><option>صوري المضافة</option></select><label class="sky-upload-btn">⬆ إضافة صور من جهازك<input type="file" accept="image/png,image/jpeg,image/webp" multiple hidden onchange="uploadCustomMedia(this)"></label><button class="btn btn-secondary" onclick="clearCustomMedia()">حذف الصور المضافة</button></div>
-        <p class="sky-media-help">اضغط على أي صورة لاستخدامها في سؤال جديد، أو افتح السؤال واضغط «مكتبة الصور» لاختيار صورة له. الصور التي تضيفها تُحفظ في هذا المتصفح فقط، لكنها تُرسل إلى الطالب عند تشغيل الاختبار.</p>
+        <div class="sky-media-toolbar"><input id="mediaSearch" type="search" placeholder="ابحث عن CPU أو ذاكرة أو شبكة أو أمن رقمي..." oninput="renderMediaLibrary()"><select id="mediaCategory" onchange="renderMediaLibrary()"><option value="all">جميع التصنيفات</option><option>مكونات الحاسوب</option><option>الشبكات</option><option>الأمن الرقمي</option><option>البرمجة</option><option>الملفات</option><option>التقنيات الحديثة</option><option>الصيانة</option><option>رسومات عامة</option><option>صوري المضافة</option></select><label class="sky-upload-btn">⬆ إضافة صور من جهازك<input type="file" accept="image/png,image/jpeg,image/webp" multiple hidden onchange="uploadCustomMedia(this)"></label><button class="btn btn-secondary" onclick="qnMediaMigrateLegacy()">☁️ نقل صوري القديمة للسحابة</button></div>
+        <p class="sky-media-help">اضغط على أي صورة لاستخدامها في سؤال جديد، أو افتح السؤال واضغط «مكتبة الصور» لاختيار صورة له. الصور الجديدة تُحفظ في حساب المعلم السحابي وتبقى متاحة بعد تسجيل الدخول من أي جهاز. يمكنك نقل الصور القديمة من المتصفح للسحابة بالزر أعلاه.</p>
         <div class="sky-media-grid" id="mediaGallery"></div>
       </div>
     </section>
@@ -223,7 +224,7 @@
           <div class="live-config-grid">
             <label>الاختبار<select id="liveQuizSelect"></select></label>
             <label>الشعبة (تظهر في Excel)<input id="liveSection" maxlength="75" placeholder="مثال: التاسع أ"></label>
-            <label>خلفية اللعبة<select id="liveBackground"><option value="cartoon">☁️ عالم كرتوني سماوي</option><option value="anime">🌸 عالم أنمي وسحب</option><option value="cinematic">🌌 أجواء سينمائية</option></select></label>
+            <label>خلفية اللعبة<select id="liveBackground"><option value="cartoon">☁️ عالم كرتوني سماوي</option><option value="anime">🌸 عالم أنمي وسحب</option><option value="cinematic">🌌 سينمائي كلاسيكي</option><option value="cine-stars">✨ الفضاء والمجرات</option><option value="cine-aurora">🌈 الشفق القطبي</option><option value="cine-neon">⚡ مدينة النيون</option><option value="cine-desert">🏜️ الصحراء الأردنية</option><option value="cine-arena">🏟️ ساحة الأبطال</option></select></label>
             <label>طريقة المنافسة<select id="liveMode"><option value="individual">👤 فردي — كل طالب لنفسه</option><option value="teams">👥 مجموعات — نقاط الفريق مجمّعة</option></select></label>
             <label>أسلوب اللعبة<select id="liveGameMode"><option value="classic">🎯 كلاسيكي (دون مكافأة سرعة)</option><option value="speed" selected>⚡ سرعة + نقاط زمن (افتراضي)</option><option value="boss">👑 Boss — السؤال الأخير ×2</option><option value="zen">🧠 تقييم هادئ بدون نقاط</option></select></label>
             <label>حماية من النقل<select id="liveVariantMode"><option value="options" selected>🛡️ متزامن آمن — نفس السؤال وخيارات مختلفة</option><option value="models4">🔀 نماذج A/B/C/D — ترتيب أسئلة وخيارات مختلف</option><option value="same">📺 موحّد — نفس السؤال ونفس الخيارات</option></select></label>
@@ -266,7 +267,9 @@
 <div id="modal" class="modal hidden"><div class="modal-backdrop" data-closemodal></div><div class="modal-card"><button class="modal-close" data-closemodal>×</button><div id="modalContent"></div></div></div>
 <script src="curriculum_bank.js"></script>
 <script src="curriculum_plus.js"></script>
-<script src="media_library.js"></script>
-<script src="studio-auth.js?v=12.0"></script>
+<script src="/avatar-names-v121.js?v=12.1"></script>
+<script src="media_library.js?v=12.1"></script>
+<script src="/booyah-countdown-v121.js?v=12.1"></script>
+<script src="studio-auth.js?v=12.1"></script>
 </body>
 </html>

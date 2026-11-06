@@ -27,7 +27,7 @@ PORT = int(os.environ.get('PORT', '8765'))
 IS_CLOUD = bool(os.environ.get('RENDER') or os.environ.get('RENDER_EXTERNAL_URL') or os.environ.get('QUIZNOVA_CLOUD'))
 TEAM_NAMES = ['البرق ⚡','الصقور 🦅','النجوم ⭐','الفرسان 🛡️','الرواد 🚀','الأبطال 🏆']
 AVATARS = platform_store.AVATAR_3D_IDS + [f'{i:02}' for i in range(1, 21)]
-SCENES = ['cartoon','anime','cinematic']
+SCENES = ['cartoon','anime','cinematic','cine-stars','cine-aurora','cine-neon','cine-desert','cine-arena']
 
 
 def qr_png(text, scale=9, border=4):
@@ -613,7 +613,12 @@ class Handler(SimpleHTTPRequestHandler):
                 room=ROOMS.get(code)
                 if not room: return self.send_json({'ok':False,'error':'room_not_found'},404)
                 if not host_token or host_token != room.get('hostToken'): return self.send_json({'ok':False,'error':'host_auth_required'},403)
-                if action=='start':
+                if action=='background':
+                    new_scene=str(data.get('background') or '')
+                    if new_scene not in SCENES:
+                        return self.send_json({'ok':False,'error':'invalid_background'},400)
+                    room['background']=new_scene
+                elif action=='start':
                     if room['status']!='lobby': return self.send_json({'ok':False,'error':'already_started'},409)
                     if room['playType']=='teams' and any(not p.get('team') for p in room['players'].values()):return self.send_json({'ok':False,'error':'team_missing'},409)
                     room['status']='question'; room['index']=0; room['startedAt']=now_ms();room['roundDurationMs']=round_duration_ms(room)

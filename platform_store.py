@@ -117,6 +117,8 @@ def init():
       'CREATE TABLE IF NOT EXISTS student_attempts (id TEXT PRIMARY KEY,teacher_id TEXT NOT NULL,student_id TEXT,quiz_id TEXT NOT NULL,room_code TEXT NOT NULL,student_name TEXT NOT NULL,class_name TEXT NOT NULL,avatar TEXT NOT NULL,correct_count INTEGER NOT NULL,question_total INTEGER NOT NULL,percent INTEGER NOT NULL,score INTEGER NOT NULL,answers TEXT NOT NULL,created_at BIGINT NOT NULL)',
       'CREATE TABLE IF NOT EXISTS active_rooms (code TEXT PRIMARY KEY, snapshot TEXT NOT NULL, updated_at BIGINT NOT NULL)',
       'CREATE TABLE IF NOT EXISTS student_card_aliases (alias TEXT PRIMARY KEY, student_id TEXT NOT NULL, teacher_id TEXT NOT NULL, created_at BIGINT NOT NULL)',
+      'CREATE TABLE IF NOT EXISTS teacher_media (id TEXT PRIMARY KEY, teacher_id TEXT NOT NULL, label TEXT NOT NULL, category TEXT NOT NULL, data_url TEXT NOT NULL, created_at BIGINT NOT NULL)',
+      'CREATE INDEX IF NOT EXISTS idx_teacher_media_owner ON teacher_media (teacher_id,created_at)',
       'CREATE INDEX IF NOT EXISTS idx_active_rooms_updated ON active_rooms (updated_at)',
       'CREATE INDEX IF NOT EXISTS idx_students_teacher ON students (teacher_id)',
       'CREATE INDEX IF NOT EXISTS idx_rooms_teacher ON played_sessions (teacher_id)',
@@ -151,6 +153,13 @@ def init():
                 present='card_code' in [x[1] for x in con.execute('PRAGMA table_info(students)').fetchall()]
             if not present:
                 con.execute('ALTER TABLE students ADD COLUMN card_code TEXT')
+            if DATABASE_URL:
+                student_columns={x[0] for x in con.execute(
+                    "SELECT column_name FROM information_schema.columns WHERE table_schema='public' AND table_name='students'").fetchall()}
+            else:
+                student_columns={x[1] for x in con.execute('PRAGMA table_info(students)').fetchall()}
+            if 'archived' not in student_columns:
+                con.execute('ALTER TABLE students ADD COLUMN archived INTEGER NOT NULL DEFAULT 0')
             con.execute('CREATE UNIQUE INDEX IF NOT EXISTS idx_students_card_code ON students (card_code)')
             # Backfill legacy cards without changing their existing QR bearer tokens.
             old=con.execute("SELECT id FROM students WHERE card_code IS NULL OR card_code=''").fetchall()
@@ -217,6 +226,53 @@ def save_snapshot(teacher_id,data):
     exec_sql('UPDATE datasets SET quizzes=?,bank=?,settings=?,results=?,updated_at=? WHERE teacher_id=?',(jdump(row['quizzes']),jdump(row['bank']),jdump(row['settings']),jdump(row['results']),epoch(),teacher_id))
     return {'ok':True}
 
+
+_MEDIA_DATA=re.compile(r'^data:image/(?:png|jpeg|webp);base64,[a-zA-Z0-9+/]+={0,2}$')
+def list_teacher_media(teacher_id):
+    rows=query('SELECT id,label,category,data_url,created_at FROM teacher_media WHERE teacher_id=? ORDER BY created_at DESC',
+               (teacher_id,),True)
+    return [{'id':r['id'],'label':r['label'],'category':r['category'],
+             'file':r['data_url'],'uploadedAt':r['created_at']*1000} for r in rows]
+
+
+def save_teacher_media(teacher_id,label,data_url):
+    """Small optimized teacher-owned images are stored durably in Neon, never browser-only."""
+    label=str(label or '').strip()[:90]
+    data_url=str(data_url or '')
+    if not label:raise ValueError('media_name_required')
+    if len(data_url)>850_000 or len(data_url)<100 or not _MEDIA_DATA.fullmatch(data_url):
+        raise ValueError('invalid_media_image')
+    import base64
+    try:
+        content=base64.b64decode(data_url.partition(',')[2],validate=True)
+    except Exception:
+        raise ValueError('invalid_media_image')
+    if len(content)>630_000:raise ValueError('media_too_large')
+    prefix=data_url[11:data_url.index(';')]
+    magic_ok=(
+        (prefix=='png' and content.startswith(b'\x89PNG\r\n\x1a\n')) or
+        (prefix=='jpeg' and content.startswith(b'\xff\xd8\xff')) or
+        (prefix=='webp' and content.startswith(b'RIFF') and content[8:12]==b'WEBP'))
+    if not magic_ok:raise ValueError('invalid_media_image')
+    limits=query('SELECT COUNT(*) AS n,COALESCE(SUM(LENGTH(data_url)),0) AS size FROM teacher_media WHERE teacher_id=?',
+                 (teacher_id,))
+    if int(limits['n'])>=60 or int(limits['size'])+len(data_url)>18_000_000:
+        raise ValueError('media_library_full')
+    asset_id=uuid.uuid4().hex
+    exec_sql('INSERT INTO teacher_media(id,teacher_id,label,category,data_url,created_at) VALUES(?,?,?,?,?,?)',
+             (asset_id,teacher_id,label,'صوري المضافة',data_url,epoch()))
+    return {'id':asset_id,'label':label,'category':'صوري المضافة','file':data_url,'uploadedAt':epoch()*1000}
+
+
+def delete_teacher_media(teacher_id,image_id):
+    if not re.fullmatch(r'[0-9a-f]{32}',str(image_id or '')):
+        raise ValueError('invalid_media_id')
+    image=query('SELECT id FROM teacher_media WHERE id=? AND teacher_id=?',(image_id,teacher_id))
+    if not image:raise ValueError('media_not_found')
+    exec_sql('DELETE FROM teacher_media WHERE id=? AND teacher_id=?',(image_id,teacher_id))
+    return image_id
+
+
 def add_students(teacher_id,students):
     created=[]
     if len(students)>450:raise ValueError('too_many_students')
@@ -226,7 +282,7 @@ def add_students(teacher_id,students):
         avatar=str(item.get('avatar','b01')).strip()
         if avatar not in allowed:avatar=allowed[0]
         if not name or not cls:continue
-        duplicate=query('SELECT id FROM students WHERE teacher_id=? AND name=? AND class_name=?',(teacher_id,name,cls))
+        duplicate=query('SELECT id FROM students WHERE teacher_id=? AND archived=0 AND name=? AND class_name=?',(teacher_id,name,cls))
         if duplicate:continue
         sid=uuid.uuid4().hex;card=secrets.token_urlsafe(24)
         code=new_card_code()
@@ -237,6 +293,37 @@ def add_students(teacher_id,students):
         exec_sql('INSERT INTO students (id,teacher_id,name,class_name,avatar,card_token,card_code,created_at) VALUES (?,?,?,?,?,?,?,?)',(sid,teacher_id,name,cls,avatar,card,code,epoch()))
         created.append({'id':sid,'name':name,'className':cls,'avatar':avatar,'card':card,'cardCode':code})
     return created
+
+
+def edit_student_card(teacher_id,student_id,name,class_name,avatar):
+    """Edits the visible student card without regenerating any QR or access code."""
+    if not re.fullmatch(r'[0-9a-f]{32}',str(student_id or '')):
+        raise ValueError('invalid_student')
+    name=str(name or '').strip()[:90]
+    class_name=str(class_name or '').strip()[:65]
+    if len(name)<2 or not class_name:
+        raise ValueError('student_name_class_required')
+    allowed=avatar_pool(teacher_school_type(teacher_id))
+    if avatar not in allowed:raise ValueError('invalid_avatar')
+    row=query('SELECT id FROM students WHERE id=? AND teacher_id=? AND archived=0',(student_id,teacher_id))
+    if not row:raise ValueError('student_not_found')
+    other=query('SELECT id FROM students WHERE teacher_id=? AND archived=0 AND name=? AND class_name=? AND id<>?',
+               (teacher_id,name,class_name,student_id))
+    if other:raise ValueError('student_duplicate')
+    exec_sql('UPDATE students SET name=?,class_name=?,avatar=? WHERE id=? AND teacher_id=? AND archived=0',
+             (name,class_name,avatar,student_id,teacher_id))
+    return {'id':student_id,'name':name,'className':class_name,'avatar':avatar}
+
+
+def archive_student_card(teacher_id,student_id):
+    """Revoke a student card but retain existing results/XP for historical reporting."""
+    if not re.fullmatch(r'[0-9a-f]{32}',str(student_id or '')):
+        raise ValueError('invalid_student')
+    row=query('SELECT id FROM students WHERE id=? AND teacher_id=? AND archived=0',(student_id,teacher_id))
+    if not row:raise ValueError('student_not_found')
+    exec_sql('UPDATE students SET archived=1 WHERE id=? AND teacher_id=? AND archived=0',
+             (student_id,teacher_id))
+    return {'id':student_id,'archived':True}
 
 def shorten_student_codes(teacher_id):
     """Opt-in only: issue memorable short codes while old printed codes remain valid."""
@@ -258,20 +345,20 @@ def shorten_student_codes(teacher_id):
     return updated
 
 def list_students(teacher_id):
-    rows=query('SELECT id,name,class_name,avatar,card_token,card_code,xp,correct_count,played_count FROM students WHERE teacher_id=? ORDER BY class_name,name',(teacher_id,),True)
+    rows=query('SELECT id,name,class_name,avatar,card_token,card_code,xp,correct_count,played_count FROM students WHERE teacher_id=? AND archived=0 ORDER BY class_name,name',(teacher_id,),True)
     return [{'id':r['id'],'name':r['name'],'className':r['class_name'],'avatar':r['avatar'],'card':r['card_token'],'cardCode':r['card_code'],'xp':r['xp'],'level':level_for_xp(r['xp']),'progress':xp_progress(r['xp']),'correct':r['correct_count'],'played':r['played_count']} for r in rows]
 
 def student_profile_by_card(token):
     """A physical student card permits access to a limited student profile."""
     value=str(token or '').strip()
     if not value or len(value)>90:return None
-    return query('SELECT id,name,class_name,avatar,xp,correct_count,played_count FROM students WHERE card_token=? OR card_code=? OR id IN (SELECT student_id FROM student_card_aliases WHERE alias=?)',(value,value.upper(),value.upper()))
+    return query('SELECT id,name,class_name,avatar,xp,correct_count,played_count FROM students WHERE archived=0 AND (card_token=? OR card_code=? OR id IN (SELECT student_id FROM student_card_aliases WHERE alias=?))',(value,value.upper(),value.upper()))
 
 def student_by_card(token,teacher_id):
     token=str(token or '').strip()
     if not token or len(token)>90 or not teacher_id:return None
     # Accept the original QR token or the new printed card code.
-    return query('SELECT * FROM students WHERE (card_token=? OR card_code=? OR id IN (SELECT student_id FROM student_card_aliases WHERE alias=? AND teacher_id=?)) AND teacher_id=?',(token,token.upper(),token.upper(),teacher_id,teacher_id))
+    return query('SELECT * FROM students WHERE archived=0 AND (card_token=? OR card_code=? OR id IN (SELECT student_id FROM student_card_aliases WHERE alias=? AND teacher_id=?)) AND teacher_id=?',(token,token.upper(),token.upper(),teacher_id,teacher_id))
 
 def attempt_count(sid,quiz_id):
     row=query('SELECT COUNT(*) AS c FROM student_attempts WHERE student_id=? AND quiz_id=?',(sid,quiz_id))
