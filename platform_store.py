@@ -177,7 +177,7 @@ def login(email,password):
         password_hash(password,'0'*32)
         raise ValueError('wrong_credentials')
     good=hmac.compare_digest(password_hash(password,row['salt']),row['password_hash'])
-    if not good: raise ValueError('wrong_credentials')
+    if not good or int(row.get('admin_disabled', 0)) == 1: raise ValueError('wrong_credentials')
     token=secrets.token_urlsafe(40)
     exec_sql('INSERT INTO auth_sessions(token_hash,teacher_id,expires_at) VALUES(?,?,?)',(token_hash(token),row['id'],epoch()+14*86400))
     return {'token':token,'teacher':teacher_public(row)}
@@ -185,7 +185,7 @@ def login(email,password):
 def teacher_for_token(token):
     if not token or len(token)>200:return None
     row=query('SELECT t.* FROM auth_sessions a JOIN teachers t ON t.id=a.teacher_id WHERE a.token_hash=? AND a.expires_at>?',(token_hash(token),epoch()))
-    return teacher_public(row) if row else None
+    return teacher_public(row) if row and int(row.get('admin_disabled',0)) == 0 else None
 
 def signout(token):
     if token:exec_sql('DELETE FROM auth_sessions WHERE token_hash=?',(token_hash(token),))
