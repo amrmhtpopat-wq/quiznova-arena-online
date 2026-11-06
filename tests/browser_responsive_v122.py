@@ -47,14 +47,15 @@ with sync_playwright() as p:
         errors=[]
         page.on('pageerror',lambda err:errors.append(str(err)))
         credentials=json.dumps({'teacherToken':boy['token'],'teacherId':boy['teacher']['id'],'room':room})
-        page.add_init_script("""(data) => {
+        page.add_init_script("""(() => {
+          const data = """+credentials+""";
           if (location.pathname === '/studio.html') {
             localStorage.setItem('qn9_teacher_token',data.teacherToken);
             sessionStorage.setItem('qn9_live_'+data.teacherId,
               JSON.stringify({code:data.room.code,hostToken:data.room.hostToken,
                 stageToken:data.room.stageToken,quizId:'fit-v122'}));
           }
-        }""",json.loads(credentials))
+        })();""")
         page.goto(base+'/studio.html#live',wait_until='domcontentloaded',timeout=30000)
         page.locator('#roomQr').wait_for(state='visible',timeout=25000)
         page.wait_for_function("()=>{let e=document.querySelector('#roomQr');return e&&e.complete&&e.naturalWidth>0;}",timeout=15000)
@@ -109,7 +110,7 @@ with sync_playwright() as p:
         check(page.locator('[data-avatar="'+cid+'"] .bo-avatar-name').inner_text()==name,
               f'Human-style avatar name was not replaced for {cid}')
     page.locator('#roomCode').fill(room['code'])
-    page.locator('#avatarPickerCount').get_by_text('31',exact=False).wait_for(timeout=10000)
+    page.wait_for_function("()=>document.querySelector('#avatarPickerCount').textContent.includes('31')",timeout=10000)
     page.wait_for_function("()=>document.querySelector('#joinHint').textContent.includes('مدرسة بنين')",timeout=10000)
     state=avatar_state()
     check(len(state['ids'])==31 and not any(x.startswith('g') for x in state['ids']),
