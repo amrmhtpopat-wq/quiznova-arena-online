@@ -114,6 +114,7 @@ with sync_playwright() as p:
         check(info.value.suggested_filename.endswith('.csv'),'Student export missing')
         page.locator('#studentsBody [data-student]').first.click()
         page.locator('#detailDrawer').wait_for(state='visible')
+        page.locator('#detailContent').get_by_text('متوسط النتيجة').wait_for(timeout=15000)
         check('80%' in page.locator('#detailContent').inner_text(),'Student grade not shown')
         page.locator('#detailClose').click()
 
