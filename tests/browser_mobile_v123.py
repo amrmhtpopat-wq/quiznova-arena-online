@@ -112,6 +112,12 @@ with sync_playwright() as playwright:
         page.locator('#mobileCloseNav').click()
         check(page.locator('#sidebar').evaluate("el=>!el.classList.contains('open')"),
               'studio menu does not close')
+        # Use a fresh tab for the live room, exactly as a teacher opening the live-screen URL.
+        # SessionStorage is tab-scoped; starting a second tab also avoids browser back-stack quirks.
+        page.close()
+        page=context.new_page()
+        page.on('pageerror',lambda e:errors.append(str(e)))
+        init_studio(page)
         page.goto(base+'/studio.html#live',wait_until='domcontentloaded')
         page.locator('#roomQr').wait_for(state='visible',timeout=25000)
         page.wait_for_function("()=>document.getElementById('roomQr').naturalWidth>0",timeout=14000)
