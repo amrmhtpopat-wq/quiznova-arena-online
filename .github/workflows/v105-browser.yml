@@ -14,6 +14,8 @@ on:
       - tests/browser_admin_v2.py
       - tests/browser_v121_features.py
       - tests/browser_responsive_v122.py
+      - tests/browser_mobile_v123.py
+      - booyah-mobile-v123.css
       - booyah-responsive-v122.css
       - avatar-names-v121.js
       - solo_api.py
@@ -65,6 +67,7 @@ jobs:
           python -m playwright install chromium
       - name: Test actual browser on desktop and mobile
         run: |
+          python tests/browser_mobile_v123.py
           python tests/browser_responsive_v122.py
           python tests/browser_smoke_v105.py
           python tests/browser_contrast_v109.py
