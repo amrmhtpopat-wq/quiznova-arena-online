@@ -69,6 +69,7 @@ window.go=go;
 $$('.nav-item').forEach(b=>b.onclick=()=>b.dataset.view==='builder'?openNewQuiz():go(b.dataset.view));
 $$('[data-jump]').forEach(b=>b.onclick=()=>b.dataset.jump==='builder'?openNewQuiz():go(b.dataset.jump));
 $('#menuBtn').onclick=()=>$('#sidebar').classList.toggle('open');
+const mobileCloseNav=$('#mobileCloseNav');if(mobileCloseNav)mobileCloseNav.onclick=()=>$('#sidebar').classList.remove('open');
 $('#quickGenerate').onclick=()=>go('generator');
 $$('[data-modejump]').forEach(b=>b.onclick=()=>{ go('play'); setTimeout(()=>$('#playMode').value=b.dataset.modejump,0) });
 $$('.book-chip').forEach(b=>b.addEventListener('click',()=>setTimeout(()=>{if($('#genGrade')){$('#genGrade').value=b.dataset.grade;renderGeneratorUnits();updateGeneratorPool()}},20)));

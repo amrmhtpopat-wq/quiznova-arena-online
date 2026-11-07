@@ -1,0 +1,473 @@
+body.v105-studio .bo-mobile-menu-close{display:none}
+/* BOOYAHJO 12.3 — MOBILE & TABLET PRESENTATION ONLY
+   Desktop >1024 CSS pixels is deliberately unaffected.
+   Physical-phone first: prevent overflow, preserve touch targets and RTL navigation. */
+@media screen and (max-width:1024px){
+  body.v105-portal,body.v105-studio,body.v105-student,body.v105-stage{
+    max-width:100%;
+    overflow-x:clip!important;
+  }
+  :is(body.v105-portal,body.v105-studio,body.v105-student) :is(input,select,textarea){
+    min-width:0;
+    max-width:100%;
+    box-sizing:border-box;
+  }
+  :is(body.v105-portal,body.v105-studio,body.v105-student) :is(button,a,input,select){
+    -webkit-tap-highlight-color:transparent;
+    touch-action:manipulation;
+  }
+  /* Preserve all JS hide/show states, especially teacher login, live setup and solo tabs.
+     Never let a responsive display:grid override .hidden. */
+  :is(body.v105-portal,body.v105-studio,body.v105-student) .hidden{
+    display:none!important;
+  }
+  /* Standalone teacher portal: make navigation usable as horizontally scrollable touch tabs. */
+  body.v105-portal .workspace:not(.hidden){
+    display:block!important;
+    width:100%!important;
+    min-width:0!important;
+  }
+  body.v105-portal .workspace>.sidebar{
+    position:relative!important;
+    inset:auto!important;
+    height:auto!important;
+    min-height:0!important;
+    width:100%!important;
+    box-sizing:border-box;
+    padding:13px clamp(12px,3vw,22px)!important;
+    gap:10px!important;
+    overflow:visible!important;
+    border-left:0!important;
+    border-bottom:1px solid #59ddfa85!important;
+    box-shadow:0 8px 25px #0003!important;
+  }
+  body.v105-portal .sidebar-brand{
+    min-width:0;
+    padding:0 2px!important;
+    gap:9px!important;
+  }
+  body.v105-portal .sidebar-brand strong{font-size:clamp(18px,2.5vw,23px)!important}
+  body.v105-portal .sidebar-brand small{font-size:10px!important;line-height:1.4}
+  body.v105-portal .workspace-tag{
+    margin:0!important;
+    padding:6px 10px!important;
+    font-size:11px!important;
+    align-self:flex-start;
+  }
+  body.v105-portal .sidebar nav{
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    gap:7px!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    padding:2px 0 9px;
+    min-width:0;
+    max-width:100%;
+    scrollbar-width:thin;
+    scroll-snap-type:x proximity;
+    overscroll-behavior-x:contain;
+    -webkit-overflow-scrolling:touch;
+  }
+  body.v105-portal .sidebar nav .nav{
+    flex:0 0 auto;
+    min-height:46px;
+    padding:9px 13px!important;
+    font-size:13px!important;
+    white-space:nowrap;
+    scroll-snap-align:start;
+    border-color:#72dafa49;
+    background:#0a397376;
+  }
+  body.v105-portal .sidebar nav .nav b{display:none!important}
+  body.v105-portal .workspace>.sidebar>.secondary.wide{
+    display:flex!important;
+    align-self:stretch;
+    min-height:42px;
+    padding:8px 12px!important;
+    white-space:normal;
+    font-size:13px!important;
+  }
+  body.v105-portal .sidebar-bottom{
+    display:flex!important;
+    flex-wrap:wrap!important;
+    align-items:center;
+    justify-content:space-between!important;
+    gap:8px!important;
+    width:100%;
+    margin:0!important;
+  }
+  body.v105-portal .sidebar-bottom .teacher-card{
+    flex:1 1 160px;
+    min-width:0;
+    padding:8px 11px!important;
+  }
+  body.v105-portal .sidebar-bottom .logout{
+    flex:0 0 auto;
+    min-height:42px;
+    padding:8px 13px!important;
+    font-size:12px!important;
+  }
+  body.v105-portal .workspace .main{
+    margin:0!important;
+    width:100%!important;
+    min-width:0;
+    padding:clamp(12px,2.3vw,24px)!important;
+  }
+  body.v105-portal .topbar{
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+    gap:12px!important;
+    padding:8px 0 15px!important;
+  }
+  body.v105-portal .topbar h1{font-size:clamp(22px,3vw,27px)!important}
+  body.v105-portal .topbar p{font-size:13px!important;line-height:1.6}
+  body.v105-portal .topbar-actions{
+    width:100%;
+    display:flex!important;
+    flex-wrap:wrap!important;
+    align-items:stretch!important;
+    justify-content:flex-start!important;
+    gap:8px!important;
+  }
+  body.v105-portal .topbar-actions>*{
+    white-space:normal!important;
+    min-height:43px;
+    flex:1 1 auto;
+    min-width:0;
+  }
+  body.v105-portal .topbar-actions .status{flex-basis:100%!important}
+  body.v105-portal .topbar-actions .icon{flex:0 0 44px;width:44px}
+  body.v105-portal .authwall:not(.hidden){
+    display:block!important;
+    min-height:100dvh;
+    padding:clamp(15px,3vw,30px)!important;
+  }
+  body.v105-portal .auth-art{display:none!important}
+  body.v105-portal .auth-card{
+    width:min(100%,540px)!important;
+    max-width:540px!important;
+    padding:clamp(18px,4vw,28px)!important;
+    margin:clamp(12px,4vh,32px) auto!important;
+  }
+  body.v105-portal .auth-card :is(input,select){min-height:47px;font-size:16px}
+  body.v105-portal .hero{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    min-width:0;
+    min-height:0!important;
+    padding:clamp(17px,3vw,28px)!important;
+    overflow:hidden;
+  }
+  body.v105-portal .hero h2{
+    font-size:clamp(25px,4.5vw,35px)!important;
+    overflow-wrap:anywhere;
+  }
+  body.v105-portal .hero-illustration{display:none!important}
+  body.v105-portal .hero-buttons{display:flex;gap:8px;flex-wrap:wrap}
+  body.v105-portal .metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  body.v105-portal .grid-two{grid-template-columns:minmax(0,1fr)!important}
+  body.v105-portal :is(.metric,.pane,.page-hero,.grid-two>*,.panel-view,.rank-row,.skill-row,.student-row,.history-row){
+    min-width:0;
+    max-width:100%;
+  }
+  body.v105-portal :is(.rank-row,.skill-row,.history-row,.student-row){
+    flex-wrap:wrap;
+    row-gap:8px;
+  }
+  body.v105-portal .pane-head{flex-wrap:wrap;row-gap:9px}
+  body.v105-portal .pane{padding:clamp(13px,2vw,20px)!important}
+  body.v105-portal .metric{padding:13px!important}
+  body.v105-portal .metric strong{font-size:clamp(23px,4vw,30px)!important}
+  body.v105-portal .page-hero{padding:19px!important}
+  body.v105-portal .progress{width:min(130px,38%)}
+  body.v105-portal :is(.pane,.panel-view) :is(input,select,textarea){
+    font-size:16px!important;
+    min-height:43px;
+  }
+  body.v105-portal :is(.pane,.panel-view) :is(.student-form,.form-grid){
+    min-width:0;
+    max-width:100%;
+  }
+  body.v105-portal .bo-folder-cards{grid-template-columns:minmax(0,1fr)!important;gap:12px!important}
+  body.v105-portal .bo-student-id{width:100%;min-width:0}
+  body.v105-portal .bo-folder-toolbar{justify-content:stretch!important}
+  body.v105-portal .bo-folder-toolbar button{width:100%;min-height:42px;font-size:12px!important}
+  body.v105-portal .bo-class-folder>summary{overflow-wrap:anywhere}
+  /* Student-first homepage */
+  body.v105-portal #studentWelcome.bo-entry{
+    width:100%;
+    min-height:100dvh;
+    padding:clamp(14px,3vw,28px)!important;
+    overflow:hidden;
+  }
+  body.v105-portal .bo-entry-main{
+    display:flex!important;
+    flex-direction:column!important;
+    width:100%;
+    min-width:0;
+    gap:20px!important;
+    padding:19px 0!important;
+  }
+  body.v105-portal .bo-entry-intro,body.v105-portal .bo-entry-options{width:100%;min-width:0}
+  body.v105-portal .bo-entry-options{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:10px!important;
+  }
+  body.v105-portal .bo-entry-option{
+    min-width:0;
+    min-height:155px!important;
+    padding:15px!important;
+    border-radius:17px!important;
+  }
+  body.v105-portal .bo-entry-option:first-child{grid-column:1/-1}
+  body.v105-portal .bo-entry-head{min-width:0;flex-wrap:wrap}
+  body.v105-portal .bo-entry-option small{font-size:13px!important;line-height:1.7!important}
+  /* Studio: tablet and phone use the existing drawer menu, never a squeezed sidebar. */
+  body.v105-studio .sidebar{
+    position:fixed!important;
+    width:min(320px,88vw)!important;
+    height:100dvh!important;
+    inset:0 0 0 auto!important;
+    overflow-x:hidden!important;
+    overflow-y:auto!important;
+    transform:translateX(110%)!important;
+    transition:transform .2s ease!important;
+    z-index:1000!important;
+    padding:17px 13px!important;
+  }
+  body.v105-studio .sidebar.open{
+    transform:translateX(0)!important;
+    box-shadow:-35px 0 85px #000b!important;
+  }
+  body.v105-studio .bo-mobile-menu-close{display:block!important;align-self:stretch;min-height:44px;border:1px solid #74dafa96;border-radius:10px;background:#095d8f;color:#fff;font-size:13px;font-weight:900;padding:10px;margin:8px 0}
+  body.v105-studio .sidebar .nav{min-width:0}
+  body.v105-studio .main{
+    margin-right:0!important;
+    width:100%!important;
+    padding:clamp(11px,2vw,22px)!important;
+  }
+  body.v105-studio .mobile-only{display:block!important}
+  body.v105-studio .topbar{
+    display:grid!important;
+    grid-template-columns:44px minmax(0,1fr)!important;
+    column-gap:10px;
+    row-gap:9px;
+    align-items:center!important;
+    min-width:0;
+    padding:12px!important;
+  }
+  body.v105-studio #menuBtn{
+    display:grid!important;
+    place-items:center;
+    width:43px!important;
+    height:43px!important;
+    min-width:43px;
+    padding:0!important;
+    font-size:22px!important;
+  }
+  body.v105-studio .topbar h2{font-size:clamp(19px,3vw,25px)!important}
+  body.v105-studio .topbar p{font-size:12px!important;line-height:1.5;overflow-wrap:anywhere}
+  body.v105-studio .top-actions{
+    grid-column:1/-1;
+    display:flex!important;
+    flex-wrap:wrap!important;
+    justify-content:flex-start!important;
+    gap:8px!important;
+    min-width:0;
+    width:100%;
+  }
+  body.v105-studio .top-actions>*{min-width:0!important;white-space:normal!important}
+  body.v105-studio .top-actions #quickGenerate{display:inline-flex!important;min-height:42px}
+  body.v105-studio .view,body.v105-studio .view>*{min-width:0}
+  body.v105-studio :is(.dashboard-grid,.generator-layout,.builder-layout,.live-layout,.live-game-grid):not(.hidden){
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    width:100%;
+    gap:12px!important;
+  }
+  body.v105-studio .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  body.v105-studio :is(.panel,.game-hero,.question-item,.bank-item,.quiz-card){
+    max-width:100%;
+    min-width:0;
+    padding:clamp(13px,2.1vw,20px)!important;
+  }
+  body.v105-studio .game-hero .hero-copy{min-width:0}
+  body.v105-studio :is(.panel-head,.section-title,.live-question-header){
+    flex-wrap:wrap!important;
+    align-items:flex-start;
+    gap:10px!important;
+  }
+  body.v105-studio :is(.form-grid,.generator-grid,.live-config-grid,.question-row,.bank-toolbar,.grid-2){
+    grid-template-columns:minmax(0,1fr)!important;
+    min-width:0;
+    gap:10px!important;
+  }
+  body.v105-studio :is(.table-wrap,.report-table,.results-table){
+    overflow-x:auto!important;
+    max-width:100%;
+    -webkit-overflow-scrolling:touch;
+  }
+  body.v105-studio .modal-card{
+    max-width:calc(100vw - 22px)!important;
+    max-height:calc(100dvh - 26px)!important;
+    overflow:auto;
+    padding:17px!important;
+  }
+  body.v105-studio :is(.modal-grid,.answer-bars,.student-lists){min-width:0}
+  body.v105-studio #view-live .host-actions .btn{min-height:45px!important}
+  body.v105-studio #view-live .bo-live-scene-control{gap:9px!important}
+  body.v105-studio #view-live .bo-live-scene-control :is(select,button){min-height:43px}
+  /* Student entry + quizzes */
+  body.v105-student .student-shell{
+    width:100%!important;
+    max-width:100%!important;
+    padding:13px clamp(11px,3vw,22px) max(26px,env(safe-area-inset-bottom))!important;
+    box-sizing:border-box;
+  }
+  body.v105-student .student-brand{
+    min-height:53px;
+    height:auto!important;
+    min-width:0;
+    gap:9px;
+  }
+  body.v105-student .student-brand .logo{flex:0 0 auto}
+  body.v105-student .student-brand>div:not(.logo){min-width:0;flex:1}
+  body.v105-student .student-brand b{overflow-wrap:anywhere}
+  body.v105-student .join-wrap:not(.hidden){
+    display:block!important;
+    min-height:0!important;
+    width:100%;
+    max-width:100%;
+  }
+  body.v105-student .join-visual{display:none!important}
+  body.v105-student .join-card{
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+    padding:clamp(15px,2.8vw,24px)!important;
+    border-radius:21px!important;
+  }
+  body.v105-student .join-card h1{font-size:clamp(25px,4vw,34px)!important;line-height:1.45}
+  body.v105-student .join-card p{font-size:14px!important;line-height:1.7}
+  body.v105-student .join-card label{font-size:14px!important;line-height:1.6}
+  body.v105-student .join-card :is(input,select){
+    width:100%!important;
+    min-height:47px;
+    font-size:16px!important;
+    border-radius:12px!important;
+  }
+  body.v105-student .join-card :is(button,#joinBtn){min-height:44px}
+  body.v105-student .bo-student-modes{
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:7px!important;
+    width:100%;
+    margin:11px auto 15px!important;
+  }
+  body.v105-student .bo-student-modes button{
+    min-width:0!important;
+    white-space:normal;
+    overflow-wrap:anywhere;
+    padding:9px 5px!important;
+    font-size:clamp(11px,1.4vw,14px)!important;
+    line-height:1.45!important;
+    min-height:49px;
+  }
+  body.v105-student .bo-solo-view,
+  body.v105-student .bo-solo-card,
+  body.v105-student .bo-solo-quiz{
+    width:100%;min-width:0;max-width:100%;
+  }
+  body.v105-student .bo-solo-card{padding:clamp(13px,2.7vw,22px)!important}
+  body.v105-student .bo-solo-form-row{grid-template-columns:minmax(0,1fr)!important}
+  body.v105-student .bo-solo-form-row input{min-width:0;max-width:100%;font-size:16px!important}
+  body.v105-student :is(.bo-solo-options,.bo-solo-match-row){min-width:0}
+  body.v105-student :is(.question-card,.lobby-card,.finish-card,.round-screen){
+    width:100%;max-width:100%;
+    min-width:0;
+  }
+  body.v105-student :is(.question-card,.lobby-card,.finish-card){padding:clamp(12px,3vw,21px)!important}
+  body.v105-student .question-card :is(h1,h2,p){overflow-wrap:anywhere}
+  body.v105-student .answer{min-width:0;overflow-wrap:anywhere}
+  body.v105-student #avatarPicker{min-width:0;width:100%;max-width:100%}
+  body.v105-student #avatarPicker .avatar-choice{min-width:0}
+  body.v105-student #avatarPicker .bo-avatar-name{overflow-wrap:anywhere}
+}
+@media screen and (max-width:600px){
+  /* Landing page becomes three compact, easily tapped choices. */
+  body.v105-portal #studentWelcome.bo-entry{padding:14px!important}
+  body.v105-portal .bo-entry-head{
+    gap:11px!important;
+    justify-content:space-between;
+  }
+  body.v105-portal .bo-entry-logo{gap:5px!important;font-size:18px!important;min-width:0}
+  body.v105-portal .bo-entry-logo strong{font-size:clamp(18px,5vw,24px)!important}
+  body.v105-portal .bo-entry-teacher{
+    min-height:41px;
+    padding:9px 11px!important;
+    font-size:12px!important;
+    white-space:normal!important;
+  }
+  body.v105-portal .bo-entry-intro h1{font-size:clamp(27px,8vw,38px)!important;line-height:1.4}
+  body.v105-portal .bo-entry-intro p{font-size:14px!important;line-height:1.8}
+  body.v105-portal .bo-entry-mascots{gap:8px!important}
+  body.v105-portal .bo-entry-mascots img{width:clamp(58px,18vw,76px)!important;height:clamp(58px,18vw,76px)!important}
+  body.v105-portal .bo-entry-options{
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:11px!important;
+  }
+  body.v105-portal .bo-entry-option:first-child{grid-column:auto!important}
+  body.v105-portal .bo-entry-option{
+    min-height:0!important;
+    padding:15px!important;
+    gap:5px!important;
+  }
+  body.v105-portal .bo-entry-option-icon{font-size:25px!important}
+  body.v105-portal .bo-entry-option strong{font-size:19px!important;line-height:1.5}
+  body.v105-portal .bo-entry-option small{font-size:13px!important}
+  body.v105-portal .bo-entry-cta{margin-top:5px;font-size:13px!important}
+  body.v105-portal .bo-entry-foot{font-size:11px!important;line-height:1.6}
+  body.v105-portal .hero-buttons{display:grid;grid-template-columns:minmax(0,1fr)}
+  body.v105-portal .hero-buttons>a{width:100%!important;min-width:0;white-space:normal}
+  body.v105-portal .pane-head{align-items:flex-start}
+  body.v105-portal .metric{gap:3px!important}
+  body.v105-portal .metric strong{font-size:23px!important}
+  body.v105-portal .bo-class-folder>summary{font-size:13px!important;padding:12px!important}
+  body.v105-studio .stats-grid{gap:8px!important}
+  body.v105-studio .stat-card{padding:11px!important;min-width:0}
+  body.v105-studio .stat-card strong{font-size:clamp(19px,5vw,25px)!important}
+  body.v105-studio #view-live .host-join-grid{
+    grid-template-columns:minmax(0,1fr)!important;
+    justify-items:center!important;
+  }
+  body.v105-studio #view-live .qr-wrap{max-width:190px!important}
+  body.v105-studio #view-live .join-copy{text-align:center;min-width:0!important}
+  body.v105-studio #view-live .join-copy .room-code{text-align:center;font-size:clamp(34px,10vw,48px)!important}
+  body.v105-studio #view-live .host-actions{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+  body.v105-studio .bo-live-scene-control{display:grid!important;grid-template-columns:minmax(0,1fr)!important}
+  body.v105-studio .bo-live-scene-control :is(label,select,button){width:100%!important;min-width:0!important}
+  body.v105-studio :is(.answers,.analysis-grid,.student-lists){grid-template-columns:minmax(0,1fr)!important}
+  body.v105-student .student-brand b{font-size:17px!important}
+  body.v105-student .student-brand small{font-size:10px!important}
+  body.v105-student #avatarPicker{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important}
+  body.v105-student #avatarPicker .avatar-choice{min-height:110px!important;padding:6px 4px!important}
+  body.v105-student #avatarPicker .bo-avatar-name{font-size:12px!important;line-height:1.4}
+  body.v105-student .bo-solo-options{grid-template-columns:minmax(0,1fr)!important}
+}
+@media screen and (max-width:360px){
+  body.v105-portal .topbar-actions .primary{flex:1 1 100%!important}
+  body.v105-portal .bo-entry-mascots img{width:57px!important;height:57px!important}
+  body.v105-portal .sidebar-bottom .logout{width:100%}
+  body.v105-studio #view-live .host-actions{grid-template-columns:minmax(0,1fr)!important}
+  body.v105-studio .top-actions #quickGenerate{font-size:12px!important;padding:9px!important}
+  body.v105-student .bo-student-modes{gap:4px!important}
+  body.v105-student .bo-student-modes button{font-size:11px!important;padding:8px 3px!important}
+  body.v105-student #avatarPicker{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media screen and (prefers-reduced-motion:reduce) and (max-width:1024px){
+  body.v105-studio .sidebar{transition:none!important}
+}
+@media print{
+  /* The existing A4 student cards and results printing are untouched. */
+}
