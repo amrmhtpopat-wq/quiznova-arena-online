@@ -1,3 +1,4 @@
+body.v105-studio .bo-mobile-menu-close{display:none}
 /* BOOYAHJO 12.3 — MOBILE & TABLET PRESENTATION ONLY
    Desktop >1024 CSS pixels is deliberately unaffected.
    Physical-phone first: prevent overflow, preserve touch targets and RTL navigation. */
@@ -234,6 +235,7 @@
     transform:translateX(0)!important;
     box-shadow:-35px 0 85px #000b!important;
   }
+  body.v105-studio .bo-mobile-menu-close{display:block!important;align-self:stretch;min-height:44px;border:1px solid #74dafa96;border-radius:10px;background:#095d8f;color:#fff;font-size:13px;font-weight:900;padding:10px;margin:8px 0}
   body.v105-studio .sidebar .nav{min-width:0}
   body.v105-studio .main{
     margin-right:0!important;
