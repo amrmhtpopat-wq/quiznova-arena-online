@@ -16,8 +16,13 @@ body.v105-studio .bo-mobile-menu-close{display:none}
     -webkit-tap-highlight-color:transparent;
     touch-action:manipulation;
   }
+  /* Preserve all JS hide/show states, especially teacher login, live setup and solo tabs.
+     Never let a responsive display:grid override .hidden. */
+  :is(body.v105-portal,body.v105-studio,body.v105-student) .hidden{
+    display:none!important;
+  }
   /* Standalone teacher portal: make navigation usable as horizontally scrollable touch tabs. */
-  body.v105-portal .workspace{
+  body.v105-portal .workspace:not(.hidden){
     display:block!important;
     width:100%!important;
     min-width:0!important;
@@ -133,7 +138,7 @@ body.v105-studio .bo-mobile-menu-close{display:none}
   }
   body.v105-portal .topbar-actions .status{flex-basis:100%!important}
   body.v105-portal .topbar-actions .icon{flex:0 0 44px;width:44px}
-  body.v105-portal .authwall{
+  body.v105-portal .authwall:not(.hidden){
     display:block!important;
     min-height:100dvh;
     padding:clamp(15px,3vw,30px)!important;
@@ -275,7 +280,7 @@ body.v105-studio .bo-mobile-menu-close{display:none}
   body.v105-studio .top-actions>*{min-width:0!important;white-space:normal!important}
   body.v105-studio .top-actions #quickGenerate{display:inline-flex!important;min-height:42px}
   body.v105-studio .view,body.v105-studio .view>*{min-width:0}
-  body.v105-studio :is(.dashboard-grid,.generator-layout,.builder-layout,.live-layout,.live-game-grid){
+  body.v105-studio :is(.dashboard-grid,.generator-layout,.builder-layout,.live-layout,.live-game-grid):not(.hidden){
     display:grid!important;
     grid-template-columns:minmax(0,1fr)!important;
     width:100%;
@@ -329,7 +334,7 @@ body.v105-studio .bo-mobile-menu-close{display:none}
   body.v105-student .student-brand .logo{flex:0 0 auto}
   body.v105-student .student-brand>div:not(.logo){min-width:0;flex:1}
   body.v105-student .student-brand b{overflow-wrap:anywhere}
-  body.v105-student .join-wrap{
+  body.v105-student .join-wrap:not(.hidden){
     display:block!important;
     min-height:0!important;
     width:100%;
