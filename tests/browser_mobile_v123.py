@@ -104,7 +104,10 @@ with sync_playwright() as playwright:
         inside(page,'.main',f'studio main {width}')
         page.locator('#menuBtn').wait_for(state='visible',timeout=6000)
         page.locator('#menuBtn').click()
-        page.wait_for_function("()=>document.querySelector('#sidebar').classList.contains('open')",timeout=5000)
+        page.wait_for_function("""()=>{
+          const el=document.querySelector('#sidebar'),box=el.getBoundingClientRect();
+          return el.classList.contains('open') && box.left>=-3 && box.right<=innerWidth+3;
+        }""",timeout=5000)
         inside(page,'#sidebar',f'mobile menu {width}')
         page.locator('#mobileCloseNav').click()
         check(page.locator('#sidebar').evaluate("el=>!el.classList.contains('open')"),
