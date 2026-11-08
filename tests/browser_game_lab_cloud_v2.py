@@ -60,7 +60,7 @@ try:
     student_page.locator("#nextBtn").wait_for(state="visible",timeout=12000)
     student_page.locator("#nextBtn").click()
    student_page.locator("#finishPanel").wait_for(state="visible",timeout=10000)
-   assert "800" in student_page.locator("#finishScore").inner_text()
+   assert "800" in student_page.locator("#finishScore").inner_text().translate(str.maketrans('٠١٢٣٤٥٦٧٨٩','0123456789'))
    assert "90" in student_page.locator("#earnedXp").inner_text()
    player_ctx.close()
    teacher_page.locator("#cloudList .cloud-activity button").filter(has_text="النتائج").click()
