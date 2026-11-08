@@ -27,24 +27,22 @@ def run():
             try:
               page.goto(base+"/game-lab-preview.html",wait_until="domcontentloaded")
               page.locator(".game").first.wait_for(state="visible",timeout=7000)
-              assert page.locator(".game").count()==24
-              assert page.locator(".game .state:not(.plan)").count()==8
+              assert page.locator("#gameGrid .game").count()==24
+              assert page.locator("#gameGrid .game .state:not(.plan)").count()==8
               assert page.locator("#contentFeedback").inner_text().startswith("✓"),"sample content failed to load"
               horizontal=page.evaluate("()=>({s:document.documentElement.scrollWidth,w:innerWidth})")
               assert horizontal["s"]<=horizontal["w"]+2,(width,horizontal)
               page.locator("#gameSearch").fill("مطابقة")
-              assert page.locator(".game").count()<=2
+              assert page.locator("#gameGrid .game").count()<=2
               page.locator("#gameSearch").fill("")
-              assert page.locator(".game").count()==24
+              assert page.locator("#gameGrid .game").count()==24
               page.locator("[data-category='vocabulary']").click()
-              assert 1<=page.locator(".game").count()<24
+              assert 1<=page.locator("#gameGrid .game").count()<24
               page.locator("[data-category='all']").click()
               # Exercise every playable template with the same content.
               for game in ("quiz","fast","pairs","flash","wheel","boxes","sort","truth"):
-                page.evaluate("id=>{document.querySelectorAll('.game').forEach(x=>{if(x.querySelector('button').onclick){}})}",game)
-                page.evaluate("id=>{document.querySelector('.button')}",game)
                 # Launch by matching catalog-card display title.
-                card=page.locator(".game").filter(has=page.locator("h3",has_text={
+                card=page.locator("#gameGrid .game").filter(has=page.locator("h3",has_text={
                   "quiz":"تحدي الاختيار","fast":"سباق الوقت","pairs":"توصيل الأزواج",
                   "flash":"بطاقات الذاكرة","wheel":"عجلة الحظ","boxes":"الصناديق الغامضة",
                   "sort":"فرز وتصنيف","truth":"صح أم خطأ؟"}[game])).first
@@ -77,7 +75,9 @@ def run():
                 page.locator("#closePlay").click()
                 assert page.locator("#playOverlay").is_hidden()
               # Printing uses a true text worksheet; no app data leaves this browser.
-              page.locator("#printActivity").evaluate("el=>{el.onclick=()=>{const p=document.getElementById('printPage');const fn=window.print;window.print=()=>{};el.click();window.print=fn}}")
+              page.evaluate("() => {window.print=()=>{}}")
+              page.locator("#printActivity").click()
+              assert page.locator("#printPage .print-q").count()==8
               # Save and reload a local draft, no server storage.
               page.locator("#saveActivity").click()
               assert page.locator("#savedList .saved").count()==1
