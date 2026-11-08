@@ -22,8 +22,9 @@ jobs:
         run: python -m pip install -r requirements.txt
       - name: Python and JavaScript syntax validation
         run: |
-          python -m compileall -q server.py platform_store.py platform_api.py platform_security.py solo_api.py admin_api.py xlsx_report.py tests
+          python -m compileall -q server.py platform_store.py platform_api.py platform_security.py solo_api.py admin_api.py visitor_analytics.py xlsx_report.py tests
           node --check admin-v1.js
+          node --check visitor-tracker-v125.js
           node --check avatar-names-v121.js
           node --check booyah-countdown-v121.js
           node --check media_library.js
@@ -52,6 +53,7 @@ jobs:
           python -m unittest discover -s tests -p 'test_student_solo_v120.py' -v
           python -m unittest discover -s tests -p 'test_admin_v1.py' -v
           python -m unittest discover -s tests -p 'test_admin_v2.py' -v
+          python -m unittest discover -s tests -p 'test_visitor_analytics_v125.py' -v
           python -m unittest discover -s tests -p 'test_v121_cards_media_scenes.py' -v
       - name: Read-only production release smoke (no test users or mutations)
         run: python tests/hosted_production_readonly.py
