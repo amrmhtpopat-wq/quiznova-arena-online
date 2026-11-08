@@ -14,6 +14,7 @@
 @media(max-width:380px){.games{grid-template-columns:1fr}.game p{min-height:unset}}
 @media print{.shell,#playOverlay,.mobilebar,.shade{display:none!important}.print-page{display:block!important;color:#000;background:#fff;padding:14mm;font:13pt Tahoma,Arial;direction:rtl}.print-page h1{text-align:center;font-size:20pt}.print-page h2{font-size:15pt}.print-page .print-q{margin:14px 0;break-inside:avoid}.print-page .print-lines{border-bottom:1px solid #777;height:24px}}
 </style>
+<style>.cloud-activity{background:linear-gradient(145deg,#123b61,#0e2c4c);border:1px solid #35688a;border-radius:14px;padding:13px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.cloud-info{display:grid;gap:3px}.cloud-info b{font-size:1rem}.cloud-info small{color:#b0cce1;font-size:.75rem}.cloud-activity .buttons{align-items:center}.lab-table-scroll{max-width:100%;overflow:auto}.lab-results-table{width:100%;border-collapse:collapse;min-width:600px}.lab-results-table th,.lab-results-table td{text-align:right;border-bottom:1px solid #365878;padding:10px;font-size:.83rem}.lab-results-table th{background:#0b3255;color:#d1f7ed}.lab-results-table td{color:#d3e7f7}.lab-results-table tr:hover{background:#ffffff0b}@media(max-width:650px){.cloud-activity{align-items:stretch;flex-direction:column}.cloud-activity .buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.cloud-activity button{width:100%}}</style>
 </head>
 <body>
 <div class="mobilebar"><b>🎮 BOOYAHJO GAME LAB</b><button class="button alt small" id="mobileMenu" aria-label="القائمة">☰</button></div><div id="shade" class="shade"></div>
@@ -24,6 +25,7 @@
  <button class="nav sel" data-jump="catalog"><span>🕹️</span>جميع الألعاب والقوالب</button>
  <button class="nav" data-jump="builder"><span>🪄</span>صانع الأنشطة</button>
  <button class="nav" data-jump="library"><span>🗃️</span>أنشطتي التجريبية</button>
+ <button class="nav" data-jump="cloud"><span>☁️</span>مكتبتي على الحساب</button>
  <button class="nav" data-jump="toolbox"><span>🧰</span>أدوات BOOYAHJO الحالية</button>
  <button class="nav" data-jump="roadmap"><span>🚀</span>ميزات قادمة</button>
  <div class="navlabel">أدوات BOOYAHJO</div>
@@ -52,13 +54,29 @@
 ما الجهاز المستخدم لإدخال النصوص؟ | لوحة المفاتيح | إدخال
 ما الجهاز الذي يعرض الصور؟ | الشاشة | إخراج
 ما الجهاز المستخدم لتحريك المؤشر؟ | الفأرة | إدخال
-ما الجهاز المستخدم لإخراج الصوت؟ | السماعات | إخراج</textarea><p class="hint">اكتب كل سطر بهذه الصيغة: <b>السؤال | الإجابة | المجموعة</b>. الحد الأقصى 24 سطرًا، ويفضل وجود 4 أسئلة على الأقل.</p></div>
+ما الجهاز المستخدم لإخراج الصوت؟ | السماعات | إخراج</textarea><p class="hint">اكتب كل سطر بهذه الصيغة: <b>السؤال | الإجابة | المجموعة</b>. الحد الأقصى 80 سطرًا، ويفضل وجود 4 أسئلة على الأقل.</p></div>
  <div class="buttons"><button class="button" id="applyContent">✓ تطبيق المحتوى</button><button class="button alt" id="saveActivity">💾 حفظ على هذا الجهاز</button><button class="button transparent" id="restoreExample">↺ محتوى تجريبي</button></div>
  </div>
  <div class="block"><h3>⚡ معاينة المحتوى</h3><p>بعد تطبيق الأسئلة، يمكنك الانتقال بين جميع الألعاب المفعلة باستخدام المحتوى نفسه.</p><div class="good" id="contentFeedback">جاهز: 8 أسئلة ومجموعات تعليمية متعددة.</div><div id="dataPreview" class="list" style="margin-top:12px"></div><div class="buttons" style="margin-top:16px"><button class="button gold" id="quickPlay">▶ جرّب تحدي الأسئلة</button><button class="button alt" id="printActivity">🖨️ ورقة عمل</button></div><hr style="border:0;border-top:1px solid #315575;margin:17px 0"><h3>قوالبك الجاهزة</h3><div class="buttons" id="quickTemplates"></div></div>
  </div></section>
  <section id="library"><div class="section-head"><div><h2>🗃️ مسودات أنشطتي</h2><p>حفظ مؤقت داخل هذا المتصفح فقط، دون تسجيل دخول أو اتصال بقاعدة بيانات BOOYAHJO.</p></div><div class="buttons"><button id="exportData" class="button alt small">⬇️ تصدير JSON</button><button id="importButton" class="button alt small">⬆️ استيراد JSON</button><input id="importFile" type="file" accept="application/json,.json" class="hide"></div></div><div id="savedList" class="list"></div></section>
- <section id="toolbox"><div class="section-head"><div><h2>🧰 جميع أدوات المنصة في مكان واحد</h2><p>وصول سريع إلى أقسام BOOYAHJO الموجودة حاليًا. قد يتطلب بعضها تسجيل دخول المعلم.</p></div><span class="pill">أدوات مرتبطة</span></div><div class="games">
+ <section id="cloud"><div class="section-head"><div><h2>☁️ مكتبتي الخاصة ونشر الأنشطة</h2><p>احفظ الأنشطة على حساب المعلم، وانشرها للطلاب برابط أو QR، وحدد المحاولات واستعرض النتائج.</p></div><span class="pill">متصل بقاعدة بيانات الاختبار المعزولة</span></div>
+<div class="block" id="cloudLogin">
+<h3>🔐 الدخول الآمن للمعلم</h3><p id="cloudLoginLabel">سجّل الدخول بحساب BOOYAHJO للبدء. لن تُرسل بيانات الطلاب إلى هذه الصفحة.</p>
+<div class="row2"><div class="field"><label for="cloudEmail">البريد الإلكتروني</label><input id="cloudEmail" type="email" autocomplete="username" placeholder="teacher@example.com"></div><div class="field"><label for="cloudPassword">كلمة المرور</label><input id="cloudPassword" type="password" autocomplete="current-password" placeholder="••••••••"></div></div>
+<div class="buttons"><button class="button" id="cloudSignIn">🔑 تسجيل الدخول</button><a class="button alt" href="/?teacher=1">إدارة حساب المعلم</a></div></div>
+<div id="cloudWorkspace" class="hide">
+<div class="block" style="margin-bottom:14px"><div class="buttons" style="justify-content:space-between;align-items:center"><b id="cloudTeacher">حساب المعلم</b><div class="buttons"><button id="cloudRefresh" class="button transparent small">↻ تحديث</button><button id="cloudLogout" class="button transparent small">تسجيل الخروج محليًا</button></div></div>
+<div class="row2" style="margin-top:12px"><div class="field"><label for="cloudMode">القالب الذي تريد نشره للطلاب</label><select id="cloudMode"></select></div><div class="field"><label for="cloudMaxAttempts">عدد المحاولات بالبطاقة</label><select id="cloudMaxAttempts"><option value="1">محاولة واحدة</option><option value="2">محاولتان</option><option value="3">3 محاولات</option><option value="4">4 محاولات</option><option value="5">5 محاولات</option><option value="10">10 محاولات</option></select></div></div>
+<div class="buttons"><button class="button" id="cloudSave">💾 حفظ النشاط على الحساب</button><button class="button alt" id="cloudNew">＋ نشاط جديد</button></div>
+<p class="hint">أولًا عدّل عنوان النشاط والأسئلة في «صانع الأنشطة» أعلى الصفحة، ثم اختر القالب واحفظ. بعد ذلك اضغط «نشر» من مكتبتي. تحفظ جميع البيانات تحت حساب المعلم فقط.</p></div>
+<div class="block"><h3>📚 أنشطتي المحفوظة على الخادم <span class="pill" id="cloudCount">0</span></h3><div id="cloudList" class="list"><div class="empty">جارٍ تحميل المكتبة...</div></div></div>
+<div id="cloudShare" class="block hide" style="margin-top:14px"><h3>🔗 رابط مشاركة النشاط <span id="cloudShareTitle"></span></h3><div class="field"><label for="cloudLink">رابط خاص بهذا النشاط</label><input id="cloudLink" readonly dir="ltr" style="direction:ltr;text-align:left"></div><div class="buttons"><button class="button" id="cloudCopy">📋 نسخ الرابط</button><a class="button alt" href="/game-lab-play.html" target="_blank" rel="noopener noreferrer">معاينة صفحة الطالب</a></div><img id="cloudQR" alt="رمز النشاط" style="background:white;display:block;width:min(210px,80vw);padding:8px;margin:15px auto;border-radius:14px"><p class="hint">يمكن للطالب مسح QR أو فتح الرابط، ثم الدخول بالبطاقة أو كضيف دون XP.</p></div>
+<div id="cloudReport" class="block hide" style="margin-top:14px"><div class="buttons" style="justify-content:space-between"><h3 id="cloudReportTitle">نتائج النشاط</h3><div class="buttons"><button class="button alt small" id="cloudExportCSV">⬇️ تصدير CSV</button><button class="button transparent small" id="cloudReportClose">✕ إغلاق</button></div></div><div id="cloudResults" class="lab-table-scroll"></div></div>
+</div><p class="hint">نسخة QA: جميع البيانات الحقيقية التي تنشأ هنا تخص بيئة الاختبار المعزولة. لا يُرسل محتوى الأنشطة إلى الموقع الرسمي حتى الموافقة النهائية.</p>
+<div id="cloudMessage" role="status" aria-live="polite" class="good">يرجى فتح حسابك لتفعيل الحفظ والنشر.</div>
+</section>
+<section id="toolbox"><div class="section-head"><div><h2>🧰 جميع أدوات المنصة في مكان واحد</h2><p>وصول سريع إلى أقسام BOOYAHJO الموجودة حاليًا. قد يتطلب بعضها تسجيل دخول المعلم.</p></div><span class="pill">أدوات مرتبطة</span></div><div class="games">
 <div class="game"><div class="figure"><div class="symbol">📝</div><span class="state">موجودة</span></div><h3>صانع الاختبارات</h3><p>أنشئ أسئلة بمستويات وأنواع مختلفة داخل استوديو المعلم.</p><a class="button alt" href="/studio.html#builder">فتح الصانع</a></div>
 <div class="game"><div class="figure"><div class="symbol">📚</div><span class="state">موجودة</span></div><h3>بنك الأسئلة</h3><p>أعد استخدام الأسئلة المحفوظة في إنشاء اختبارات وتحديات.</p><a class="button alt" href="/studio.html#bank">فتح البنك</a></div>
 <div class="game"><div class="figure"><div class="symbol">🎥</div><span class="state">موجودة</span></div><h3>الصف المباشر</h3><p>جلسة تفاعلية مع PIN وشاشة عرض وترتيب بعد الأسئلة.</p><a class="button alt" href="/studio.html#live">فتح الصف</a></div>
@@ -121,7 +139,7 @@ const names=Object.fromEntries(catalog.map(x=>[x.id,x.name]));
 function secureText(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','&quot;':'&quot;',"'":'&#39;'}[c]))}
 function sampleBank(){return readRows(example).rows}
 function readRows(raw){
- const lines=raw.split(/\n/).map(x=>x.trim()).filter(Boolean).slice(0,24),rows=[],seen=new Set();
+ const lines=raw.split(/\n/).map(x=>x.trim()).filter(Boolean).slice(0,80),rows=[],seen=new Set();
  for(const s of lines){const parts=s.split('|').map(x=>x.trim());if(parts.length<2||!parts[0]||!parts[1])return {rows:[],error:'هناك سطر غير مكتمل. استخدم: السؤال | الإجابة | المجموعة'};
   const question=parts[0].slice(0,200),answer=parts[1].slice(0,100),group=(parts[2]||'عام').slice(0,60);
   if(seen.has(question+'|'+answer))continue;seen.add(question+'|'+answer);rows.push({q:question,a:answer,g:group})}
@@ -182,7 +200,7 @@ function fill(p){$('activityTitle').value=p.title;$('subject').value=p.subject;$
 function save(){const a=getPayload();if(a.error){report(a.error,true);return}if(activities.length>=25){report('الحد التجريبي 25 مسودة. احذف مسودة قديمة أو صدّر نسخك.',true);return}activities.unshift(a);persist();refreshSaved();report('✓ حفظت «'+a.title+'» في المتصفح الحالي. لا تُحفظ على حساب المعلم.')}
 function printable(){const p=getPayload();if(p.error){report(p.error,true);return}const page=$('printPage');page.replaceChildren();const h=document.createElement('h1');h.textContent='ورقة عمل | '+p.title;page.append(h);const meta=document.createElement('p');meta.textContent='المبحث: '+p.subject+'     الصف: '+p.grade+'       الاسم: ........................................';page.append(meta);p.rows.forEach((r,i)=>{const div=document.createElement('div');div.className='print-q';const question=document.createElement('p');question.textContent=(i+1)+'. '+r.q;div.append(question);for(let j=0;j<2;j++){const line=document.createElement('div');line.className='print-lines';div.append(line)}page.append(div)});window.print()}
 function exportFile(){const data=JSON.stringify({version:1,activities},null,2);const blob=new Blob([data],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='BOOYAHJO-GameLab-activities.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),2000)}
-function validateImport(raw){if(!raw||raw.version!==1||!Array.isArray(raw.activities)||raw.activities.length>25)throw Error('ملف JSON غير متوافق');return raw.activities.map(a=>{if(!a||!Array.isArray(a.rows)||a.rows.length<4||a.rows.length>24)throw Error('صفوف غير صالحة');const data={title:String(a.title||'نشاط').slice(0,90),subject:String(a.subject||'المهارات الرقمية'),grade:String(a.grade||'السابع'),time:Number(a.time)||25,rows:a.rows.map(r=>({q:String(r.q||'').slice(0,200),a:String(r.a||'').slice(0,100),g:String(r.g||'عام').slice(0,60)}))};if(data.rows.some(x=>!x.q||!x.a))throw Error('إجابة أو سؤال مفقود');return data})}
+function validateImport(raw){if(!raw||raw.version!==1||!Array.isArray(raw.activities)||raw.activities.length>25)throw Error('ملف JSON غير متوافق');return raw.activities.map(a=>{if(!a||!Array.isArray(a.rows)||a.rows.length<4||a.rows.length>80)throw Error('صفوف غير صالحة');const data={title:String(a.title||'نشاط').slice(0,90),subject:String(a.subject||'المهارات الرقمية'),grade:String(a.grade||'السابع'),time:Number(a.time)||25,rows:a.rows.map(r=>({q:String(r.q||'').slice(0,200),a:String(r.a||'').slice(0,100),g:String(r.g||'عام').slice(0,60)}))};if(data.rows.some(x=>!x.q||!x.a))throw Error('إجابة أو سؤال مفقود');return data})}
 $('gameSearch').oninput=renderCatalog;$('gradeFilter').onchange=renderCatalog;document.querySelectorAll('[data-category]').forEach(b=>b.onclick=()=>{filter=b.dataset.category;document.querySelectorAll('[data-category]').forEach(x=>x.classList.toggle('on',x===b));renderCatalog()});
 document.querySelectorAll('[data-jump]').forEach(b=>b.onclick=()=>scrollToId(b.dataset.jump));document.querySelectorAll('[data-scroll]').forEach(b=>b.onclick=()=>scrollToId(b.dataset.scroll));
 $('mobileMenu').onclick=()=>{$('rail').classList.toggle('open');$('shade').classList.toggle('show')};$('shade').onclick=()=>{$('rail').classList.remove('open');$('shade').classList.remove('show')};
@@ -196,4 +214,5 @@ $('countAll').textContent=catalog.length;$('countLive').textContent=catalog.filt
 renderCatalog();apply();refreshSaved();
 })();
 </script>
+<script src="/game-lab-cloud-v2.js?v=2.0" defer></script>
 </body></html>
