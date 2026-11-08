@@ -199,7 +199,7 @@ function gameEnd(){stopClock();container('<div class="playcard"><div style="font
        const rows=mixerState.results.map((x,i)=>'<p>'+(i+1)+'. '+secureText(names[x.game])+' — '+x.score+' نقطة</p>').join('');
        container('<div class="playcard"><div style="font-size:3rem">🎉</div><h3>اكتملت رحلة Game Mixer!</h3>'+rows+'<h2>المجموع: '+sum+' نقطة</h2><p>هذا ملخص تدريبي محلي ولا يُضيف XP أو علامات الطلاب.</p></div><div class="buttons extra-center" id="mixerFinishButtons"></div>');
        mixerState=null;
-       $('#mixerFinishButtons').append(textButton('✅ إنهاء الحصة',closeGame,'button'));
+       $('mixerFinishButtons').append(textButton('✅ إنهاء الحصة',closeGame,'button'));
      },'button gold'));
    }
  }
