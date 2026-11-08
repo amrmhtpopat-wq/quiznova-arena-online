@@ -2,6 +2,8 @@
 from __future__ import annotations
 import json,os,tempfile,threading,uuid
 from pathlib import Path
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from http.server import ThreadingHTTPServer
 from playwright.sync_api import sync_playwright
 TMP=tempfile.TemporaryDirectory()
