@@ -12,6 +12,10 @@ on:
       - admin-v1.js
       - tests/browser_admin_v1.py
       - tests/browser_admin_v2.py
+      - tests/browser_visitor_v125.py
+      - visitor_analytics.py
+      - visitor-tracker-v125.js
+      - admin-visitors-v125.css
       - tests/browser_v121_features.py
       - tests/browser_responsive_v122.py
       - tests/browser_mobile_v123.py
@@ -77,6 +81,7 @@ jobs:
           python tests/browser_student_entry_v120.py
           python tests/browser_admin_v1.py
           python tests/browser_admin_v2.py
+          python tests/browser_visitor_v125.py
           python tests/browser_v121_features.py
       - name: Upload visual QA screenshots
         if: always()
