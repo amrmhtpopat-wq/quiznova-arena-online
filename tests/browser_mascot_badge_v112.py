@@ -65,7 +65,7 @@ with sync_playwright() as playwright:
     gallery=page.locator('#schoolAvatarGallery .bo-mascot-option')
     gallery.first.wait_for(state='visible',timeout=8000)
     selected=page.locator('#newStudentAvatar option').all_text_contents()
-    for name in ('شرارة','روبوك','فوكسو','نينزو','درعو','بيكسو','زومي'):
+    for name in ('Zappo','Robix','Foxzo','Ninzo','Shieldox','Pixelo','Zoomix'):
       assert name in selected,(name,selected)
     assert 'شخصية شبابية' not in selected
     page.eval_on_selector_all('#schoolAvatarGallery .bo-mascot-option img',
