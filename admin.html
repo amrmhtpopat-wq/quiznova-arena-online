@@ -5,7 +5,8 @@
 <meta name="theme-color" content="#071c39"><meta name="robots" content="noindex,nofollow,noarchive">
 <title>BOOYAHJO CONTROL CENTER | إدارة المنصة</title>
 <link rel="stylesheet" href="/admin-v1.css?v=2.1">
-<script defer src="/admin-v1.js?v=2.1"></script>
+<link rel="stylesheet" href="/admin-visitors-v125.css?v=12.5">
+<script defer src="/admin-v1.js?v=12.5"></script>
 </head>
 <body>
 <section id="authentication" class="auth-stage" aria-labelledby="authTitle">
@@ -75,6 +76,14 @@
       <section id="overviewView" class="view">
         <div class="page-head"><div><span class="eyebrow">تحكم المنصة</span><h1>نظرة عامة</h1><p>متابعة مستخدمي BOOYAHJO والألعاب والاختبارات من قاعدة البيانات مباشرة.</p></div><button id="refreshBtn" class="outlined">↻ تحديث البيانات</button></div>
         <div class="metrics-grid" id="metricsGrid" aria-live="polite"></div>
+        <section class="visitor-section" aria-labelledby="visitorsTitle">
+          <div class="visitor-heading">
+            <div><span class="eyebrow">SITE TRAFFIC</span><h2 id="visitorsTitle">👁️ زوار موقع BOOYAHJO</h2><p>متابعة الزوار الحقيقيين بعد تفعيل الإحصاء، دون تسجيل أسمائهم أو عناوين IP.</p></div>
+            <span class="chip">اليوم حسب توقيت الأردن 🇯🇴</span>
+          </div>
+          <div class="visitor-stat-grid" id="visitorMetrics" aria-live="polite"></div>
+          <p class="visitor-note" id="visitorNote">جارٍ تحميل إحصاءات الزوار...</p>
+        </section>
         <div class="insight-banner" id="insightBanner" aria-live="polite"></div>
         <div class="charts-grid">
           <article class="panel chart-panel"><div class="panel-header"><div><h2>نشاط الجلسات</h2><p>آخر 14 يومًا (حسب UTC)</p></div><span class="chip">مباشر من قاعدة البيانات</span></div><div class="activity-chart" id="activityChart"></div></article>
