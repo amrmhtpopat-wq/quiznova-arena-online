@@ -28,7 +28,7 @@ def run():
               page.goto(base+"/game-lab-preview.html",wait_until="domcontentloaded")
               page.locator(".game").first.wait_for(state="visible",timeout=7000)
               assert page.locator("#gameGrid .game").count()==24
-              assert page.locator("#gameGrid .game .state:not(.plan)").count()==8
+              assert page.locator("#gameGrid .game .state:not(.plan)").count()==24
               assert page.locator("#contentFeedback").inner_text().startswith("✓"),"sample content failed to load"
               horizontal=page.evaluate("()=>({s:document.documentElement.scrollWidth,w:innerWidth})")
               assert horizontal["s"]<=horizontal["w"]+2,(width,horizontal)
@@ -74,6 +74,45 @@ def run():
                   assert page.locator("#truthNext button").count()==1
                 page.locator("#closePlay").click()
                 assert page.locator("#playOverlay").is_hidden()
+              # All sixteen new minigames render original interactive controls.
+              catalog_extra={
+                'crossword':('الكلمات المتقاطعة','.extra-cross-letter'),
+                'wordsearch':('البحث عن الكلمات','.extra-word-letter'),
+                'anagram':('ترتيب الحروف','.extra-letter'),
+                'order':('الترتيب المنطقي','.extra-order-line'),
+                'maze':('متاهة المعرفة','#mazeChoices .choice'),
+                'balloons':('فرقعة البالونات','.extra-balloon'),
+                'memory':('تذكّر الصورة','.extra-memory-card'),
+                'hidden':('الصورة المخفية','.extra-hidden-tile'),
+                'cloze':('أكمل الفراغ','#clozeChoices .choice'),
+                'diagram':('تسمية الرسم','#diagramChoices .choice'),
+                'board':('لوحة النقاط','.extra-score-team'),
+                'teams':('معركة الفرق','#teamsOptions .choice'),
+                'survey':('استفتاء الصف','.extra-survey-row'),
+                'exit':('بطاقة الخروج','#exitResponse'),
+                'story':('اختر مسارك','#storyPaths .choice'),
+                'bingo':('بينغو المصطلحات','.extra-bingo-cell')}
+              for gid,(title,selector) in catalog_extra.items():
+                card=page.locator('#gameGrid .game').filter(has=page.locator('h3',has_text=title)).first
+                card.locator('button').click()
+                page.locator('#playOverlay').wait_for(state='visible',timeout=7000)
+                if page.locator(selector).count()<1:
+                  page.screenshot(path=str(ROOT/'browser-qa-artifacts'/('gamelab-broken-'+gid+'-'+str(width)+'.png')),full_page=True)
+                  raise AssertionError(f'{gid} failed to show {selector}')
+                # Enter a sample interaction into the playable template.
+                if gid=='anagram':page.locator('.extra-letter:not([disabled])').first.click()
+                if gid=='memory':page.locator('.extra-memory-card').first.click()
+                if gid=='hidden':page.locator('.extra-hidden-tile').first.click()
+                if gid=='order':page.locator('.extra-order-line .button').first.click()
+                if gid=='maze':page.locator('#mazeChoices button').first.click()
+                if gid=='balloons':page.locator('.extra-balloon').first.click()
+                if gid=='survey':page.locator('.extra-survey-row .button').first.click()
+                if gid=='exit':page.locator('#exitResponse').fill('إجابة تجريبية')
+                if gid=='story':page.locator('#storyPaths .choice').first.click()
+                if gid=='bingo':page.locator('#bingoControls .button').first.click()
+                assert not errors,(gid,width,errors)
+                page.locator('#closePlay').click()
+                assert page.locator('#playOverlay').is_hidden()
               # Printing uses a true text worksheet; no app data leaves this browser.
               page.evaluate("() => {window.print=()=>{}}")
               page.locator("#printActivity").click()
@@ -84,14 +123,14 @@ def run():
               page.reload(wait_until="domcontentloaded")
               assert page.locator("#savedList .saved").count()==1
               assert not errors,(width,errors)
-              print("PASS GameLab %sx%s: catalog, filters, 8 games, local drafts, viewport" % (width,height),flush=True)
+              print("PASS GameLab %sx%s: catalog, filters, 24 games, local drafts, viewport" % (width,height),flush=True)
             finally:
               page.close()
         finally:
           browser.close()
     finally:
       http.shutdown()
-    print("PASS GameLab: all 8 interactive templates across 4 desktop/mobile viewports.")
+    print("PASS GameLab: all 24 interactive templates across 4 desktop/mobile viewports.")
 
 if __name__=="__main__":
     run()
