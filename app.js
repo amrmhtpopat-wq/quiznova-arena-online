@@ -644,7 +644,7 @@ const boTeacherStageChannel=typeof BroadcastChannel==='function'?new BroadcastCh
 if(boTeacherStageChannel)boTeacherStageChannel.onmessage=e=>{
  const data=e.data||{};
  if(data.type!=='next-request'||!liveRoom||!liveHostToken||String(data.code)!==String(liveRoom))return;
- if(liveCurrentStatus!=='results')return;
+ if(liveCurrentStatus!=='results'&&liveCurrentStatus!=='question')return;
  boTeacherStageChannel.postMessage({type:'next-ack',code:liveRoom});
  void liveControl('next');
 };
