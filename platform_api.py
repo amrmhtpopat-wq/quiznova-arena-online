@@ -18,7 +18,7 @@ def check_rate(handler,route,identity=""):
         if len(RATES)>2000:RATES.clear()
     return True
 from platform_store import (DATABASE_KIND,create_teacher,login,teacher_for_token,signout,snapshot,save_snapshot,
-                             add_students,list_students,edit_student_card,archive_student_card,list_teacher_media,save_teacher_media,delete_teacher_media,shorten_student_codes,history,dashboard,class_wars,mastery,update_school_type,avatar_pool)
+                             add_students,list_students,edit_student_card,archive_student_card,list_teacher_media,save_teacher_media,delete_teacher_media,shorten_student_codes,history,dashboard,class_wars,mastery,reset_dashboard_view,update_school_type,avatar_pool)
 
 MAX_POST=1_850_000
 
@@ -54,7 +54,7 @@ def handle_get(h,u):
     return True
 
 def handle_post(h,u,data):
-    if u.path not in ('/api/auth/register','/api/auth/login','/api/auth/forgot','/api/auth/reset','/api/auth/logout','/api/auth/password','/api/teacher/snapshot','/api/teacher/students','/api/teacher/students/shorten-codes','/api/teacher/students/edit','/api/teacher/students/delete','/api/teacher/media/save','/api/teacher/media/delete','/api/teacher/school-type','/api/teacher/backups/create','/api/teacher/backups/restore'):return False
+    if u.path not in ('/api/auth/register','/api/auth/login','/api/auth/forgot','/api/auth/reset','/api/auth/logout','/api/auth/password','/api/teacher/snapshot','/api/teacher/students','/api/teacher/students/shorten-codes','/api/teacher/students/edit','/api/teacher/students/delete','/api/teacher/media/save','/api/teacher/media/delete','/api/teacher/school-type','/api/teacher/backups/create','/api/teacher/backups/restore','/api/teacher/reset-view'):return False
     try:
         if u.path in ('/api/auth/register','/api/auth/login','/api/auth/forgot','/api/auth/reset') and not check_rate(h,u.path,data.get("email") or data.get("token") or ""):
             h.send_json({'ok':False,'error':'rate_limited'},429);return True
@@ -70,6 +70,11 @@ def handle_post(h,u,data):
             h.send_json(sec.reset_password(data.get('token'),data.get('password')));return True
         t=authorized(h)
         if not t:return True
+        if u.path=='/api/teacher/reset-view':
+            scope=str(data.get('scope') or '')
+            if scope not in ('recent','classes','support','history','mastery'):
+                h.send_json({'ok':False,'error':'invalid_view_scope'},400);return True
+            h.send_json({'ok':True,**reset_dashboard_view(t['id'],scope,bool(data.get('restore',False)))});return True
         if u.path=='/api/auth/logout':
             signout(bearer(h));h.send_json({'ok':True});return True
         if u.path=='/api/auth/password':

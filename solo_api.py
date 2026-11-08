@@ -67,17 +67,40 @@ def published_quiz(teacher_id, quiz_id):
     return None
 
 
-def catalog(teacher_id):
+def max_attempts(quiz):
+    """Teacher-selected per-quiz attempt cap; existing quizzes default to 1."""
+    try:
+        value = int((quiz.get('settings') or {}).get('soloMaxAttempts', 1))
+    except (TypeError, ValueError):
+        value = 1
+    return max(1, min(10, value))
+
+
+def catalog(student):
+    teacher_id = student['teacher_id']
+    student_id = student['id']
+    usage = store.query('SELECT quiz_id,COUNT(*) AS n FROM solo_sessions '
+                        'WHERE teacher_id=? AND student_id=? GROUP BY quiz_id',
+                        (teacher_id, student_id), True)
+    counts = {r['quiz_id']: int(r['n']) for r in usage}
+    awards = store.query('SELECT DISTINCT quiz_id FROM student_attempts '
+                         'WHERE teacher_id=? AND student_id=? AND room_code LIKE ?',
+                         (teacher_id, student_id, 'SOLO-%'), True)
+    awarded = {r['quiz_id'] for r in awards}
     result = []
     for quiz in store.snapshot(teacher_id).get('quizzes', []):
         if (quiz.get('settings', {}).get('publishedSolo') is True
                 and isinstance(quiz.get('questions'), list) and quiz['questions']):
+            quiz_id = str(quiz.get('id', ''))[:100]
+            allowed = max_attempts(quiz)
+            used = counts.get(quiz_id, 0)
             result.append({
-                'id': str(quiz.get('id', ''))[:100],
-                'title': str(quiz.get('title', 'اختبار'))[:130],
+                'id': quiz_id, 'title': str(quiz.get('title', 'اختبار'))[:130],
                 'subject': str(quiz.get('subject', 'عام'))[:80],
                 'grade': str(quiz.get('grade', ''))[:50],
-                'questions': min(len(quiz['questions']), MAX_QUIZ_QUESTIONS)
+                'questions': min(len(quiz['questions']), MAX_QUIZ_QUESTIONS),
+                'attemptsUsed': used, 'maxAttempts': allowed,
+                'remaining': max(0, allowed-used), 'xpAwarded': quiz_id in awarded
             })
     return result
 
@@ -208,9 +231,8 @@ def commit_answer(token, state, submitted, submitted_index):
     completed = state['index'] >= len(state['quiz']['questions'])
     state['finished'] = completed
     xp_gain = int(state['correct'] * 10 + (10 if completed else 0))
-    if completed:
-        state['xpGain'] = xp_gain
-        state['xp'] = int(state.get('xp', 0)) + xp_gain
+    # Do not update XP optimistically: the transaction below determines whether
+    # this is the student's first completed solo attempt for this quiz.
     key = digest(token)
     with store.DB_LOCK:
         with store.db_connection() as con:
@@ -221,6 +243,19 @@ def commit_answer(token, state, submitted, submitted_index):
             previous = store.jload(prior[0], {})
             if previous.get('index') != idx or previous.get('finished'):
                 return {'ok': False, 'error': 'question_changed', 'state': public_state(previous)}
+            if completed:
+                # Serialize XP awards for the same student, even across DB workers.
+                lock_sql = 'SELECT xp FROM students WHERE id=? AND teacher_id=?' + (' FOR UPDATE' if store.DATABASE_URL else '')
+                owner = cur.execute(store.sql(lock_sql), (state['studentId'], state['teacherId'])).fetchone()
+                if not owner:
+                    raise ValueError('invalid_student')
+                prior_solo = cur.execute(store.sql(
+                    'SELECT id FROM student_attempts WHERE teacher_id=? AND student_id=? '
+                    'AND quiz_id=? AND room_code LIKE ? LIMIT 1'),
+                    (state['teacherId'], state['studentId'], state['quiz']['id'], 'SOLO-%')).fetchone()
+                xp_gain = 0 if prior_solo else xp_gain
+                state['xpGain'] = xp_gain
+                state['xp'] = int(owner[0]) + xp_gain
             cur.execute(store.sql('UPDATE solo_sessions SET payload=?,updated_at=? WHERE token_hash=?'),
                         (store.jdump(state), now(), key))
             if completed:
@@ -262,7 +297,7 @@ def handle_post(h, u, data):
                 h.send_json({'ok': True, 'student': {
                     'name': student['name'], 'className': student['class_name'],
                     'xp': student['xp'], 'progress': store.xp_progress(student['xp'])},
-                    'quizzes': catalog(student['teacher_id'])})
+                    'quizzes': catalog(student)})
                 return True
             quiz = published_quiz(student['teacher_id'], data.get('quizId'))
             if not quiz:
@@ -270,11 +305,28 @@ def handle_post(h, u, data):
                 return True
             token = secrets.token_urlsafe(40)
             state = make_session(student, quiz)
-            store.exec_sql(
-                'INSERT INTO solo_sessions(token_hash,teacher_id,student_id,quiz_id,payload,updated_at) '
-                'VALUES(?,?,?,?,?,?)',
-                (digest(token), state['teacherId'], state['studentId'], quiz['id'],
-                 store.jdump(state), now()))
+            # Count and reserve each started attempt in one locked transaction.
+            # In Postgres, the student row lock serializes requests across workers.
+            with store.DB_LOCK:
+                with store.db_connection() as con:
+                    cur = con.cursor()
+                    lock_sql = ('SELECT id FROM students WHERE id=? AND teacher_id=?' +
+                                (' FOR UPDATE' if store.DATABASE_URL else ''))
+                    owner = cur.execute(store.sql(lock_sql), (student['id'], student['teacher_id'])).fetchone()
+                    if not owner:
+                        h.send_json({'ok': False, 'error': 'invalid_card'}, 403)
+                        return True
+                    row = cur.execute(store.sql('SELECT COUNT(*) FROM solo_sessions '
+                                                 'WHERE teacher_id=? AND student_id=? AND quiz_id=?'),
+                                      (student['teacher_id'], student['id'], quiz['id'])).fetchone()
+                    if int(row[0]) >= max_attempts(quiz):
+                        h.send_json({'ok': False, 'error': 'attempt_limit'}, 403)
+                        return True
+                    cur.execute(store.sql(
+                        'INSERT INTO solo_sessions(token_hash,teacher_id,student_id,quiz_id,payload,updated_at) '
+                        'VALUES(?,?,?,?,?,?)'),
+                        (digest(token), state['teacherId'], state['studentId'], quiz['id'],
+                         store.jdump(state), now()))
             h.send_json({'ok': True, 'token': token, 'state': public_state(state)})
             return True
         token = data.get('token')
