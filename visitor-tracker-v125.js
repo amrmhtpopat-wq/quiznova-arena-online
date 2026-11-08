@@ -3,7 +3,7 @@
 (()=>{
   'use strict';
   const pages={'/':'home','/index.html':'home','/student.html':'student',
-    '/studio.html':'studio','/stage.html':'stage','/about.html':'about','/privacy.html':'privacy'};
+    '/studio.html':'studio','/stage.html':'stage','/about.html':'about','/for-teachers.html':'about','/privacy.html':'privacy'};
   const page=pages[location.pathname];
   if(!page)return;
   let id='';

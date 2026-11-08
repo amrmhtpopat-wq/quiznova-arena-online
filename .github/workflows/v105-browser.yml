@@ -51,6 +51,12 @@ on:
       - tests/browser_studio_routing_v112.py
       - portal.js
       - index.html
+      - for-teachers.html
+      - for-teachers-v127.css
+      - about.html
+      - sitemap.xml
+      - robots.txt
+      - tests/browser_teacher_landing_v127.py
       - studio-auth.js
       - tests/browser_contrast_v109.py
       - platform_store.py
@@ -87,6 +93,7 @@ jobs:
           python tests/browser_admin_v1.py
           python tests/browser_admin_v2.py
           python tests/browser_visitor_v125.py
+          python tests/browser_teacher_landing_v127.py
           python tests/browser_v121_features.py
       - name: Upload visual QA screenshots
         if: always()
