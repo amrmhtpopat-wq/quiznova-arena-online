@@ -88,9 +88,10 @@ with sync_playwright() as playwright:
     student_ctx=browser.new_context(viewport={'width':width,'height':height},is_mobile=mobile,has_touch=mobile)
     student_page=student_ctx.new_page()
     student_page.goto(base+'/student.html',wait_until='domcontentloaded',timeout=30000)
+    student_page.locator('#avatarPickerToggle').click()
     student_page.locator('#avatarPicker .avatar-choice').first.wait_for(state='visible',timeout=10000)
     names=student_page.locator('#avatarPicker .bo-avatar-name').all_text_contents()
-    assert names[:7]==['شرارة','روبوك','فوكسو','نينزو','درعو','بيكسو','زومي'],names
+    assert names[:7]==['Zappo','Robix','Foxzo','Ninzo','Shieldox','Pixelo','Zoomix'],names
     student_page.eval_on_selector_all('#avatarPicker img',
         'imgs=>imgs.forEach(img=>img.loading="eager")')
     student_page.wait_for_function(
