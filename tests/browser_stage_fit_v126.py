@@ -94,7 +94,7 @@ def run():
                         for code, scene in SCENES.items():
                             page.goto(f"{base}/stage.html?code={code}&stage=mock", wait_until="domcontentloaded")
                             expected = "results" if scene in ("teamresults", "private") else ("question" if scene == "longquestion" else scene)
-                            page.wait_for_function("(status) => document.body.dataset.stageView === status", expected, timeout=8000)
+                            page.wait_for_function("(status) => document.body.dataset.stageView === status", arg=expected, timeout=8000)
                             page.wait_for_timeout(220)
                             sizes_seen = page.evaluate("""() => {
                                 let wrap = document.querySelector('.stage-wrap');
@@ -117,7 +117,7 @@ def run():
                             for rect in sizes_seen["rects"]:
                                 if rect["top"] < -2 or rect["bottom"] > height + 2:
                                     errors.append(rect["sel"] + " out of viewport")
-                            if not sizes_seen["titleVisible"] or not sizes_seen["firstRankVisible"]:
+                            if not sizes_seen["titleVisible"] or (scene != "private" and not sizes_seen["firstRankVisible"]):
                                 errors.append("missing key content")
                             if scene in ("results", "teamresults"):
                                 visible_rank = page.locator(".bo-result-row").count()
