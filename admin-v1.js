@@ -159,6 +159,21 @@ async function loadOverview(){
    '<article class="metric"><div class="metric-top"><span class="metric-label">'+h(c.label)
    +'</span><span class="metric-icon">'+c.icon+'</span></div><strong>'+num(c.value)
    +'</strong><span class="metric-foot">'+h(c.foot)+'</span></article>').join('');
+  const traffic=s.visitors||{};
+  const trafficCards=[
+   {label:'إجمالي الزوار',value:traffic.total,icon:'👥',foot:'متصفحات مختلفة منذ تفعيل العداد',featured:true},
+   {label:'زوار اليوم',value:traffic.today,icon:'☀️',foot:'زوار مختلفون اليوم'},
+   {label:'آخر 7 أيام',value:traffic.last7Days,icon:'📈',foot:'زوار مختلفون خلال الأسبوع'},
+   {label:'عدد الزيارات',value:traffic.visits,icon:'↻',foot:'زيارة جديدة بعد 30 دقيقة من الخمول'}
+  ];
+  $('visitorMetrics').innerHTML=trafficCards.map(c=>
+   '<article class="visitor-tile'+(c.featured?' featured':'')+'"><div class="visitor-title"><span>'+h(c.label)
+   +'</span><span class="visitor-icon" aria-hidden="true">'+c.icon
+   +'</span></div><strong>'+num(c.value)+'</strong><small>'+h(c.foot)+'</small></article>').join('');
+  const start=traffic.since?new Date(Number(traffic.since)*1000).toLocaleDateString('ar-JO',{timeZone:'Asia/Amman'}):null;
+  $('visitorNote').textContent=start
+   ? 'بدأ تسجيل الزيارات بتاريخ '+start+' • الزائر هو متصفح يحتفظ بمعرّف مجهول. فتح الصفحة مجددًا يزيد المشاهدات، وليس عدد الزوار.'
+   : 'يبدأ عدّ الزوار من تفعيل هذه الميزة؛ لا يمكن احتساب زيارات سابقة لم تُسجَّل. لا تُجمع الأسماء أو عناوين IP.';
   const max=Math.max(1,...(s.days||[]).map(d=>Number(d.sessions)||0));
   $('activityChart').innerHTML=(s.days||[]).map(d=>
    '<div class="bar-cell" title="'+num(d.sessions)+' جلسة"><div class="bar" style="height:'
@@ -168,7 +183,7 @@ async function loadOverview(){
    ['المدارس المسجلة',s.schools],['محاولات الطلاب',s.attempts],
    ['الغرف النشطة المسجلة',s.liveRooms],['المعلمون النشطون خلال 7 أيام',s.activeTeachers7d]
   ].map(([name,value])=>'<div class="operation-item"><span>'+h(name)+'</span><strong>'+num(value)+'</strong></div>').join('');
- }catch(e){$('metricsGrid').innerHTML='<p class="empty">تعذر تحميل البيانات من قاعدة البيانات.</p>';toast(errorLabel(e),true)}
+ }catch(e){$('metricsGrid').innerHTML='<p class="empty">تعذر تحميل البيانات من قاعدة البيانات.</p>';$('visitorMetrics').innerHTML='';$('visitorNote').textContent='تعذر تحميل إحصاءات الزوار.';toast(errorLabel(e),true)}
 }
 $('refreshBtn').addEventListener('click',loadOverview);
 
