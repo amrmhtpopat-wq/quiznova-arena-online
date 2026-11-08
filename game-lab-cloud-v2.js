@@ -32,9 +32,58 @@ async function remove(id){if(!confirm('هل تريد أرشفة النشاط؟ �
 function showShare(url,title){const panel=$('cloudShare');panel.classList.remove('hide');$('cloudShareTitle').textContent=title||'نشاطك';$('cloudLink').value=url;$('cloudQR').src='/api/qr?format=svg&text='+encodeURIComponent(url);$('cloudQR').alt='رمز QR للنشاط: '+(title||'نشاط');}
 async function report(id){try{const data=await api('/api/game-lab/teacher/reports?id='+encodeURIComponent(id));const title=items.find(x=>x.id===id)?.title||'النتائج';$('cloudReport').classList.remove('hide');$('cloudReportTitle').textContent=title+' — '+data.total+' محاولة مكتملة · متوسط '+data.averagePercent+'%';const holder=$('cloudResults');holder.replaceChildren();const table=element('table','lab-results-table'),thead=element('thead');const header=element('tr');['الطالب','الشعبة','الإجابات الصحيحة','النسبة','النقاط','XP','التاريخ'].forEach(h=>{header.append(element('th','',h))});thead.append(header);table.append(thead);const body=element('tbody');for(const r of data.results){const row=element('tr');for(const val of [r.name+(r.guest?' (ضيف)':''),r.className,r.correct+' / '+r.questions,Math.round(r.correct*100/Math.max(1,r.questions))+'%',r.score,r.xpGain,new Date(r.finishedAt*1000).toLocaleDateString('ar-JO')])row.append(element('td','',val));body.append(row)}table.append(body);holder.append(table);if(!data.results.length)holder.append(element('p','hint','لا توجد محاولات مكتملة بعد.'));$('cloudExportCSV').onclick=()=>exportCSV(data.results,title);$('cloudReport').scrollIntoView({behavior:'smooth'})}catch(e){note('تعذر تحميل النتائج: '+e.message,true)}}
 function exportCSV(rows,title){const all=[['الطالب','الشعبة','الصحيح','العدد','النسبة','النقاط','XP','التاريخ'],...rows.map(r=>[r.name,r.className,r.correct,r.questions,Math.round(r.correct*100/Math.max(1,r.questions)),r.score,r.xpGain,new Date(r.finishedAt*1000).toISOString().slice(0,10)])];const escape=s=>'"'+String(s).replace(/"/g,'""')+'"';const csv='\ufeff'+all.map(row=>row.map(escape).join(',')).join('\r\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='BOOYAHJO-GameLab-'+title.replace(/[\/\\:*?"<>|]/g,'').slice(0,30)+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),500)}
+
+let existingQuizzes=[];
+async function loadExistingQuizzes(){
+ try{
+  const snapshot=await api('/api/teacher/snapshot');
+  const data=snapshot.data||{};
+  existingQuizzes=(Array.isArray(data.quizzes)?data.quizzes:[]).filter(q=>Array.isArray(q.questions)&&q.questions.length>=4);
+  const select=$('cloudImportQuiz');
+  select.replaceChildren();
+  const empty=document.createElement('option');empty.value='';empty.textContent='اختر اختبارًا محفوظًا';select.append(empty);
+  for(const q of existingQuizzes){
+   const option=document.createElement('option');option.value=String(q.id||'');option.textContent=(q.title||'اختبار')+' · '+q.questions.length+' سؤال';select.append(option)
+  }
+  note('✓ تم العثور على '+existingQuizzes.length+' اختبارًا في بنك أسئلة BOOYAHJO.');
+ }catch(e){note('تعذر تحميل بنك الاختبارات: '+(translations[e.message]||e.message),true)}
+}
+function convertQuestion(q){
+ const text=String(q.text||q.prompt||q.question||'').trim();
+ const options=Array.isArray(q.options)?q.options:[];
+ let answer='';
+ if(typeof q.correct==='boolean')answer=q.correct?'صح':'خطأ';
+ else if(Array.isArray(q.correct)&&q.correct.length){
+  const pos=q.correct[0];const opt=options[Number(pos)];
+  answer=String(typeof opt==='object'?(opt?.text||opt?.label||''):(opt??pos));
+ }else if(Number.isInteger(q.correct)&&options.length){
+  const opt=options[q.correct];answer=String(typeof opt==='object'?(opt?.text||opt?.label||''):(opt??''));
+ }else if(typeof q.correct==='string')answer=q.correct;
+ else if(typeof q.answer==='string')answer=q.answer;
+ else if(typeof q.correctAnswer==='string')answer=q.correctAnswer;
+ if(!text||!answer)return null;
+ return {q:text.slice(0,200),a:answer.trim().slice(0,100),g:String(q.skill||q.outcome||'عام').slice(0,60)}
+}
+function useExistingQuiz(){
+ const id=$('cloudImportQuiz').value,q=existingQuizzes.find(x=>String(x.id||'')===id);
+ if(!q){note('اختر اختبارًا محفوظًا أولًا.',true);return}
+ const rows=q.questions.map(convertQuestion).filter(Boolean).slice(0,80);
+ if(rows.length<4){note('الاختبار لا يحتوي على أربع أسئلة مناسبة للتحويل. الأسئلة المعتمدة تحتاج إجابات محددة.',true);return}
+ fill({id:null,activity:{title:'أنشطة: '+String(q.title||'اختبار').slice(0,65),
+   subject:q.subject||'المهارات الرقمية',grade:q.grade||'السابع',time:25,mode:'quiz',rows}});
+ note('✓ تم تحويل '+rows.length+' سؤالًا من اختبارك إلى صانع الألعاب. لم نعدل الاختبار الأصلي.');
+}
+function exportAllCloud(){
+ if(!items.length){note('لا توجد أنشطة محفوظة لتصديرها.',true);return}
+ const bundle={version:1,activities:items.map(x=>x.activity).filter(Boolean)};
+ const file=new Blob([JSON.stringify(bundle,null,2)],{type:'application/json;charset=utf-8'});
+ const url=URL.createObjectURL(file),a=document.createElement('a');a.href=url;a.download='BOOYAHJO-GameLab-Cloud-Backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1200);
+ note('✓ تم تصدير محتوى '+bundle.activities.length+' نشاطًا. احفظ الملف في مكان آمن؛ فهو يحتوي إجابات الاختبارات.');
+}
+
 function renderItems(){const host=$('cloudList');host.replaceChildren();$('cloudCount').textContent=items.length;if(!items.length){host.append(element('div','empty','لم تنشئ أنشطة على حسابك بعد. افتح صانع الأنشطة وأنشئ أول نشاط.'));return}for(const item of items){const row=element('div','cloud-activity'),left=element('div','cloud-info'),right=element('div','buttons');left.append(element('b','',item.title),element('small','',item.subject+' • '+item.grade+' • '+label(item.mode)+' • '+item.questionCount+' أسئلة'));left.append(element('small','',item.published?'🟢 منشور للطلاب':'⚪ مسودة خاصة'));right.append(button('✏️ تعديل',()=>fill(item)));if(item.published){right.append(button('🔗 مشاركة',()=>showShare(buildLink(item),item.title)),button('⏸ إيقاف',()=>unpublish(item.id)))}else right.append(button('🚀 نشر',()=>publish(item.id),'button small'));right.append(button('📊 النتائج',()=>report(item.id)),button('🗑️ أرشفة',()=>remove(item.id),'button transparent small'));row.append(left,right);host.append(row)}}
 const m=$('cloudMode');for(const [id,name] of MODES){const option=document.createElement('option');option.value=id;option.textContent=name;m.append(option)}m.value='quiz';
-$('cloudSignIn').onclick=signIn;$('cloudSave').onclick=save;$('cloudRefresh').onclick=refresh;$('cloudNew').onclick=resetSelection;$('cloudReportClose').onclick=()=>$('cloudReport').classList.add('hide');$('cloudCopy').onclick=()=>{const url=$('cloudLink').value;navigator.clipboard?.writeText(url).then(()=>note('✓ تم نسخ رابط النشاط.')).catch(()=>note('يمكنك نسخ الرابط من الحقل.',true))};$('cloudMode').onchange=()=>{selectedMode=m.value};$('cloudLogout').onclick=()=>{token='';me=null;localStorage.removeItem(tokenKey);setLoggedOut();note('تم الخروج من Game Lab على هذا المتصفح. يرجى تسجيل الدخول مجددًا.')};
+$('cloudLoadQuizzes').onclick=loadExistingQuizzes;$('cloudUseQuiz').onclick=useExistingQuiz;$('cloudExportAll').onclick=exportAllCloud;$('cloudSignIn').onclick=signIn;$('cloudSave').onclick=save;$('cloudRefresh').onclick=refresh;$('cloudNew').onclick=resetSelection;$('cloudReportClose').onclick=()=>$('cloudReport').classList.add('hide');$('cloudCopy').onclick=()=>{const url=$('cloudLink').value;navigator.clipboard?.writeText(url).then(()=>note('✓ تم نسخ رابط النشاط.')).catch(()=>note('يمكنك نسخ الرابط من الحقل.',true))};$('cloudMode').onchange=()=>{selectedMode=m.value};$('cloudLogout').onclick=()=>{token='';me=null;localStorage.removeItem(tokenKey);setLoggedOut();note('تم الخروج من Game Lab على هذا المتصفح. يرجى تسجيل الدخول مجددًا.')};
 document.addEventListener('click',e=>{const card=e.target.closest('#gameGrid .game');if(card&&card.querySelector('h3')){const name=card.querySelector('h3').textContent;const hit=MODES.find(([id,label])=>label===name);if(hit){$('cloudMode').value=hit[0];selectedMode=hit[0]}}});
 refresh();
 })();
