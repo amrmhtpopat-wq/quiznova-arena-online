@@ -401,12 +401,41 @@ def persist_room(room,report,questions):
     except Exception as exc:
         print('[QuizNova backup] automatic backup failed:',type(exc).__name__)
 
-def history(teacher_id,limit=100):
-    rows=query('SELECT code,section,subject,quiz_title,game_mode,played_at,report,questions FROM played_sessions WHERE teacher_id=? ORDER BY played_at DESC LIMIT ?',(teacher_id,limit),True)
+VIEW_SCOPES = ('recent', 'classes', 'support', 'history', 'mastery')
+
+def dashboard_cutoffs(teacher_id):
+    settings = snapshot(teacher_id).get('settings', {})
+    values = settings.get('dashboardCutoffs', {}) if isinstance(settings, dict) else {}
+    if not isinstance(values, dict):
+        values = {}
+    return {key: max(0, int(values.get(key, 0) or 0)) for key in VIEW_SCOPES}
+
+def reset_dashboard_view(teacher_id, scope, restore=False):
+    """Reset only the selected teacher's report VIEW; never delete stored grades or XP."""
+    if scope not in VIEW_SCOPES: raise ValueError('invalid_view_scope')
+    with DB_LOCK:
+        with db_connection() as con:
+            cur=con.cursor()
+            raw=cur.execute(sql('SELECT settings FROM datasets WHERE teacher_id=?'),(teacher_id,)).fetchone()
+            if not raw: raise ValueError('dataset_not_found')
+            settings=jload(raw[0],{})
+            if not isinstance(settings,dict):settings={}
+            marks=settings.get('dashboardCutoffs',{})
+            if not isinstance(marks,dict):marks={}
+            marks[scope]=0 if restore else epoch()
+            settings['dashboardCutoffs']=marks
+            cur.execute(sql('UPDATE datasets SET settings=?,updated_at=? WHERE teacher_id=?'),
+                        (jdump(settings),epoch(),teacher_id))
+    return {'scope':scope,'restored':bool(restore)}
+
+def history(teacher_id,limit=100,scope='history'):
+    if scope not in VIEW_SCOPES:raise ValueError('invalid_view_scope')
+    cutoff=dashboard_cutoffs(teacher_id)[scope]
+    rows=query('SELECT code,section,subject,quiz_title,game_mode,played_at,report,questions FROM played_sessions WHERE teacher_id=? AND played_at>? ORDER BY played_at DESC LIMIT ?',(teacher_id,cutoff,limit),True)
     return [{**{k:r[k] for k in ('code','section','subject','quiz_title','game_mode','played_at')},'report':jload(r['report'],[]),'questions':jload(r['questions'],[])} for r in rows]
 
 def class_wars(teacher_id):
-    rooms=history(teacher_id,300); classes={}
+    rooms=history(teacher_id,300,'classes'); classes={}
     for room in rooms:
         section=room.get('section') or 'غير محددة';sub=room.get('subject') or 'عام'
         key=(section,sub);slot=classes.setdefault(key,{'section':section,'subject':sub,'scores':[],'sessions':0,'participants':0})
@@ -414,8 +443,8 @@ def class_wars(teacher_id):
         slot['participants']+=len(rows);slot['sessions']+=1
     return sorted([{**{k:v for k,v in cls.items() if k!='scores'},'rating':round(sum(cls['scores'])/len(cls['scores']),1) if cls['scores'] else 0} for cls in classes.values()],key=lambda r:(r['rating'],r['participants']),reverse=True)
 
-def mastery(teacher_id):
-    rooms=history(teacher_id,300);stats={}
+def mastery(teacher_id,scope='mastery'):
+    rooms=history(teacher_id,300,scope);stats={}
     for room in rooms:
         for q in room.get('questions',[]):
             skill=(q.get('skill') or q.get('unit') or 'مهارات عامة').strip()
@@ -428,8 +457,8 @@ def dashboard(teacher_id):
     hist=history(teacher_id,80); students=list_students(teacher_id)
     percents=[r.get('percent',0) for ses in hist for r in ses.get('report',[])]
     return {'sessions':len(hist),'students':len(students),'attempts':len(percents),'average':round(sum(percents)/len(percents)) if percents else 0,
-            'recent':[{k:v for k,v in ses.items() if k not in ('report','questions')} for ses in hist[:6]],'classes':class_wars(teacher_id)[:12],
-            'mastery':mastery(teacher_id)[:60], 'dbKind':DATABASE_KIND}
+            'recent':[{k:v for k,v in ses.items() if k not in ('report','questions')} for ses in history(teacher_id,6,'recent')],'classes':class_wars(teacher_id)[:12],
+            'mastery':mastery(teacher_id)[:60], 'support':mastery(teacher_id,'support')[:60], 'dashboardCutoffs':dashboard_cutoffs(teacher_id), 'dbKind':DATABASE_KIND}
 
 # V10: school-specific avatar policy and recoverable live-room snapshots.
 def teacher_school_type(teacher_id):
