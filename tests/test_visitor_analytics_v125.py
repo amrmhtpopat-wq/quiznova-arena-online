@@ -68,7 +68,7 @@ class VisitorCounterTests(unittest.TestCase):
         stats=visitor.summary()
         self.assertEqual([stats[k] for k in ('total','today','visits','pageviews')],[2,2,3,4])
         # No stored address, student or teacher identity.
-        columns={c[1] for c in store.query('PRAGMA table_info(site_visitors)',many=True)} if False else set(raw)
+        columns=set(raw)
         self.assertEqual(columns,{'visitor_hash','first_seen','last_seen','visits','pageviews'})
 
     def test_02_reject_invalid_and_cross_site_and_keep_totals_unchanged(self):
