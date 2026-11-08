@@ -610,11 +610,11 @@ function renderLiveHost(data,quiz){
       </div>
       <div class="host-actions"><button class="btn btn-white" id="liveStartBtn">▶ ابدأ أول سؤال</button><button class="btn btn-glass" id="liveNextBtn">إظهار الترتيب 🏆</button><button class="btn btn-skip" id="liveSkipBtn" title="تخطّ السؤال فورًا، دون انتظار أي طالب">⏭ تخطّي السؤال</button><button class="btn btn-glass" id="openStageBtn">▣ شاشة العرض</button><button class="btn btn-glass" id="copyJoinBtn">نسخ الرابط</button><button class="btn btn-glass" id="liveEndBtn">إنهاء</button><button class="btn btn-primary" id="liveNewRoomBtn" title="إنهاء الغرفة الحالية وفتح إعدادات غرفة جديدة">＋ غرفة جديدة</button></div>
     </div>
-    <div class="panel players-panel"><div class="panel-head"><div><div class="overline">LOBBY</div><h3>الطلاب المنضمون <span id="livePlayerCount">0</span></h3><p id="liveJoinMessage">بانتظار دخول الطلاب...</p><p>${data.playType==='teams'?(data.teamAssignment==='manual'?'اختر فريق كل طالب من القائمة قبل بدء اللعبة.':'توزيع عشوائي متوازن بين الفرق.'):'اللعب فردي؛ لكل طالب ترتيبه ونقاطه.'}</p></div></div>${data.playType==='teams'?'<button type="button" class="btn btn-soft v104-shuffle" id="shuffleLiveTeams">🎲 وزّع الطلاب عشوائيًا الآن</button>':''}<div id="livePlayers" class="players-grid"></div></div>
+    <div class="panel players-panel"><div class="panel-head"><div><div class="overline">LOBBY</div><h3>الطلاب المنضمون <span id="livePlayerCount">0</span></h3><p id="liveJoinMessage">بانتظار دخول الطلاب...</p><p>${data.playType==='teams'?(data.teamAssignment==='manual'?'اختر فريق كل طالب من القائمة قبل بدء اللعبة.':'توزيع عشوائي متوازن بين الفرق.'):'اللعب فردي؛ لكل طالب ترتيبه ونقاطه.'}</p></div></div>${data.playType==='teams'?'<button type="button" class="btn btn-soft v104-shuffle" id="shuffleLiveTeams">🎲 وزّع الطلاب عشوائيًا الآن</button>':''}<div id="livePlayers" class="players-grid"></div><div id="boLiveTeamMomentum" aria-live="polite"></div></div>
   </div>
   <div class="live-game-grid">
     <div class="panel live-question-panel">
-      <div class="live-question-header"><div><div class="overline">LIVE QUESTION</div><h3 id="liveQuestionTitle">بانتظار بدء اللعبة</h3></div><span class="pill" id="liveClock">⏱ --</span><span class="pill" id="liveAnswerCount">0 إجابة</span></div>
+      <div class="live-question-header"><div><div class="overline">LIVE QUESTION</div><h3 id="liveQuestionTitle">بانتظار بدء اللعبة</h3></div><span class="pill" id="liveClock">⏱ --</span><span class="pill" id="liveAnswerCount">0 إجابة</span><button type="button" class="btn btn-primary bo-live-inline-next" id="liveInlineNextBtn" aria-label="إظهار الترتيب أو السؤال التالي">⏭️ إظهار الترتيب</button></div>
       <div id="liveQuestionBody"><div class="tip-box"><strong>🎮 ${escapeHtml(quiz.title)}</strong><p>ابدأ عندما يكتمل دخول الطلاب. يمكنك إبقاء رمز QR ظاهرًا حتى يدخل المتأخرون.</p></div></div>
     </div>
     <div class="panel"><div class="panel-head"><div><div class="overline">LEADERBOARD</div><h3 id="leaderTitle">الترتيب المباشر</h3></div></div><div id="liveLeaderboard" class="leaderboard"></div><div id="liveReactions" class="reaction-strip"></div></div>
@@ -634,9 +634,20 @@ function renderLiveHost(data,quiz){
   const liveSceneSelect=$('#liveRoomBackground');
   liveSceneSelect.onchange=()=>{liveSceneSelect.dataset.userChoice='1'};
   $('#changeLiveScene').onclick=()=>liveControl('background');
-  $('#liveStartBtn').onclick=()=>liveControl('start'); $('#liveNextBtn').onclick=()=>liveControl('next');$('#liveSkipBtn').onclick=()=>{if(confirm('تخطي السؤال الحالي والانتقال مباشرة إلى السؤال التالي؟'))liveControl('skip')}; $('#liveEndBtn').onclick=()=>liveControl('end'); $('#liveNewRoomBtn').onclick=openNewLiveRoom;
+  $('#liveStartBtn').onclick=()=>liveControl('start'); $('#liveNextBtn').onclick=()=>liveControl('next');$('#liveInlineNextBtn').onclick=()=>liveControl('next');$('#liveSkipBtn').onclick=()=>{if(confirm('تخطي السؤال الحالي والانتقال مباشرة إلى السؤال التالي؟'))liveControl('skip')}; $('#liveEndBtn').onclick=()=>liveControl('end'); $('#liveNewRoomBtn').onclick=openNewLiveRoom;
   $('#copyJoinBtn').onclick=()=>navigator.clipboard?.writeText(join).then(()=>toast('تم نسخ رابط الدخول')).catch(()=>toast('انسخ الرابط الظاهر يدويًا')); $('#openStageBtn').onclick=()=>window.open('/stage.html?code='+encodeURIComponent(data.code)+'&stage='+encodeURIComponent(liveStageToken),'quiznova_stage','noopener');
 }
+
+// QA V12.4: projector requests are carried to this authenticated host tab only.
+// Stage URLs never contain host credentials; other devices cannot advance rounds.
+const boTeacherStageChannel=typeof BroadcastChannel==='function'?new BroadcastChannel('booyah-stage-teacher-v124'):null;
+if(boTeacherStageChannel)boTeacherStageChannel.onmessage=e=>{
+ const data=e.data||{};
+ if(data.type!=='next-request'||!liveRoom||!liveHostToken||String(data.code)!==String(liveRoom))return;
+ if(liveCurrentStatus!=='results')return;
+ boTeacherStageChannel.postMessage({type:'next-ack',code:liveRoom});
+ void liveControl('next');
+};
 async function liveControl(action){
   try{const r=await fetch('/api/room/control',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:liveRoom,action,hostToken:liveHostToken,background:$('#liveRoomBackground')?.value})});const d=await r.json();if(!d.ok)throw 0;if(action==='background'){if($('#liveRoomBackground'))$('#liveRoomBackground').dataset.userChoice='';toast('تم تغيير الخلفية لجميع شاشات الغرفة')}if(action==='end'){
     toast('تم إنهاء الجلسة؛ يمكنك تنزيل التقرير أو فتح غرفة جديدة');
@@ -754,6 +765,14 @@ function liveReportCsv(room){
   toast('جارٍ تنزيل تقرير Excel الملوّن');
 }
 
+function boRenderTeamMomentum(room){
+ if(room.playType!=='teams')return '';
+ const players=Array.isArray(room.players)?room.players:[];
+ return '<div class="bo-team-momentum">'+(room.teams||[]).map((team,i)=>{
+  const members=players.filter(p=>p.team===team.name);
+  return '<div class="bo-team-momentum-card"><span class="bo-team-momentum-medal">'+(i===0?'👑':'⚔️')+'</span><strong>'+escapeHtml(team.name)+'</strong><span>👥 '+members.length+'</span><b>'+Number(team.score||0)+' ★</b><small>'+members.slice(0,6).map(p=>escapeHtml(p.name)).join(' • ')+'</small></div>';
+ }).join('')+'</div>';
+}
 function updateLiveHost(room){
   if(!$('#livePlayers'))return;
   window.booyahLaunchCountdown?.(room,liveRoom);
@@ -763,8 +782,8 @@ function updateLiveHost(room){
   liveCurrentStatus=room.status;
   liveRosterMode=room.playType;liveRosterStatus=room.status;liveRosterTeams=room.teamNames||[];
   const players=Array.isArray(room.players)?room.players:[];$('#livePlayerCount').textContent=players.length;const sign=JSON.stringify(players.map(p=>[p.name,p.avatar,p.team,p.score]));if(sign!==livePlayerSignature){livePlayerSignature=sign;$('#livePlayers').innerHTML=renderPlayerCards(players)} const msg=document.getElementById('liveJoinMessage');if(msg)msg.textContent=players.length?'انضم '+players.length+' طالب إلى الغرفة':'بانتظار دخول الطلاب...';
-  $('#liveLeaderboard').innerHTML=room.examMode&&room.status!=='finished'?'🛡️ تم إخفاء الترتيب أثناء الامتحان':renderLeaderboard(room);
-  const nextBtn=$('#liveNextBtn'),startBtn=$('#liveStartBtn'),skipBtn=$('#liveSkipBtn'),clock=$('#liveClock');
+  $('#liveLeaderboard').innerHTML=room.examMode&&room.status!=='finished'?'🛡️ تم إخفاء الترتيب أثناء الامتحان':renderLeaderboard(room);const teamMomentum=$('#boLiveTeamMomentum');if(teamMomentum)teamMomentum.innerHTML=boRenderTeamMomentum(room);
+  const nextBtn=$('#liveNextBtn'),inlineNext=$('#liveInlineNextBtn'),startBtn=$('#liveStartBtn'),skipBtn=$('#liveSkipBtn'),clock=$('#liveClock');
   const missing=room.playType==='teams'&&players.some(p=>!p.team);
   if(startBtn){startBtn.disabled=room.status==='lobby'&&missing;startBtn.title=missing?'لا يمكن البدء قبل تعيين فريق لكل طالب':''}
   const joinStatus=$('#liveJoinMessage');if(joinStatus&&missing&&room.status==='lobby')joinStatus.textContent='⚠️ يوجد '+players.filter(p=>!p.team).length+' طالب دون فريق؛ اختر فريقًا لكل طالب أو اضغط التوزيع العشوائي.';
@@ -773,21 +792,21 @@ function updateLiveHost(room){
   if(skipBtn)skipBtn.classList.toggle('hidden',room.status!=='question');
   if(room.status==='lobby'){
     $('#liveQuestionTitle').textContent='بانتظار بدء اللعبة';$('#liveAnswerCount').textContent=`${room.players.length} لاعب`;
-    if(nextBtn)nextBtn.textContent='إظهار الترتيب 🏆'; if(startBtn)startBtn.classList.remove('hidden'); return;
+    if(nextBtn)nextBtn.textContent='إظهار الترتيب 🏆'; if(inlineNext)inlineNext.classList.add('hidden'); if(startBtn)startBtn.classList.remove('hidden'); return;
   }
   if(startBtn)startBtn.classList.add('hidden');
   if(room.status==='finished'){
     $('#liveQuestionTitle').textContent='النتائج النهائية';$('#liveAnswerCount').textContent='انتهى';$('#liveQuestionBody').innerHTML=renderFinal(room);
-    if(nextBtn)nextBtn.classList.add('hidden');saveLiveSession(room);if($('#exportLiveReport'))$('#exportLiveReport').onclick=()=>liveReportCsv(room);return;
+    if(nextBtn)nextBtn.classList.add('hidden');if(inlineNext)inlineNext.classList.add('hidden');saveLiveSession(room);if($('#exportLiveReport'))$('#exportLiveReport').onclick=()=>liveReportCsv(room);return;
   }
-  if(nextBtn)nextBtn.classList.remove('hidden');
+  if(nextBtn)nextBtn.classList.remove('hidden');if(inlineNext)inlineNext.classList.remove('hidden');
   if(room.status==='results'){
     $('#liveQuestionTitle').textContent=`نتائج الجولة ${room.index+1}`;$('#liveAnswerCount').textContent='🏆 الترتيب';$('#liveQuestionBody').innerHTML=renderRoundResults(room);
-    if(nextBtn)nextBtn.textContent=room.index+1>=room.total?'عرض النتائج النهائية 🎉':'السؤال التالي ⟵';
+    if(nextBtn)nextBtn.textContent=room.index+1>=room.total?'عرض النتائج النهائية 🎉':'السؤال التالي ⟵';if(inlineNext)inlineNext.textContent=nextBtn.textContent;
   }else{
     $('#liveQuestionTitle').textContent=room.variantMode==='models4'?`الجولة ${room.index+1} من ${room.total} — نماذج مختلفة`:`السؤال ${room.index+1} من ${room.total}`;
     $('#liveAnswerCount').textContent=`${room.stats?.answered||0} / ${room.players.length} أجابوا`; $('#liveQuestionBody').innerHTML=renderQuestionStats(room);
-    if(nextBtn)nextBtn.textContent='إظهار الترتيب 🏆';
+    if(nextBtn)nextBtn.textContent='إظهار الترتيب 🏆';if(inlineNext)inlineNext.textContent='🏆 إظهار الترتيب';
     // The server owns both the timer and the all-answered transition, even if this tab is closed.
   }
   const reacts=room.stats?.reactions||{}; $('#liveReactions').innerHTML=Object.entries(reacts).map(([e,n])=>`<span class="reaction-chip">${e} ${n}</span>`).join('');
