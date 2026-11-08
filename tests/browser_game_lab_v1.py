@@ -23,7 +23,7 @@ def run():
           for width,height in ((1440,900),(1280,720),(390,844),(360,740)):
             page=browser.new_page(viewport={"width":width,"height":height})
             errors=[]
-            page.on("pageerror",lambda e:errors.append(str(e)))
+            page.on("pageerror",lambda e:errors.append(str(e)+" STACK "+str(e.stack)))
             try:
               page.goto(base+"/game-lab-preview.html",wait_until="domcontentloaded")
               page.locator(".game").first.wait_for(state="visible",timeout=7000)
@@ -121,6 +121,7 @@ def run():
                 page.locator('#playOverlay').wait_for(state='visible')
                 for stage in range(3):
                   page.locator('#boardControls button').filter(has_text='إنهاء').click()
+                  assert not errors,('mixer stage',stage,errors)
                   if stage<2:
                     page.locator('#endButtons button').filter(has_text='الانتقال').click()
                   else:
