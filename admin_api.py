@@ -15,6 +15,7 @@ from datetime import datetime, timezone
 from urllib.parse import parse_qs
 
 import platform_store as store
+import visitor_analytics
 
 RATE = {}
 RATE_LOCK = threading.Lock()
@@ -299,7 +300,8 @@ def summary():
             'schools': int(sql("SELECT COUNT(DISTINCT school) AS n FROM teachers")['n']),
             'activeTeachers7d': int(sql("""SELECT COUNT(DISTINCT teacher_id) AS n FROM
               played_sessions WHERE played_at>=?""", (clock() - 7*86400,))['n']),
-            'days': days, 'database': store.DATABASE_KIND}
+            'days': days, 'database': store.DATABASE_KIND,
+            'visitors': visitor_analytics.summary()}
 
 
 def teacher_rows(page, search, status='all'):

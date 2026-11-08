@@ -13,6 +13,8 @@ import solo_api
 solo_api.ensure_schema()
 import admin_api
 admin_api.initialize()
+import visitor_analytics
+visitor_analytics.initialize()
 
 ROOT = Path(__file__).resolve().parent
 sys.path.append(str(ROOT / 'vendor'))
@@ -529,6 +531,14 @@ class Handler(SimpleHTTPRequestHandler):
         return super().do_GET()
     def do_POST(self):
         u=urlparse(self.path)
+        if u.path=='/api/visitors/track':
+            try: body_length=int(self.headers.get('Content-Length','0') or 0)
+            except ValueError: return self.send_json({'ok':False,'error':'bad_length'},400)
+            if body_length<1 or body_length>512:
+                return self.send_json({'ok':False,'error':'payload_too_large'},413)
+            try: tracking=self.read_json()
+            except Exception: return self.send_json({'ok':False,'error':'bad_json'},400)
+            return visitor_analytics.handle_post(self,tracking)
         try: data=self.read_json()
         except Exception: return self.send_json({'ok':False,'error':'bad_json'},400)
         if admin_api.handle_post(self,u,data):return
