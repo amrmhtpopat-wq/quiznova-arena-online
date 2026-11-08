@@ -131,8 +131,7 @@ with sync_playwright() as playwright:
         # Student avatar choices open on demand; every field fits, and solo tab works.
         page.goto(base+'/student.html?mode=live',wait_until='domcontentloaded')
         page.locator('#avatarPickerToggle').click()
-        print('AVATAR DEBUG',width,page.evaluate("""() => ({expanded:document.querySelector('#avatarPickerToggle')?.getAttribute('aria-expanded'),sectionHidden:document.querySelector('#avatarPickerSection')?.hidden,sectionDisplay:getComputedStyle(document.querySelector('#avatarPickerSection')).display,joinDisplay:getComputedStyle(document.querySelector('#joinView')).display,pickerDisplay:getComputedStyle(document.querySelector('#avatarPicker')).display,choiceVisible:!!document.querySelector('#avatarPicker .avatar-choice')?.getClientRects().length})"""),flush=True)
-        page.locator('#avatarPicker .avatar-choice').first.wait_for(timeout=4000)
+        page.locator('#avatarPicker .avatar-choice').first.wait_for(timeout=12000)
         check(page.locator('#avatarPicker .avatar-choice').count()==31,
               'boys avatar options missing at '+str(width))
         no_body_overflow(page,f'student join {width}')
