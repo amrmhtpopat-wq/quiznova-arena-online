@@ -51,7 +51,7 @@ async function catalog(event){
   info.innerHTML='<b>مرحبًا '+clean(d.student.name)+'</b> • '+clean(d.student.className)+' • ⭐ '+Number(d.student.xp||0)+' XP';
   const quizzes=d.quizzes||[];
   if(!quizzes.length){el('soloQuizList').innerHTML='<p class="bo-solo-empty">لا توجد اختبارات فردية متاحة حاليًا. يستطيع معلمك إتاحتها من مكتبة الاختبارات.</p>';return}
-  el('soloQuizList').innerHTML=quizzes.map((q,i)=>'<article class="bo-solo-quiz"><h3>'+clean(q.title)+'</h3><p>'+clean(q.subject)+' • '+clean(q.grade)+' • '+Number(q.questions||0)+' سؤال</p><button type="button" data-solo-id="'+i+'">ابدأ التدريب 🚀</button></article>').join('');
+  el('soloQuizList').innerHTML=quizzes.map((q,i)=>'<article class="bo-solo-quiz"><h3>'+clean(q.title)+'</h3><p>'+clean(q.subject)+' • '+clean(q.grade)+' • '+Number(q.questions||0)+' سؤال</p><p>المحاولات: '+Number(q.attemptsUsed||0)+' / '+Number(q.maxAttempts||1)+(q.xpAwarded?' • تم احتساب نقاط الخبرة سابقًا':' • نقاط الخبرة تحتسب لأول إكمال')+'</p><button type="button" data-solo-id="'+i+'"'+(Number(q.remaining||0)<=0?' disabled':'')+'>'+(Number(q.remaining||0)<=0?'انتهت المحاولات 🔒':'ابدأ التدريب 🚀')+'</button></article>').join('');
   el('soloQuizList').querySelectorAll('[data-solo-id]').forEach(b=>b.addEventListener('click',()=>start(quizzes[Number(b.dataset.soloId)].id,b)));
  }catch(e){error(e.message==='invalid_card'?'رمز البطاقة غير صحيح.':e.message==='rate_limited'?'عدد محاولات كبير، حاول لاحقًا.':'تعذر تحميل الاختبارات؛ تحقق من الاتصال.')}
  finally{button.disabled=false}
@@ -62,7 +62,7 @@ async function start(id,b){
   const d=await api('start',{card:current.card,quizId:id});
   current.token=d.token;current.state=d.state;sessionStorage.setItem('booyah_solo_token',d.token);
   el('soloQuizList').innerHTML='';el('soloCardForm').classList.add('hidden');render(d.state);
- }catch(e){error(e.message==='not_published'?'لم يعد الاختبار متاحًا.':'تعذر بدء التدريب.')}finally{b.disabled=false}
+ }catch(e){error(e.message==='not_published'?'لم يعد الاختبار متاحًا.':e.message==='attempt_limit'?'استُنفدت المحاولات المحددة لهذا الاختبار.':'تعذر بدء التدريب.')}finally{b.disabled=false}
 }
 function orderHtml(){return current.order.map((x,i)=>'<div class="bo-solo-order-row"><span>'+clean(x)+'</span><span><button type="button" data-move="'+i+',-1">↑</button> <button type="button" data-move="'+i+',1">↓</button></span></div>').join('')}
 function bindOrder(){el('soloOrderList')?.querySelectorAll('[data-move]').forEach(b=>b.addEventListener('click',()=>{

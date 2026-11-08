@@ -158,7 +158,7 @@ $('#previewPool').onclick=()=>{ const p=generatorPool(); openModal(`<div class="
 // ---------- Builder ----------
 function openNewQuiz(){resetBuilder();go('builder')}
 window.openNewQuiz=openNewQuiz;
-function resetBuilder(){ editingQuizId=null; $('#quizTitle').value=''; $('#quizSubject').value=window.QN9_TEACHER?.subject||'عام'; $('#quizGrade').value='السابع'; $('#quizSection').value=''; $('#randomQuestions').checked=true; $('#randomOptions').checked=true; $('#showFeedback').checked=true; $('#speedBonus').checked=true; $('#bossEnabled').checked=false; $('#soloPublish').checked=false; builderQuestions=[blankQuestion('single')]; boActiveQuestionId=builderQuestions[0].id; renderQuestions() }
+function resetBuilder(){ editingQuizId=null; $('#quizTitle').value=''; $('#quizSubject').value=window.QN9_TEACHER?.subject||'عام'; $('#quizGrade').value='السابع'; $('#quizSection').value=''; $('#randomQuestions').checked=true; $('#randomOptions').checked=true; $('#showFeedback').checked=true; $('#speedBonus').checked=true; $('#bossEnabled').checked=false; $('#soloPublish').checked=false; $('#soloMaxAttempts').value='1'; builderQuestions=[blankQuestion('single')]; boActiveQuestionId=builderQuestions[0].id; renderQuestions() }
 function addQuestion(type='single'){ const q=blankQuestion(type); q.subject=$('#quizSubject').value||window.QN9_TEACHER?.subject||'عام';q.grade=$('#quizGrade').value;builderQuestions.push(q);boActiveQuestionId=q.id;renderQuestions() }
 $('#addQuestion').onclick=()=>addQuestion('single'); $('#boRailAddQuestion').onclick=()=>addQuestion('single'); $$('#quickTypes [data-addtype]').forEach(b=>b.onclick=()=>addQuestion(b.dataset.addtype)); $('#resetBuilder').onclick=resetBuilder;
 const ideaPlans={
@@ -336,7 +336,7 @@ async function optimizeImage(file){
   return canvas.toDataURL('image/jpeg',0.76);
 }
 window.attachImage=async(id,input)=>{const f=input.files[0];if(!f)return;try{getQ(id).image=await optimizeImage(f);renderQuestions();toast('تمت إضافة الصورة للسؤال')}catch(e){toast(e.message||'تعذر قراءة الصورة')}}; window.removeImage=id=>{getQ(id).image='';renderQuestions()};
-function fillBuilder(q){$('#quizTitle').value=q.title;$('#quizSubject').value=q.subject||window.QN9_TEACHER?.subject||'عام';$('#quizGrade').value=q.grade||'السابع';$('#quizSection').value=q.section||'';$('#randomQuestions').checked=!!q.settings?.randomQuestions;$('#randomOptions').checked=!!q.settings?.randomOptions;$('#showFeedback').checked=q.settings?.showFeedback!==false;$('#speedBonus').checked=q.settings?.speedBonus!==false;$('#bossEnabled').checked=!!q.settings?.bossEnabled;$('#soloPublish').checked=!!q.settings?.publishedSolo;builderQuestions=clone(q.questions||[]);boActiveQuestionId=builderQuestions[0]?.id||null;renderQuestions()}
+function fillBuilder(q){$('#quizTitle').value=q.title;$('#quizSubject').value=q.subject||window.QN9_TEACHER?.subject||'عام';$('#quizGrade').value=q.grade||'السابع';$('#quizSection').value=q.section||'';$('#randomQuestions').checked=!!q.settings?.randomQuestions;$('#randomOptions').checked=!!q.settings?.randomOptions;$('#showFeedback').checked=q.settings?.showFeedback!==false;$('#speedBonus').checked=q.settings?.speedBonus!==false;$('#bossEnabled').checked=!!q.settings?.bossEnabled;$('#soloPublish').checked=!!q.settings?.publishedSolo;$('#soloMaxAttempts').value=String([1,2,3,4,5,10].includes(Number(q.settings?.soloMaxAttempts))?q.settings.soloMaxAttempts:1);builderQuestions=clone(q.questions||[]);boActiveQuestionId=builderQuestions[0]?.id||null;renderQuestions()}
 function validateQuestion(q){if(!q.text.trim())return 'يوجد سؤال بدون نص'; if((q.type==='single'||q.type==='multi')&&q.options.some(x=>!x.trim()))return 'يوجد خيار فارغ'; if(q.type==='single'&&q.correct.length!==1)return 'سؤال اختيار بدون إجابة صحيحة'; if(q.type==='multi'&&q.correct.length<1)return 'سؤال متعدد بدون إجابة صحيحة'; if(q.type==='short'&&!q.answers.some(x=>x.trim()))return 'سؤال قصير بدون إجابة مقبولة'; if(q.type==='estimate'&&(!Number.isFinite(Number(q.estimateAnswer))||!Number.isFinite(Number(q.tolerance))||Number(q.tolerance)<0))return 'تأكد من قيمة سؤال التقدير وهامش التسامح'; if(q.type==='order'&&q.items.some(x=>!x.trim()))return 'سؤال ترتيب يحتوي خطوة فارغة'; if(q.type==='match'&&q.pairs.some(p=>!p.left.trim()||!p.right.trim()))return 'سؤال مطابقة يحتوي خانة فارغة'; return ''}
 function syncQuestionsToBank(questions,quizMeta){let bank=DB.bank,seen=new Set(bank.map(qSignature)),added=0;questions.filter(q=>q.type!=='poll').forEach(q=>{const x=clone(q);x.id=uid();x.subject=quizMeta.subject;x.grade=quizMeta.grade;if(!seen.has(qSignature(x))){bank.push(x);seen.add(qSignature(x));added++}});DB.bank=bank;return added}
 let boLastSavedQuizId=null;
@@ -366,7 +366,8 @@ $('#saveQuiz').onclick=async()=>{
       showFeedback:$('#showFeedback').checked,
       speedBonus:$('#speedBonus').checked,
       bossEnabled:$('#bossEnabled').checked,
-      publishedSolo:$('#soloPublish').checked
+      publishedSolo:$('#soloPublish').checked,
+      soloMaxAttempts:Number($('#soloMaxAttempts').value)||1
     },
     questions:clone(builderQuestions)
   };
@@ -412,7 +413,7 @@ function renderLibrary(){
     <div class="quiz-cover">${x.settings?.bossEnabled?'👑':'🎯'}</div>
     <h4>${escapeHtml(x.title)}</h4>
     <p>${escapeHtml(x.subject)} • الصف ${escapeHtml(x.grade||'—')}</p>
-    <div class="card-meta"><span class="chip">${(x.questions||[]).length} سؤال</span><span class="chip">${x.settings?.randomQuestions?'خلط أسئلة':'ترتيب ثابت'}</span>${x.id===boLastSavedQuizId?'<span class="chip bo-saved-chip">✓ تم الحفظ</span>':''}${x.settings?.publishedSolo?'<span class="chip bo-saved-chip">🎮 متاح لتدريب الطلاب</span>':''}</div>
+    <div class="card-meta"><span class="chip">${(x.questions||[]).length} سؤال</span><span class="chip">${x.settings?.randomQuestions?'خلط أسئلة':'ترتيب ثابت'}</span>${x.id===boLastSavedQuizId?'<span class="chip bo-saved-chip">✓ تم الحفظ</span>':''}${x.settings?.publishedSolo?'<span class="chip bo-saved-chip">🎮 متاح • '+(Number(x.settings.soloMaxAttempts)||1)+' محاولة</span>':''}</div>
     <div class="card-actions bo-library-actions">
       <button type="button" class="btn btn-primary" onclick="openLiveQuizById('${x.id}')">▶ صف مباشر</button>
       <button type="button" class="btn btn-secondary" onclick="playQuizById('${x.id}')">🎮 تحدي فردي</button>
