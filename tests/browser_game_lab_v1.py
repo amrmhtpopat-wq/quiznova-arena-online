@@ -105,7 +105,7 @@ def run():
                 if gid=='hidden':page.locator('.extra-hidden-tile').first.click()
                 if gid=='order':page.locator('.extra-order-line .button').first.click()
                 if gid=='maze':page.locator('#mazeChoices button').first.click()
-                if gid=='balloons':page.locator('.extra-balloon').first.click()
+                if gid=='balloons':page.locator('.extra-balloon').first.click(force=True)
                 if gid=='survey':page.locator('.extra-survey-row .button').first.click()
                 if gid=='exit':page.locator('#exitResponse').fill('إجابة تجريبية')
                 if gid=='story':page.locator('#storyPaths .choice').first.click()
