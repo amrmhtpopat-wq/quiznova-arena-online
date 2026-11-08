@@ -20,7 +20,7 @@ import server
 account=store.create_teacher('entry-'+uuid.uuid4().hex+'@example.org',
     'SecureTeacherPassword123!','Teacher Entry','مدرسة تجريبية للبنين','المهارات الرقمية','boys')
 tid=account['teacher']['id']
-student=store.add_students(tid,[{'name':'طالب التجربة','className':'التاسع ب','avatar':'m01'}])[0]
+students=store.add_students(tid,[{'name':'طالب التجربة الأول','className':'التاسع ب','avatar':'m01'},{'name':'طالب التجربة الثاني','className':'التاسع ب','avatar':'m02'}])
 quiz={'id':'v120-published','title':'مهارات رقمية — تدريب فردي',
       'subject':'المهارات الرقمية','grade':'التاسع',
       'settings':{'publishedSolo':True,'randomQuestions':False},
@@ -39,7 +39,8 @@ out=Path('browser-qa-artifacts');out.mkdir(exist_ok=True)
 
 with sync_playwright() as playwright:
     browser=playwright.chromium.launch(headless=True,args=['--no-sandbox'])
-    for width,height,mobile in ((1280,800,False),(390,844,True)):
+    for case_idx,(width,height,mobile) in enumerate(((1280,800,False),(390,844,True))):
+        student=students[case_idx]
         ctx=browser.new_context(viewport={'width':width,'height':height},is_mobile=mobile,has_touch=mobile)
         page=ctx.new_page()
         errors=[]
@@ -101,10 +102,10 @@ with sync_playwright() as playwright:
         card_page.locator('#cardCode').fill(student['cardCode'])
         card_page.locator('#showCardProfile').click()
         card_page.locator('#cardProfile').wait_for(state='visible',timeout=15000)
-        assert 'طالب التجربة' in card_page.locator('#cardProfile').inner_text()
+        assert student['name'] in card_page.locator('#cardProfile').inner_text()
         assert card_page.locator('#joinBtn').is_visible()
         card_ctx.close()
     browser.close()
 http.shutdown();http.server_close()
 assert store.query('SELECT COUNT(*) AS c FROM student_attempts WHERE quiz_id=?',(quiz['id'],))['c']==2
-print('PASS: student-first entry, secure card solo, hidden unpublished quizzes, two complete attempts, session resume and teacher login.')
+print('PASS: student-first entry, secure solo with one attempt per card, two distinct students, session resume and teacher login.')

@@ -128,8 +128,9 @@ with sync_playwright() as playwright:
         check(page.locator('.room-code').first.inner_text().strip()==room['code'],
               f'room PIN changed at {width}')
         if width in (320,390,820):page.screenshot(path=str(out/f'v123-live-{width}.png'),full_page=True)
-        # Student choice of all avatars remains visible, every field fits, and solo tab works.
+        # Student avatar choices open on demand; every field fits, and solo tab works.
         page.goto(base+'/student.html?mode=live',wait_until='domcontentloaded')
+        page.locator('#avatarPickerToggle').click()
         page.locator('#avatarPicker .avatar-choice').first.wait_for(timeout=12000)
         check(page.locator('#avatarPicker .avatar-choice').count()==31,
               'boys avatar options missing at '+str(width))

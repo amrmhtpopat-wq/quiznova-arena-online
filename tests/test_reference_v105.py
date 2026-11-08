@@ -96,8 +96,8 @@ class VisualAndDirectAnswerTests(unittest.TestCase):
         self.assertIn("if(!r.ok||!d.ok)throw Object.assign",source)
         self.assertIn("e.status===401||e.message==='login_required'",source)
         self.assertNotIn("تعذر إنشاء الغرفة. تحقق من اتصال الخادم بالإنترنت ثم حاول مرة أخرى",source)
-        self.assertIn("script.src='/app.js?v=12.3'",read('studio-auth.js'))
-        self.assertIn("studio-auth.js?v=12.3",read('studio.html'))
+        self.assertIn("script.src='/app.js?v=12.4'",read('studio-auth.js'))
+        self.assertIn("studio-auth.js?v=12.4",read('studio.html'))
 
     def test_booyah_classroom_viewport_and_progress_contract(self):
         css=read('booyah-classroom.css')
@@ -180,9 +180,9 @@ class VisualAndDirectAnswerTests(unittest.TestCase):
         self.assertIn("function pendingStudioDestination()",portal)
         self.assertIn("if(resumeStudioAfterLogin())return",portal)
         self.assertIn("history.replaceState(null,'','#'+view)",app)
-        self.assertIn("portal.js?v=12.1",read('index.html'))
-        self.assertIn("studio-auth.js?v=12.3",read('studio.html'))
-        self.assertIn("script.src='/app.js?v=12.3'",studio_auth)
+        self.assertIn("portal.js?v=12.4",read('index.html'))
+        self.assertIn("studio-auth.js?v=12.4",read('studio.html'))
+        self.assertIn("script.src='/app.js?v=12.4'",studio_auth)
 
     def test_studio_navigation_uses_collection_selectors(self):
         import re
@@ -207,7 +207,7 @@ class VisualAndDirectAnswerTests(unittest.TestCase):
         self.assertIn('id="soloPublish"',studio)
         self.assertIn("publishedSolo:$('#soloPublish').checked",script)
         self.assertIn("window.toggleSoloPublish=async id=>",script)
-        self.assertIn('/solo-student-v120.js?v=12.0',student)
+        self.assertIn('/solo-student-v120.js?v=12.4',student)
         self.assertIn('BOOYAHJO',studio)
         self.assertIn('BOOYAHJO',portal)
         self.assertIn('BOOYAHJO',student)

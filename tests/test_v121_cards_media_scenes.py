@@ -130,9 +130,9 @@ class Release121Tests(unittest.TestCase):
 
     def test_05_named_characters_and_launch_assets(self):
         data=(ROOT/'avatar-names-v121.js').read_text()
-        self.assertIn("n01:'نشمي'",data)
-        self.assertIn('g16:',data)
-        self.assertIn('b16:',data)
+        self.assertIn('"n01":"Nomado"',data)
+        self.assertIn('"g16":"Shusha"',data)
+        self.assertIn('"b16":"Shuzo"',data)
         count=(ROOT/'booyah-countdown-v121.js').read_text()
         for label in ("'3'","'2'","'1'","'READY'","'GO!'"):
             self.assertIn(label,count)
