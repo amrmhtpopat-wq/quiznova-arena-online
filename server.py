@@ -409,6 +409,8 @@ class Handler(SimpleHTTPRequestHandler):
         if ROOT not in safe.parents and safe!=ROOT:return str(ROOT/'__not_found__')
         # Never expose database credentials, Python sources or other private server files.
         if safe.is_dir():return str(ROOT/'__not_found__')
+        # Serve only the two public SEO resources; do not expose arbitrary .txt/.xml files.
+        if rel in ('robots.txt', 'sitemap.xml'):return str(safe)
         allowed={'.html','.js','.css','.svg','.png','.jpg','.jpeg','.webp','.ico','.woff','.woff2'}
         if safe.suffix.lower() not in allowed:return str(ROOT/'__not_found__')
         return str(safe)
