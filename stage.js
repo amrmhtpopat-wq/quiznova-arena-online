@@ -40,17 +40,17 @@ async function load(){
  try{
   const r=await fetch('/api/room/state?code='+encodeURIComponent(code)+'&stage='+encodeURIComponent(stageToken),{cache:'no-store'});
   const d=await r.json();
-  if(r.ok&&d.ok){stageLoaded=true;render(d.room)}
+  if(r.ok&&d.ok){stageLoaded=true;render(d.room);requestAnimationFrame(boFitStage)}
   else if(!stageLoaded||r.status===403||r.status===404)$('#stage').innerHTML='<div class="loading">تعذر فتح الغرفة. افتح شاشة العرض من حساب المعلم.</div>';
  }catch(e){if(!stageLoaded)$('#stage').innerHTML='<div class="loading">تعذر الاتصال بالخادم. تجري إعادة المحاولة...</div>'}
  finally{stageLoading=false}
 }
-function leaders(r){const x=r.playType==='teams'?r.teams:r.leaders;return (x||[]).slice(0,6).map((p,i)=>`<div class="leaders-row"><div class="rank">${i+1}</div><b>${esc(p.name)}</b><b>${p.score}</b></div>`).join('')||'بانتظار النقاط...'}
-function head(){return `<div class="stage-head"><div class="brand"><div class="logo">BJ</div><div>BOOYAHJO<br><small>QUIZ ARENA</small></div></div><div class="pin">PIN ${esc(code)}</div></div>`}
+function leaders(r){const x=r.playType==='teams'?r.teams:r.leaders;return (x||[]).slice(0,3).map((p,i)=>`<div class="leaders-row"><div class="rank">${i+1}</div><b>${esc(p.name)}</b><b>${p.score}</b></div>`).join('')||'بانتظار النقاط...'}
+function head(){return `<div class="stage-head"><div class="brand"><div class="logo">BJ</div><div>BOOYAHJO<br><small>QUIZ ARENA</small></div></div><button type="button" class="bo-fullscreen" onclick="booyahStageFullscreen()">⛶ ملء الشاشة</button><div class="pin">PIN ${esc(code)}</div></div>`}
 let stageLobbySignature='',stageFinalSignature='';
 function replayStageVictory(){const layer=document.getElementById('v104VictoryParticles');if(!layer)return;layer.replaceChildren();if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;for(let i=0;i<42;i++){const p=document.createElement('i');p.style.setProperty('--left',(Math.random()*100)+'%');p.style.setProperty('--delay',(Math.random()*1.8)+'s');p.style.setProperty('--hue',String(Math.round(Math.random()*300+35)));layer.appendChild(p)}}
 window.replayStageVictory=replayStageVictory;
-function render(r){document.body.dataset.scene=r.background||'cartoon';window.booyahLaunchCountdown?.(r,code);if(r.status==='lobby'){const sig=JSON.stringify([r.background,r.status,r.players]);if(sig===stageLobbySignature)return;stageLobbySignature=sig;const join=location.origin+'/student.html?code='+code;$('#stage').innerHTML=`<div class="stage-wrap">${head()}<div class="lobby"><div class="qr-card"><img src="/api/qr?format=png&text=${encodeURIComponent(join)}" alt="رمز الدخول" onerror="if(!this.dataset.fallback){this.dataset.fallback=1;this.src='/api/qr?format=svg&text=${encodeURIComponent(join)}'}else{this.style.display='none';this.insertAdjacentHTML('afterend','<p>يمكن الدخول بالرابط ورمز الغرفة.</p>')}"><div class="code">${esc(code)}</div><b>امسح QR أو اكتب الرمز</b></div><div><div class="join-title">ادخلوا الآن إلى <em>التحدي!</em></div><p style="color:#d7cff4;font-size:20px">${r.examMode&&r.requireCard?'امسح بطاقة الطالب ثم اكتب PIN الغرفة':'اكتب اسمك الحقيقي وانتظر بدء الأستاذ.'}</p><div class="stage-roster-title">👥 الطلاب المنضمون: ${(r.players||[]).length}</div><div class="players">${(r.players||[]).map(p=>`<span class="player"><img class="stage-avatar" src="${avatarPath(p.avatar)}" alt="">${esc(p.name)}${p.level>1?' ⭐Lv.'+p.level:''}${p.team?' • '+esc(p.team):''}</span>`).join('')}</div></div></div></div>`;return}
+function render(r){document.body.dataset.stageView=r.status||'unknown';document.body.dataset.scene=r.background||'cartoon';window.booyahLaunchCountdown?.(r,code);if(r.status==='lobby'){const sig=JSON.stringify([r.background,r.status,r.players]);if(sig===stageLobbySignature)return;stageLobbySignature=sig;const join=location.origin+'/student.html?code='+code;$('#stage').innerHTML=`<div class="stage-wrap">${head()}<div class="lobby"><div class="qr-card"><img src="/api/qr?format=png&text=${encodeURIComponent(join)}" alt="رمز الدخول" onerror="if(!this.dataset.fallback){this.dataset.fallback=1;this.src='/api/qr?format=svg&text=${encodeURIComponent(join)}'}else{this.style.display='none';this.insertAdjacentHTML('afterend','<p>يمكن الدخول بالرابط ورمز الغرفة.</p>')}"><div class="code">${esc(code)}</div><b>امسح QR أو اكتب الرمز</b></div><div><div class="join-title">ادخلوا الآن إلى <em>التحدي!</em></div><p style="color:#d7cff4;font-size:20px">${r.examMode&&r.requireCard?'امسح بطاقة الطالب ثم اكتب PIN الغرفة':'اكتب اسمك الحقيقي وانتظر بدء الأستاذ.'}</p><div class="stage-roster-title">👥 الطلاب المنضمون: ${(r.players||[]).length}</div><div class="players">${(r.players||[]).map(p=>`<span class="player"><img class="stage-avatar" src="${avatarPath(p.avatar)}" alt="">${esc(p.name)}${p.level>1?' ⭐Lv.'+p.level:''}${p.team?' • '+esc(p.team):''}</span>`).join('')}</div></div></div></div>`;return}
 if(r.status==='finished'){
  const ranked=r.playType==='teams'?(r.teams||[]):(r.report||[]);
  const signature=JSON.stringify(ranked.map(x=>[x.name,x.score]));
@@ -63,6 +63,26 @@ if(r.status==='finished'){
  replayStageVictory();return;
 }
 if(r.status==='results'&&(r.examMode||!r.showFeedback)){$('#stage').innerHTML=`<div class="stage-wrap">${head()}<div class="round-stage"><h1>🛡️ انتهت الجولة ${r.index+1}</h1><p>${r.examMode?'نتائج الامتحان سرية حتى النهاية.':'أخفى المعلم التصحيح والترتيب لهذه الغرفة.'}</p>${stageNextControl()}</div></div>`;return}
-if(r.status==='results'){const x=r.playType==='teams'?r.teams:r.leaders,st=r.stats||{},med=['🥇','🥈','🥉'];$('#stage').innerHTML=`<div class="stage-wrap">${head()}<div class="round-stage"><div class="round-stage-title"><span>🏆</span><div><small>ROUND ${r.index+1}</small><h1>ترتيب الجولة</h1><p>${st.accuracy||0}% دقة • ${st.correct||0} صحيحة • ${st.wrong||0} خاطئة</p></div></div><div class="podium stage-round-podium">${(x||[]).slice(0,3).map((p,i)=>`<div class="pod ${i===0?'first':''}"><span>${med[i]}</span><b>${esc(p.name)}</b><small>${p.score} نقطة</small></div>`).join('')}</div><div class="stage-ranks">${(x||[]).slice(3,8).map((p,i)=>`<div><span>${i+4}</span><b>${esc(p.name)}</b><strong>${p.score}</strong></div>`).join('')}</div>${r.explanation?`<div style="background:#073d76aa;border:1px solid #86edff66;padding:13px;border-radius:16px;margin:12px 0">💡 ${esc(r.explanation)}</div>`:''}${stageTopFive(r)}${stageNextControl()}</div></div>`;return}
+if(r.status==='results'){
+ const ranks=(r.playType==='teams'?r.teams:r.leaders)||[],st=r.stats||{},groupMode=r.playType==='teams';
+ const rows=ranks.slice(0,5).map((p,i)=>`<div class="bo-result-row"><span class="bo-result-rank">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</span><b>${esc(p.name)}</b><strong>${Number(p.score)||0} ⭐</strong></div>`).join('');
+ $('#stage').innerHTML=`<div class="stage-wrap">${head()}<div class="round-stage bo-stage-results"><div class="bo-result-title"><div><small>ROUND ${r.index+1} • ${st.answered||0} إجابة</small><h1>🏆 نتائج الجولة</h1></div><p>${st.accuracy||0}% دقة • ${st.correct||0} صحيحة • ${st.wrong||0} خاطئة</p></div><div class="bo-result-grid ${groupMode?'is-teams':''}"><section class="bo-result-panel"><h2>${groupMode?'⚔️ ترتيب المجموعات':'🏅 أفضل خمسة طلاب'}</h2><div class="bo-result-list">${rows||'<p>لم تُسجل نقاط بعد</p>'}</div></section>${groupMode?stageTopFive(r):''}</div>${r.explanation?`<p class="bo-stage-explanation">💡 ${esc(r.explanation)}</p>`:''}${stageNextControl()}</div></div>`;
+ return;
+}
 const q=r.question||{},opts=q.options||[],st=r.stats||{};const mixed=r.variantMode==='models4';$('#stage').innerHTML=`<div class="stage-wrap">${head()}<div class="question ${mixed?'mixed-stage':''}"><div class="qnum">${mixed?'الجولة':'السؤال'} ${r.index+1} من ${r.total} • ${st.answered||0}/${(r.players||[]).length} أجابوا</div><div class="stage-active-roster">👥 ${(r.players||[]).length} مشارك: ${(r.players||[]).slice(0,8).map(p=>esc(p.name)).join(" • ")}</div>${mixed?`<div class="mixed-stage-hero"><div>🔀</div><h1>نماذج A / B / C / D</h1><p>كل طالب يرى سؤالًا بترتيب مختلف على جهازه</p></div>`:`<h1>${esc(q.text||'')}</h1>${q.image?`<img class="stage-question-image" src="${esc(q.image)}" alt="صورة السؤال">`:''}${opts.length?`<div class="answer-grid">${opts.map((o,i)=>`<div class="answer"><div class="shape">${shapes[i%4]}</div>${esc(o)}</div>`).join('')}</div>`:''}`}</div>${stageNextControl(true)}<div class="live-bottom"><div class="statbox"><div class="bigstat">${st.accuracy||0}%</div><div>دقة الإجابات الحالية • ${st.correct||0} صحيحة • ${st.wrong||0} خاطئة</div></div><div class="leaders">${r.examMode?'🛡️ الترتيب مخفي أثناء الامتحان':leaders(r)}</div></div></div>`}
+window.booyahStageFullscreen=async function(){
+ try{if(document.fullscreenElement){if(document.exitFullscreen)await document.exitFullscreen()}
+ else if(document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen()}
+ catch(e){const b=document.querySelector('.bo-fullscreen');if(b)b.title='استخدم F11 على الكمبيوتر'}
+};
+function boFitStage(){
+ const title=document.querySelector('body[data-stage-view="question"] .question h1');
+ if(title){title.style.fontSize='';const start=Math.min(49,Math.max(21,Math.floor(window.innerHeight*.065)));
+ for(let px=start;px>=15;px--){title.style.fontSize=px+'px';if(title.scrollHeight<=title.clientHeight+2)break}}
+ document.querySelectorAll('body[data-stage-view="question"] .answer').forEach(el=>{
+ const initial=Math.min(23,Math.max(15,Math.floor(window.innerWidth*.017)));
+ for(let px=initial;px>=13;px--){el.style.fontSize=px+'px';if(el.scrollHeight<=el.clientHeight+2)break}
+ });
+}
+window.addEventListener('resize',()=>requestAnimationFrame(boFitStage),{passive:true});
 load();setInterval(load,700);
