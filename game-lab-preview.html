@@ -24,6 +24,7 @@
  <button class="nav sel" data-jump="catalog"><span>🕹️</span>جميع الألعاب والقوالب</button>
  <button class="nav" data-jump="builder"><span>🪄</span>صانع الأنشطة</button>
  <button class="nav" data-jump="library"><span>🗃️</span>أنشطتي التجريبية</button>
+ <button class="nav" data-jump="toolbox"><span>🧰</span>أدوات BOOYAHJO الحالية</button>
  <button class="nav" data-jump="roadmap"><span>🚀</span>ميزات قادمة</button>
  <div class="navlabel">أدوات BOOYAHJO</div>
  <a class="nav" href="/studio.html"><span>🏆</span>الاستوديو والاختبارات</a>
@@ -57,7 +58,19 @@
  <div class="block"><h3>⚡ معاينة المحتوى</h3><p>بعد تطبيق الأسئلة، يمكنك الانتقال بين جميع الألعاب المفعلة باستخدام المحتوى نفسه.</p><div class="good" id="contentFeedback">جاهز: 8 أسئلة ومجموعات تعليمية متعددة.</div><div id="dataPreview" class="list" style="margin-top:12px"></div><div class="buttons" style="margin-top:16px"><button class="button gold" id="quickPlay">▶ جرّب تحدي الأسئلة</button><button class="button alt" id="printActivity">🖨️ ورقة عمل</button></div><hr style="border:0;border-top:1px solid #315575;margin:17px 0"><h3>قوالبك الجاهزة</h3><div class="buttons" id="quickTemplates"></div></div>
  </div></section>
  <section id="library"><div class="section-head"><div><h2>🗃️ مسودات أنشطتي</h2><p>حفظ مؤقت داخل هذا المتصفح فقط، دون تسجيل دخول أو اتصال بقاعدة بيانات BOOYAHJO.</p></div><div class="buttons"><button id="exportData" class="button alt small">⬇️ تصدير JSON</button><button id="importButton" class="button alt small">⬆️ استيراد JSON</button><input id="importFile" type="file" accept="application/json,.json" class="hide"></div></div><div id="savedList" class="list"></div></section>
- <section id="roadmap"><div class="section-head"><div><h2>🚀 ما الذي سنضيفه ليصبح أقوى من صفحة ألعاب عادية؟</h2><p>تصميم مستقبل BOOYAHJO Game Lab — لم تُفعّل هذه المزايا بعد.</p></div></div><div class="tile3">
+ <section id="toolbox"><div class="section-head"><div><h2>🧰 جميع أدوات المنصة في مكان واحد</h2><p>وصول سريع إلى أقسام BOOYAHJO الموجودة حاليًا. قد يتطلب بعضها تسجيل دخول المعلم.</p></div><span class="pill">أدوات مرتبطة</span></div><div class="games">
+<div class="game"><div class="figure"><div class="symbol">📝</div><span class="state">موجودة</span></div><h3>صانع الاختبارات</h3><p>أنشئ أسئلة بمستويات وأنواع مختلفة داخل استوديو المعلم.</p><a class="button alt" href="/studio.html#builder">فتح الصانع</a></div>
+<div class="game"><div class="figure"><div class="symbol">📚</div><span class="state">موجودة</span></div><h3>بنك الأسئلة</h3><p>أعد استخدام الأسئلة المحفوظة في إنشاء اختبارات وتحديات.</p><a class="button alt" href="/studio.html#bank">فتح البنك</a></div>
+<div class="game"><div class="figure"><div class="symbol">🎥</div><span class="state">موجودة</span></div><h3>الصف المباشر</h3><p>جلسة تفاعلية مع PIN وشاشة عرض وترتيب بعد الأسئلة.</p><a class="button alt" href="/studio.html#live">فتح الصف</a></div>
+<div class="game"><div class="figure"><div class="symbol">⚔️</div><span class="state">موجودة</span></div><h3>تحديات المجموعات</h3><p>أنماط لعب جماعي وتنافس بين فرق الصف.</p><a class="button alt" href="/studio.html#live">بدء تحدٍ</a></div>
+<div class="game"><div class="figure"><div class="symbol">🪪</div><span class="state">موجودة</span></div><h3>بطاقات الطلاب QR</h3><p>إنشاء بطاقات الطلاب وفتح التدريبات والأنشطة المناسبة لهم.</p><a class="button alt" href="/?teacher=1">لوحة البطاقات</a></div>
+<div class="game"><div class="figure"><div class="symbol">📊</div><span class="state">موجودة</span></div><h3>خريطة الإتقان</h3><p>مراجعة المهارات التي أتقنها الطلاب والمهارات التي تحتاج دعمًا.</p><a class="button alt" href="/?teacher=1">لوحة التحليل</a></div>
+<div class="game"><div class="figure"><div class="symbol">🎮</div><span class="state">موجودة</span></div><h3>التدريب الفردي</h3><p>يدخل الطالب بالبطاقة ويختار اختبارًا منشورًا من المعلم.</p><a class="button alt" href="/student.html?mode=solo">صفحة الطالب</a></div>
+<div class="game"><div class="figure"><div class="symbol">📋</div><span class="state">موجودة</span></div><h3>النتائج والتقارير</h3><p>متابعة الجلسات المكتملة ونتائج الطلاب من لوحة المعلم.</p><a class="button alt" href="/?teacher=1">لوحة النتائج</a></div>
+<div class="game"><div class="figure"><div class="symbol">⏳</div><span class="state plan">تجريبية</span></div><h3>أدوات الحصة اليومية</h3><p>مؤقت، سبورة، اختيار عشوائي، وخطة درس على Teacher Hub.</p><a class="button alt" href="/teacher-hub-preview.html">فتح المعاينة</a></div>
+<div class="game"><div class="figure"><div class="symbol">✨</div><span class="state">موجودة</span></div><h3>مولّد الأسئلة</h3><p>مساعدة المعلم في إعداد أسئلة ومسودات تدريبات.</p><a class="button alt" href="/studio.html#generator">فتح المولّد</a></div>
+</div></section>
+<section id="roadmap"><div class="section-head"><div><h2>🚀 ما الذي سنضيفه ليصبح أقوى من صفحة ألعاب عادية؟</h2><p>تصميم مستقبل BOOYAHJO Game Lab — لم تُفعّل هذه المزايا بعد.</p></div></div><div class="tile3">
  <div class="planitem"><span>📱</span><b>QR ورابط لكل نشاط</b><p>الطالب يفتح نشاطًا مستقلًا على جهازه، مع دخول اختياري بالبطاقة.</p></div>
  <div class="planitem"><span>📊</span><b>تقارير تلقائية</b><p>نتائج حسب الطالب والشعبة والنتاج، ومحاولات بدون تكرار XP.</p></div>
  <div class="planitem"><span>🔁</span><b>تغيير اللعبة في ثانية</b><p>استخدام بنك أسئلة واحد داخل ألعاب متعددة وتحويله إلى واجب.</p></div>
