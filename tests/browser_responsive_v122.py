@@ -94,10 +94,11 @@ with sync_playwright() as p:
         check(not errors,f'Browser JS errors at {width}: {errors}')
         page.screenshot(path=str(screens/f'booyah-v122-100-percent-{width}.png'),full_page=True)
         context.close()
-    # Public student entry should show 31 unique boys' characters without inner scroll/clipping.
+    # The student opens a compact chooser; all 31 boys' characters remain available.
     context=browser.new_context(viewport={'width':390,'height':844},is_mobile=True,has_touch=True)
     page=context.new_page()
     page.goto(base+'/student.html?mode=live',wait_until='domcontentloaded')
+    page.locator('#avatarPickerToggle').click()
     page.locator('#avatarPicker .avatar-choice').first.wait_for(timeout=12000)
     def avatar_state():
         return page.evaluate("""()=>({ids:[...document.querySelectorAll('#avatarPicker [data-avatar]')].map(x=>x.dataset.avatar),
@@ -110,8 +111,8 @@ with sync_playwright() as p:
     check(len(state['ids'])==len(set(state['ids'])),f'Duplicate boys character: {state}')
     check(state['overflow']=='visible' and state['maxHeight']=='none',f'Avatar gallery clips content: {state}')
     check('31' in state['hint'],'No visible avatar count')
-    check(page.locator('[data-avatar="n01"] .bo-avatar-name').inner_text()=='نشمي','Jordanian mascot renamed')
-    expected={'b05':'دومو','b14':'تربو','n03':'مسمارو','b12':'دبدوب'}
+    check(page.locator('[data-avatar="n01"] .bo-avatar-name').inner_text()=='Nomado','Jordanian mascot name mismatch')
+    expected={'b05':'Domo','b14':'Turbo','n03':'Gearix','b12':'Beardo'}
     for cid,name in expected.items():
         check(page.locator('[data-avatar="'+cid+'"] .bo-avatar-name').inner_text()==name,
               f'Human-style avatar name was not replaced for {cid}')
