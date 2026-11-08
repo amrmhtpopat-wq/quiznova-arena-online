@@ -25,6 +25,7 @@
  <div class="navlabel">استكشف المختبر</div>
  <button class="nav sel" data-jump="catalog"><span>🕹️</span>جميع الألعاب والقوالب</button>
  <button class="nav" data-jump="builder"><span>🪄</span>صانع الأنشطة</button>
+ <button class="nav" data-jump="mixer"><span>🧪</span>مُركّب الحصة Game Mixer</button>
  <button class="nav" data-jump="library"><span>🗃️</span>أنشطتي التجريبية</button>
  <button class="nav" data-jump="cloud"><span>☁️</span>مكتبتي على الحساب</button>
  <button class="nav" data-jump="toolbox"><span>🧰</span>أدوات BOOYAHJO الحالية</button>
@@ -60,7 +61,17 @@
  </div>
  <div class="block"><h3>⚡ معاينة المحتوى</h3><p>بعد تطبيق الأسئلة، يمكنك الانتقال بين جميع الألعاب المفعلة باستخدام المحتوى نفسه.</p><div class="good" id="contentFeedback">جاهز: 8 أسئلة ومجموعات تعليمية متعددة.</div><div id="dataPreview" class="list" style="margin-top:12px"></div><div class="buttons" style="margin-top:16px"><button class="button gold" id="quickPlay">▶ جرّب تحدي الأسئلة</button><button class="button alt" id="printActivity">🖨️ ورقة عمل</button></div><hr style="border:0;border-top:1px solid #315575;margin:17px 0"><h3>قوالبك الجاهزة</h3><div class="buttons" id="quickTemplates"></div></div>
  </div></section>
- <section id="library"><div class="section-head"><div><h2>🗃️ مسودات أنشطتي</h2><p>حفظ مؤقت داخل هذا المتصفح فقط، دون تسجيل دخول أو اتصال بقاعدة بيانات BOOYAHJO.</p></div><div class="buttons"><button id="exportData" class="button alt small">⬇️ تصدير JSON</button><button id="importButton" class="button alt small">⬆️ استيراد JSON</button><input id="importFile" type="file" accept="application/json,.json" class="hide"></div></div><div id="savedList" class="list"></div></section>
+ <section id="mixer"><div class="section-head"><div><h2>🧪 Game Mixer — الحصة متعددة الألعاب</h2><p>ابدأ بالتمهيد، ثم نشاط التعلّم، واختم بالتقويم. المحتوى نفسه يتحوّل بين ثلاثة قوالب دون إعادة كتابته.</p></div><span class="pill">ميزة تفاعلية جديدة</span></div>
+<div class="block"><h3>🎯 صمّم رحلة تعلم من ثلاث مراحل</h3><div class="row2">
+<div class="field"><label for="mixerOne">1. التهيئة والمراجعة</label><select id="mixerOne"></select></div>
+<div class="field"><label for="mixerTwo">2. التفاعل والممارسة</label><select id="mixerTwo"></select></div>
+<div class="field"><label for="mixerThree">3. التقويم الختامي</label><select id="mixerThree"></select></div>
+<div class="field"><label for="mixerMinutes">الوقت المقترح للحصة</label><select id="mixerMinutes"><option value="10">10 دقائق</option><option value="15" selected>15 دقيقة</option><option value="20">20 دقيقة</option><option value="30">30 دقيقة</option></select></div></div>
+<div id="mixerPlan" class="good">الخطة الافتراضية: بطاقات ذاكرة → مطابقة → تحدي اختيار، باستخدام أسئلة الدرس نفسها.</div>
+<div class="buttons" style="margin-top:13px"><button class="button gold" id="mixerStart">🚀 تشغيل الحصة التفاعلية</button><button class="button alt" data-scroll="builder">✏️ تعديل أسئلة الدرس أولًا</button></div>
+<p class="hint">الوقت المقترح للتخطيط فقط؛ ينتقل المعلم بين مراحل Game Mixer بعد إنهاء اللعبة الحالية. النتائج في هذا النموذج للمعاينة ولا تُحفظ كعلامات رسمية.</p>
+</div></section>
+<section id="library"><div class="section-head"><div><h2>🗃️ مسودات أنشطتي</h2><p>حفظ مؤقت داخل هذا المتصفح فقط، دون تسجيل دخول أو اتصال بقاعدة بيانات BOOYAHJO.</p></div><div class="buttons"><button id="exportData" class="button alt small">⬇️ تصدير JSON</button><button id="importButton" class="button alt small">⬆️ استيراد JSON</button><input id="importFile" type="file" accept="application/json,.json" class="hide"></div></div><div id="savedList" class="list"></div></section>
  <section id="cloud"><div class="section-head"><div><h2>☁️ مكتبتي الخاصة ونشر الأنشطة</h2><p>احفظ الأنشطة على حساب المعلم، وانشرها للطلاب برابط أو QR، وحدد المحاولات واستعرض النتائج.</p></div><span class="pill">متصل بقاعدة بيانات الاختبار المعزولة</span></div>
 <div class="block" id="cloudLogin">
 <h3>🔐 الدخول الآمن للمعلم</h3><p id="cloudLoginLabel">سجّل الدخول بحساب BOOYAHJO للبدء. لن تُرسل بيانات الطلاب إلى هذه الصفحة.</p>
@@ -135,7 +146,7 @@ const catalog=[
 ];
 const example=$('activityData').value;
 const K='booyah_game_lab_qa_v1';
-let activities=[], content=[], filter='all',type=null,round=0,score=0,timer=null,options={},selection=null,openBox=new Set(),wheelTurn=0;
+let activities=[], content=[], filter='all',type=null,round=0,score=0,timer=null,options={},selection=null,openBox=new Set(),wheelTurn=0,mixerState=null;
 const names=Object.fromEntries(catalog.map(x=>[x.id,x.name]));
 function secureText(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','&quot;':'&quot;',"'":'&#39;'}[c]))}
 function sampleBank(){return readRows(example).rows}
@@ -161,7 +172,7 @@ function shuffle(ar){const out=[...ar];for(let i=out.length-1;i>0;i--){const j=M
 function stopClock(){if(timer){clearInterval(timer);timer=null}}
 function updateCounter(v){$('playCounter').textContent=v}
 function openGame(id){const g=catalog.find(x=>x.id===id);if(!g||!g.ready)return;if(!apply())return;type=id;round=0;score=0;selection=null;openBox=new Set();stopClock();$('playOverlay').hidden=false;document.body.style.overflow='hidden';$('playTitle').textContent=g.icon+' '+g.name;status('');renderGame()}
-function closeGame(){stopClock();window.BOOYAH_EXTRA?.stop();$('playOverlay').hidden=true;document.body.style.overflow='';type=null}
+function closeGame(){stopClock();window.BOOYAH_EXTRA?.stop();mixerState=null;$('playOverlay').hidden=true;document.body.style.overflow='';type=null}
 function renderGame(){
  stopClock();status('');
  if(!content.length)return;
@@ -174,7 +185,25 @@ function renderGame(){
  if(type==='truth')return truthGame();
  if(window.BOOYAH_EXTRA)return window.BOOYAH_EXTRA.render(type,{rows:content,container,status,updateCounter,finish:points=>{score=points;gameEnd()}});
 }
-function gameEnd(){stopClock();container('<div class="playcard"><div style="font-size:4.5rem">🏆</div><h3>أحسنت! انتهى النشاط</h3><p>نتيجة المحاولة على جهاز المعلم فقط</p><h2 style="color:var(--aqua);font-size:3rem">'+score+' نقطة</h2><p>هذا عرض تجريبي ولا تُحفظ فيه نتائج الطلاب.</p></div><div class="buttons" style="justify-content:center" id="endButtons"></div>');const area=$('endButtons');area.append(textButton('↺ إعادة اللعب',()=>{round=0;score=0;renderGame()},'button'),textButton('📚 اختر قالبًا آخر',closeGame));updateCounter('انتهى')}
+function gameEnd(){stopClock();container('<div class="playcard"><div style="font-size:4.5rem">🏆</div><h3>أحسنت! انتهى النشاط</h3><p>نتيجة المحاولة على جهاز المعلم فقط</p><h2 style="color:var(--aqua);font-size:3rem">'+score+' نقطة</h2><p>هذا عرض تجريبي ولا تُحفظ فيه نتائج الطلاب.</p></div><div class="buttons" style="justify-content:center" id="endButtons"></div>');const area=$('endButtons');area.append(textButton('↺ إعادة اللعب',()=>{round=0;score=0;renderGame()},'button'),textButton('📚 اختر قالبًا آخر',closeGame));updateCounter('انتهى');
+ if(mixerState){
+   mixerState.results.push({game:type,score});
+   area.replaceChildren();
+   if(mixerState.index+1<mixerState.stages.length){
+     area.append(textButton('🎮 الانتقال إلى اللعبة '+(mixerState.index+2)+' من 3',()=>{
+       mixerState.index++;openGame(mixerState.stages[mixerState.index])
+     },'button gold'));
+   }else{
+     area.append(textButton('🏆 ملخص الحصة',()=>{
+       const sum=mixerState.results.reduce((t,x)=>t+x.score,0);
+       const rows=mixerState.results.map((x,i)=>'<p>'+(i+1)+'. '+secureText(names[x.game])+' — '+x.score+' نقطة</p>').join('');
+       container('<div class="playcard"><div style="font-size:3rem">🎉</div><h3>اكتملت رحلة Game Mixer!</h3>'+rows+'<h2>المجموع: '+sum+' نقطة</h2><p>هذا ملخص تدريبي محلي ولا يُضيف XP أو علامات الطلاب.</p></div><div class="buttons extra-center" id="mixerFinishButtons"></div>');
+       mixerState=null;
+       $('#mixerFinishButtons').append(textButton('✅ إنهاء الحصة',closeGame,'button'));
+     },'button gold'));
+   }
+ }
+}
 function nextRound(){round++;if(round>=Math.min(content.length,8)){gameEnd();return}renderGame()}
 function quizGame(){
  if(round>=Math.min(content.length,8))return gameEnd();
@@ -209,6 +238,12 @@ $('labImageFile').onchange=e=>{const file=e.target.files?.[0];if(labImageObjectU
  if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>1572864){alert('اختر صورة PNG أو JPG أو WEBP بحجم أقصى 1.5 ميغابايت');e.target.value='';return}
  labImageObjectUrl=URL.createObjectURL(file);window.BOOYAH_GAME_LAB_IMAGE=labImageObjectUrl;$('labImagePreview').src=labImageObjectUrl;$('labImagePreview').classList.remove('hide')};
 window.addEventListener('pagehide',()=>{if(labImageObjectUrl)URL.revokeObjectURL(labImageObjectUrl)});
+const mixerChoices=[['flash','بطاقات الذاكرة'],['pairs','توصيل الأزواج'],['quiz','تحدي الاختيار'],['fast','سباق الوقت'],['sort','فرز وتصنيف'],['truth','صح أم خطأ'],['anagram','ترتيب الحروف'],['memory','لعبة الذاكرة'],['board','لوحة النقاط'],['teams','معركة الفرق'],['bingo','بينغو']];
+for(const id of ['mixerOne','mixerTwo','mixerThree']){const select=$(id);for(const [key,name] of mixerChoices){const opt=document.createElement('option');opt.value=key;opt.textContent=name;select.append(opt)}}
+$('mixerOne').value='flash';$('mixerTwo').value='pairs';$('mixerThree').value='quiz';
+$('mixerStart').onclick=()=>{if(!apply())return;mixerState={stages:[$('mixerOne').value,$('mixerTwo').value,$('mixerThree').value],index:0,results:[]};openGame(mixerState.stages[0])};
+function mixerExplain(){const ids=['mixerOne','mixerTwo','mixerThree'];const mins=Number($('mixerMinutes').value)||15;const split=[Math.round(mins*.27),Math.round(mins*.43),Math.max(1,mins-Math.round(mins*.27)-Math.round(mins*.43))];$('mixerPlan').textContent='توزيع زمني مقترح: '+ids.map((id,i)=>$(id).selectedOptions[0].text+' ('+split[i]+' د)').join(' ← ')}
+for(const id of ['mixerOne','mixerTwo','mixerThree','mixerMinutes'])$(id).onchange=mixerExplain;mixerExplain();
 $('gameSearch').oninput=renderCatalog;$('gradeFilter').onchange=renderCatalog;document.querySelectorAll('[data-category]').forEach(b=>b.onclick=()=>{filter=b.dataset.category;document.querySelectorAll('[data-category]').forEach(x=>x.classList.toggle('on',x===b));renderCatalog()});
 document.querySelectorAll('[data-jump]').forEach(b=>b.onclick=()=>scrollToId(b.dataset.jump));document.querySelectorAll('[data-scroll]').forEach(b=>b.onclick=()=>scrollToId(b.dataset.scroll));
 $('mobileMenu').onclick=()=>{$('rail').classList.toggle('open');$('shade').classList.toggle('show')};$('shade').onclick=()=>{$('rail').classList.remove('open');$('shade').classList.remove('show')};
