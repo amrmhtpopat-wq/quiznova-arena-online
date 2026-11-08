@@ -113,6 +113,20 @@ def run():
                 assert not errors,(gid,width,errors)
                 page.locator('#closePlay').click()
                 assert page.locator('#playOverlay').is_hidden()
+              # Game Mixer: three playable stages and a single classroom recap.
+              if width==1440:
+                for select in ('mixerOne','mixerTwo','mixerThree'):
+                  page.locator('#'+select).select_option('board')
+                page.locator('#mixerStart').click()
+                page.locator('#playOverlay').wait_for(state='visible')
+                for stage in range(3):
+                  page.locator('#boardControls button').filter(has_text='إنهاء').click()
+                  if stage<2:
+                    page.locator('#endButtons button').filter(has_text='الانتقال').click()
+                  else:
+                    page.locator('#endButtons button').filter(has_text='ملخص الحصة').click()
+                assert 'اكتملت رحلة Game Mixer' in page.locator('#playBody').inner_text()
+                page.locator('#closePlay').click()
               # Printing uses a true text worksheet; no app data leaves this browser.
               page.evaluate("() => {window.print=()=>{}}")
               page.locator("#printActivity").click()
