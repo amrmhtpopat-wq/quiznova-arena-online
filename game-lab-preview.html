@@ -15,6 +15,7 @@
 @media print{.shell,#playOverlay,.mobilebar,.shade{display:none!important}.print-page{display:block!important;color:#000;background:#fff;padding:14mm;font:13pt Tahoma,Arial;direction:rtl}.print-page h1{text-align:center;font-size:20pt}.print-page h2{font-size:15pt}.print-page .print-q{margin:14px 0;break-inside:avoid}.print-page .print-lines{border-bottom:1px solid #777;height:24px}}
 </style>
 <style>.cloud-activity{background:linear-gradient(145deg,#123b61,#0e2c4c);border:1px solid #35688a;border-radius:14px;padding:13px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.cloud-info{display:grid;gap:3px}.cloud-info b{font-size:1rem}.cloud-info small{color:#b0cce1;font-size:.75rem}.cloud-activity .buttons{align-items:center}.lab-table-scroll{max-width:100%;overflow:auto}.lab-results-table{width:100%;border-collapse:collapse;min-width:600px}.lab-results-table th,.lab-results-table td{text-align:right;border-bottom:1px solid #365878;padding:10px;font-size:.83rem}.lab-results-table th{background:#0b3255;color:#d1f7ed}.lab-results-table td{color:#d3e7f7}.lab-results-table tr:hover{background:#ffffff0b}@media(max-width:650px){.cloud-activity{align-items:stretch;flex-direction:column}.cloud-activity .buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.cloud-activity button{width:100%}}</style>
+<link rel="stylesheet" href="/game-lab-extra-v2.css?v=2.0">
 </head>
 <body>
 <div class="mobilebar"><b>🎮 BOOYAHJO GAME LAB</b><button class="button alt small" id="mobileMenu" aria-label="القائمة">☰</button></div><div id="shade" class="shade"></div>
@@ -34,10 +35,10 @@
  <div class="note">هذا المختبر منفصل عن سجلات الطلاب. البيانات التي تحفظها هنا تبقى على متصفحك الحالي فقط.</div>
 </aside>
 <main class="main">
- <div class="bar"><div class="crumb"><b>BOOYAHJO</b> / مختبر الألعاب التعليمية</div><div class="buttons"><span class="pill">✨ 8 قوالب قابلة للتجربة</span><span class="pill">بدون اشتراكات</span><a class="button alt small" href="/studio.html">استوديو المعلم</a></div></div>
+ <div class="bar"><div class="crumb"><b>BOOYAHJO</b> / مختبر الألعاب التعليمية</div><div class="buttons"><span class="pill">✨ 24 قالبًا تفاعليًا</span><span class="pill">بدون اشتراكات</span><a class="button alt small" href="/studio.html">استوديو المعلم</a></div></div>
  <section class="mast"><div><span class="eyebrow">BOOYAHJO GAME LAB · PREVIEW 1.0</span><h2>حوّل درسك إلى لعبة.<br>بنقرة واحدة.</h2><p>مكتبة ألعاب تعليمية مصممة للمعلم العربي. اكتب أسئلة الدرس مرة واحدة، ثم جرّب المحتوى نفسه بأشكال متنوعة: بطاقات، مطابقة، عجلة، صناديق، فرز، ومنافسات سريعة.</p><div class="buttons"><button class="button" data-scroll="catalog">🎮 استكشف الألعاب</button><button class="button alt" data-scroll="builder">🪄 اصنع نشاطًا الآن</button></div></div><div class="mascot" aria-hidden="true">🎲</div></section>
- <div class="kpis"><div class="kpi"><b id="countAll">24</b><span>أداة ولعبة في خارطة المختبر</span></div><div class="kpi"><b id="countLive">8</b><span>قوالب تعمل الآن في التجربة</span></div><div class="kpi"><b id="countSaved">0</b><span>أنشطة محفوظة على هذا الجهاز</span></div><div class="kpi"><b>∞</b><span>تبديل القالب لنفس المحتوى</span></div></div>
- <div class="notice" role="status">نسخة استكشافية فقط: الألعاب تشتغل محليًا على متصفح المعلم، ولا تُرسل درجات الطلاب، ولا تنشئ جلسات متعددة الأجهزة أو روابط واجبات حقيقية. سيجري ربطها بالحسابات لاحقًا بعد اعتمادك.</div>
+ <div class="kpis"><div class="kpi"><b id="countAll">24</b><span>أداة ولعبة في خارطة المختبر</span></div><div class="kpi"><b id="countLive">24</b><span>قوالب تعمل الآن في التجربة</span></div><div class="kpi"><b id="countSaved">0</b><span>أنشطة محفوظة على هذا الجهاز</span></div><div class="kpi"><b>∞</b><span>تبديل القالب لنفس المحتوى</span></div></div>
+ <div class="notice" role="status">يمكن تجربة الألعاب الـ24 محليًا دون حساب. ولحفظ نشاط على الخادم ونشره برابط أو QR وحفظ نتائج الطلاب، انتقل إلى «مكتبتي على الحساب». المنافسة المباشرة متعددة الأجهزة ما زالت ميزة مستقلة قيد التطوير.</div>
  <section id="catalog"><div class="section-head"><div><h2>🕹️ مكتبة الألعاب والأدوات</h2><p>اختر طريقة اللعب المناسبة للدرس والصف والزمن المتاح.</p></div><span class="pill" id="resultCount">24 قالبًا</span></div>
  <div class="searchrow"><div class="searchwrap"><label for="gameSearch" class="hide">ابحث عن لعبة</label><input id="gameSearch" placeholder="🔎 ابحث عن مطابقة، أسئلة، حفظ، مفردات..." autocomplete="off"></div><select id="gradeFilter" aria-label="التصفية حسب المرحلة" style="width:auto;min-width:160px"><option value="all">كل المراحل</option><option value="ابتدائي">ابتدائي</option><option value="أساسي">أساسي</option><option value="ثانوي">ثانوي</option></select></div>
  <div class="filters" id="filterBar"><button class="filter on" data-category="all">جميع الأدوات</button><button class="filter" data-category="assessment">التقويم والتحديات</button><button class="filter" data-category="vocabulary">المفردات والذاكرة</button><button class="filter" data-category="interaction">التفاعل والحظ</button><button class="filter" data-category="thinking">التصنيف والتفكير</button><button class="filter" data-category="classroom">أدوات الحصة</button></div>
@@ -55,7 +56,7 @@
 ما الجهاز الذي يعرض الصور؟ | الشاشة | إخراج
 ما الجهاز المستخدم لتحريك المؤشر؟ | الفأرة | إدخال
 ما الجهاز المستخدم لإخراج الصوت؟ | السماعات | إخراج</textarea><p class="hint">اكتب كل سطر بهذه الصيغة: <b>السؤال | الإجابة | المجموعة</b>. الحد الأقصى 80 سطرًا، ويفضل وجود 4 أسئلة على الأقل.</p></div>
- <div class="buttons"><button class="button" id="applyContent">✓ تطبيق المحتوى</button><button class="button alt" id="saveActivity">💾 حفظ على هذا الجهاز</button><button class="button transparent" id="restoreExample">↺ محتوى تجريبي</button></div>
+ <div class="field"><label for="labImageFile">🖼️ صورة اختيارية لألعاب الصورة المخفية وتسمية الرسم</label><input id="labImageFile" type="file" accept="image/png,image/jpeg,image/webp" style="width:100%"><p class="hint">تُستخدم الصورة محليًا في متصفحك فقط ولا تُرسل إلى الخادم أو تُدرج في رابط الطالب المنشور. أقصى حجم: 1.5 ميغابايت.</p><img id="labImagePreview" alt="معاينة صورة الدرس" class="hide" style="width:170px;max-height:125px;object-fit:contain;border-radius:12px;border:1px solid #62a5c0"></div><div class="buttons"><button class="button" id="applyContent">✓ تطبيق المحتوى</button><button class="button alt" id="saveActivity">💾 حفظ على هذا الجهاز</button><button class="button transparent" id="restoreExample">↺ محتوى تجريبي</button></div>
  </div>
  <div class="block"><h3>⚡ معاينة المحتوى</h3><p>بعد تطبيق الأسئلة، يمكنك الانتقال بين جميع الألعاب المفعلة باستخدام المحتوى نفسه.</p><div class="good" id="contentFeedback">جاهز: 8 أسئلة ومجموعات تعليمية متعددة.</div><div id="dataPreview" class="list" style="margin-top:12px"></div><div class="buttons" style="margin-top:16px"><button class="button gold" id="quickPlay">▶ جرّب تحدي الأسئلة</button><button class="button alt" id="printActivity">🖨️ ورقة عمل</button></div><hr style="border:0;border-top:1px solid #315575;margin:17px 0"><h3>قوالبك الجاهزة</h3><div class="buttons" id="quickTemplates"></div></div>
  </div></section>
@@ -115,22 +116,22 @@ const catalog=[
 {id:'boxes',name:'الصناديق الغامضة',icon:'🎁',cat:'interaction',desc:'افتح الصندوق واكتشف السؤال أو الإجابة بداخله.',grade:'all',ready:1},
 {id:'sort',name:'فرز وتصنيف',icon:'🗂️',cat:'thinking',desc:'ضع المعلومة في مجموعتها الصحيحة لتحصل على النقاط.',grade:'أساسي',ready:1},
 {id:'truth',name:'صح أم خطأ؟',icon:'✅',cat:'assessment',desc:'اختبر صحة العلاقة بين السؤال والإجابة بسرعة.',grade:'all',ready:1},
-{id:'crossword',name:'الكلمات المتقاطعة',icon:'🔠',cat:'vocabulary',desc:'ضع المصطلحات في شبكة كلمات متقاطعة من التعريفات.',grade:'أساسي',ready:0},
-{id:'wordsearch',name:'البحث عن الكلمات',icon:'🔍',cat:'vocabulary',desc:'ابحث عن المفردات التعليمية في شبكة من الحروف.',grade:'ابتدائي',ready:0},
-{id:'anagram',name:'ترتيب الحروف',icon:'🔤',cat:'vocabulary',desc:'أعد ترتيب الحروف لتكوين الإجابة.',grade:'ابتدائي',ready:0},
-{id:'order',name:'الترتيب المنطقي',icon:'🪜',cat:'thinking',desc:'رتب خطوات العملية بالترتيب الصحيح.',grade:'أساسي',ready:0},
-{id:'maze',name:'متاهة المعرفة',icon:'🌀',cat:'assessment',desc:'تحرك عبر المسارات بالإجابة الصحيحة.',grade:'أساسي',ready:0},
-{id:'balloons',name:'فرقعة البالونات',icon:'🎈',cat:'interaction',desc:'اختر البالون الذي يحمل الإجابة الصحيحة.',grade:'ابتدائي',ready:0},
-{id:'memory',name:'تذكّر الصورة',icon:'🧠',cat:'vocabulary',desc:'احفظ التسلسل ثم استرجع الصور أو الكلمات.',grade:'ابتدائي',ready:0},
-{id:'hidden',name:'الصورة المخفية',icon:'🖼️',cat:'interaction',desc:'اكشف أجزاء من الصورة لتخمين المفهوم.',grade:'all',ready:0},
-{id:'cloze',name:'أكمل الفراغ',icon:'✍️',cat:'vocabulary',desc:'اسحب الإجابة لإكمال الجملة الصحيحة.',grade:'أساسي',ready:0},
-{id:'diagram',name:'تسمية الرسم',icon:'📍',cat:'thinking',desc:'سمّ أجزاء الحاسوب أو الرسم العلمي التفاعلي.',grade:'أساسي',ready:0},
-{id:'board',name:'لوحة النقاط',icon:'📈',cat:'classroom',desc:'منافسة صفية بين المجموعات مع نقاط قابلة للتعديل.',grade:'all',ready:0},
-{id:'teams',name:'معركة الفرق',icon:'⚔️',cat:'assessment',desc:'نشاط حماسي بفريقين وترتيب وتحديات مشتركة.',grade:'all',ready:0},
-{id:'survey',name:'استفتاء الصف',icon:'🗳️',cat:'classroom',desc:'اجمع آراء الطلاب وعرضها على الشاشة.',grade:'all',ready:0},
-{id:'exit',name:'بطاقة الخروج',icon:'🎟️',cat:'classroom',desc:'سؤال سريع قبل مغادرة الحصة لتحديد فجوات التعلم.',grade:'all',ready:0},
-{id:'story',name:'اختر مسارك',icon:'🧭',cat:'thinking',desc:'سيناريو تعليمي له خيارات ونتائج مختلفة.',grade:'ثانوي',ready:0},
-{id:'bingo',name:'بينغو المصطلحات',icon:'🔲',cat:'interaction',desc:'شبكة مصطلحات وتحديات للحصة الجماعية.',grade:'ابتدائي',ready:0}
+{id:'crossword',name:'الكلمات المتقاطعة',icon:'🔠',cat:'vocabulary',desc:'ضع المصطلحات في شبكة كلمات متقاطعة من التعريفات.',grade:'أساسي',ready:1},
+{id:'wordsearch',name:'البحث عن الكلمات',icon:'🔍',cat:'vocabulary',desc:'ابحث عن المفردات التعليمية في شبكة من الحروف.',grade:'ابتدائي',ready:1},
+{id:'anagram',name:'ترتيب الحروف',icon:'🔤',cat:'vocabulary',desc:'أعد ترتيب الحروف لتكوين الإجابة.',grade:'ابتدائي',ready:1},
+{id:'order',name:'الترتيب المنطقي',icon:'🪜',cat:'thinking',desc:'رتب خطوات العملية بالترتيب الصحيح.',grade:'أساسي',ready:1},
+{id:'maze',name:'متاهة المعرفة',icon:'🌀',cat:'assessment',desc:'تحرك عبر المسارات بالإجابة الصحيحة.',grade:'أساسي',ready:1},
+{id:'balloons',name:'فرقعة البالونات',icon:'🎈',cat:'interaction',desc:'اختر البالون الذي يحمل الإجابة الصحيحة.',grade:'ابتدائي',ready:1},
+{id:'memory',name:'تذكّر الصورة',icon:'🧠',cat:'vocabulary',desc:'احفظ التسلسل ثم استرجع الصور أو الكلمات.',grade:'ابتدائي',ready:1},
+{id:'hidden',name:'الصورة المخفية',icon:'🖼️',cat:'interaction',desc:'اكشف أجزاء من الصورة لتخمين المفهوم.',grade:'all',ready:1},
+{id:'cloze',name:'أكمل الفراغ',icon:'✍️',cat:'vocabulary',desc:'اسحب الإجابة لإكمال الجملة الصحيحة.',grade:'أساسي',ready:1},
+{id:'diagram',name:'تسمية الرسم',icon:'📍',cat:'thinking',desc:'سمّ أجزاء الحاسوب أو الرسم العلمي التفاعلي.',grade:'أساسي',ready:1},
+{id:'board',name:'لوحة النقاط',icon:'📈',cat:'classroom',desc:'منافسة صفية بين المجموعات مع نقاط قابلة للتعديل.',grade:'all',ready:1},
+{id:'teams',name:'معركة الفرق',icon:'⚔️',cat:'assessment',desc:'نشاط حماسي بفريقين وترتيب وتحديات مشتركة.',grade:'all',ready:1},
+{id:'survey',name:'استفتاء الصف',icon:'🗳️',cat:'classroom',desc:'اجمع آراء الطلاب وعرضها على الشاشة.',grade:'all',ready:1},
+{id:'exit',name:'بطاقة الخروج',icon:'🎟️',cat:'classroom',desc:'سؤال سريع قبل مغادرة الحصة لتحديد فجوات التعلم.',grade:'all',ready:1},
+{id:'story',name:'اختر مسارك',icon:'🧭',cat:'thinking',desc:'سيناريو تعليمي له خيارات ونتائج مختلفة.',grade:'ثانوي',ready:1},
+{id:'bingo',name:'بينغو المصطلحات',icon:'🔲',cat:'interaction',desc:'شبكة مصطلحات وتحديات للحصة الجماعية.',grade:'ابتدائي',ready:1}
 ];
 const example=$('activityData').value;
 const K='booyah_game_lab_qa_v1';
@@ -160,7 +161,7 @@ function shuffle(ar){const out=[...ar];for(let i=out.length-1;i>0;i--){const j=M
 function stopClock(){if(timer){clearInterval(timer);timer=null}}
 function updateCounter(v){$('playCounter').textContent=v}
 function openGame(id){const g=catalog.find(x=>x.id===id);if(!g||!g.ready)return;if(!apply())return;type=id;round=0;score=0;selection=null;openBox=new Set();stopClock();$('playOverlay').hidden=false;document.body.style.overflow='hidden';$('playTitle').textContent=g.icon+' '+g.name;status('');renderGame()}
-function closeGame(){stopClock();$('playOverlay').hidden=true;document.body.style.overflow='';type=null}
+function closeGame(){stopClock();window.BOOYAH_EXTRA?.stop();$('playOverlay').hidden=true;document.body.style.overflow='';type=null}
 function renderGame(){
  stopClock();status('');
  if(!content.length)return;
@@ -171,6 +172,7 @@ function renderGame(){
  if(type==='boxes')return boxesGame();
  if(type==='sort')return sortGame();
  if(type==='truth')return truthGame();
+ if(window.BOOYAH_EXTRA)return window.BOOYAH_EXTRA.render(type,{rows:content,container,status,updateCounter,finish:points=>{score=points;gameEnd()}});
 }
 function gameEnd(){stopClock();container('<div class="playcard"><div style="font-size:4.5rem">🏆</div><h3>أحسنت! انتهى النشاط</h3><p>نتيجة المحاولة على جهاز المعلم فقط</p><h2 style="color:var(--aqua);font-size:3rem">'+score+' نقطة</h2><p>هذا عرض تجريبي ولا تُحفظ فيه نتائج الطلاب.</p></div><div class="buttons" style="justify-content:center" id="endButtons"></div>');const area=$('endButtons');area.append(textButton('↺ إعادة اللعب',()=>{round=0;score=0;renderGame()},'button'),textButton('📚 اختر قالبًا آخر',closeGame));updateCounter('انتهى')}
 function nextRound(){round++;if(round>=Math.min(content.length,8)){gameEnd();return}renderGame()}
@@ -201,6 +203,12 @@ function save(){const a=getPayload();if(a.error){report(a.error,true);return}if(
 function printable(){const p=getPayload();if(p.error){report(p.error,true);return}const page=$('printPage');page.replaceChildren();const h=document.createElement('h1');h.textContent='ورقة عمل | '+p.title;page.append(h);const meta=document.createElement('p');meta.textContent='المبحث: '+p.subject+'     الصف: '+p.grade+'       الاسم: ........................................';page.append(meta);p.rows.forEach((r,i)=>{const div=document.createElement('div');div.className='print-q';const question=document.createElement('p');question.textContent=(i+1)+'. '+r.q;div.append(question);for(let j=0;j<2;j++){const line=document.createElement('div');line.className='print-lines';div.append(line)}page.append(div)});window.print()}
 function exportFile(){const data=JSON.stringify({version:1,activities},null,2);const blob=new Blob([data],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='BOOYAHJO-GameLab-activities.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),2000)}
 function validateImport(raw){if(!raw||raw.version!==1||!Array.isArray(raw.activities)||raw.activities.length>25)throw Error('ملف JSON غير متوافق');return raw.activities.map(a=>{if(!a||!Array.isArray(a.rows)||a.rows.length<4||a.rows.length>80)throw Error('صفوف غير صالحة');const data={title:String(a.title||'نشاط').slice(0,90),subject:String(a.subject||'المهارات الرقمية'),grade:String(a.grade||'السابع'),time:Number(a.time)||25,rows:a.rows.map(r=>({q:String(r.q||'').slice(0,200),a:String(r.a||'').slice(0,100),g:String(r.g||'عام').slice(0,60)}))};if(data.rows.some(x=>!x.q||!x.a))throw Error('إجابة أو سؤال مفقود');return data})}
+let labImageObjectUrl=null;
+$('labImageFile').onchange=e=>{const file=e.target.files?.[0];if(labImageObjectUrl){URL.revokeObjectURL(labImageObjectUrl);labImageObjectUrl=null}
+ if(!file){window.BOOYAH_GAME_LAB_IMAGE='';$('labImagePreview').classList.add('hide');return}
+ if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>1572864){alert('اختر صورة PNG أو JPG أو WEBP بحجم أقصى 1.5 ميغابايت');e.target.value='';return}
+ labImageObjectUrl=URL.createObjectURL(file);window.BOOYAH_GAME_LAB_IMAGE=labImageObjectUrl;$('labImagePreview').src=labImageObjectUrl;$('labImagePreview').classList.remove('hide')};
+window.addEventListener('pagehide',()=>{if(labImageObjectUrl)URL.revokeObjectURL(labImageObjectUrl)});
 $('gameSearch').oninput=renderCatalog;$('gradeFilter').onchange=renderCatalog;document.querySelectorAll('[data-category]').forEach(b=>b.onclick=()=>{filter=b.dataset.category;document.querySelectorAll('[data-category]').forEach(x=>x.classList.toggle('on',x===b));renderCatalog()});
 document.querySelectorAll('[data-jump]').forEach(b=>b.onclick=()=>scrollToId(b.dataset.jump));document.querySelectorAll('[data-scroll]').forEach(b=>b.onclick=()=>scrollToId(b.dataset.scroll));
 $('mobileMenu').onclick=()=>{$('rail').classList.toggle('open');$('shade').classList.toggle('show')};$('shade').onclick=()=>{$('rail').classList.remove('open');$('shade').classList.remove('show')};
@@ -214,5 +222,5 @@ $('countAll').textContent=catalog.length;$('countLive').textContent=catalog.filt
 renderCatalog();apply();refreshSaved();
 })();
 </script>
-<script src="/game-lab-cloud-v2.js?v=2.0" defer></script>
+<script src="/game-lab-cloud-v2.js?v=2.0" defer></script><script src="/game-lab-extra-v2.js?v=2.0"></script>
 </body></html>
