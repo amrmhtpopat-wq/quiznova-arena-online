@@ -21,6 +21,7 @@
 .extra-balloon:nth-child(3){background:linear-gradient(140deg,#26ad7e,#126b83)}
 .extra-balloon:nth-child(4){background:linear-gradient(140deg,#cc8640,#a74764)}
 .extra-balloon:after{content:"";position:absolute;bottom:-9px;left:calc(50% - 8px);border-left:8px solid transparent;border-right:8px solid transparent;border-top:14px solid #f1ccfa}
+.extra-balloon:hover,.extra-balloon:focus-visible{animation-play-state:paused}
 .extra-balloon.popped{transform:scale(0);opacity:0;animation:none;transition:transform .3s,opacity .3s}
 .extra-balloon.wrong{filter:grayscale(.85);animation:none}
 @keyframes extraFloat{0%{transform:translateY(-8px)}100%{transform:translateY(9px)}}
