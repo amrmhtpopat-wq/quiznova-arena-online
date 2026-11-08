@@ -16,6 +16,12 @@ on:
       - tests/browser_responsive_v122.py
       - game-lab-preview.html
       - tests/browser_game_lab_v1.py
+      - game-lab-play.html
+      - game-lab-cloud-v2.js
+      - game-lab-extra-v2.js
+      - game-lab-extra-v2.css
+      - game_lab_api.py
+      - tests/browser_game_lab_cloud_v2.py
       - tests/browser_mobile_v123.py
       - booyah-mobile-v123.css
       - booyah-responsive-v122.css
@@ -70,6 +76,7 @@ jobs:
       - name: Test actual browser on desktop and mobile
         run: |
           python tests/browser_game_lab_v1.py
+          python tests/browser_game_lab_cloud_v2.py
           python tests/browser_stage_fit_v126.py
           python tests/browser_mobile_v123.py
           python tests/browser_responsive_v122.py
