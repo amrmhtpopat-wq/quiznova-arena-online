@@ -134,10 +134,12 @@ class StudentSoloContract(unittest.TestCase):
              'settings': {'randomQuestions': False, 'publishedSolo': True, 'soloMaxAttempts': 2},
              'questions': [{'id': 'tf1', 'type': 'tf', 'text': 'RAM مؤقتة', 'time': 120,
                             'points': 1000, 'correct': True}]}
+        student = store.add_students(self.tid, [{'name':'QA-'+uuid.uuid4().hex[:12], 'className':'التاسع أ', 'avatar':'m01'}])[0]
+        card, sid = student['cardCode'], student['id']
         store.save_snapshot(self.tid, {'quizzes': [q]})
-        baseline=store.query('SELECT xp FROM students WHERE id=?',(self.student_id,))['xp']
+        baseline=store.query('SELECT xp FROM students WHERE id=?',(sid,))['xp']
         with ThreadPoolExecutor(max_workers=4) as pool:
-            responses=list(pool.map(lambda _: post('start', {'card': self.card, 'quizId': q['id']}), range(4)))
+            responses=list(pool.map(lambda _: post('start', {'card': card, 'quizId': q['id']}), range(4)))
         successes=[data for status,data in responses if status==200]
         rejected=[data for status,data in responses if status==403]
         self.assertEqual(len(successes),2,responses)
@@ -150,9 +152,9 @@ class StudentSoloContract(unittest.TestCase):
             self.assertTrue(result['state']['finished'])
             gains.append(result['state']['xpGain'])
         self.assertEqual(sorted(gains),[0,20])
-        actual=store.query('SELECT xp FROM students WHERE id=?',(self.student_id,))['xp']
+        actual=store.query('SELECT xp FROM students WHERE id=?',(sid,))['xp']
         self.assertEqual(actual-baseline,20)
-        status,response=post('catalog',{'card':self.card})
+        status,response=post('catalog',{'card':card})
         self.assertEqual(status,200)
         info=next(item for item in response['quizzes'] if item['id']==q['id'])
         self.assertEqual(info['attemptsUsed'],2)
