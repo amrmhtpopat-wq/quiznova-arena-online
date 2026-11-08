@@ -11,6 +11,8 @@ platform_store.init()
 import platform_api
 import solo_api
 solo_api.ensure_schema()
+import game_lab_api
+game_lab_api.ensure_schema()
 import admin_api
 admin_api.initialize()
 
@@ -428,6 +430,7 @@ class Handler(SimpleHTTPRequestHandler):
         u=urlparse(self.path)
         if admin_api.handle_get(self,u):return
         if platform_api.handle_get(self,u):return
+        if game_lab_api.handle_get(self,u):return
         if u.path=='/api/health':
             try:
                 result=platform_store.query('SELECT 1 AS ok')
@@ -536,6 +539,7 @@ class Handler(SimpleHTTPRequestHandler):
         if admin_api.handle_post(self,u,data):return
         if platform_api.handle_post(self,u,data):return
         if solo_api.handle_post(self,u,data):return
+        if game_lab_api.handle_post(self,u,data):return
         if u.path=='/api/room/start':
             teacher=platform_api.authorized(self)
             if not teacher:return
