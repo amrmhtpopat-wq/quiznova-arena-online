@@ -198,7 +198,7 @@ async function showAssignments(){
  try{
   const reply=await request('/api/game-lab/pro/assignments?id='+encodeURIComponent(aid));
   const targets=reply.targets||[];
-  const selectedType=targets[0]?.target_type||'all';
+  const selectedType=targets[0]?.target_type||$('labAssignType').value;
   $('labAssignType').value=selectedType;renderTargetChoices();
   const chosen=targets.filter(x=>x.target_type===selectedType).map(x=>x.target_value);
   for(const input of $('labAssignTargets').querySelectorAll('input'))input.checked=chosen.includes(input.value);
