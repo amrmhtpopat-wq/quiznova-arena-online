@@ -14,6 +14,8 @@ const errors={
  invalid_pages:'نطاق الصفحات غير صحيح.',
  empty_pages:'لا توجد نصوص في الصفحات المحددة.',
  ai_not_configured:'التوليد بالذكاء الاصطناعي غير مفعّل لعدم وجود مفتاح API على الخادم. استخدم الاستخراج المجاني أو أضف المفتاح عبر إعدادات Render الآمنة.',
+ ai_consent_required:'وافق أولًا على إرسال الصفحات المختارة إلى مزود الذكاء الاصطناعي.',
+ ai_daily_limit:'وصلت إلى الحد اليومي التجريبي (10 عمليات لكل معلم).',
  ai_provider_unavailable:'مزود الذكاء الاصطناعي غير متاح الآن. جرّب الاستخراج المجاني.',
  ai_invalid_response:'لم يُرجع النموذج أسئلة صالحة. أعد المحاولة.',
  publish_first:'انشر النشاط أولًا ثم أضفه إلى بطاقات الطلاب.',
@@ -128,6 +130,8 @@ async function generate(){
  const b=$('labBookGenerate');b.disabled=true;message('labBookStatus','جارٍ استخراج الأسئلة من الكتاب المحدد...');
  try{
   const mode=$('labBookMode').value,params=requestDraft();
+  if(mode==='ai'&&!$('labAiConsent').checked)throw Error('ai_consent_required');
+  params.consent=mode==='ai'&&$('labAiConsent').checked;
   const response=await request('/api/game-lab/pro/books/'+(mode==='ai'?'ai':'draft'),params);
   const src=response.rows||[];
   if(!src.length){message('labBookStatus',response.warning||'لم يتم استخراج أسئلة. جرّب صفحات أو درسًا آخر.',true);return}
