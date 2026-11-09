@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive"><meta name="theme-color" content="#0b2241">
+<title>BOOYAHJO GAME LAB | المنافسة المباشرة</title>
+<style>
+:root{font-family:Tahoma,"Segoe UI",Arial,sans-serif;--bg:#07172f;--panel:#123b61;--line:#386c91;--ink:#effbff;--muted:#b9d4e7;--mint:#7bffe2;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;min-height:100dvh;background:radial-gradient(ellipse at 85% 0,#15547e,transparent 38%),var(--bg);color:var(--ink);line-height:1.5}
+button,input,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.55;cursor:default}a{color:#aef1f4;text-decoration:none}
+button:focus-visible,input:focus-visible,a:focus-visible,select:focus-visible{outline:3px solid #91ffe7;outline-offset:3px}
+.wrap{max-width:1520px;margin:0 auto;padding:clamp(12px,2vw,22px);display:flex;flex-direction:column;gap:12px;min-height:100dvh}
+.top{display:flex;gap:14px;align-items:center;justify-content:space-between;border-bottom:1px solid #416786;padding-bottom:10px;flex-wrap:wrap}.brand{font-size:1.4rem;font-weight:900;letter-spacing:.03em}.brand em{color:var(--mint);font-style:normal}
+.actions{display:flex;gap:7px;flex-wrap:wrap;align-items:center}.btn{border:1px solid transparent;background:var(--mint);color:#092f3b;font-weight:900;padding:9px 13px;border-radius:11px;min-height:42px;text-align:center}.btn.alt{color:#e1f7ff;background:#1b4c70;border-color:#5489aa}.btn.clear{color:#deebfc;background:transparent;border-color:#47718f}.btn.gold{background:#ffdc88;color:#3d2e10}.pill{border:1px solid #5188a4;border-radius:100px;padding:5px 11px;background:#163d5f;font-size:.82rem}
+.panel{background:linear-gradient(135deg,#143a5d,#092644);border:1px solid #356384;border-radius:19px;padding:clamp(14px,2vw,22px);min-width:0}
+.hidden{display:none!important}.login{max-width:740px;margin:auto;width:100%;display:flex;flex-direction:column;gap:12px}.login h1{font-size:clamp(1.8rem,4vw,2.7rem);margin:0}.login p{color:#b3cfe0;margin:0}
+.field label{display:block;font-size:.87rem;margin:0 0 6px;font-weight:800}.field input,.field select{width:100%;background:#0b2a4d;border:1px solid #5488a6;color:white;padding:11px 13px;border-radius:11px}
+.row2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.code{font-size:clamp(2.1rem,5vw,3.9rem);letter-spacing:.13em;color:var(--mint);line-height:1.3;font-weight:900}
+.error{border:1px solid #bc7785;background:#6f294370;padding:9px;border-radius:10px;color:#ffe2e6}.good{color:#a8ffe4;min-height:28px}.stage{flex:1;display:grid;grid-template-columns:minmax(0,1.7fr) minmax(260px,.7fr);gap:13px;min-height:0;align-items:stretch}
+.stage-left{display:flex;flex-direction:column;gap:12px;min-width:0;max-height:calc(100dvh - 110px)}
+.stage-right{display:flex;flex-direction:column;gap:11px;min-height:0;max-height:calc(100dvh - 110px)}
+.stage .panel{min-width:0}.live-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}.live-title{font-size:clamp(1.1rem,2vw,1.6rem);margin:0;max-width:720px}.round{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.question-card{flex:1;display:flex;flex-direction:column;justify-content:center;gap:10px;min-height:0;overflow:auto}.question-card h2{text-align:center;font-size:clamp(1.4rem,3.2vw,2.3rem);margin:0;line-height:1.44;overflow-wrap:anywhere}.q-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;min-height:0}.q-option{padding:12px;border:1px solid #508fb6;border-radius:14px;background:#175078;min-height:clamp(56px,10vh,96px);font-size:clamp(.95rem,1.7vw,1.25rem);color:white;font-weight:800;overflow-wrap:anywhere}
+.q-option:hover:not(:disabled){border-color:#8cffdd}.q-option.correct{background:#0f775a;border-color:#a0ffdd}.q-option.selected{border-color:#ffdc82;background:#84662c}.q-option.wrong{background:#7f3350;border-color:#ffa0b2}
+.status{min-height:34px;text-align:center;font-weight:800;font-size:.96rem}.leader-title{display:flex;justify-content:space-between;align-items:center;gap:8px}.leader-title h3{margin:0;font-size:clamp(1.05rem,1.8vw,1.35rem)}.ranks{display:grid;gap:7px;overflow:auto;min-height:0}
+.rank{display:grid;grid-template-columns:35px minmax(0,1fr) auto;align-items:center;gap:7px;padding:8px 10px;border:1px solid #426e8e;background:#0c3355;border-radius:10px;font-size:.83rem}.rank b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rank strong{color:#ffdf86}.rank:first-child{border-color:#f8d57d;background:#4a3e2978}.teamrank{background:#153c62;border-radius:9px;padding:9px 10px;display:flex;justify-content:space-between;border:1px solid #446d8e;margin-bottom:6px}.live-actionbar{display:flex;gap:9px;align-items:center;justify-content:center;flex-wrap:wrap}.live-actionbar .btn{min-width:145px}
+.image{display:block;max-height:19vh;width:min(100%,430px);object-fit:contain;margin:0 auto;border-radius:13px;border:1px solid #356f97;background:#09253e}.footer{text-align:center;color:#8cb0c8;font-size:.73rem;padding-top:2px}.waiting{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px;min-height:200px}.waiting strong{font-size:clamp(1.45rem,3vw,2.4rem)}.student-stage{max-width:1050px;width:100%;margin:0 auto;flex:1;display:flex;flex-direction:column;gap:13px}.student-stage .question-card{max-height:none}
+.teams-mates{font-size:.8rem;color:#bce8f9}.count{color:#ffdd89;font-weight:900;font-size:clamp(1.25rem,2.4vw,1.85rem)}.session-url{direction:ltr;font-size:.72rem;word-break:break-all;color:#b4dfed}
+@media(max-width:1000px){.stage{grid-template-columns:minmax(0,1fr) 250px;gap:9px}.stage-left,.stage-right{max-height:none}.stage .panel{padding:12px}.stage-left{min-height:550px}}@media(max-width:700px){.stage{display:flex;flex-direction:column}.stage-left,.stage-right{max-height:none;min-height:0}.wrap{padding:11px}.q-options{grid-template-columns:1fr;gap:8px}.q-option{min-height:59px}.question-card{min-height:0}.row2{grid-template-columns:1fr}.rank{padding:7px 9px}}
+@media(min-width:1000px) and (min-height:700px){.wrap{max-height:100dvh;overflow:hidden}.stage-left,.stage-right{height:calc(100dvh - 116px)}.question-card{overflow:auto}.ranks{max-height:40vh}}
+</style></head><body>
+<div class="wrap"><header class="top"><div class="brand">⚡ BOOYAH<em>JO</em> <span style="color:#bbdaec;font-size:.62em">LIVE GAME LAB</span></div><div class="actions"><span class="pill" id="roomBadge">رمز الغرفة: —</span><button id="fullButton" class="btn alt">⛶ ملء الشاشة</button><a class="pill" href="/game-lab-preview.html">مختبر الألعاب</a></div></header>
+<section id="join" class="panel login"><div style="font-size:3.2rem;text-align:center">🏆</div><h1 id="joinTitle">انضم للمنافسة المباشرة</h1><p id="joinHelp">اكتب رمز الغرفة ورمز بطاقة الطالب لتدخل بالتحدي، أو اسمًا تجريبيًا للعب بدون XP.</p>
+<div class="field"><label for="roomCode">🔢 رمز الغرفة</label><input id="roomCode" autocomplete="off" maxlength="8" placeholder="ABC123" dir="ltr" style="text-align:center;letter-spacing:.12em"></div>
+<div class="row2"><div class="field"><label for="joinCard">🪪 رمز بطاقة الطالب</label><input id="joinCard" autocomplete="off" maxlength="90" placeholder="اختياري عند تجربة الضيف"></div><div class="field"><label for="joinName">👨‍🎓 الاسم (للضيف فقط)</label><input id="joinName" autocomplete="name" maxlength="40" placeholder="طالب تجريبي"></div></div><button class="btn" id="joinButton">🚀 انضم الآن</button><p class="good" role="status" id="joinStatus"></p></section>
+<section id="teacher" class="stage hidden"><div class="stage-left"><div class="panel"><div class="live-head"><h2 id="teacherTitle" class="live-title">المنافسة المباشرة</h2><div class="actions"><span id="teacherStatus" class="pill">انتظار</span><span id="teacherTimer" class="count">—</span></div></div><div class="round"><span id="teacherRound" class="pill">الجولة 0</span><span id="teacherAnswered" class="pill">0 / 0 أجابوا</span></div></div>
+<div class="panel question-card" id="teacherQuestionCard"><div class="waiting"><strong>🎯 شارك PIN مع طلابك</strong><span>بعد انضمامهم اضغط «بدء التحدي»</span><div class="code" id="teacherPin">------</div><img id="teacherQr" alt="رمز QR الخاص بالغرفة" style="max-height:150px;background:white;border-radius:12px;padding:8px"><small id="teacherJoinUrl" class="session-url"></small></div></div>
+<div class="panel live-actionbar"><button id="teacherStart" class="btn gold">▶ بدء التحدي</button><button id="teacherNext" class="btn hidden">السؤال التالي ⟵</button><button id="teacherEnd" class="btn clear">⏹ إنهاء الجلسة</button></div></div>
+<div class="stage-right"><div class="panel" style="display:flex;flex-direction:column;flex:1;min-height:0"><div class="leader-title"><h3>🏅 أفضل خمسة طلاب</h3><span id="teacherMembers" class="pill">0 لاعب</span></div><div id="teacherRanks" class="ranks"></div></div><div class="panel"><div class="leader-title"><h3>👥 ترتيب المجموعات</h3></div><div id="teacherTeamRanks"></div></div></div></section>
+<section id="student" class="student-stage hidden"><div class="panel live-head"><div><h2 class="live-title" id="studentTitle">تحدّي تعليمي مباشر</h2><p style="margin:3px 0;color:#a9d6e4;font-size:.8rem" id="studentTeam"></p></div><div class="actions"><span id="studentRound" class="pill">الجولة</span><span id="studentTimer" class="count">—</span><span id="studentScore" class="pill">0 ⭐</span></div></div>
+<div class="panel question-card" id="studentQuestionCard"><div class="waiting"><strong>✅ تم الانضمام بنجاح</strong><p>أنت الآن في غرفة الانتظار، استعد للسؤال التالي.</p></div></div>
+<div id="studentMessage" class="panel status" role="status" aria-live="polite">جارٍ مزامنة الجلسة...</div>
+<div class="panel"><div class="leader-title"><h3>🏆 الترتيب الحالي</h3></div><div id="studentRanks" class="ranks"></div><div id="studentMates" class="teams-mates"></div></div></section>
+<footer class="footer">BOOYAHJO GAME LAB · الأسئلة والنقاط متزامنة مع الخادم · نتائج الفرق والفردي دون تكرار نقاط XP</footer></div>
+<script>
+(()=>{'use strict';const $=id=>document.getElementById(id);
+const params=new URLSearchParams(location.search),teacherCode=params.get('host')||'',playerCode=params.get('code')||'';
+const code=(teacherCode||playerCode).trim().toUpperCase();
+const host=!!teacherCode,tokenKey='qn9_teacher_token',runKey='lab_room_session_'+code;
+let studentToken=sessionStorage.getItem(runKey)||'',state=null,polling=null,pending=false,shownIndex=-1;
+const map={room_not_found:'الغرفة غير موجودة أو انتهت صلاحيتها.',invalid_card:'رمز البطاقة غير صحيح.',card_other_teacher:'هذه البطاقة تخص معلمًا آخر.',already_joined:'هذه البطاقة دخلت الغرفة بالفعل. افتح الغرفة على الجهاز الذي دخلت منه.',room_full:'اكتملت سعة الغرفة.',invalid_session:'تعذر استعادة الجلسة. ادخل مجددًا.',question_closed:'انتهى الوقت أو انتقل السؤال.',already_answered:'لقد أجبت عن السؤال بالفعل.',rate_limited:'طلبات كثيرة، جرّب بعد قليل.'};
+function err(e){return map[e.message]||'تعذّر الاتصال بالخادم: '+e.message}
+async function api(url,data){
+ const opts={cache:'no-store',headers:{}};
+ if(host)opts.headers.Authorization='Bearer '+(localStorage.getItem(tokenKey)||'');
+ if(data!==undefined){opts.method='POST';opts.headers['Content-Type']='application/json';opts.body=JSON.stringify(data)}
+ const response=await fetch(url,opts);
+ let payload=await response.json();
+ if(!response.ok||!payload.ok)throw Error(payload.error||'network');
+ return payload
+}
+function show(id){['join','teacher','student'].forEach(x=>$(x).classList.toggle('hidden',id!==x))}
+function element(tag,className,value){const e=document.createElement(tag);if(className)e.className=className;if(value!==undefined)e.textContent=String(value);return e}
+function button(text,cb,className='btn alt'){const e=element('button',className,text);e.onclick=cb;return e}
+function countdown(deadline){return Math.max(0,Number(deadline||0)-Math.floor(Date.now()/1000))}
+function statusText(s){return {lobby:'في غرفة الانتظار',question:'السؤال مباشر',results:'انتهى السؤال',finished:'انتهت المنافسة'}[s]||'انتظار'}
+function rankList(target,items,max=5){target.replaceChildren();const best=(items||[]).slice(0,max);if(!best.length){target.append(element('p','pill','انضمام الطلاب لم يبدأ بعد'));return}
+ best.forEach((r,i)=>{const row=element('div','rank');row.append(element('span','',i===0?'🥇':i===1?'🥈':i===2?'🥉':String(i+1)),element('b','',r.name+(r.team?' · '+r.team:'')),element('strong','',r.score+' ⭐'));target.append(row)})}
+function teams(target,items){target.replaceChildren();if(!items?.length){target.append(element('div','pill','وضع اللعب فردي'));return}items.forEach(x=>{const row=element('div','teamrank');row.append(element('b','',x.name),element('strong','',x.score+' ⭐'));target.append(row)})}
+function createQuestion(target,s,isTeacher){
+ target.replaceChildren();const q=s.question;
+ if(!q){const section=element('div','waiting');section.append(element('strong','',s.status==='finished'?'🏆 انتهت المنافسة':'🎯 انتظر بدء الجلسة'));target.append(section);return}
+ const heading=element('h2','',q.text);target.append(heading);
+ if(q.imageUrl){const img=element('img','image');img.src=q.imageUrl;img.alt='صورة السؤال';target.append(img)}
+ const buttons=element('div','q-options');
+ for(const text of q.options){
+  const btn=button(text,()=>submit(q.index,text,btn));
+  btn.className='q-option';btn.dataset.value=text;
+  if(isTeacher||s.status==='results'||s.me?.answered)btn.disabled=true;
+  if((isTeacher||s.status==='results')&&s.correctAnswer===text)btn.classList.add('correct');
+  buttons.append(btn)
+ }target.append(buttons);
+ if(s.status==='results'){
+  const feedback=element('div','status',s.correctAnswer?'✅ الإجابة الصحيحة: '+s.correctAnswer:'اكتملت الجولة. استعد للسؤال التالي.');target.append(feedback)
+ }else if(!isTeacher&&s.me?.answered)target.append(element('div','status','✅ تم تسجيل إجابتك. استعد للجولة التالية.'));
+}
+async function submit(index,choice,b){
+ if(pending||!studentToken||!state||state.status!=='question'||state.me?.answered)return;
+ pending=true;try{
+  b.classList.add('selected');
+  const r=await api('/api/game-lab/live/answer',{code,token:studentToken,index,answer:choice});
+  $('studentMessage').textContent=r.submitted?'✅ أُرسلت إجابتك إلى المعلم':'تعذر إرسال الإجابة.';
+  await sync()
+ }catch(e){$('studentMessage').textContent=err(e)}finally{pending=false}
+}
+function renderTeacher(s){
+ show('teacher');
+ $('roomBadge').textContent='PIN: '+s.code;$('teacherPin').textContent=s.code;
+ $('teacherTitle').textContent='🎥 '+s.title;
+ $('teacherStatus').textContent=statusText(s.status);
+ $('teacherTimer').textContent=s.status==='question'?'⏱ '+countdown(s.deadline)+' ث':'—';
+ $('teacherRound').textContent='السؤال '+(s.index+1)+' من '+s.total;
+ $('teacherAnswered').textContent=(s.answerStats?.answered||0)+' / '+(s.answerStats?.total||0)+' أجابوا';
+ $('teacherMembers').textContent=s.participants+' لاعب';
+ const playerUrl=location.origin+'/game-lab-live.html?code='+encodeURIComponent(code);
+ $('teacherJoinUrl').textContent=playerUrl;
+ $('teacherQr').src='/api/qr?format=svg&text='+encodeURIComponent(playerUrl);
+ $('teacherStart').classList.toggle('hidden',s.status!=='lobby');
+ $('teacherNext').classList.toggle('hidden',!['question','results'].includes(s.status));
+ $('teacherNext').textContent=s.index+1>=s.total?'🏆 إظهار الترتيب النهائي':'السؤال التالي ⟵';
+ $('teacherNext').disabled=s.status==='question';
+ $('teacherEnd').disabled=s.status==='finished';
+ if(s.status==='lobby'){const target=$('teacherQuestionCard');target.innerHTML='<div class="waiting"><strong>شارك رمز الجلسة مع الطلاب</strong><p>عند اكتمال الانضمام اضغط «بدء التحدي»</p><div class="code" id="teacherPinLive"></div></div>';$('teacherPinLive').textContent=s.code;}
+ else createQuestion($('teacherQuestionCard'),s,true);
+ rankList($('teacherRanks'),s.leaderboard,5);
+ teams($('teacherTeamRanks'),s.teamLeaderboard);
+}
+function renderStudent(s){
+ show('student');
+ $('roomBadge').textContent='PIN: '+s.code;
+ $('studentTitle').textContent='🎮 '+s.title;
+ $('studentRound').textContent='الجولة '+(s.index+1)+' / '+s.total;
+ $('studentTimer').textContent=s.status==='question'?'⏱ '+countdown(s.deadline)+' ث':statusText(s.status);
+ $('studentScore').textContent=(s.me?.score||0)+' ⭐';
+ $('studentTeam').textContent='👤 '+(s.me?.name||'طالب')+(s.me?.team?' · فريق '+s.me.team:'');
+ if(s.status==='lobby'){$('studentQuestionCard').innerHTML='<div class="waiting"><strong>✅ انضممت بنجاح</strong><p>استعد للسؤال الأول، ستظهر الأسئلة تلقائيًا.</p></div>'}
+ else if(s.status==='finished'){$('studentQuestionCard').innerHTML='<div class="waiting"><strong>🏆 اكتملت المنافسة!</strong><p>شكرًا لمشاركتك، تظهر النقاط النهائية بالأسفل.</p></div>'}
+ else createQuestion($('studentQuestionCard'),s,false);
+ rankList($('studentRanks'),s.leaderboard,5);
+ if(s.me?.team){
+  const friendList=s.teammates?.length?'👥 أعضاء فريقي: '+s.teammates.join('، '):'أنت في فريق '+s.me.team;
+  $('studentMates').textContent=friendList
+ }else $('studentMates').textContent='';
+ if(s.status==='results')$('studentMessage').textContent=s.correctAnswer?'💡 '+s.correctAnswer:'🏁 انتهى السؤال. انتظر الجولة الجديدة.';
+ else if(s.me?.answered)$('studentMessage').textContent='✅ تم تسجيل إجابتك.';
+ else if(s.status==='question')$('studentMessage').textContent='اختر إجابة واحدة قبل انتهاء الوقت.';
+ else $('studentMessage').textContent=statusText(s.status);
+}
+async function sync(){
+ if(!code||(!host&&!studentToken))return;
+ try{
+  const route='/api/game-lab/live/state?code='+encodeURIComponent(code)+(host?'':'&token='+encodeURIComponent(studentToken));
+  const response=await api(route);
+  state=response.state;
+  if(host)renderTeacher(state);else renderStudent(state)
+ }catch(e){
+  const target=host?'teacherStatus':'studentMessage';
+  $(target).textContent=err(e);
+  if(!host&&e.message==='invalid_session'){studentToken='';sessionStorage.removeItem(runKey);show('join')}
+ }
+}
+async function command(action){
+ try{await api('/api/game-lab/live/'+action,{code});await sync()}catch(e){$('teacherStatus').textContent=err(e)}
+}
+async function join(){
+ const room=$('roomCode').value.trim().toUpperCase(),card=$('joinCard').value.trim(),name=$('joinName').value.trim();
+ if(!room){$('joinStatus').textContent='اكتب رمز الغرفة.';return}
+ $('joinButton').disabled=true;$('joinStatus').textContent='جارٍ الانضمام...';
+ try{
+  const data=await api('/api/game-lab/live/join',{code:room,card,guestName:name});
+  studentToken=data.token;sessionStorage.setItem('lab_room_session_'+room,studentToken);
+  location.replace('/game-lab-live.html?code='+encodeURIComponent(room))
+ }catch(e){$('joinStatus').textContent=err(e);$('joinButton').disabled=false}
+}
+$('joinButton').onclick=join;
+$('teacherStart').onclick=()=>command('start');
+$('teacherNext').onclick=()=>command('next');
+$('teacherEnd').onclick=()=>{if(confirm('هل تريد إنهاء المباراة وعرض الترتيب النهائي؟'))command('finish')};
+$('fullButton').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen()}catch(_){}};
+if(code){$('roomCode').value=code;$('roomBadge').textContent='PIN: '+code}
+else $('roomCode').value='';
+const cardSaved=sessionStorage.getItem('booyah_lab_card_code');if(cardSaved)$('joinCard').value=cardSaved;
+if(host){show('teacher');if(!localStorage.getItem(tokenKey))$('teacherStatus').textContent='سجل الدخول بحساب المعلم في هذا المتصفح أولًا.';void sync();}
+else if(code&&studentToken){void sync();}
+else show('join');
+polling=setInterval(()=>{if((host||studentToken)&&!document.hidden)void sync()},1350);
+window.addEventListener('pagehide',()=>clearInterval(polling));
+})();
+</script></body></html>
