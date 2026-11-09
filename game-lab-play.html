@@ -7,11 +7,30 @@
 :root{font-family:Tahoma,"Segoe UI",Arial,sans-serif;color-scheme:dark;--surface:#102f50;--bright:#47efd2;--text:#effbff;--muted:#bbd0df}
 *{box-sizing:border-box}body{background:radial-gradient(ellipse at 80% 0,#17537d,transparent 46%),#091b35;color:var(--text);margin:0;min-height:100dvh;line-height:1.65}button,input{font:inherit}button{cursor:pointer}button:disabled{opacity:.6;cursor:default}input{background:#0b2542;border:1px solid #6382a1;border-radius:13px;padding:12px 14px;color:white;width:100%}button:focus-visible,input:focus-visible{outline:3px solid #79ffe8;outline-offset:3px}.wrap{max-width:1070px;margin:auto;padding:18px 20px;min-height:100dvh;display:flex;flex-direction:column;gap:15px}.header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:1px solid #335a78;padding:0 0 14px}.header strong{font-size:1.55rem}.header em{font-style:normal;color:var(--bright)}a{color:#aceaff;text-decoration:none}.badge{background:#1b4968;padding:5px 11px;border:1px solid #427c9c;border-radius:100px;font-size:.77rem;color:#d4f7ff}.box{padding:clamp(17px,3vw,27px);border:1px solid #366282;border-radius:22px;background:linear-gradient(135deg,#123b60,#102749);box-shadow:0 12px 39px #0004}.intro{width:100%;max-width:730px;margin:auto}.intro h1{font-size:clamp(1.7rem,4vw,2.5rem);margin:0 0 12px}.intro p{color:var(--muted)}.field{margin:12px 0}.field label{display:block;margin-bottom:6px;font-weight:bold;font-size:.87rem}.note{padding:11px 13px;background:#59441f76;border:1px solid #b28b45;border-radius:12px;color:#ffe4ac;font-size:.83rem;margin:11px 0}.btn{border:1px solid transparent;background:var(--bright);color:#06303b;border-radius:13px;padding:12px 17px;min-height:46px;font-weight:900;display:inline-flex;align-items:center;justify-content:center;gap:8px}.btn.alt{background:#205079;color:#e9f8ff;border-color:#4c88ae}.btn.white{background:transparent;border-color:#57758e;color:#d8f4ff}.actions{display:flex;flex-wrap:wrap;gap:10px}.hide{display:none!important}.muted{color:var(--muted)}.playarea{max-width:1000px;width:100%;margin:auto;display:flex;flex-direction:column;gap:17px;flex:1}.playinfo{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}.progress{height:9px;border-radius:10px;background:#0b2948;overflow:hidden}.progress span{height:100%;display:block;background:linear-gradient(90deg,#2be3bf,#74aaff);transition:width .35s}.prompt{font-size:clamp(1.45rem,3vw,2.25rem);line-height:1.55;text-align:center;margin:16px auto 22px;max-width:880px;overflow-wrap:anywhere}.choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.choice{border:2px solid #528eb2;border-radius:18px;background:linear-gradient(145deg,#154d78,#16446e);color:#fff;min-height:clamp(78px,16vh,138px);font-size:clamp(1.1rem,2.3vw,1.55rem);padding:12px 17px;font-weight:760;text-align:center;overflow-wrap:anywhere;transition:transform .12s}.choice:hover:not(:disabled){border-color:#65ffeb;transform:translateY(-2px)}.choice.correct{background:linear-gradient(145deg,#08765d,#185c61);border-color:#5cf7d7}.choice.wrong{background:#76364d;border-color:#ff8297}.choice.pick{border-color:#ffe18d;box-shadow:0 0 0 3px #ffe18d4c}.message{font-size:1.08rem;min-height:48px;text-align:center;font-weight:bold}.modebadge{background:#124767;padding:7px 12px;border-radius:100px;color:#83fbe4;font-size:.78rem}.bigscore{font-size:clamp(3rem,9vw,5.2rem);color:#84ffe5;font-weight:900;text-align:center}.end{text-align:center}.end h2{font-size:clamp(1.55rem,4vw,2.5rem)}.qr{display:block;margin:14px auto;background:white;border-radius:12px;padding:8px;max-width:200px;width:100%}.footer{text-align:center;color:#779fb9;font-size:.76rem;margin-top:auto;padding:20px 0}.timebar{height:10px;background:#0a2846;border-radius:100px;overflow:hidden}.timebar i{display:block;height:100%;background:#ffd568;transition:width .2s}.game-skin-boxes .choice{background:linear-gradient(125deg,#55418f,#196a87);border:2px dashed #e3b8ff}.game-skin-balloons .choice{border-radius:50% 50% 42% 42%;background:#8751a8;min-height:150px}.game-skin-wheel .choice{border-radius:100px;background:#1c7090}.game-skin-sort .choice{border-style:dashed}.game-skin-maze .choice{background:#194e6c;clip-path:polygon(0 0,95% 0,100% 15%,100% 100%,5% 100%,0 85%)}.game-skin-quiz .choice:nth-child(2n){background:#17536c}.game-skin-truth .choice{border-radius:28px;background:#104f68}.game-skin-story .choice{background:#375087}.game-skin-teams .choice{background:#206a75}
 @media(min-width:850px) and (min-height:630px){.playarea{justify-content:center}}@media(max-width:650px){.wrap{padding:12px 13px}.choices{grid-template-columns:1fr;gap:9px}.choice{min-height:62px;padding:10px}.box{padding:15px}.actions .btn{flex:1}.header strong{font-size:1.2rem}}
+</style><style>
+.mode-scene{display:grid;gap:10px;text-align:center;min-height:0}.mode-scene:empty{display:none}.scene-label{font-size:clamp(.9rem,2vw,1.08rem);padding:9px 12px;border-radius:12px;background:#123d5d;color:#c9efff}
+.scene-panel{padding:12px 16px;border-radius:15px;border:1px solid #519fb0;background:linear-gradient(125deg,#174567,#113656)}
+.scene-flip{min-height:100px;display:grid;place-items:center;border:2px dashed #68e9d6;border-radius:17px;background:linear-gradient(135deg,#13547e,#185e6b);font-size:1.3rem;font-weight:850;padding:15px;cursor:pointer}
+.scene-flip.flipped{background:#185c52}.scene-wheel{font-size:3.5rem;border:6px solid #99ffdb;border-radius:50%;width:160px;height:160px;display:grid;place-items:center;margin:auto;background:conic-gradient(#147fb1 0 60deg,#0f607c 60deg 120deg,#4e6ca1 120deg 180deg,#0b8e88 180deg 240deg,#9e667f 240deg 300deg,#d99a53 300deg 360deg);transition:transform 1.4s ease-in-out;box-shadow:0 9px 29px #0006}
+.scene-boxes,.scene-tiles,.scene-bingo{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;max-width:640px;width:100%;margin:auto}
+.scene-box{background:#16567c;color:white;border:1px solid #84caf1;border-radius:12px;padding:12px;min-height:70px;font-size:1.8rem}
+.scene-box.open{background:#0c7565;border-color:#96ffda}
+.scene-tiles{max-width:340px;aspect-ratio:16/10;gap:2px}.scene-tile{border:1px solid #5b97b9;background:#1c5a89;border-radius:4px}.scene-tile.open{opacity:0;pointer-events:none}
+.scene-letters{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}.scene-letter{min-width:42px;min-height:46px;background:#17517b;color:#fff;border:1px solid #65c7e4;border-radius:10px;font-weight:800;font-size:1.3rem}.scene-letter:disabled{opacity:.35}
+.scene-entry{width:min(100%,580px);margin:auto;background:#0b2e50;color:white;border:1px solid #63b7cc;padding:12px;border-radius:12px;font-size:1.18rem;min-height:52px}
+.scene-submit{width:max-content;min-width:155px;margin:0 auto}
+.scene-cross{display:flex;justify-content:center;flex-wrap:wrap;gap:4px}.scene-cross input{min-width:29px;width:clamp(30px,6vw,40px);height:43px;padding:4px;text-align:center;border-radius:5px;border:1px solid #79b5d0;background:#1d5980;color:#fff;font-size:1.2rem}
+.scene-bingo .choice{min-height:65px;font-size:.9rem;padding:5px}
+.scene-maze{display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap}.scene-maze span{width:37px;height:37px;border-radius:10px;background:#246189;display:grid;place-items:center}.scene-maze span.active{background:#d09d3d;color:#292410}.scene-balloon{border-radius:48% 48% 44% 44%!important;animation:labFloat 2s ease-in-out infinite alternate;background:linear-gradient(145deg,#815abf,#2a91c2)!important}
+@keyframes labFloat{to{transform:translateY(9px)}}.scene-balloon:hover,.scene-balloon:focus-visible{animation-play-state:paused}
+.mode-scene .btn{width:max-content;margin:auto}.question-card{overflow-wrap:anywhere}
+@media(max-width:650px){.scene-wheel{width:120px;height:120px;font-size:2.6rem}.scene-box{min-height:55px;padding:7px}.scene-bingo{gap:4px}.scene-bingo .choice{min-height:54px;font-size:.72rem}.scene-cross input{height:36px}.scene-balloon{animation:none}}
+@media(prefers-reduced-motion:reduce){.scene-balloon{animation:none!important}.scene-wheel{transition:none!important}}
 </style></head>
 <body><div class="wrap"><header class="header"><strong>⚡ BOOYAH<em>JO</em> <small style="font-size:.65em;color:#aacbdc">GAME LAB</small></strong><div class="actions"><span class="badge" id="gameLabel">نشاط تعليمي</span><a href="/student.html" class="badge">بوابة الطلاب</a></div></header>
 <main class="playarea">
 <section class="intro box" id="joinPanel"><div style="font-size:3rem" aria-hidden="true">🎮</div><h1 id="activityTitle">نشاط تعليمي تفاعلي</h1><p id="activitySummary">اكتشف أسئلة الدرس واستمتع بالتحدي.</p><div class="actions"><span class="badge" id="activitySubject">المبحث</span><span class="badge" id="activityQuestions">— سؤال</span><span class="badge" id="attempts">— محاولات</span></div><div class="field"><label for="studentCard">🪪 رمز البطاقة الذكية (لحفظ النقاط والنتائج)</label><input id="studentCard" autocomplete="off" maxlength="90" placeholder="رمز البطاقة أو رقمها"></div><div class="field"><label for="guestName">أو اسمك للتجربة بدون نقاط خبرة</label><input id="guestName" maxlength="40" placeholder="الطالب التجريبي"></div><div class="note">الدخول بالبطاقة يُحتسب ضمن عدد محاولات المعلم. الدخول كضيف تجربة بلا XP، ويمكنه الاطلاع على نتائج إجاباته فقط.</div><div class="actions"><button class="btn" id="startBtn">🚀 ابدأ التحدي</button><button class="btn alt" id="resumeBtn">↻ استئناف المحاولة</button></div><p class="muted" id="joinMessage" role="status"></p></section>
-<section id="questionPanel" class="hide box"><div class="playinfo"><span class="badge" id="playerName">الطالب</span><span id="questionCounter">السؤال</span><span>⭐ <b id="currentScore">0</b></span></div><div class="progress"><span id="progressBar" style="width:0"></span></div><h1 class="prompt" id="questionText"></h1><img id="lessonImage" class="hide" alt="صورة توضيحية من الدرس" style="width:min(100%,400px);height:auto;max-height:185px;object-fit:contain;margin:auto;border:1px solid #4888a8;border-radius:13px"><div id="candidateText" class="hide" style="text-align:center;color:#ffd77d;font-size:1.5rem;font-weight:900"></div><div id="timebar" class="timebar hide"><i id="remainingTime" style="width:100%"></i></div><div id="choices" class="choices"></div><div class="message" id="answerMessage" aria-live="polite"></div><div class="actions" style="justify-content:center"><button id="nextBtn" class="btn hide">السؤال التالي ⟵</button></div></section>
+<section id="questionPanel" class="hide box"><div class="playinfo"><span class="badge" id="playerName">الطالب</span><span id="questionCounter">السؤال</span><span>⭐ <b id="currentScore">0</b></span></div><div class="progress"><span id="progressBar" style="width:0"></span></div><h1 class="prompt" id="questionText"></h1><img id="lessonImage" class="hide" alt="صورة توضيحية من الدرس" style="width:min(100%,400px);height:auto;max-height:185px;object-fit:contain;margin:auto;border:1px solid #4888a8;border-radius:13px"><div id="candidateText" class="hide" style="text-align:center;color:#ffd77d;font-size:1.5rem;font-weight:900"></div><div id="timebar" class="timebar hide"><i id="remainingTime" style="width:100%"></i></div><div id="modeScene" class="mode-scene"></div><div id="choices" class="choices"></div><div class="message" id="answerMessage" aria-live="polite"></div><div class="actions" style="justify-content:center"><button id="nextBtn" class="btn hide">السؤال التالي ⟵</button></div></section>
 <section id="finishPanel" class="hide box end"><div style="font-size:4rem">🏆</div><h2>أحسنت! اكتمل التحدي</h2><p id="finishName"></p><div class="bigscore" id="finishScore">0</div><p id="finishAccuracy"></p><div class="actions" style="justify-content:center"><span class="badge" id="earnedXp">—</span></div><div class="actions" style="justify-content:center;margin-top:20px"><button id="restartBtn" class="btn">↻ محاولة أخرى</button><a href="/student.html" class="btn alt">العودة لصفحة الطالب</a></div></section>
 </main><footer class="footer">BOOYAHJO GAME LAB · كل إجابة يتم التحقق منها في الخادم · لا تشارك رمز بطاقتك مع الآخرين</footer></div>
 <script>
@@ -26,10 +45,137 @@ function stopClock(){if(clock){clearInterval(clock);clock=null}}
 function errorMessage(e){return messages[e.message]||'تعذر الاتصال؛ تحقق من الشبكة والمحاولة.'}
 function scoreText(n){return Number(n||0).toLocaleString('ar-JO')}
 function setSession(payload){state=payload;ended=Boolean(state.finished);if(state.finished)finish();else drawQuestion()}
-function finish(){stopClock();pane('finishPanel');$('finishName').textContent='🎓 '+state.studentName;$('finishScore').textContent=scoreText(state.score)+' نقطة';$('finishAccuracy').textContent=state.correct+' إجابات صحيحة من '+state.total;$('earnedXp').textContent=state.guest?'تجربة ضيف • بلا XP':'+ '+state.xpGain+' XP';$('restartBtn').disabled=false;sessionStorage.removeItem(storageKey)}
-async function answer(value){if(selected||ended||!state)return;selected=true;stopClock();$('choices').querySelectorAll('button').forEach(b=>b.disabled=true);$('answerMessage').textContent='جارٍ التحقق من إجابتك...';try{const reply=await json('/api/game-lab/student/answer',{token,index:state.index,answer:String(value)});const answer=reply.correctAnswer;$('choices').querySelectorAll('button').forEach(b=>{if(b.dataset.value===answer)b.classList.add('correct');else if(b.dataset.value===String(value))b.classList.add('wrong')});showMessage('answerMessage',(reply.correct?'✅ أحسنت، إجابة صحيحة!':'💡 الإجابة الصحيحة: '+answer));nextState=reply.state;$('nextBtn').classList.remove('hide');$('nextBtn').textContent=nextState.finished?'🏆 إظهار النتيجة':'السؤال التالي ⟵';$('currentScore').textContent=scoreText(nextState.score)}catch(e){showMessage('answerMessage',errorMessage(e));selected=false;$('choices').querySelectorAll('button').forEach(b=>b.disabled=false);if(e.message==='question_changed')await resume()}}
-function drawQuestion(){stopClock();pane('questionPanel');nextState=null;selected=false;const q=state.question;if(!q)return finish();$('questionPanel').className='box game-skin-'+state.mode;$('playerName').textContent='👤 '+state.studentName;$('questionCounter').textContent='سؤال '+(q.index+1)+' / '+q.total;$('currentScore').textContent=scoreText(state.score);$('progressBar').style.width=(q.index/q.total*100)+'%';$('questionText').textContent=q.question;const image=$('lessonImage');if(q.imageUrl){image.src=q.imageUrl;image.classList.remove('hide')}else{image.removeAttribute('src');image.classList.add('hide')}$('candidateText').classList.toggle('hide',!q.candidate);$('candidateText').textContent=q.candidate?'هل الإجابة: «'+q.candidate+'» صحيحة؟':'';$('nextBtn').classList.add('hide');showMessage('answerMessage','');$('choices').replaceChildren();q.choices.forEach((opt,i)=>{const b=document.createElement('button');b.className='choice';b.textContent=opt;b.dataset.value=opt;b.onclick=()=>answer(opt);$('choices').append(b)});
- if(state.mode==='fast'){let time=Math.max(10,Number(q.duration)||25);$('timebar').classList.remove('hide');$('remainingTime').style.width='100%';clock=setInterval(()=>{time--;$('remainingTime').style.width=Math.max(0,time/(q.duration||25)*100)+'%';if(time<=0){stopClock();answer('')}} ,1000)}else $('timebar').classList.add('hide');
+function finish(){stopClock();pane('finishPanel');$('finishName').textContent='🎓 '+state.studentName;$('finishScore').textContent=scoreText(state.score)+' نقطة';$('finishAccuracy').textContent=state.unscored?'مشاركة تعليمية مكتملة؛ لا يوجد تقييم للنقاط.':state.correct+' إجابات صحيحة من '+state.total;$('earnedXp').textContent=state.guest?'تجربة ضيف • بلا XP':'+ '+state.xpGain+' XP';$('restartBtn').disabled=false;sessionStorage.removeItem(storageKey)}
+async function answer(value){if(selected||ended||!state)return;selected=true;stopClock();$('choices').querySelectorAll('button').forEach(b=>b.disabled=true);$('answerMessage').textContent='جارٍ التحقق من إجابتك...';try{const reply=await json('/api/game-lab/student/answer',{token,index:state.index,answer:String(value)});const answer=reply.correctAnswer;$('choices').querySelectorAll('button').forEach(b=>{if(b.dataset.value===answer)b.classList.add('correct');else if(b.dataset.value===String(value))b.classList.add('wrong')});showMessage('answerMessage',reply.correct===null?'✅ تم تسجيل مشاركتك في النشاط.':(reply.correct?'✅ أحسنت، إجابة صحيحة!':'💡 الإجابة الصحيحة: '+answer));nextState=reply.state;$('nextBtn').classList.remove('hide');$('nextBtn').textContent=nextState.finished?'🏆 إظهار النتيجة':'السؤال التالي ⟵';$('currentScore').textContent=scoreText(nextState.score)}catch(e){showMessage('answerMessage',errorMessage(e));selected=false;$('choices').querySelectorAll('button').forEach(b=>b.disabled=false);if(e.message==='question_changed')await resume()}}
+function makeButton(label,handler,cls='btn alt'){
+ const b=document.createElement('button');b.type='button';b.className=cls;b.textContent=label;b.onclick=handler;return b
+}
+function sceneText(txt,cls='scene-label'){const e=document.createElement('div');e.className=cls;e.textContent=txt;return e}
+function optionButtons(q){
+ const wrap=$('choices');wrap.replaceChildren();
+ for(const opt of q.choices||[]){
+  const b=makeButton(opt,()=>answer(opt),'choice');
+  b.dataset.value=opt;
+  if(state.mode==='balloons')b.classList.add('scene-balloon');
+  wrap.append(b);
+ }
+}
+function textAnswer(q){
+ const scene=$('modeScene'),mode=state.mode;
+ if(mode==='exit'){
+  scene.append(sceneText('🎟️ اكتب ما تعلمته من الدرس، وستُحفظ مشاركتك بدون علامة أو XP.'));
+  const text=document.createElement('textarea');text.className='scene-entry';text.maxLength=120;text.rows=3;text.placeholder='تعلّمت اليوم أن...';scene.append(text);
+  scene.append(makeButton('📩 إرسال بطاقة الخروج',()=>answer(text.value.trim()),'btn scene-submit'));return
+ }
+ if(mode==='crossword'){
+  scene.append(sceneText('🔠 اكتب حروف المصطلح المقصود من اليمين إلى اليسار.'));
+  const wrap=document.createElement('div');wrap.className='scene-cross';
+  const amount=Math.min(18,Math.max(2,q.answerLength||5)),inputs=[];
+  for(let i=0;i<amount;i++){const f=document.createElement('input');f.maxLength=1;f.setAttribute('aria-label','الحرف '+(i+1));f.oninput=()=>{if(f.value&&inputs[i+1])inputs[i+1].focus()};wrap.append(f);inputs.push(f)}
+  scene.append(wrap);
+  scene.append(makeButton('✅ تحقق من الكلمة',()=>answer(inputs.map(x=>x.value).join('')),'btn scene-submit'));return
+ }
+ if(mode==='anagram'){
+  scene.append(sceneText('🔤 رتّب الحروف لتصل إلى الإجابة الصحيحة.'));
+  const chosen=[],target=sceneText('اختر الحروف بالترتيب','scene-panel'),pool=document.createElement('div');pool.className='scene-letters';
+  for(const c of q.scrambled||[]){
+   const b=makeButton(c,()=>{chosen.push(c);b.disabled=true;target.textContent=chosen.join('')},'scene-letter');pool.append(b)
+  }
+  scene.append(target,pool);
+  const actions=document.createElement('div');actions.className='actions';actions.style.justifyContent='center';
+  actions.append(makeButton('↺ إعادة',()=>{chosen.length=0;target.textContent='اختر الحروف بالترتيب';pool.querySelectorAll('button').forEach(b=>b.disabled=false)},'btn alt'),makeButton('✓ تحقق',()=>answer(chosen.join('')),'btn'));
+  scene.append(actions);return
+ }
+ if(mode==='wordsearch'){
+  scene.append(sceneText('🔍 ابحث عن الكلمة من الحروف المبعثرة، ثم اكتب المصطلح الصحيح.'));
+  const pool=document.createElement('div');pool.className='scene-letters';
+  for(const ch of q.scrambled||[]){const item=document.createElement('span');item.className='scene-letter';item.style.display='grid';item.style.placeItems='center';item.textContent=ch;pool.append(item)}
+  scene.append(pool);
+ }else if(mode==='cloze')scene.append(sceneText('✍️ أكمل الفراغ بالكلمة أو التعريف المناسب.'));
+ const field=document.createElement('input');field.className='scene-entry';field.autocomplete='off';field.maxLength=100;field.placeholder='اكتب الإجابة هنا';field.dir='auto';
+ scene.append(field);
+ scene.append(makeButton('✅ تحقق',()=>answer(field.value.trim()),'btn scene-submit'));
+ field.onkeydown=e=>{if(e.key==='Enter')answer(field.value.trim())}
+}
+function drawQuestion(){
+ stopClock();pane('questionPanel');nextState=null;selected=false;
+ const q=state.question;if(!q)return finish();
+ const mode=state.mode,scene=$('modeScene'),options=$('choices');
+ scene.replaceChildren();options.replaceChildren();
+ $('questionPanel').className='box game-skin-'+mode;
+ $('playerName').textContent='👤 '+state.studentName;
+ $('questionCounter').textContent='سؤال '+(q.index+1)+' / '+q.total;
+ $('currentScore').textContent=scoreText(state.score);
+ $('progressBar').style.width=(q.index/q.total*100)+'%';
+ $('questionText').textContent=q.question;
+ const image=$('lessonImage');
+ if(q.imageUrl){image.src=q.imageUrl;image.classList.remove('hide')}
+ else{image.removeAttribute('src');image.classList.add('hide')}
+ $('candidateText').classList.toggle('hide',!q.candidate);
+ $('candidateText').textContent=q.candidate?'هل العبارة «'+q.candidate+'» صحيحة؟':'';
+ $('nextBtn').classList.add('hide');showMessage('answerMessage','');
+ if(q.entry){textAnswer(q)}
+ else if(mode==='flash'||mode==='memory'){
+   scene.append(sceneText(mode==='flash'?'🃏 بطاقة الذاكرة':'🧠 تذكر السؤال، ثم اكشف خيارات الإجابة.'));
+   const card=makeButton('🎴 اضغط لقلب البطاقة',()=>{
+      card.classList.add('flipped');card.textContent=q.group?'التصنيف: '+q.group:'هل تذكرت الإجابة؟';optionButtons(q)},'scene-flip');
+   scene.append(card);options.replaceChildren();
+ }else if(mode==='wheel'){
+   scene.append(sceneText('🎡 دُر العجلة لاختيار طريقك للسؤال.'));
+   const spinner=makeButton('🎡','', 'scene-wheel');spinner.onclick=()=>{
+     spinner.disabled=true;spinner.style.transform='rotate(1500deg)';
+     const index=q.index;setTimeout(()=>{if(state?.index===index)optionButtons(q)},1400)
+   };
+   scene.append(spinner);options.replaceChildren();
+ }else if(mode==='boxes'){
+   scene.append(sceneText('🎁 افتح صندوق الإجابات أولًا.'));
+   const boxes=document.createElement('div');boxes.className='scene-boxes';
+   for(let n=0;n<4;n++){
+     const b=makeButton('🎁',()=>{b.classList.add('open');b.textContent='🔓';optionButtons(q)},'scene-box');boxes.append(b)
+   }
+   scene.append(boxes);options.replaceChildren();
+ }else if(mode==='hidden'){
+   scene.append(sceneText('🖼️ اكشف بعض مربعات الصورة لمساعدتك في الإجابة.'));
+   const grid=document.createElement('div');grid.className='scene-tiles';
+   for(let n=0;n<16;n++){const b=makeButton('?',()=>{b.classList.add('open');b.disabled=true},'scene-tile');grid.append(b)}
+   scene.append(grid);optionButtons(q)
+ }else if(mode==='story'){
+   scene.append(sceneText('🧭 أنت بطل قصة تعليمية. اختر المسار الصحيح لتتقدم!'));
+   optionButtons(q)
+ }else if(mode==='maze'){
+   const trail=document.createElement('div');trail.className='scene-maze';
+   for(let i=0;i<Math.min(q.total,10);i++){const tile=sceneText(i+1,'');if(i===q.index)tile.className='active';trail.append(tile)}
+   scene.append(sceneText('🌀 اختر الباب الصحيح لتخرج من المرحلة الحالية.'),trail);
+   optionButtons(q)
+ }else if(mode==='bingo'){
+   scene.append(sceneText('🔲 اعثر على الإجابة الصحيحة من شبكة بينغو.'));
+   const grid=document.createElement('div');grid.className='scene-bingo';
+   const opts=q.choices||[];
+   for(let n=0;n<16;n++){const value=opts[n%opts.length];const b=makeButton(value,()=>answer(value),'choice');b.dataset.value=value;grid.append(b)}
+   scene.append(grid);options.replaceChildren()
+ }else if(mode==='order'){
+   scene.append(sceneText('🪜 رتب الخيارات بإشارات الأسهم، واجعل الإجابة الصحيحة في الأعلى.'));
+   let sorted=[...(q.choices||[])],host=document.createElement('div');host.className='scene-panel';
+   const paint=()=>{host.replaceChildren();sorted.forEach((item,i)=>{const row=document.createElement('div');row.className='actions';row.style.justifyContent='space-between';row.style.marginBottom='8px';row.append(sceneText((i+1)+'. '+item,''));
+      row.append(makeButton('↑',()=>{if(i>0){[sorted[i],sorted[i-1]]=[sorted[i-1],sorted[i]];paint()}},'btn alt'));host.append(row)})};
+   scene.append(host);paint();
+   scene.append(makeButton('✅ اعتماد أول إجابة',()=>answer(sorted[0]),'btn scene-submit'));options.replaceChildren()
+ }else{
+   if(mode==='pairs')scene.append(sceneText('🧩 صِل المصطلح بالإجابة: اختر البطاقة المطابقة من اليمين.'));
+   if(mode==='sort')scene.append(sceneText('🗂️ اختر المجموعة الصحيحة لهذا المفهوم.'));
+   if(mode==='truth')scene.append(sceneText('✅ صح أو خطأ؟'));
+   if(mode==='diagram')scene.append(sceneText('📍 سمِّ الجزء الصحيح من الصورة أو الرسم.'));
+   if(mode==='teams')scene.append(sceneText('⚔️ هذا تدريب فردي لهذا القالب؛ منافسة الفرق الحقيقية متاحة عبر الغرفة المباشرة.'));
+   if(mode==='board')scene.append(sceneText('📈 سجّل مشاركتك؛ هذا النشاط لا يمنح XP.'));
+   if(mode==='survey')scene.append(sceneText('🗳️ شارك برأيك؛ الاستفتاء لا يمنح XP.'));
+   if(mode==='balloons')scene.append(sceneText('🎈 اضغط البالون الذي يحمل الإجابة الصحيحة.'));
+   optionButtons(q)
+ }
+ if(mode==='fast'){
+  let time=Math.max(10,Number(q.duration)||25);
+  $('timebar').classList.remove('hide');$('remainingTime').style.width='100%';
+  clock=setInterval(()=>{time--;$('remainingTime').style.width=Math.max(0,time/(q.duration||25)*100)+'%';if(time<=0){stopClock();answer('')}},1000)
+ }else $('timebar').classList.add('hide')
 }
 async function resume(){stopClock();token=sessionStorage.getItem(storageKey)||token;if(!token){showMessage('joinMessage','لا توجد محاولة سابقة محفوظة في هذا المتصفح.');pane('joinPanel');return}try{const data=await json('/api/game-lab/student/state',{token});setSession(data.state)}catch(e){sessionStorage.removeItem(storageKey);showMessage('joinMessage',errorMessage(e));pane('joinPanel')}}
 $('nextBtn').onclick=()=>{if(nextState){setSession(nextState)}};
