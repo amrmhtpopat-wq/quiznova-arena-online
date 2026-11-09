@@ -21,6 +21,9 @@ on:
       - game-lab-extra-v2.js
       - game-lab-extra-v2.css
       - game_lab_api.py
+      - game_lab_pro.py
+      - game_lab_live.py
+      - tests/test_game_lab_pro.py
       - tests/browser_game_lab_cloud_v2.py
       - tests/browser_mobile_v123.py
       - booyah-mobile-v123.css
