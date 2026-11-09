@@ -184,10 +184,11 @@ def question_state(state,token_hash):
     item=rows[idx];mode=state['mode']
     rng=random.Random(int(hashlib.sha256((token_hash+':'+str(idx)).encode()).hexdigest()[:12],16))
     if mode in TEXT_MODES:
-        letters=list(item['a'].replace(' ','')[:40]) if mode in ('anagram','wordsearch') else []
+        can_shuffle=mode in ('anagram','wordsearch') and len(item['a'].replace(' ',''))<=40
+        letters=list(item['a'].replace(' ','')) if can_shuffle else []
         rng.shuffle(letters)
         return {'index':idx,'question':item['q'],'choices':[],
-                'entry':'letters' if mode in ('anagram','wordsearch') else 'text',
+                'entry':'letters' if can_shuffle else 'text',
                 'scrambled':letters,'answerLength':len(item['a'][:40]),
                 'total':len(rows),'mode':mode,'duration':state['duration'],
                 'score':state['score']}
