@@ -16,9 +16,11 @@ function current(){const lines=$('activityData').value.split(/\r?\n/).map(s=>s.t
  if(rows.length<4)throw Error('أدخل أربعة أسئلة مختلفة على الأقل.');
  return {title:$('activityTitle').value.trim().slice(0,90),subject:$('subject').value,grade:$('grade').value,
          mode:$('cloudMode').value,time:Number($('roundTime').value)||25,rows,
-         bookId:window.BOOYAH_LAB_BOOK_ID||'',imageId:window.BOOYAH_LAB_IMAGE_ID||''}}
-function fill(a){currentId=a.id;const p=a.activity||a;window.BOOYAH_LAB_BOOK_ID=p.bookId||'';window.BOOYAH_LAB_IMAGE_ID=p.imageId||'';$('activityTitle').value=p.title;$('subject').value=p.subject;$('grade').value=p.grade;$('roundTime').value=String(p.time);$('activityData').value=p.rows.map(x=>x.q+' | '+x.a+' | '+x.g).join('\n');$('cloudMode').value=p.mode||'quiz';selectedMode=$('cloudMode').value;$('cloudMaxAttempts').value=String(a.maxAttempts||1);$('applyContent').click();note('تم فتح «'+p.title+'» للتعديل. احفظ التغييرات على حسابك.');document.getElementById('builder').scrollIntoView({behavior:'smooth'})}
-function resetSelection(){window.BOOYAH_LAB_BOOK_ID='';window.BOOYAH_LAB_IMAGE_ID='';currentId=null;$('cloudMaxAttempts').value='1';note('نشاط جديد: اختر القالب، عدّل محتوى الدرس، ثم احفظه على حسابك.')}
+         bookId:window.BOOYAH_LAB_BOOK_ID||'',imageId:window.BOOYAH_LAB_IMAGE_ID||'',
+         sourceGroup:window.BOOYAH_LAB_SOURCE_GROUP||''}}
+function fill(a){currentId=a.id;const p=a.activity||a;window.BOOYAH_LAB_BOOK_ID=p.bookId||'';window.BOOYAH_LAB_IMAGE_ID=p.imageId||'';
+window.BOOYAH_LAB_SOURCE_GROUP=p.sourceGroup||a.sourceGroup||'';$('activityTitle').value=p.title;$('subject').value=p.subject;$('grade').value=p.grade;$('roundTime').value=String(p.time);$('activityData').value=p.rows.map(x=>x.q+' | '+x.a+' | '+x.g).join('\n');$('cloudMode').value=p.mode||'quiz';selectedMode=$('cloudMode').value;$('cloudMaxAttempts').value=String(a.maxAttempts||1);$('applyContent').click();note('تم فتح «'+p.title+'» للتعديل. احفظ التغييرات على حسابك.');document.getElementById('builder').scrollIntoView({behavior:'smooth'})}
+function resetSelection(){window.BOOYAH_LAB_BOOK_ID='';window.BOOYAH_LAB_IMAGE_ID='';window.BOOYAH_LAB_SOURCE_GROUP='';currentId=null;$('cloudMaxAttempts').value='1';note('نشاط جديد: اختر القالب، عدّل محتوى الدرس، ثم احفظه على حسابك.')}
 function buildLink(item){return location.origin+'/game-lab-play.html?game='+encodeURIComponent(item.publicCode||'')}
 function element(tag,cls,content){const e=document.createElement(tag);if(cls)e.className=cls;if(content!==undefined)e.textContent=String(content);return e}
 function button(text,act,cls='button alt small'){const e=element('button',cls,text);e.type='button';e.onclick=act;return e}
