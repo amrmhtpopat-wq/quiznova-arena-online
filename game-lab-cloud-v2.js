@@ -27,6 +27,19 @@ function setLoggedOut(){me=null;$('cloudLogin').classList.remove('hide');$('clou
 function setLoggedIn(){$('cloudLogin').classList.add('hide');$('cloudWorkspace').classList.remove('hide');$('cloudTeacher').textContent='مرحبًا، '+(me.name||'المعلم');}
 async function signIn(){const email=$('cloudEmail').value.trim(),password=$('cloudPassword').value;if(!email||!password){note('أدخل البريد وكلمة المرور.',true);return}const btn=$('cloudSignIn');busy(btn,true);try{const d=await api('/api/auth/login',{email,password});token=d.token;localStorage.setItem(tokenKey,token);$('cloudPassword').value='';await refresh();note('✓ تم الدخول إلى مكتبتك الشخصية.') }catch(e){note(translations[e.message]||e.message,true)}finally{busy(btn,false)}}
 async function save(){const btn=$('cloudSave');busy(btn,true);try{const d=await api('/api/game-lab/teacher/save',{id:currentId||undefined,activity:current()});currentId=d.id;await refresh();note('✓ حُفظ نشاطك على قاعدة البيانات الخاصة بحسابك.');}catch(e){note(translations[e.message]||e.message,true)}finally{busy(btn,false)}}
+async function generateAll(){
+ const btn=$('cloudGenerateAll');btn.disabled=true;
+ try{
+  const valid=current();
+  const saved=await api('/api/game-lab/teacher/save',{id:currentId||undefined,activity:valid});
+  currentId=saved.id;
+  const group=await api('/api/game-lab/teacher/generate-all',{sourceId:currentId,confirm:true});
+  await refresh();
+  note('✓ تم تجهيز '+group.templates+' قالبًا من أسئلة هذا الدرس: '+group.created+' جديدة و'+group.updated+' محدّثة. كلها مرتبطة بمجموعة XP واحدة.');
+  $('cloudList').scrollIntoView({behavior:'smooth',block:'start'});
+ }catch(e){note(translations[e.message]||e.message,true)}
+ finally{btn.disabled=false}
+}
 async function publish(id){const activity=items.find(x=>x.id===id);if(!activity)return;const max=Number($('cloudMaxAttempts').value)||1;try{const result=await api('/api/game-lab/teacher/publish',{id,maxAttempts:max});await refresh();const url=buildLink(result);note('✓ تم نشر النشاط. شارك الرابط أو رمز QR مع الطلاب.');showShare(url,result.title)}catch(e){note(translations[e.message]||e.message,true)}}
 async function unpublish(id){if(!confirm('إيقاف رابط هذا النشاط؟ لن يستطيع الطلاب بدء محاولات جديدة.'))return;try{await api('/api/game-lab/teacher/unpublish',{id});await refresh();note('تم إيقاف نشر النشاط، ولا تتأثر النتائج السابقة.')}catch(e){note(translations[e.message]||e.message,true)}}
 async function remove(id){if(!confirm('هل تريد أرشفة النشاط؟ لن يُحذف سجل المحاولات.'))return;try{await api('/api/game-lab/teacher/delete',{id,confirm:true});if(currentId===id)currentId=null;await refresh();note('تمت أرشفة النشاط دون حذف النتائج القديمة.')}catch(e){note(translations[e.message]||e.message,true)}}
@@ -86,7 +99,7 @@ function renderItems(){const host=$('cloudList');host.replaceChildren();$('cloud
 button('📡 تنافس مباشر',()=>document.dispatchEvent(new CustomEvent('gamelab:live',{detail:{id:item.id}}))),
 button('📊 النتائج',()=>report(item.id)),button('🗑️ أرشفة',()=>remove(item.id),'button transparent small'));row.append(left,right);host.append(row)}}
 const m=$('cloudMode');for(const [id,name] of MODES){const option=document.createElement('option');option.value=id;option.textContent=name;m.append(option)}m.value='quiz';
-$('cloudLoadQuizzes').onclick=loadExistingQuizzes;$('cloudUseQuiz').onclick=useExistingQuiz;$('cloudExportAll').onclick=exportAllCloud;$('cloudSignIn').onclick=signIn;$('cloudSave').onclick=save;$('cloudRefresh').onclick=refresh;$('cloudNew').onclick=resetSelection;$('cloudReportClose').onclick=()=>$('cloudReport').classList.add('hide');$('cloudCopy').onclick=()=>{const url=$('cloudLink').value;navigator.clipboard?.writeText(url).then(()=>note('✓ تم نسخ رابط النشاط.')).catch(()=>note('يمكنك نسخ الرابط من الحقل.',true))};$('cloudMode').onchange=()=>{selectedMode=m.value};$('cloudLogout').onclick=()=>{token='';me=null;localStorage.removeItem(tokenKey);setLoggedOut();note('تم الخروج من Game Lab على هذا المتصفح. يرجى تسجيل الدخول مجددًا.')};
+$('cloudLoadQuizzes').onclick=loadExistingQuizzes;$('cloudUseQuiz').onclick=useExistingQuiz;$('cloudExportAll').onclick=exportAllCloud;$('cloudSignIn').onclick=signIn;$('cloudSave').onclick=save;$('cloudGenerateAll').onclick=generateAll;$('cloudRefresh').onclick=refresh;$('cloudNew').onclick=resetSelection;$('cloudReportClose').onclick=()=>$('cloudReport').classList.add('hide');$('cloudCopy').onclick=()=>{const url=$('cloudLink').value;navigator.clipboard?.writeText(url).then(()=>note('✓ تم نسخ رابط النشاط.')).catch(()=>note('يمكنك نسخ الرابط من الحقل.',true))};$('cloudMode').onchange=()=>{selectedMode=m.value};$('cloudLogout').onclick=()=>{token='';me=null;localStorage.removeItem(tokenKey);setLoggedOut();note('تم الخروج من Game Lab على هذا المتصفح. يرجى تسجيل الدخول مجددًا.')};
 document.addEventListener('click',e=>{const card=e.target.closest('#gameGrid .game');if(card&&card.querySelector('h3')){const name=card.querySelector('h3').textContent;const hit=MODES.find(([id,label])=>label===name);if(hit){$('cloudMode').value=hit[0];selectedMode=hit[0]}}});
 refresh();
 })();
