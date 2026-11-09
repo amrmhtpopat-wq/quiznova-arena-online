@@ -121,6 +121,8 @@ def snapshot(room,players,role='',person=None):
           'question':question(s,with_answers=role=='teacher') if current in ('question','results') else None,
           'correctAnswer':correct,'roomUpdatedAt':room['updated_at']}
     if role=='teacher':data['answerStats']=answer_data
+    if person and person['team']:
+        data['teammates']=[p['student_name'] for p in players if p['team']==person['team']][:50]
     if person:data['me']={'name':person['student_name'],'team':person['team'],
              'score':person['score'],'answered':responded,
              'answerCorrect':mine.get(str(idx),{}).get('correct') if current=='results' and s['showFeedback'] else None}
