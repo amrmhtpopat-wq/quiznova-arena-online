@@ -1,0 +1,64 @@
+<!doctype html><html lang="ar" dir="rtl"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive"><meta name="theme-color" content="#082040">
+<title>ألعاب بطاقة الطالب | BOOYAHJO GAME LAB</title>
+<style>
+:root{font-family:Tahoma,"Segoe UI",Arial,sans-serif;color-scheme:dark;--mint:#6cf6d7}*{box-sizing:border-box}
+body{background:radial-gradient(circle at 84% -10%,#126080 0,transparent 45%),#081c38;margin:0;color:#eefbff;min-height:100dvh;line-height:1.65}
+button,input{font:inherit}button{cursor:pointer}input{width:100%;background:#0b2947;color:white;padding:13px;border:1px solid #568baa;border-radius:12px}input:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid #8dffe8;outline-offset:3px}
+.wrap{max-width:1080px;margin:0 auto;padding:20px 18px 60px}.bar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:1px solid #326585;padding-bottom:15px}.logo{font-size:1.65rem;font-weight:900}.logo span{color:var(--mint)}a{color:#b2eff9;text-decoration:none}.pill{border-radius:100px;border:1px solid #477f94;background:#164262;padding:6px 11px;font-size:.78rem}
+.hero{max-width:850px;margin:33px auto 20px;text-align:center}.hero h1{font-size:clamp(1.65rem,4vw,2.7rem);line-height:1.3;margin:10px 0}.hero p{color:#b4d0de;margin:0 auto}
+.card{padding:clamp(15px,3vw,26px);border:1px solid #387394;border-radius:22px;background:linear-gradient(145deg,#143e62,#11294a);margin-bottom:18px}.form{display:flex;flex-wrap:wrap;align-items:end;gap:12px}.field{flex:1 1 250px}.field label{display:block;font-size:.86rem;margin-bottom:6px;font-weight:800}
+.btn{border:none;background:var(--mint);color:#083345;padding:12px 18px;min-height:46px;border-radius:13px;font-weight:900;cursor:pointer}.btn:disabled{opacity:.55}.btn.alt{background:#215075;border:1px solid #5493b1;color:#edfbff}.btn.small{font-size:.8rem;padding:8px 13px;min-height:38px}.status{margin:12px 0 0;color:#d3ffe9;min-height:27px}
+.profile{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:16px 0}.profile h2{margin:0}.profile small{color:#bfdded}.games{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}.game{display:flex;flex-direction:column;gap:10px;padding:20px;border:1px solid #47789a;background:linear-gradient(140deg,#153e63,#0b2a49);border-radius:18px;min-width:0}.game h3{margin:0;font-size:1.15rem;overflow-wrap:anywhere}.game p{margin:0;color:#a8cbdc;font-size:.84rem;flex:1}.game .btn{text-align:center;display:block}.game .mode{font-size:2.8rem}.game .remaining{display:inline-block;border-radius:10px;padding:6px 10px;color:#9cffdf;background:#164b48;width:max-content;max-width:100%;font-size:.78rem}.game .remaining.closed{color:#ffc8c9;background:#69354f}
+.empty{text-align:center;border:1px dashed #5485a0;color:#9fc0d5;border-radius:14px;padding:35px 12px}.hide{display:none!important}.notice{background:#4e3a1c;border:1px solid #a98746;color:#ffeba9;border-radius:13px;padding:10px 13px;font-size:.8rem;margin:13px 0}
+.footer{text-align:center;font-size:.74rem;color:#829fba;margin-top:40px}@media(max-width:850px){.games{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:580px){.games{grid-template-columns:1fr}.wrap{padding:15px}.game{padding:15px}.hero{margin:24px auto}.profile{align-items:start;flex-direction:column}}
+</style></head><body>
+<div class="wrap"><header class="bar"><div class="logo">⚡ BOOYAH<span>JO</span> <small style="color:#b3e3ed;font-size:.55em">GAME LAB</small></div><a class="pill" href="/student.html">← صفحة الطالب</a></header>
+<div class="hero"><div style="font-size:3.5rem" aria-hidden="true">🎮</div><h1>ألعابك التعليمية ببطاقتك الذكية</h1><p>ادخل رمز البطاقة الذكية لتظهر الألعاب التي أضافها المعلم إلى شعبتك أو خصصها لك.</p></div>
+<section class="card"><div class="form"><div class="field"><label for="cardCode">🪪 رقم البطاقة أو رمز QR</label><input id="cardCode" autocomplete="off" maxlength="90" placeholder="مثال: ABCD-EFGH" inputmode="text"></div><button class="btn" id="loadButton">🎯 عرض ألعابي</button></div><div class="notice">ألعاب البطاقة مرتبطة بحساب معلمك، ولا تظهر إلا الأنشطة التي نشرها لك. لا تشارك رمز البطاقة مع الآخرين.</div><div id="status" role="status" aria-live="polite" class="status">يمكنك أيضًا مسح بطاقة الطالب من قارئ QR لإدخال الرمز.</div></section>
+<section id="results" class="hide"><div class="profile"><div><h2 id="studentName"></h2><small id="studentClass"></small></div><span class="pill" id="gameCount">0 ألعاب</span></div><div id="gameList" class="games"></div></section>
+<footer class="footer">BOOYAHJO · منصة مهارات رقمية وألعاب تعليمية · نسخ تجريبية لا تحتسب XP من الضيوف</footer></div>
+<script>
+(()=>{'use strict';const $=id=>document.getElementById(id);const key='booyah_lab_card_code';let card='';
+const names={quiz:'تحدي الأسئلة',fast:'سباق الوقت',pairs:'توصيل الأزواج',flash:'بطاقات الذاكرة',wheel:'عجلة الحظ',boxes:'الصناديق الغامضة',sort:'فرز وتصنيف',truth:'صح أو خطأ',crossword:'الكلمات المتقاطعة',wordsearch:'البحث عن الكلمات',anagram:'ترتيب الحروف',order:'الترتيب المنطقي',maze:'المتاهة',balloons:'فرقعة البالونات',memory:'لعبة الذاكرة',hidden:'الصورة المخفية',cloze:'أكمل الفراغ',diagram:'تسمية الرسم',board:'لوحة نقاط',teams:'معركة الفرق',survey:'استطلاع',exit:'بطاقة الخروج',story:'اختر مسارك',bingo:'بينغو'};
+const icons={quiz:'🏆',fast:'⏱️',pairs:'🧩',flash:'🃏',wheel:'🎡',boxes:'🎁',sort:'🗂️',truth:'✅',crossword:'🔠',wordsearch:'🔍',anagram:'🔤',order:'🪜',maze:'🌀',balloons:'🎈',memory:'🧠',hidden:'🖼️',cloze:'✍️',diagram:'📍',board:'📈',teams:'⚔️',survey:'🗳️',exit:'🎟️',story:'🧭',bingo:'🔲'};
+function element(type,cls,txt){const el=document.createElement(type);if(cls)el.className=cls;if(txt!==undefined)el.textContent=String(txt);return el}
+async function load(){
+ card=$('cardCode').value.trim();
+ if(!card){$('status').textContent='اكتب رمز بطاقتك أولًا.';return}
+ $('loadButton').disabled=true;$('status').textContent='جارٍ تحميل الألعاب المخصصة لبطاقتك...';
+ try{
+  const res=await fetch('/api/game-lab/pro/card/catalog',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({card}),cache:'no-store'});
+  const data=await res.json();
+  if(!res.ok||!data.ok)throw Error(data.error||'network');
+  sessionStorage.setItem(key,card);
+  $('studentName').textContent='👨‍🎓 '+data.student.name;
+  $('studentClass').textContent='الصف: '+data.student.className;
+  const list=$('gameList');list.replaceChildren();
+  const games=data.activities||[];
+  $('gameCount').textContent=games.length+' ألعاب تعليمية';
+  if(!games.length)list.append(element('div','empty','لم يضف المعلم أي لعبة لهذه البطاقة حتى الآن.'));
+  for(const game of games){
+   const art=element('article','game');
+   art.append(element('div','mode',icons[game.mode]||'🎮'));
+   art.append(element('h3','',game.title));
+   art.append(element('p','',game.subject+' · '+game.grade+' · '+(names[game.mode]||'لعبة تعليمية')));
+   const remain=element('span','remaining'+(game.remaining===0?' closed':''),'المحاولات المتبقية: '+game.remaining+' من '+game.maxAttempts);
+   art.append(remain);
+   const play=element('button','btn',game.remaining?'▶ ابدأ اللعبة':'انتهت المحاولات');
+   play.disabled=game.remaining<=0;
+   play.onclick=()=>{sessionStorage.setItem(key,card);location.href='/game-lab-play.html?game='+encodeURIComponent(game.publicCode)};
+   art.append(play);list.append(art)
+  }
+  $('results').classList.remove('hide');
+  $('status').textContent='✓ تم تحميل الألعاب المرتبطة ببطاقتك.';
+ }catch(e){$('results').classList.add('hide');$('status').textContent=({invalid_card:'رمز البطاقة غير صحيح أو غير مربوط بالمنصة.',rate_limited:'تم تجاوز عدد المحاولات مؤقتًا.'}[e.message]||'تعذر تحميل الألعاب. تحقق من رمز البطاقة أو الاتصال.')}
+ finally{$('loadButton').disabled=false}
+}
+$('loadButton').onclick=load;
+$('cardCode').onkeydown=e=>{if(e.key==='Enter')load()};
+$('cardCode').value=sessionStorage.getItem(key)||'';
+if(new URLSearchParams(location.search).get('open')==='1'&&$('cardCode').value)load();
+})();
+</script></body></html>
