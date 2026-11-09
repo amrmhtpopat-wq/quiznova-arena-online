@@ -25,6 +25,7 @@ jobs:
           python -m compileall -q server.py platform_store.py platform_api.py platform_security.py solo_api.py game_lab_api.py game_lab_pro.py game_lab_live.py admin_api.py xlsx_report.py tests
           node --check game-lab-extra-v2.js
           node --check game-lab-cloud-v2.js
+          node --check game-lab-pro-v3.js
           node --check admin-v1.js
           node --check avatar-names-v121.js
           node --check booyah-countdown-v121.js
