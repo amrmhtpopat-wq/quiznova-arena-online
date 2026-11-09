@@ -45,7 +45,7 @@ button:focus-visible,input:focus-visible,a:focus-visible,select:focus-visible{ou
 const params=new URLSearchParams(location.search),teacherCode=params.get('host')||'',playerCode=params.get('code')||'';
 const code=(teacherCode||playerCode).trim().toUpperCase();
 const host=!!teacherCode,tokenKey='qn9_teacher_token',runKey='lab_room_session_'+code;
-let studentToken=sessionStorage.getItem(runKey)||'',state=null,polling=null,pending=false,shownIndex=-1;
+let studentToken=sessionStorage.getItem(runKey)||'',state=null,polling=null,pending=false,shownIndex=-1,teacherRenderKey='',studentRenderKey='';
 const map={room_not_found:'الغرفة غير موجودة أو انتهت صلاحيتها.',invalid_card:'رمز البطاقة غير صحيح.',card_other_teacher:'هذه البطاقة تخص معلمًا آخر.',already_joined:'هذه البطاقة دخلت الغرفة بالفعل. افتح الغرفة على الجهاز الذي دخلت منه.',room_full:'اكتملت سعة الغرفة.',invalid_session:'تعذر استعادة الجلسة. ادخل مجددًا.',question_closed:'انتهى الوقت أو انتقل السؤال.',already_answered:'لقد أجبت عن السؤال بالفعل.',rate_limited:'طلبات كثيرة، جرّب بعد قليل.'};
 function err(e){return map[e.message]||'تعذّر الاتصال بالخادم: '+e.message}
 async function api(url,data){
@@ -102,15 +102,19 @@ function renderTeacher(s){
  $('teacherMembers').textContent=s.participants+' لاعب';
  const playerUrl=location.origin+'/game-lab-live.html?code='+encodeURIComponent(code);
  $('teacherJoinUrl').textContent=playerUrl;
- $('teacherQr').src='/api/qr?format=svg&text='+encodeURIComponent(playerUrl);
+ if($('teacherQr').dataset.forUrl!==playerUrl){$('teacherQr').src='/api/qr?format=svg&text='+encodeURIComponent(playerUrl);$('teacherQr').dataset.forUrl=playerUrl;}
  $('teacherStart').classList.toggle('hidden',s.status!=='lobby');
  $('teacherNext').classList.toggle('hidden',!['question','results'].includes(s.status));
  $('teacherNext').textContent=s.index+1>=s.total?'🏆 إظهار الترتيب النهائي':'السؤال التالي ⟵';
  $('teacherNext').disabled=s.status==='question';
  $('teacherEnd').disabled=s.status==='finished';
  $('teacherLobbyLinks').classList.toggle('hidden',s.status!=='lobby');
- if(s.status==='lobby'){const target=$('teacherQuestionCard');target.innerHTML='<div class="waiting"><strong>شارك رمز الجلسة مع الطلاب</strong><p>عند اكتمال الانضمام اضغط «بدء التحدي»</p><div class="code" id="teacherPinLive"></div></div>';$('teacherPinLive').textContent=s.code;}
- else createQuestion($('teacherQuestionCard'),s,true);
+ const renderKey=s.status+':'+s.index;
+ if(teacherRenderKey!==renderKey){
+  teacherRenderKey=renderKey;
+  if(s.status==='lobby'){const target=$('teacherQuestionCard');target.innerHTML='<div class="waiting"><strong>شارك رمز الجلسة مع الطلاب</strong><p>عند اكتمال الانضمام اضغط «بدء التحدي»</p><div class="code" id="teacherPinLive"></div></div>';$('teacherPinLive').textContent=s.code;}
+  else createQuestion($('teacherQuestionCard'),s,true);
+ }
  rankList($('teacherRanks'),s.leaderboard,5);
  teams($('teacherTeamRanks'),s.teamLeaderboard);
 }
@@ -122,9 +126,13 @@ function renderStudent(s){
  $('studentTimer').textContent=s.status==='question'?'⏱ '+countdown(s.deadline)+' ث':statusText(s.status);
  $('studentScore').textContent=(s.me?.score||0)+' ⭐';
  $('studentTeam').textContent='👤 '+(s.me?.name||'طالب')+(s.me?.team?' · فريق '+s.me.team:'');
- if(s.status==='lobby'){$('studentQuestionCard').innerHTML='<div class="waiting"><strong>✅ انضممت بنجاح</strong><p>استعد للسؤال الأول، ستظهر الأسئلة تلقائيًا.</p></div>'}
- else if(s.status==='finished'){$('studentQuestionCard').innerHTML='<div class="waiting"><strong>🏆 اكتملت المنافسة!</strong><p>شكرًا لمشاركتك، تظهر النقاط النهائية بالأسفل.</p></div>'}
- else createQuestion($('studentQuestionCard'),s,false);
+ const renderKey=s.status+':'+s.index+':'+Boolean(s.me?.answered);
+ if(studentRenderKey!==renderKey){
+  studentRenderKey=renderKey;
+  if(s.status==='lobby'){$('studentQuestionCard').innerHTML='<div class="waiting"><strong>✅ انضممت بنجاح</strong><p>استعد للسؤال الأول، ستظهر الأسئلة تلقائيًا.</p></div>'}
+  else if(s.status==='finished'){$('studentQuestionCard').innerHTML='<div class="waiting"><strong>🏆 اكتملت المنافسة!</strong><p>شكرًا لمشاركتك، تظهر النقاط النهائية بالأسفل.</p></div>'}
+  else createQuestion($('studentQuestionCard'),s,false);
+ }
  rankList($('studentRanks'),s.leaderboard,5);
  if(s.me?.team){
   const friendList=s.teammates?.length?'👥 أعضاء فريقي: '+s.teammates.join('، '):'أنت في فريق '+s.me.team;
@@ -138,8 +146,7 @@ function renderStudent(s){
 async function sync(){
  if(!code||(!host&&!studentToken))return;
  try{
-  const route='/api/game-lab/live/state?code='+encodeURIComponent(code)+(host?'':'&token='+encodeURIComponent(studentToken));
-  const response=await api(route);
+  const response=await api('/api/game-lab/live/state',{code,token:host?'':studentToken});
   state=response.state;
   if(host)renderTeacher(state);else renderStudent(state)
  }catch(e){
