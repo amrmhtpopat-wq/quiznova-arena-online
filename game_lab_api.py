@@ -17,6 +17,8 @@ import platform_api as auth
 import solo_api
 
 MAX_ROWS=80
+TEXT_MODES={'anagram','crossword','wordsearch','cloze','exit'}
+NON_GRADED_MODES={'survey','exit','board'}
 MODES={'quiz','fast','pairs','flash','wheel','boxes','sort','truth','crossword',
        'wordsearch','anagram','order','maze','balloons','memory','hidden',
        'cloze','diagram','board','teams','survey','exit','story','bingo'}
@@ -181,6 +183,14 @@ def question_state(state,token_hash):
     if answered:return None
     item=rows[idx];mode=state['mode']
     rng=random.Random(int(hashlib.sha256((token_hash+':'+str(idx)).encode()).hexdigest()[:12],16))
+    if mode in TEXT_MODES:
+        letters=list(item['a'].replace(' ','')[:40]) if mode in ('anagram','wordsearch') else []
+        rng.shuffle(letters)
+        return {'index':idx,'question':item['q'],'choices':[],
+                'entry':'letters' if mode in ('anagram','wordsearch') else 'text',
+                'scrambled':letters,'answerLength':len(item['a'][:40]),
+                'total':len(rows),'mode':mode,'duration':state['duration'],
+                'score':state['score']}
     if mode=='sort':
         choices=list(dict.fromkeys(r['g'] for r in rows))
         correct=item['g']
@@ -221,7 +231,8 @@ def state_view(state,digest):
           'className':state['className'],'score':state['score'],
           'correct':state['correct'],'index':state['index'],'total':len(state['rows']),
           'xpGain':state.get('xpGain',0),'guest':state.get('guest',False),
-          'activityTitle':state['title'],'mode':state['mode']}
+          'activityTitle':state['title'],'mode':state['mode'],
+          'unscored':state['mode'] in NON_GRADED_MODES}
     if not completed:
         data['question']=question_state(state,digest)
         if state.get('imageUrl'):data['question']['imageUrl']=state['imageUrl']
@@ -310,7 +321,8 @@ def answer(data,h):
             state=db.jload(session['state'],{})
             if state['finished'] or state['index']!=idx:return fail(h,'question_changed',409)
             right=expected_answer(state,key)
-            correct=normalize(raw)==normalize(right)
+            graded=state['mode'] not in NON_GRADED_MODES
+            correct=normalize(raw)==normalize(right) if graded else None
             if correct:
                 state['correct']+=1;state['score']+=100
             state['index']+=1
@@ -327,7 +339,7 @@ def answer(data,h):
                 cur.execute(db.sql('SELECT id FROM student_attempts WHERE teacher_id=? AND student_id=? '
                                    'AND quiz_id=? LIMIT 1'),(tid,student_id,'LAB-'+aid))
                 awarded=cur.fetchone() is not None
-                gain=0 if awarded else (state['correct']*10+10)
+                gain=0 if awarded or not graded else (state['correct']*10+10)
                 state['xpGain']=gain
                 if gain:
                     cur.execute(db.sql('UPDATE students SET xp=xp+?,correct_count=correct_count+?,'
@@ -343,7 +355,7 @@ def answer(data,h):
                              state['score'],db.jdump({'source':'game_lab','run':key[:12]}),timestamp))
             cur.execute(db.sql('UPDATE game_lab_runs SET state=?,updated_at=?,finished_at=? WHERE token_hash=?'),
                         (db.jdump(state),timestamp,timestamp if finished else 0,key))
-    h.send_json({'ok':True,'correct':correct,'correctAnswer':right,
+    h.send_json({'ok':True,'correct':correct,'correctAnswer':right if graded else None,
                  'state':state_view(state,key)})
     return True
 
