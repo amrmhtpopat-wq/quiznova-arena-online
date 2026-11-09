@@ -16,7 +16,15 @@
 </style>
 <style>.cloud-activity{background:linear-gradient(145deg,#123b61,#0e2c4c);border:1px solid #35688a;border-radius:14px;padding:13px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.cloud-info{display:grid;gap:3px}.cloud-info b{font-size:1rem}.cloud-info small{color:#b0cce1;font-size:.75rem}.cloud-activity .buttons{align-items:center}.lab-table-scroll{max-width:100%;overflow:auto}.lab-results-table{width:100%;border-collapse:collapse;min-width:600px}.lab-results-table th,.lab-results-table td{text-align:right;border-bottom:1px solid #365878;padding:10px;font-size:.83rem}.lab-results-table th{background:#0b3255;color:#d1f7ed}.lab-results-table td{color:#d3e7f7}.lab-results-table tr:hover{background:#ffffff0b}@media(max-width:650px){.cloud-activity{align-items:stretch;flex-direction:column}.cloud-activity .buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.cloud-activity button{width:100%}}</style>
 <link rel="stylesheet" href="/game-lab-extra-v2.css?v=2.0">
-</head>
+<style>
+.lab-target-choices{padding:9px;border:1px solid #356285;border-radius:13px;max-height:240px;overflow-y:auto;margin:10px 0;background:#0b2d4b}
+.lab-target-choices label{display:flex;gap:10px;align-items:center;font-size:.84rem;margin:7px;padding:5px 8px;border-radius:8px}
+.lab-target-choices label:hover{background:#173f5f}
+.lab-target-choices input{width:auto;min-width:18px}
+.lab-bookrow{padding:10px 13px;background:#0d3153;border:1px solid #365c78;border-radius:12px}
+.lab-bookrow b{display:block;font-size:.86rem}
+.lab-bookrow small{font-size:.76rem;color:#c1d7eb}
+</style></head>
 <body>
 <div class="mobilebar"><b>🎮 BOOYAHJO GAME LAB</b><button class="button alt small" id="mobileMenu" aria-label="القائمة">☰</button></div><div id="shade" class="shade"></div>
 <div class="shell">
@@ -25,9 +33,12 @@
  <div class="navlabel">استكشف المختبر</div>
  <button class="nav sel" data-jump="catalog"><span>🕹️</span>جميع الألعاب والقوالب</button>
  <button class="nav" data-jump="builder"><span>🪄</span>صانع الأنشطة</button>
+<button class="nav" data-jump="bookLab"><span>📚</span>رفع الكتاب وتحويله لألعاب</button>
  <button class="nav" data-jump="mixer"><span>🧪</span>مُركّب الحصة Game Mixer</button>
  <button class="nav" data-jump="library"><span>🗃️</span>أنشطتي التجريبية</button>
  <button class="nav" data-jump="cloud"><span>☁️</span>مكتبتي على الحساب</button>
+<button class="nav" data-jump="studentAssignments"><span>🪪</span>ألعاب بطاقة الطالب</button>
+<button class="nav" data-jump="liveLab"><span>📡</span>المنافسة المباشرة</button>
  <button class="nav" data-jump="toolbox"><span>🧰</span>أدوات BOOYAHJO الحالية</button>
  <button class="nav" data-jump="roadmap"><span>🚀</span>ميزات قادمة</button>
  <div class="navlabel">أدوات BOOYAHJO</div>
@@ -61,7 +72,19 @@
  </div>
  <div class="block"><h3>⚡ معاينة المحتوى</h3><p>بعد تطبيق الأسئلة، يمكنك الانتقال بين جميع الألعاب المفعلة باستخدام المحتوى نفسه.</p><div class="good" id="contentFeedback">جاهز: 8 أسئلة ومجموعات تعليمية متعددة.</div><div id="dataPreview" class="list" style="margin-top:12px"></div><div class="buttons" style="margin-top:16px"><button class="button gold" id="quickPlay">▶ جرّب تحدي الأسئلة</button><button class="button alt" id="printActivity">🖨️ ورقة عمل</button></div><hr style="border:0;border-top:1px solid #315575;margin:17px 0"><h3>قوالبك الجاهزة</h3><div class="buttons" id="quickTemplates"></div></div>
  </div></section>
- <section id="mixer"><div class="section-head"><div><h2>🧪 Game Mixer — الحصة متعددة الألعاب</h2><p>ابدأ بالتمهيد، ثم نشاط التعلّم، واختم بالتقويم. المحتوى نفسه يتحوّل بين ثلاثة قوالب دون إعادة كتابته.</p></div><span class="pill">ميزة تفاعلية جديدة</span></div>
+ <section id="bookLab"><div class="section-head"><div><h2>📚 ارفع كتابك وحوّله إلى ألعاب</h2><p>اختر كتابًا PDF أو Word أو TXT، ثم حدّد الصفحات ووَلّد مسودة قابلة للتعديل، وبعدها احفظها بجميع القوالب.</p></div><span class="pill">خصوصية المعلم · تخزين في قاعدة بيانات الاختبار</span></div>
+<div class="layout2"><div class="block">
+<h3>📖 مكتبتي من الكتب التعليمية</h3>
+<div class="field"><label for="labBookFile">اختيار كتاب دراسي (حتى 6 ميغابايت)</label><input type="file" id="labBookFile" accept=".pdf,.docx,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"></div>
+<div class="field"><label for="labBookSection">الوحدة أو الفصل</label><input id="labBookSection" maxlength="60" placeholder="مثال: الوحدة الأولى" value="الكتاب كاملًا"></div>
+<div class="buttons"><button class="button" id="labBookUpload">☁️ رفع الكتاب وحفظه</button><button class="button alt" id="labBookRefresh">↻ تحديث مكتبتي</button></div>
+<div class="field" style="margin-top:14px"><label for="labBookSelect">اختر كتابًا محفوظًا</label><select id="labBookSelect"><option value="">لا توجد كتب محملة</option></select></div>
+<div class="row2"><div class="field"><label for="labBookStart">من صفحة</label><input id="labBookStart" type="number" min="1" max="350" value="1"></div><div class="field"><label for="labBookEnd">إلى صفحة</label><input id="labBookEnd" type="number" min="1" max="350" value="15"></div></div>
+<div class="row2"><div class="field"><label for="labBookCount">عدد الأسئلة المقترح</label><select id="labBookCount"><option value="8">8 أسئلة</option><option selected value="12">12 سؤالًا</option><option value="20">20 سؤالًا</option><option value="25">25 سؤالًا</option></select></div><div class="field"><label for="labBookMode">طريقة إنشاء الأسئلة</label><select id="labBookMode"><option value="extract">من تعريفات الكتاب (مجانًا)</option><option value="ai">الذكاء الاصطناعي (يتطلب مفتاح API)</option></select></div></div>
+<div class="buttons"><button class="button gold" id="labBookGenerate">🪄 توليد مسودة أسئلة</button><button class="button transparent" id="labBookPages">📄 عرض الصفحات المستخرجة</button></div>
+<div class="notice">قد لا تُستخرج النصوص من الكتب المصورة أو الصفحات الممسوحة ضوئيًا. لا نعتمد الأسئلة تلقائيًا؛ راجع كل سؤال مع الكتاب قبل نشره للطلبة. الكتاب الأصلي يُحفظ بشكل خاص على نسخة الاختبار، وليس متاحًا للطلاب.</div></div>
+<div class="block"><h3>🧠 مراجعة نتائج الكتاب</h3><div id="labBookStatus" class="good" role="status">سجّل دخول المعلم من «مكتبتي على الحساب» لرفع الكتب وحفظها.</div><div class="list" id="labBookPreview" style="margin-top:12px"><div class="empty">اختر كتابًا ثم اضغط توليد مسودة. تظهر هنا الأسئلة وصفحاتها.</div></div><div id="labBookSummary" class="hint"></div><div class="buttons" style="margin-top:12px"><button id="labBookOpenEditor" class="button alt">✏️ الانتقال لتحرير الأسئلة</button></div></div></div></section>
+<section id="mixer"><div class="section-head"><div><h2>🧪 Game Mixer — الحصة متعددة الألعاب</h2><p>ابدأ بالتمهيد، ثم نشاط التعلّم، واختم بالتقويم. المحتوى نفسه يتحوّل بين ثلاثة قوالب دون إعادة كتابته.</p></div><span class="pill">ميزة تفاعلية جديدة</span></div>
 <div class="block"><h3>🎯 صمّم رحلة تعلم من ثلاث مراحل</h3><div class="row2">
 <div class="field"><label for="mixerOne">1. التهيئة والمراجعة</label><select id="mixerOne"></select></div>
 <div class="field"><label for="mixerTwo">2. التفاعل والممارسة</label><select id="mixerTwo"></select></div>
@@ -90,6 +113,26 @@
 </div><p class="hint">نسخة QA: جميع البيانات الحقيقية التي تنشأ هنا تخص بيئة الاختبار المعزولة. لا يُرسل محتوى الأنشطة إلى الموقع الرسمي حتى الموافقة النهائية.</p>
 <div id="cloudMessage" role="status" aria-live="polite" class="good">يرجى فتح حسابك لتفعيل الحفظ والنشر.</div>
 </section>
+<section id="studentAssignments"><div class="section-head"><div><h2>🪪 أضف الألعاب إلى بطاقات الطلاب</h2><p>حدد نشاطًا منشورًا، ثم شاركه مع المدرسة أو شعبة محددة أو طالب واحد. يظهر عند الطالب من خلال بطاقته الذكية.</p></div><span class="pill">صلاحيات المعلم</span></div>
+<div class="layout2"><div class="block"><h3>🎯 تخصيص النشاط</h3>
+<div class="field"><label for="labAssignActivity">اختر لعبة منشورة</label><select id="labAssignActivity"><option value="">اختر نشاطًا محفوظًا أولًا</option></select></div>
+<div class="field"><label for="labAssignType">تخصيص اللعبة لـ</label><select id="labAssignType"><option value="all">جميع طلاب حسابي</option><option value="class">شعبة أو أكثر</option><option value="student">بطاقة طالب أو أكثر</option></select></div>
+<div id="labAssignTargets" class="lab-target-choices"><p class="hint">لجميع الطلاب: احفظ الإسناد مباشرة.</p></div>
+<div class="buttons"><button class="button" id="labAssignSave">🪪 إضافة الألعاب إلى البطاقات</button><button class="button alt" id="labAssignRefresh">↻ تحديث الشعب والطلاب</button></div></div>
+<div class="block"><h3>👨‍🎓 ماذا سيظهر للطالب؟</h3><p>عند إدخال رمز بطاقته يرى الألعاب التي نشرها المعلم لشعبته أو باسمه فقط، وعدد المحاولات المتبقية. لا يستطيع زيادة XP عبر تكرار الاختبار بعد استنفاد المحاولات.</p>
+<div class="buttons"><a class="button gold" href="/game-lab-card.html">🎮 معاينة ألعاب بطاقة الطالب</a><a class="button alt" href="/student.html">بوابة الطالب</a></div>
+<div class="good" role="status" id="labAssignStatus" style="margin-top:14px">سجّل الدخول واختَر النشاط المنشور.</div>
+<div class="list" id="labAssignedPreview" style="margin-top:12px"></div></div></div></section>
+<section id="liveLab"><div class="section-head"><div><h2>📡 المنافسة المتزامنة بين الأجهزة</h2><p>افتح غرفة مباشرة، وأرسل PIN إلى الطلاب؛ يظهر سؤال واحد للجميع وتتحدث النتائج دون إعادة تحميل.</p></div><span class="pill">مزامنة الخادم · مباريات فردية وفرق</span></div>
+<div class="layout2"><div class="block"><h3>🏆 إعداد المنافسة</h3>
+<div class="field"><label for="labLiveActivity">نشاط المنافسة</label><select id="labLiveActivity"><option value="">اختر نشاطًا بعد حفظه</option></select></div>
+<div class="row2"><div class="field"><label for="labLiveMode">وضع اللعب</label><select id="labLiveMode"><option value="individual">🧍 فردي</option><option value="teams">👥 مجموعات</option></select></div><div class="field"><label for="labLiveDuration">زمن كل سؤال</label><select id="labLiveDuration"><option value="20">20 ثانية</option><option value="30" selected>30 ثانية</option><option value="45">45 ثانية</option><option value="60">60 ثانية</option></select></div></div>
+<div class="field"><label for="labLiveTeams">أسماء الفرق (عند اختيار المجموعات)</label><input id="labLiveTeams" maxlength="150" value="الصقور، النمور" placeholder="الصقور، النمور"></div>
+<label style="display:flex;gap:10px;align-items:center;margin-bottom:12px"><input id="labLiveFeedback" type="checkbox" checked style="width:auto"> إظهار الإجابة الصحيحة والترتيب بعد انتهاء السؤال</label>
+<button class="button gold" id="labLiveCreate">📡 إنشاء غرفة مباشرة</button>
+</div><div class="block"><h3>🎥 شاشة المعلم والبروجيكتور</h3><div id="labLiveStatus" class="good" role="status">اختَر نشاطًا ثم أنشئ غرفة جديدة. ستظهر روابط المعلم والطلاب هنا.</div>
+<div id="labLiveCreated" class="hide" style="margin-top:13px"><div class="kpi"><b id="labLiveCode" style="letter-spacing:.12em">------</b><span>رمز دخول الجلسة</span></div><div class="buttons" style="margin:13px 0"><a id="labLiveTeacherLink" class="button gold" target="_blank" rel="noopener">🎥 شاشة المعلم</a><a id="labLiveStudentLink" class="button alt" target="_blank" rel="noopener">📱 دخول الطلاب</a></div><div class="field"><label for="labLiveUrl">الرابط المختصر للطلاب</label><input id="labLiveUrl" dir="ltr" readonly></div><img alt="QR الدخول للمنافسة" id="labLiveQR" style="width:190px;max-width:75%;background:white;padding:8px;border-radius:12px;margin:10px auto;display:block"></div>
+<div style="margin-top:14px"><h3>الغرف السابقة</h3><div id="labLiveRooms" class="list"></div><button id="labLiveRefresh" class="button transparent small">↻ تحديث الغرف</button></div></div></div></section>
 <section id="toolbox"><div class="section-head"><div><h2>🧰 جميع أدوات المنصة في مكان واحد</h2><p>وصول سريع إلى أقسام BOOYAHJO الموجودة حاليًا. قد يتطلب بعضها تسجيل دخول المعلم.</p></div><span class="pill">أدوات مرتبطة</span></div><div class="games">
 <div class="game"><div class="figure"><div class="symbol">📝</div><span class="state">موجودة</span></div><h3>صانع الاختبارات</h3><p>أنشئ أسئلة بمستويات وأنواع مختلفة داخل استوديو المعلم.</p><a class="button alt" href="/studio.html#builder">فتح الصانع</a></div>
 <div class="game"><div class="figure"><div class="symbol">📚</div><span class="state">موجودة</span></div><h3>بنك الأسئلة</h3><p>أعد استخدام الأسئلة المحفوظة في إنشاء اختبارات وتحديات.</p><a class="button alt" href="/studio.html#bank">فتح البنك</a></div>
@@ -259,5 +302,6 @@ $('countAll').textContent=catalog.length;$('countLive').textContent=catalog.filt
 renderCatalog();apply();refreshSaved();
 })();
 </script>
-<script src="/game-lab-cloud-v2.js?v=2.0" defer></script><script src="/game-lab-extra-v2.js?v=2.0"></script>
+<script src="/game-lab-cloud-v2.js?v=2.0" defer></script>
+<script defer src="/game-lab-pro-v3.js?v=3.0"></script><script src="/game-lab-extra-v2.js?v=2.0"></script>
 </body></html>
