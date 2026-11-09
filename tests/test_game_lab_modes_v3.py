@@ -70,4 +70,42 @@ class ModeContract(unittest.TestCase):
     # Learner can continue in every mode; server advances state.
     self.assertEqual(replied['state']['index'],1)
 
+
+ def test_bulk_templates_share_one_xp_entitlement(self):
+  source={'title':'درس واحد لجميع الألعاب','subject':'المهارات الرقمية','grade':'السابع',
+   'mode':'quiz','rows':[{'q':'سؤال'+str(i),'a':'حل'+str(i),'g':'عام'} for i in range(4)]}
+  code,created=self.api('/api/game-lab/teacher/save',{'activity':source},self.token)
+  self.assertEqual(code,200,created)
+  root=created['id']
+  code,batch=self.api('/api/game-lab/teacher/generate-all',{'sourceId':root,'confirm':True},self.token)
+  self.assertEqual(code,200,batch)
+  self.assertEqual(batch['templates'],24)
+  self.assertEqual(batch['created'],23)
+  code,batch_again=self.api('/api/game-lab/teacher/generate-all',{'sourceId':root,'confirm':True},self.token)
+  self.assertEqual(code,200,batch_again)
+  self.assertEqual(batch_again['created'],0)
+  self.assertEqual(batch_again['updated'],24)
+  names=self.store.query('SELECT id,mode,payload FROM game_lab_activities WHERE teacher_id=?',(self.tid,),True)
+  siblings=[r for r in names if self.store.jload(r['payload'],{}).get('sourceGroup')==root]
+  self.assertEqual(len(siblings),24)
+  individual=next(x for x in siblings if x['mode']=='quiz')
+  text=next(x for x in siblings if x['mode']=='crossword')
+  baseline=self.store.query('SELECT xp FROM students WHERE id=?',(self.student['id'],))['xp']
+  gains=[]
+  for item in (individual,text):
+   code,enabled=self.api('/api/game-lab/teacher/publish',{'id':item['id']},self.token)
+   self.assertEqual(code,200,enabled)
+   code,running=self.api('/api/game-lab/student/start',{
+      'code':enabled['publicCode'],'card':self.student['cardCode']})
+   self.assertEqual(code,200,running)
+   state=running['state']
+   for i in range(4):
+    code,reply=self.api('/api/game-lab/student/answer',{
+       'token':running['token'],'index':i,'answer':'حل'+str(i)})
+    self.assertEqual(code,200,reply)
+    state=reply['state']
+   gains.append(state['xpGain'])
+  self.assertEqual(gains,[50,0])
+  self.assertEqual(self.store.query('SELECT xp FROM students WHERE id=?',(self.student['id'],))['xp']-baseline,50)
+
 if __name__=='__main__':unittest.main(verbosity=2)
