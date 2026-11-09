@@ -18,7 +18,7 @@ import game_lab_api as games
 GET={'/api/game-lab/live/state','/api/game-lab/live/rooms'}
 HOST={'/api/game-lab/live/create','/api/game-lab/live/next',
       '/api/game-lab/live/finish','/api/game-lab/live/start'}
-STUDENT={'/api/game-lab/live/join','/api/game-lab/live/answer'}
+STUDENT={'/api/game-lab/live/join','/api/game-lab/live/answer','/api/game-lab/live/state'}
 TTL=5*3600
 
 
@@ -288,10 +288,25 @@ def handle_get(h,u):
     teacher=auth.get_teacher(h)
     if teacher and teacher['id']==room['teacher_id']:
         h.send_json({'ok':True,'state':snapshot(room,roster(room['code']),role='teacher')});return True
-    token=(params.get('token') or [''])[0]
-    person=get_player(room['code'],token)
+    # Participant session tokens must not appear in URLs or access logs.
+    return error(h,'use_post_state',405)
     if not person:return error(h,'invalid_session',403)
     h.send_json({'ok':True,'state':snapshot(room,roster(room['code']),person=person)})
+    return True
+
+
+def post_state(h,data):
+    code=str(data.get('code') or '').strip().upper()
+    room=load(code)
+    if not room:return error(h,'room_not_found',404)
+    t=auth.get_teacher(h)
+    if t and t['id']==room['teacher_id']:
+        h.send_json({'ok':True,'state':snapshot(room,roster(code),role='teacher')})
+        return True
+    token=str(data.get('token') or '')
+    person=get_player(code,token)
+    if not person:return error(h,'invalid_session',403)
+    h.send_json({'ok':True,'state':snapshot(room,roster(code),person=person)})
     return True
 
 
@@ -299,7 +314,9 @@ def handle_post(h,u,data):
     if u.path not in HOST|STUDENT:return False
     try:
         if u.path in STUDENT:
-            return join(h,data) if u.path.endswith('/join') else answer(h,data)
+            if u.path.endswith('/join'):return join(h,data)
+            if u.path.endswith('/state'):return post_state(h,data)
+            return answer(h,data)
         t=auth.authorized(h)
         if not t:return True
         if u.path.endswith('/create'):
