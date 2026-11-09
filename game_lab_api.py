@@ -22,7 +22,8 @@ NON_GRADED_MODES={'survey','exit','board'}
 MODES={'quiz','fast','pairs','flash','wheel','boxes','sort','truth','crossword',
        'wordsearch','anagram','order','maze','balloons','memory','hidden',
        'cloze','diagram','board','teams','survey','exit','story','bingo'}
-TEACHER_PATHS={'/api/game-lab/teacher/save','/api/game-lab/teacher/delete',
+TEACHER_PATHS={'/api/game-lab/teacher/generate-all',
+               '/api/game-lab/teacher/save','/api/game-lab/teacher/delete',
                '/api/game-lab/teacher/publish','/api/game-lab/teacher/unpublish'}
 STUDENT_PATHS={'/api/game-lab/student/start','/api/game-lab/student/state',
                '/api/game-lab/student/answer'}
@@ -77,13 +78,15 @@ def validate_payload(raw):
     raw_time=raw.get('time',25)
     try:seconds=int(raw_time)
     except (ValueError,TypeError):seconds=25
+    source_group=str(raw.get('sourceGroup') or '').strip()
+    if source_group and not re.fullmatch('[a-f0-9]{32}',source_group):raise ValueError('invalid_source_group')
     image_id=str(raw.get('imageId') or '').strip()
     book_id=str(raw.get('bookId') or '').strip()
     if image_id and not re.fullmatch('[a-f0-9]{32}',image_id):raise ValueError('invalid_image_id')
     if book_id and not re.fullmatch('[a-f0-9]{32}',book_id):raise ValueError('invalid_book_id')
     return {'title':title,'subject':subject,'grade':grade,'mode':mode,
             'time':max(10,min(90,seconds)),'rows':result,
-            'imageId':image_id,'bookId':book_id}
+            'imageId':image_id,'bookId':book_id,'sourceGroup':source_group}
 
 
 def public_view(row):
@@ -92,6 +95,7 @@ def public_view(row):
             'published':bool(row['published']),'publicCode':row['public_code'] if row['published'] else None,
             'maxAttempts':row['max_attempts'],
             'imageId':db.jload(row['payload'],{}).get('imageId') or '',
+            'sourceGroup':db.jload(row['payload'],{}).get('sourceGroup') or row['id'],
             'bookId':db.jload(row['payload'],{}).get('bookId') or '',
             'createdAt':row['created_at'],
             'updatedAt':row['updated_at'],'questionCount':len(db.jload(row['payload'],{}).get('rows',[]))}
@@ -133,6 +137,54 @@ def save(tid,data):
                     (aid,tid,activity['title'],activity['subject'],activity['grade'],activity['mode'],
                      db.jdump(activity),timestamp,timestamp))
     return {**public_view(owner_row(tid,aid)),'activity':activity}
+
+
+
+def generate_all(tid,data):
+    """Bulk-create or refresh 24 template activities sharing one lesson and one XP entitlement."""
+    if data.get('confirm') is not True:raise ValueError('confirmation_required')
+    source_id=str(data.get('sourceId') or '')
+    original=owner_row(tid,source_id)
+    if not original:raise ValueError('activity_not_found')
+    original_data=db.jload(original['payload'],{})
+    validated=validate_payload(original_data)
+    group=validated.get('sourceGroup') or original['id']
+    validated['sourceGroup']=group
+    existing=list_activities(tid)
+    grouped={}
+    for item in existing:
+        payload=item.get('activity') or {}
+        if (payload.get('sourceGroup') or item['id'])==group:
+            grouped.setdefault(payload.get('mode'),item['id'])
+    required=len([mode for mode in MODES if mode not in grouped])
+    if len(existing)+required>150:raise ValueError('activity_library_limit')
+    created=0;updated=0
+    date=now()
+    with db.DB_LOCK:
+        with db.db_connection() as con:
+            for mode in sorted(MODES):
+                item={**validated,'mode':mode,'sourceGroup':group,
+                      'title':(validated['title'].split(' — ')[0]+' — '+mode)[:90]}
+                # Keep source activity title and mode; avoid overwriting its authorship context.
+                if grouped.get(mode)==original['id']:
+                    item['title']=original['title']
+                text=db.jdump(item)
+                if mode in grouped:
+                    aid=grouped[mode]
+                    con.execute(db.sql('UPDATE game_lab_activities SET title=?,subject=?,grade=?,'
+                        'mode=?,payload=?,updated_at=? WHERE id=? AND teacher_id=?'),
+                        (item['title'],item['subject'],item['grade'],mode,text,date,aid,tid))
+                    updated+=1
+                else:
+                    aid=uuid.uuid4().hex
+                    con.execute(db.sql('INSERT INTO game_lab_activities '
+                       '(id,teacher_id,title,subject,grade,mode,payload,created_at,updated_at) '
+                       'VALUES(?,?,?,?,?,?,?,?,?)'),
+                       (aid,tid,item['title'],item['subject'],item['grade'],mode,text,date,date))
+                    created+=1
+    return {'created':created,'updated':updated,'total':created+updated,
+            'sourceGroup':group,'templates':len(MODES),
+            'message':'هذه الألعاب تستعمل نفس أسئلة الدرس، ولا تمنح XP إلا مرة واحدة للمصدر الواحد.'}
 
 
 def publish(tid,data,enabled):
@@ -268,6 +320,7 @@ def start(data,h):
            'index':0,'score':0,'correct':0,'finished':False,'xpGain':0,
            'guest':guest,'studentName':student['name'] if student else name,
            'className':student['class_name'] if student else 'زائر',
+           'sourceGroup':payload.get('sourceGroup') or a['id'],
            'imageUrl':('/api/game-lab/pro/image?id='+str(payload.get('imageId'))+
               '&code='+str(a['public_code'])) if payload.get('imageId') else ''}
     key=hashed(token);timestamp=now()
@@ -332,13 +385,14 @@ def answer(data,h):
             timestamp=now()
             if finished and session['student_id']:
                 student_id=session['student_id'];tid=session['teacher_id'];aid=session['activity_id']
+                group_id=state.get('sourceGroup') or aid
                 # Serialize XP for all runs by this student in Postgres, too.
                 owner_lock='SELECT xp FROM students WHERE id=? AND teacher_id=?'+(' FOR UPDATE' if db.DATABASE_URL else '')
                 cur.execute(db.sql(owner_lock),(student_id,tid))
                 owner=cur.fetchone()
                 if not owner:return fail(h,'invalid_card',403)
                 cur.execute(db.sql('SELECT id FROM student_attempts WHERE teacher_id=? AND student_id=? '
-                                   'AND quiz_id=? LIMIT 1'),(tid,student_id,'LAB-'+aid))
+                                   'AND quiz_id=? LIMIT 1'),(tid,student_id,'LAB-'+group_id))
                 awarded=cur.fetchone() is not None
                 gain=0 if awarded or not graded else (state['correct']*10+10)
                 state['xpGain']=gain
@@ -350,7 +404,7 @@ def answer(data,h):
                 cur.execute(db.sql('INSERT INTO student_attempts (id,teacher_id,student_id,quiz_id,room_code,'
                                    'student_name,class_name,avatar,correct_count,question_total,percent,'
                                    'score,answers,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)'),
-                            (attempt_id,tid,student_id,'LAB-'+aid,'LAB-'+aid,
+                            (attempt_id,tid,student_id,'LAB-'+group_id,'LAB-'+aid,
                              session['student_name'],session['class_name'],'b01',state['correct'],
                              len(state['rows']),round(state['correct']*100/max(1,len(state['rows']))),
                              state['score'],db.jdump({'source':'game_lab','run':key[:12]}),timestamp))
@@ -414,7 +468,8 @@ def handle_post(h,u,data):
     if not teacher:return True
     tid=teacher['id']
     try:
-        if u.path.endswith('/save'):result=save(tid,data)
+        if u.path.endswith('/generate-all'):result=generate_all(tid,data)
+        elif u.path.endswith('/save'):result=save(tid,data)
         elif u.path.endswith('/delete'):result=remove(tid,data)
         elif u.path.endswith('/publish'):result=publish(tid,data,True)
         else:result=publish(tid,data,False)
