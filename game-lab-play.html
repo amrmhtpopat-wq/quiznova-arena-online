@@ -67,7 +67,7 @@ function textAnswer(q){
   const text=document.createElement('textarea');text.className='scene-entry';text.maxLength=120;text.rows=3;text.placeholder='تعلّمت اليوم أن...';scene.append(text);
   scene.append(makeButton('📩 إرسال بطاقة الخروج',()=>answer(text.value.trim()),'btn scene-submit'));return
  }
- if(mode==='crossword'){
+ if(mode==='crossword'&&q.answerLength<=18){
   scene.append(sceneText('🔠 اكتب حروف المصطلح المقصود من اليمين إلى اليسار.'));
   const wrap=document.createElement('div');wrap.className='scene-cross';
   const amount=Math.min(18,Math.max(2,q.answerLength||5)),inputs=[];
@@ -75,7 +75,7 @@ function textAnswer(q){
   scene.append(wrap);
   scene.append(makeButton('✅ تحقق من الكلمة',()=>answer(inputs.map(x=>x.value).join('')),'btn scene-submit'));return
  }
- if(mode==='anagram'){
+ if(mode==='anagram'&&q.entry==='letters'){
   scene.append(sceneText('🔤 رتّب الحروف لتصل إلى الإجابة الصحيحة.'));
   const chosen=[],target=sceneText('اختر الحروف بالترتيب','scene-panel'),pool=document.createElement('div');pool.className='scene-letters';
   for(const c of q.scrambled||[]){
