@@ -6,3 +6,7 @@ qrcode>=8.0,<9
 
 # Encrypt the administration TOTP seed (never expose it to JavaScript).
 cryptography>=44,<48
+
+# Private teaching-book PDF and Word extraction; no system OCR dependency.
+pypdf>=6.2,<8
+python-docx>=1.2,<2
