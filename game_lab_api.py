@@ -10,6 +10,7 @@ import random
 import secrets
 import time
 import uuid
+import re
 from urllib.parse import parse_qs
 import platform_store as db
 import platform_api as auth
@@ -74,15 +75,23 @@ def validate_payload(raw):
     raw_time=raw.get('time',25)
     try:seconds=int(raw_time)
     except (ValueError,TypeError):seconds=25
+    image_id=str(raw.get('imageId') or '').strip()
+    book_id=str(raw.get('bookId') or '').strip()
+    if image_id and not re.fullmatch('[a-f0-9]{32}',image_id):raise ValueError('invalid_image_id')
+    if book_id and not re.fullmatch('[a-f0-9]{32}',book_id):raise ValueError('invalid_book_id')
     return {'title':title,'subject':subject,'grade':grade,'mode':mode,
-            'time':max(10,min(90,seconds)),'rows':result}
+            'time':max(10,min(90,seconds)),'rows':result,
+            'imageId':image_id,'bookId':book_id}
 
 
 def public_view(row):
     return {'id':row['id'],'title':row['title'],'subject':row['subject'],
             'grade':row['grade'],'mode':row['mode'],
             'published':bool(row['published']),'publicCode':row['public_code'] if row['published'] else None,
-            'maxAttempts':row['max_attempts'],'createdAt':row['created_at'],
+            'maxAttempts':row['max_attempts'],
+            'imageId':db.jload(row['payload'],{}).get('imageId') or '',
+            'bookId':db.jload(row['payload'],{}).get('bookId') or '',
+            'createdAt':row['created_at'],
             'updatedAt':row['updated_at'],'questionCount':len(db.jload(row['payload'],{}).get('rows',[]))}
 
 
@@ -99,6 +108,12 @@ def list_activities(tid):
 
 def save(tid,data):
     activity=validate_payload(data.get('activity'))
+    if activity.get('imageId') and not db.query(
+        'SELECT id FROM game_lab_media WHERE id=? AND teacher_id=? AND archived=0',
+        (activity['imageId'],tid)):raise ValueError('media_not_found')
+    if activity.get('bookId') and not db.query(
+        'SELECT id FROM game_lab_books WHERE id=? AND teacher_id=? AND archived=0',
+        (activity['bookId'],tid)):raise ValueError('book_not_found')
     aid=str(data.get('id') or '')
     timestamp=now()
     if aid:
@@ -150,7 +165,9 @@ def public_activity(code):
 def participant_view(a):
     return {'title':a['title'],'subject':a['subject'],'grade':a['grade'],
             'mode':a['mode'],'questions':len(db.jload(a['payload'],{}).get('rows',[])),
-            'maxAttempts':a['max_attempts']}
+            'maxAttempts':a['max_attempts'],
+            'imageUrl':('/api/game-lab/pro/image?id='+str(db.jload(a['payload'],{}).get('imageId'))+
+              '&code='+str(a['public_code'])) if db.jload(a['payload'],{}).get('imageId') else ''}
 
 
 def hashed(token):return hashlib.sha256(token.encode()).hexdigest()
@@ -205,7 +222,9 @@ def state_view(state,digest):
           'correct':state['correct'],'index':state['index'],'total':len(state['rows']),
           'xpGain':state.get('xpGain',0),'guest':state.get('guest',False),
           'activityTitle':state['title'],'mode':state['mode']}
-    if not completed:data['question']=question_state(state,digest)
+    if not completed:
+        data['question']=question_state(state,digest)
+        if state.get('imageUrl'):data['question']['imageUrl']=state['imageUrl']
     return data
 
 
@@ -223,11 +242,22 @@ def start(data,h):
     payload=db.jload(a['payload'],{})
     rows=payload.get('rows',[])
     if not rows:return fail(h,'empty_activity',409)
+    assigned=db.query('SELECT target_type,target_value FROM game_lab_assignments '
+       'WHERE activity_id=? AND teacher_id=?',(a['id'],a['teacher_id']),True)
+    if assigned:
+        if not student:return fail(h,'card_required_for_assignment',403)
+        if not any(t['target_type']=='all' or
+             (t['target_type']=='student' and t['target_value']==student['id']) or
+             (t['target_type']=='class' and t['target_value']==student['class_name'])
+             for t in assigned):
+            return fail(h,'not_assigned_to_card',403)
     token=secrets.token_urlsafe(36)
     state={'rows':rows,'title':a['title'],'mode':a['mode'],'duration':payload.get('time',25),
            'index':0,'score':0,'correct':0,'finished':False,'xpGain':0,
            'guest':guest,'studentName':student['name'] if student else name,
-           'className':student['class_name'] if student else 'زائر'}
+           'className':student['class_name'] if student else 'زائر',
+           'imageUrl':('/api/game-lab/pro/image?id='+str(payload.get('imageId'))+
+              '&code='+str(a['public_code'])) if payload.get('imageId') else ''}
     key=hashed(token);timestamp=now()
     # Atomic start quota for a student card: lock that student record first.
     with db.DB_LOCK:
