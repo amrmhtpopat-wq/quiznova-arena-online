@@ -1,0 +1,185 @@
+/* BOOYAHJO V12.8 — grade-scoped card quizzes and one-screen live/solo questions.
+   These selectors run only while a question is being displayed. */
+body.v105-student .bo-card-quizzes[hidden]{display:none!important}
+body.v105-student .bo-card-quizzes{border:1px solid #67d7e4;background:linear-gradient(155deg,#0a345c,#0d4b6b);border-radius:16px;margin:12px 0;padding:14px;color:#f4fcff;box-shadow:0 11px 25px #00142b55}
+body.v105-student .bo-card-test-header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px}
+body.v105-student .bo-card-test-header h3{font-size:clamp(15px,1.6vw,19px);font-weight:900;color:#fff!important;margin:0}
+body.v105-student .bo-card-test-header>span{background:#e1f5f8;color:#0e5074;padding:5px 11px;font-size:12px;border-radius:999px;font-weight:850}
+body.v105-student .bo-card-test-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:10px}
+body.v105-student .bo-card-test-item{display:flex;flex-direction:column;gap:7px;min-width:0;background:#eef9ff;color:#153955;border:1px solid #b5d5e9;padding:13px;border-radius:12px}
+body.v105-student .bo-card-test-item b{font-size:15px;line-height:1.55;color:#173957;overflow-wrap:anywhere}
+body.v105-student .bo-card-test-item small{font-size:12px;line-height:1.5;color:#416780}
+body.v105-student .bo-card-test-item button{align-self:stretch;border-radius:10px;background:#0e6890;border:1px solid #19718d;color:#fff;font:900 13px Cairo,Tahoma,Arial,sans-serif;padding:10px 12px;cursor:pointer;margin-top:auto}
+body.v105-student .bo-card-test-item button:disabled{background:#617488;cursor:not-allowed}
+body.v105-student .bo-card-test-empty{color:#dbf4ff;font-size:13px;line-height:1.8;margin:0;padding:7px 0}
+/* Hide nonessential entry controls only DURING an actual question; restore automatically otherwise. */
+body.v105-student[data-bo-question="live"] :is(.student-brand,.bo-student-modes),
+body.v105-student[data-bo-question="solo"] :is(.student-brand,.bo-student-modes){display:none!important}
+html:has(body.v105-student[data-bo-question="live"]),
+html:has(body.v105-student[data-bo-question="solo"]){overflow:hidden!important}
+body.v105-student[data-bo-question="live"],
+body.v105-student[data-bo-question="solo"]{overflow:hidden!important}
+body.v105-student[data-bo-question="live"] #gameView{
+ position:fixed!important;inset:0!important;z-index:80;
+ width:100%!important;max-width:100%!important;
+ height:100dvh!important;min-height:0!important;
+ box-sizing:border-box;overflow:hidden!important;
+ padding:clamp(7px,1.35vh,15px) clamp(8px,2vw,25px) max(7px,env(safe-area-inset-bottom))!important;
+ display:flex!important;flex-direction:column!important;gap:clamp(4px,.9vh,11px)!important;
+ background:linear-gradient(150deg,#061832,#082747 62%,#071a36)!important
+}
+body.v105-student[data-bo-question="live"] #gameView .game-top{
+ display:flex!important;flex:0 0 auto;max-width:100%;flex-wrap:wrap;
+ margin:0!important;gap:clamp(4px,.8vw,10px)!important;min-height:0
+}
+body.v105-student[data-bo-question="live"] #gameView .game-top :is(.player-pill,.team-pill,.score-pill,.streak-pill,.model-pill){
+ padding:5px 9px!important;font-size:clamp(10px,1vw,12px)!important;line-height:1.35!important;
+ display:inline-flex;align-items:center;min-height:30px
+}
+body.v105-student[data-bo-question="live"] #gameView .game-top .pill-avatar{width:22px;height:22px}
+body.v105-student[data-bo-question="live"] #gameView .game-top .timer{
+ width:clamp(37px,5vh,55px)!important;height:clamp(37px,5vh,55px)!important;flex-shrink:0;
+ margin-inline-start:auto!important;border-radius:12px!important;font-size:clamp(15px,2.5vh,23px)!important
+}
+body.v105-student[data-bo-question="live"] #gameView .bo-team-huddle{display:none!important}
+body.v105-student[data-bo-question="live"] #gameView>.progress{flex:0 0 auto;min-height:4px!important;height:5px!important;margin:0!important}
+body.v105-student[data-bo-question="live"] #gameView>.question-card{
+ display:flex!important;flex-direction:column!important;flex:1 1 0!important;
+ min-height:0!important;max-height:100%!important;overflow:hidden!important;
+ padding:clamp(8px,1.6vh,21px) clamp(9px,1.8vw,26px)!important;border-radius:clamp(12px,2vw,23px)!important;
+ gap:clamp(5px,1vh,12px)!important;
+}
+body.v105-student[data-bo-question="live"] #gameView .boss-banner{flex:0 0 auto;margin:0!important;padding:3px 9px;font-size:11px}
+body.v105-student[data-bo-question="live"] #gameView .question-image{
+ display:block;flex:0 1 auto!important;min-height:0!important;
+ width:auto;max-width:min(460px,100%)!important;
+ max-height:min(18dvh,170px)!important;margin:0 auto!important;object-fit:contain;border-radius:10px!important
+}
+body.v105-student[data-bo-question="live"] #gameView .question-card h2{
+ flex:0 1 auto!important;min-height:0!important;max-height:32%!important;
+ overflow-y:auto!important;overscroll-behavior:contain;scrollbar-width:thin;
+ padding:0 2px!important;margin:0 auto!important;width:100%!important;
+ max-width:1200px!important;line-height:1.35!important;
+ font-size:clamp(20px,3.4vw,42px)!important;font-weight:950!important;
+ text-align:center!important;overflow-wrap:anywhere!important;
+}
+body.v105-student[data-bo-question="live"] #gameView .question-card .answers{
+ display:grid!important;flex:1 1 0!important;min-height:0!important;min-width:0!important;
+ grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ grid-template-rows:repeat(var(--bo-answer-rows,2),minmax(0,1fr))!important;
+ gap:clamp(6px,1.2vh,14px)!important;margin:0!important
+}
+body.v105-student[data-bo-question="live"] #gameView .question-card .answer{
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ gap:clamp(5px,1vw,15px);width:100%!important;height:100%!important;
+ min-height:0!important;min-width:0!important;max-height:100%!important;
+ padding:clamp(6px,1.6vh,20px)!important;
+ border-radius:clamp(11px,1.7vw,20px)!important;
+ font-size:clamp(14px,2.2vw,27px)!important;
+ text-align:center!important;line-height:1.33!important;
+ overflow-y:auto!important;overflow-wrap:anywhere!important;
+ word-break:normal!important;white-space:normal!important;scrollbar-width:thin
+}
+body.v105-student[data-bo-question="live"] #gameView .answer:before{
+ flex:0 0 auto!important;width:clamp(22px,3vw,34px)!important;height:clamp(22px,3vw,34px)!important;
+ margin:0!important;font-size:12px
+}
+body.v105-student[data-bo-question="live"] #gameView :is(.short,.order,.match){flex:1 1 auto;min-height:0;overflow-y:auto;max-width:100%;width:100%;margin:0 auto}
+body.v105-student[data-bo-question="live"] #gameView .game-tools{flex:0 0 auto;min-height:0!important;margin:0!important;padding:0}
+body.v105-student[data-bo-question="live"] #gameView .game-tools:empty{display:none!important}
+body.v105-student[data-bo-question="live"] #gameView .power-btn{font-size:12px!important;padding:5px 10px!important;min-height:28px!important}
+body.v105-student[data-bo-question="live"] #gameView .submit:not(.hidden){flex:0 0 auto;min-height:38px!important;max-height:49px!important;margin:0 auto!important;padding:7px 12px!important;max-width:400px}
+body.v105-student[data-bo-question="live"] #gameView .v105-answer-hint{flex:0 0 auto;text-align:center;font-size:clamp(9px,1.6vh,12px)!important;line-height:1.2!important;margin:0!important;padding:0!important}
+body.v105-student[data-bo-question="live"] #gameView #feedback:empty{display:none!important}
+/* SOLO: use the same full viewport without losing question or answer actions. */
+body.v105-student[data-bo-question="solo"] #soloView{
+ position:fixed!important;inset:0!important;z-index:80;
+ width:100%!important;height:100dvh!important;max-width:none!important;
+ padding:clamp(7px,1.2vh,15px) clamp(8px,2vw,28px) max(7px,env(safe-area-inset-bottom))!important;
+ margin:0!important;display:flex!important;flex-direction:column!important;
+ box-sizing:border-box;overflow:hidden!important;
+ background:linear-gradient(150deg,#061832,#082747 62%,#071a36)!important
+}
+body.v105-student[data-bo-question="solo"] #soloView>.bo-solo-card{
+ display:flex!important;flex-direction:column!important;flex:1 1 0!important;
+ min-height:0!important;overflow:hidden!important;width:100%!important;max-width:100%!important;
+ padding:clamp(7px,1.3vh,16px)!important;border-radius:clamp(12px,1.8vw,20px)!important
+}
+body.v105-student[data-bo-question="solo"] #soloView .bo-solo-card>:is(.bo-solo-kicker,h1,p,.bo-solo-login,.bo-solo-student-info,.bo-solo-quizzes){
+ display:none!important
+}
+body.v105-student[data-bo-question="solo"] #soloView .bo-solo-error:empty{display:none!important}
+body.v105-student[data-bo-question="solo"] #soloView .bo-solo-error:not(:empty){
+ flex:0 0 auto!important;margin:0!important;line-height:1.4!important;font-size:12px!important
+}
+body.v105-student[data-bo-question="solo"] #soloView .bo-solo-play{
+ flex:1 1 0!important;min-height:0!important;min-width:0!important;
+ display:flex!important;flex-direction:column!important;overflow:hidden!important;margin:0!important
+}
+body.v105-student[data-bo-question="solo"] #soloView .bo-solo-progress-header{
+ display:flex!important;align-items:center!important;justify-content:space-between!important;
+ gap:6px!important;min-width:0!important;min-height:0!important;
+ font-size:clamp(11px,1.3vw,15px)!important;margin:0 0 clamp(5px,.8vh,10px)!important;line-height:1.45
+}
+body.v105-student[data-bo-question="solo"] #soloView .bo-solo-progress-header span{min-width:0}
+body.v105-student[data-bo-question="solo"] #soloView .bo-solo-progress-header span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:32%}
+body.v105-student[data-bo-question="solo"] #soloView .bo-solo-question{
+ flex:1 1 0!important;min-height:0!important;min-width:0!important;overflow:hidden!important;
+ display:flex!important;flex-direction:column!important;
+ gap:clamp(6px,1vh,14px)!important;
+ padding:clamp(8px,1.8vh,22px)!important;margin:0!important
+}
+body.v105-student[data-bo-question="solo"] #soloView .bo-solo-question h2{
+ flex:0 1 auto!important;min-height:0!important;max-height:35%!important;
+ overflow-y:auto!important;overscroll-behavior:contain;scrollbar-width:thin;
+ font-size:clamp(20px,3.2vw,40px)!important;line-height:1.38!important;
+ font-weight:950!important;text-align:center;margin:0!important;
+ padding:0 3px!important;overflow-wrap:anywhere!important
+}
+body.v105-student[data-bo-question="solo"] #soloView .bo-solo-question-image{
+ flex:0 1 auto!important;min-height:0!important;
+ max-height:min(17dvh,170px)!important;max-width:min(460px,100%)!important;
+ margin:0 auto!important;object-fit:contain!important
+}
+body.v105-student[data-bo-question="solo"] #soloView .bo-solo-options{
+ flex:1 1 0!important;min-height:0!important;min-width:0!important;
+ display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ grid-template-rows:repeat(var(--bo-answer-rows,2),minmax(0,1fr))!important;
+ gap:clamp(6px,1vh,14px)!important;margin:0!important
+}
+body.v105-student[data-bo-question="solo"] #soloView .bo-solo-choice{
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ min-height:0!important;min-width:0!important;max-height:100%!important;
+ height:100%!important;padding:clamp(6px,1.5vh,20px)!important;
+ border-radius:clamp(10px,1.5vw,18px)!important;
+ text-align:center!important;line-height:1.4!important;
+ font-size:clamp(14px,2.2vw,25px)!important;
+ overflow-y:auto!important;overflow-wrap:anywhere!important;scrollbar-width:thin
+}
+body.v105-student[data-bo-question="solo"] #soloView .bo-solo-choice input{flex-shrink:0!important}
+body.v105-student[data-bo-question="solo"] #soloView .bo-solo-answer-input{
+ flex:1 1 auto!important;min-height:45px!important;max-height:65px!important;
+ margin:auto 0!important
+}
+body.v105-student[data-bo-question="solo"] #soloView :is(#soloOrderList,.bo-solo-match-row){min-height:0}
+body.v105-student[data-bo-question="solo"] #soloView #soloOrderList{flex:1;overflow-y:auto}
+body.v105-student[data-bo-question="solo"] #soloView .bo-solo-submit{
+ flex:0 0 auto!important;max-height:50px!important;min-height:42px!important;
+ margin:0 auto!important;width:min(430px,100%)!important
+}
+@media(max-width:600px){
+ body.v105-student[data-bo-question="live"] #gameView .game-top :is(.streak-pill,.team-pill,.model-pill){display:none!important}
+ body.v105-student[data-bo-question="live"] #gameView .question-card h2{font-size:clamp(17px,5.2vw,28px)!important;max-height:30%!important}
+ body.v105-student[data-bo-question="live"] #gameView .question-card .answer{font-size:clamp(13px,3.6vw,19px)!important;padding:clamp(5px,1.2vh,10px)!important}
+ body.v105-student[data-bo-question="live"] #gameView .question-card .answer:before{width:23px!important;height:23px!important}
+ body.v105-student[data-bo-question="solo"] #soloView .bo-solo-question h2{font-size:clamp(17px,5vw,27px)!important;max-height:30%!important}
+ body.v105-student[data-bo-question="solo"] #soloView .bo-solo-choice{font-size:clamp(13px,3.5vw,19px)!important;padding:clamp(5px,1.2vh,10px)!important}
+ body.v105-student[data-bo-question="solo"] #soloView .bo-solo-progress-header{font-size:11px!important}
+}
+@media(max-height:610px){
+ body.v105-student[data-bo-question="live"] #gameView .question-image{max-height:11dvh!important}
+ body.v105-student[data-bo-question="solo"] #soloView .bo-solo-question-image{max-height:11dvh!important}
+ body.v105-student[data-bo-question="live"] #gameView .v105-answer-hint{display:none!important}
+ body.v105-student[data-bo-question="live"] #gameView .question-card h2{max-height:28%!important}
+ body.v105-student[data-bo-question="solo"] #soloView .bo-solo-question h2{max-height:28%!important}
+}
