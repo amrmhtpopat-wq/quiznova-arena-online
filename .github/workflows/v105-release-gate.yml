@@ -26,6 +26,7 @@ jobs:
           node --check game-lab-extra-v2.js
           node --check game-lab-cloud-v2.js
           node --check game-lab-pro-v3.js
+          node --check game-lab-grade7-pilot.js
           node --check admin-v1.js
           node --check avatar-names-v121.js
           node --check booyah-countdown-v121.js
@@ -57,6 +58,7 @@ jobs:
           python -m unittest discover -s tests -p 'test_game_lab_pro.py' -v
           python -m unittest discover -s tests -p 'test_game_lab_modes_v3.py' -v
           python -m unittest discover -s tests -p 'test_game_lab_documents_v3.py' -v
+          python -m unittest discover -s tests -p 'test_grade7_school_pilot.py' -v
           python -m unittest discover -s tests -p 'test_admin_v1.py' -v
           python -m unittest discover -s tests -p 'test_admin_v2.py' -v
           python -m unittest discover -s tests -p 'test_v121_cards_media_scenes.py' -v
