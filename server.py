@@ -437,6 +437,12 @@ class Handler(SimpleHTTPRequestHandler):
         if game_lab_api.handle_get(self,u):return
         if game_lab_pro.handle_get(self,u):return
         if game_lab_live.handle_get(self,u):return
+        if u.path=='/api/game-lab/pilot/grade7':
+            try:
+                example=json.loads((ROOT/'pilot'/'grade7_computing_reviewed.json').read_text(encoding='utf-8'))
+            except (OSError,ValueError):
+                return self.send_json({'ok':False,'error':'pilot_unavailable'},503)
+            return self.send_json({'ok':True,'pilot':example})
         if u.path=='/api/health':
             try:
                 result=platform_store.query('SELECT 1 AS ok')
