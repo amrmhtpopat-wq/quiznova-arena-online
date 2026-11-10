@@ -83,4 +83,21 @@ class DocumentParsers(unittest.TestCase):
         self.assertIn('وحدة المعالجة',rows[0]['q'])
 
 
+    def test_acronyms_are_supported_but_broken_pdf_captions_are_rejected(self):
+        sample='''[صفحة 11]
+CPU: وحدة تنفذ العمليات الحسابية والمنطقية داخل الحاسوب.
+RAM: ذاكرة تحفظ البيانات المؤقتة عند تشغيل البرامج والتطبيقات.
+1 .: في هذه المرحلة يستقبل الحاسوب البيانات والأوامر ثم يعالجها.
+[صفحة 12]
+أفكر وأحلل: أذكر الفرق بين البيانات والمعلومات مع توضيح الأمثلة.
+[صفحة 13]
+الشكل 1-2: رسم توضيحي لمكونات الحاسوب الخارجية والداخلية.
+المعرفة: أُوظِّف في هذا الدرس ما تعلمته في الإجابة عن الأسئلة الآتية.'''
+        results=lab.deterministic_draft(sample,12)
+        self.assertEqual(len(results),2,results)
+        self.assertEqual([r['sourcePage'] for r in results],[11,11])
+        self.assertIn('CPU',results[0]['q'])
+        self.assertIn('RAM',results[1]['q'])
+
+
 if __name__=='__main__':unittest.main(verbosity=2)
