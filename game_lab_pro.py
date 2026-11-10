@@ -194,14 +194,15 @@ def deterministic_draft(text,maximum):
             if m:a,b=m.group(1),m.group(2)
         if not a or not b:continue
         a=a.strip('،. ؛:()');b=b.strip('، ؛:.')
-        if not 4<=len(a)<=62 or not 16<=len(b)<=100:continue
+        latin_acronym=bool(re.fullmatch(r'[A-Za-z]{2,12}',a))
+        if not (2 if latin_acronym else 4)<=len(a)<=62 or not 16<=len(b)<=100:continue
         if len(a.split())>7 or len(b.split())<4:continue
         if re.search(r'\d|[؟?!;:()\[\]]',a):continue
         if re.search(r'[.!؟]',a) or blocked.search(a):continue
         if a.endswith(('مثلا','مثلاً','عليها','بما يلي','كما يلي','ماذا','التالي')):continue
         # Require a plausible short concept rather than a full sentence.
         if a.startswith(('يمكن','يستعمل','تستعمل','يستخدم','أذكر','أُحدد','لاحظ','أتأمل')):continue
-        if len(re.findall(r'[\u0621-\u064A]',a))<4 or len(re.findall(r'[\u0621-\u064A]',b))<11:continue
+        if (not latin_acronym and len(re.findall(r'[\u0621-\u064A]',a))<4) or len(re.findall(r'[\u0621-\u064A]',b))<11:continue
         if re.search(r'(الأسئلة|العبارة الصحيحة|العبارة غير الصحيحة|وظِّف|وَظِّف|أُوظّف|'
                      r'أتواصل|التمرين|المشروع|لِما يأتي|في ما يأتي)',b):continue
         if re.match(r'^(الشكل|الجدول|نشاط|مقدمة|إرشادات)',b):continue
