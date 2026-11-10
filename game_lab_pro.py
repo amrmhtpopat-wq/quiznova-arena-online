@@ -196,12 +196,14 @@ def deterministic_draft(text,maximum):
         a=a.strip('،. ؛:()');b=b.strip('، ؛:.')
         if not 4<=len(a)<=62 or not 16<=len(b)<=100:continue
         if len(a.split())>7 or len(b.split())<4:continue
-        if re.search(r'[0-9٠-٩؟?!;:()\\[\]]',a):continue
+        if re.search(r'\d|[؟?!;:()\[\]]',a):continue
         if re.search(r'[.!؟]',a) or blocked.search(a):continue
         if a.endswith(('مثلا','مثلاً','عليها','بما يلي','كما يلي','ماذا','التالي')):continue
         # Require a plausible short concept rather than a full sentence.
         if a.startswith(('يمكن','يستعمل','تستعمل','يستخدم','أذكر','أُحدد','لاحظ','أتأمل')):continue
         if len(re.findall(r'[\u0621-\u064A]',a))<4 or len(re.findall(r'[\u0621-\u064A]',b))<11:continue
+        if re.search(r'(الأسئلة|العبارة الصحيحة|العبارة غير الصحيحة|وظِّف|وَظِّف|أُوظّف|'
+                     r'أتواصل|التمرين|المشروع|لِما يأتي|في ما يأتي)',b):continue
         if re.match(r'^(الشكل|الجدول|نشاط|مقدمة|إرشادات)',b):continue
         definitions.append({'q':'ما المقصود بـ '+a+'؟','a':b,
                             'g':'صفحة '+str(page),'sourcePage':page})
