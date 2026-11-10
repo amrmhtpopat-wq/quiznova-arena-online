@@ -142,7 +142,7 @@ async function generate(){
    const answer=document.createElement('small');answer.textContent='الإجابة المقترحة: '+r.a+' · صفحة '+r.sourcePage;
    el.append(answer);parent.append(el);
   }
-  $('activityData').value=src.map(x=>x.q.replaceAll('|',' ')+' | '+x.a.replaceAll('|',' ')+' | '+x.g.replaceAll('|',' ')).join('\n');
+  $('activityData').value=src.map(x=>x.q.replaceAll('|',' ')+' | '+x.a.replaceAll('|',' ')+' | '+x.g.replaceAll('|',' ')+(x.sourcePage?' | '+x.sourcePage:'')).join('\n');
   const book=books.find(x=>x.id===params.bookId);
   if(book)$('activityTitle').value=('ألعاب '+book.name.replace(/\.(pdf|docx|txt)$/i,'')).slice(0,90);
   window.BOOYAH_LAB_BOOK_ID=params.bookId;
