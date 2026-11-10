@@ -1,6 +1,17 @@
 """Document parser smoke tests for the actual PDF and Word textbook upload formats."""
 import io
 import unittest
+import os
+import tempfile
+import atexit
+from pathlib import Path
+DOC_TEMP=tempfile.TemporaryDirectory()
+atexit.register(DOC_TEMP.cleanup)
+os.environ.pop('DATABASE_URL',None)
+os.environ['QUIZNOVA_SQLITE_PATH']=str(Path(DOC_TEMP.name)/'docparser.sqlite')
+os.environ['QUIZNOVA_ALLOW_EPHEMERAL']='yes'
+import platform_store
+platform_store.init()
 
 from docx import Document
 from pypdf import PdfWriter
