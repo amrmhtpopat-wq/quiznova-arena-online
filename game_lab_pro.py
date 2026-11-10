@@ -187,7 +187,7 @@ def deterministic_draft(text,maximum):
         line=re.sub(r'\s+',' ',line).strip('•-ـ. ')
         if not 15<=len(line)<=270:continue
         a=None;b=None
-        m=re.match(r'^(.{2,70}?)\s*[:：]\s*(.{12,170})
+        m=re.match(r'^(.{2,70}?)\s*[:：]\s*(.{12,170})$',line)
         if m:a,b=m.group(1),m.group(2)
         else:
             m=re.match(r'^(.{4,65}?)\s+(?:هو|هي|يعني|تُعرف بأنها|يُعرف بأنه|يشير إلى)\s+(.{12,170})$',line)
