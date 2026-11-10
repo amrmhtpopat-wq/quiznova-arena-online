@@ -434,7 +434,7 @@ window.toggleSoloPublish=async id=>{
     if(typeof window.QN9_SAVE_NOW!=='function'||!await window.QN9_SAVE_NOW()){
       DB.quizzes=old;renderLibrary();return toast('تعذر حفظ صلاحية التدريب. حاول مرة أخرى.');
     }
-    renderLibrary();toast(target.settings.publishedSolo?'تم إتاحة الاختبار لتدريب الطلاب بالبطاقة':'تم إيقاف إتاحة الاختبار للطلاب');
+    renderLibrary();toast(target.settings.publishedSolo?'تم إتاحة الاختبار فقط لطلاب الصف المحدد'+(target.section?' / الشعبة '+target.section:' (كل الشعب)'):'تم إيقاف إتاحة الاختبار للطلاب');
   }catch(e){DB.quizzes=old;renderLibrary();toast('تعذر تحديث صلاحية التدريب');}
 };
 $('#librarySearch').oninput=renderLibrary;
