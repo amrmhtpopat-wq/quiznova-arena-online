@@ -178,7 +178,7 @@ def deterministic_draft(text,maximum):
     definitions=[]
     page=1
     blocked=re.compile(r'(الشكل|الجدول|السؤال|النشاط|أفكر|أناقش|أُفكِّر|أذكر|'
-                       r'أوجه|من الأمثلة|تمهيد|الفقرة|الآتية|ما يأتي|أبحث|)'
+                       r'أوجه|من الأمثلة|تمهيد|الفقرة|الآتية|ما يأتي|أبحث)'
                        r'',re.IGNORECASE)
     for raw in text.splitlines():
         line=raw.strip()
