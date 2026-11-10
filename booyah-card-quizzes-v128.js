@@ -3,7 +3,7 @@
 'use strict';
 const section=document.getElementById('boCardQuizzes');
 if(!section)return;
-const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;':'&quot;',"'":'&#39;'}[c]));
+const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let requestSeq=0, items=[], visibleCard='';
 function clear(){
  requestSeq++;
