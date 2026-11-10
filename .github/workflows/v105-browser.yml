@@ -19,6 +19,10 @@ on:
       - game-lab-play.html
       - game-lab-cloud-v2.js
       - game-lab-pro-v3.js
+      - game-lab-grade7-pilot.js
+      - pilot/grade7_computing_reviewed.json
+      - tests/test_grade7_school_pilot.py
+      - tests/browser_grade7_pilot.py
       - game-lab-card.html
       - game-lab-live.html
       - tests/browser_game_lab_pro_v3.py
@@ -85,6 +89,7 @@ jobs:
           python tests/browser_game_lab_v1.py
           python tests/browser_game_lab_cloud_v2.py
           python tests/browser_game_lab_pro_v3.py
+          python tests/browser_grade7_pilot.py
           python tests/browser_stage_fit_v126.py
           python tests/browser_mobile_v123.py
           python tests/browser_responsive_v122.py
