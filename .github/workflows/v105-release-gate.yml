@@ -56,6 +56,7 @@ jobs:
           python -m unittest discover -s tests -p 'test_game_lab_api.py' -v
           python -m unittest discover -s tests -p 'test_game_lab_pro.py' -v
           python -m unittest discover -s tests -p 'test_game_lab_modes_v3.py' -v
+          python -m unittest discover -s tests -p 'test_game_lab_documents_v3.py' -v
           python -m unittest discover -s tests -p 'test_admin_v1.py' -v
           python -m unittest discover -s tests -p 'test_admin_v2.py' -v
           python -m unittest discover -s tests -p 'test_v121_cards_media_scenes.py' -v
