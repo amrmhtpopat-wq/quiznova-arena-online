@@ -207,7 +207,7 @@ class VisualAndDirectAnswerTests(unittest.TestCase):
         self.assertIn('id="soloPublish"',studio)
         self.assertIn("publishedSolo:$('#soloPublish').checked",script)
         self.assertIn("window.toggleSoloPublish=async id=>",script)
-        self.assertIn('/solo-student-v120.js?v=12.4',student)
+        self.assertIn('/solo-student-v120.js?v=12.8',student)
         self.assertIn('BOOYAHJO',studio)
         self.assertIn('BOOYAHJO',portal)
         self.assertIn('BOOYAHJO',student)

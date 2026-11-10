@@ -7,6 +7,7 @@ import time
 import uuid
 
 import platform_store as store
+from student_quiz_scope_v128 import allowed as student_can_access_quiz
 
 GUARD = threading.RLock()
 RATE_LOCK = threading.Lock()
@@ -90,6 +91,7 @@ def catalog(student):
     result = []
     for quiz in store.snapshot(teacher_id).get('quizzes', []):
         if (quiz.get('settings', {}).get('publishedSolo') is True
+                and student_can_access_quiz(quiz, student)
                 and isinstance(quiz.get('questions'), list) and quiz['questions']):
             quiz_id = str(quiz.get('id', ''))[:100]
             allowed = max_attempts(quiz)
@@ -98,6 +100,7 @@ def catalog(student):
                 'id': quiz_id, 'title': str(quiz.get('title', 'اختبار'))[:130],
                 'subject': str(quiz.get('subject', 'عام'))[:80],
                 'grade': str(quiz.get('grade', ''))[:50],
+                'section': str(quiz.get('section', ''))[:50],
                 'questions': min(len(quiz['questions']), MAX_QUIZ_QUESTIONS),
                 'attemptsUsed': used, 'maxAttempts': allowed,
                 'remaining': max(0, allowed-used), 'xpAwarded': quiz_id in awarded
@@ -300,7 +303,8 @@ def handle_post(h, u, data):
                     'quizzes': catalog(student)})
                 return True
             quiz = published_quiz(student['teacher_id'], data.get('quizId'))
-            if not quiz:
+            if not quiz or not student_can_access_quiz(quiz, student):
+                # Do not reveal existence of tests for other grades/sections.
                 h.send_json({'ok': False, 'error': 'not_published'}, 404)
                 return True
             token = secrets.token_urlsafe(40)
