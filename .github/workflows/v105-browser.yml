@@ -87,6 +87,7 @@ jobs:
           python -m playwright install chromium
       - name: Test actual browser on desktop and mobile
         run: |
+          python tests/browser_student_grade_fit_v128.py
           python tests/browser_stage_fit_v126.py
           python tests/browser_mobile_v123.py
           python tests/browser_responsive_v122.py
@@ -96,7 +97,6 @@ jobs:
           python tests/browser_studio_routing_v112.py
           python tests/browser_mascot_badge_v112.py
           python tests/browser_student_entry_v120.py
-          python tests/browser_student_grade_fit_v128.py
           python tests/browser_admin_v1.py
           python tests/browser_admin_v2.py
           python tests/browser_visitor_v125.py
