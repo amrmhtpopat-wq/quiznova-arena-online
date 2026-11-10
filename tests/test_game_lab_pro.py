@@ -99,6 +99,19 @@ class ExtendedGameLabTest(unittest.TestCase):
         self.assertEqual(status,200,saved);aid=saved['id']
         status,pub,_=self.request('/api/game-lab/teacher/publish',{'id':aid,'maxAttempts':2},self.token)
         self.assertEqual(status,200,pub);code=pub['publicCode']
+        # Published images remain private until a valid owning activity code is provided.
+        from urllib.request import Request as BinaryRequest
+        with urlopen(BinaryRequest(self.base+'/api/game-lab/pro/image?id='+media,
+                   headers={'Authorization':'Bearer '+self.token}),timeout=10) as image:
+            self.assertEqual(image.status,200)
+            self.assertEqual(image.headers.get_content_type(),'image/png')
+            self.assertEqual(image.read(),png)
+        with urlopen(BinaryRequest(self.base+'/api/game-lab/pro/image?id='+media+'&code='+code),timeout=10) as image:
+            self.assertEqual(image.read(),png)
+        with self.assertRaises(HTTPError) as denied:
+            urlopen(BinaryRequest(self.base+'/api/game-lab/pro/image?id='+media,
+                    headers={'Authorization':'Bearer '+self.other}),timeout=10)
+        self.assertEqual(denied.exception.code,401)
         # Assigned to ninth A: ninth B must not see this activity, nor bypass via its URL.
         status,out,_=self.request('/api/game-lab/pro/assignments/save',{
             'activityId':aid,'targets':[{'type':'class','value':'التاسع أ'}]},self.token)
