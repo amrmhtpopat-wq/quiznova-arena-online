@@ -168,28 +168,45 @@ def source_selection(book,start,end):
 
 
 def deterministic_draft(text,maximum):
-    """Extract definitional source-linked pairs; do not synthesize unsupported facts."""
+    """Conservative, source-linked definition extraction.
+
+    In PDF extraction, colon-separated chapter captions and line fragments can
+    resemble definitions. Reject them rather than fabricate test questions.
+    If too few genuine definitions survive, the teacher can review and type
+    questions or request opt-in AI generation instead.
+    """
     definitions=[]
     page=1
+    blocked=re.compile(r'(الشكل|الجدول|السؤال|النشاط|أفكر|أناقش|أُفكِّر|أذكر|'
+                       r'أوجه|من الأمثلة|تمهيد|الفقرة|الآتية|ما يأتي|أبحث|)'
+                       r'',re.IGNORECASE)
     for raw in text.splitlines():
         line=raw.strip()
-        if re.match(r'^\[صفحة \d+\]$',line):
+        if re.fullmatch(r'\[صفحة\s+\d+\]',line):
             page=int(re.search(r'\d+',line).group());continue
         line=re.sub(r'\s+',' ',line).strip('•-ـ. ')
-        if len(line)<15 or len(line)>270:continue
+        if not 15<=len(line)<=270:continue
         a=None;b=None
-        m=re.match(r'^(.{3,75}?)\s*[:：]\s*(.{8,170})$',line)
+        m=re.match(r'^(.{4,70}?)\s*[:：]\s*(.{12,170})$',line)
         if m:a,b=m.group(1),m.group(2)
         else:
-            m=re.match(r'^(.{3,75}?)\s+(?:هو|هي|يعني|تُعرف بأنها|يُعرف بأنه|يشير إلى)\s+(.{8,170})$',line)
+            m=re.match(r'^(.{4,65}?)\s+(?:هو|هي|يعني|تُعرف بأنها|يُعرف بأنه|يشير إلى)\s+(.{12,170})$',line)
             if m:a,b=m.group(1),m.group(2)
-        if not a or not b or len(b)>100:continue
-        if any(ch in a for ch in '?؟') or len(b)<8:continue
-        definitions.append({'q':'ما المقصود بـ '+a.strip()+'؟','a':b.strip(),
+        if not a or not b:continue
+        a=a.strip('،. ؛:()');b=b.strip('، ؛:.')
+        if not 4<=len(a)<=62 or not 16<=len(b)<=100:continue
+        if len(a.split())>7 or len(b.split())<4:continue
+        if re.search(r'[0-9٠-٩؟?!;:()\\[\]]',a):continue
+        if re.search(r'[.!؟]',a) or blocked.search(a):continue
+        if a.endswith(('مثلا','مثلاً','عليها','بما يلي','كما يلي','ماذا','التالي')):continue
+        # Require a plausible short concept rather than a full sentence.
+        if a.startswith(('يمكن','يستعمل','تستعمل','يستخدم','أذكر','أُحدد','لاحظ','أتأمل')):continue
+        if len(re.findall(r'[\u0621-\u064A]',a))<4 or len(re.findall(r'[\u0621-\u064A]',b))<11:continue
+        if re.match(r'^(الشكل|الجدول|نشاط|مقدمة|إرشادات)',b):continue
+        definitions.append({'q':'ما المقصود بـ '+a+'؟','a':b,
                             'g':'صفحة '+str(page),'sourcePage':page})
         if len(definitions)>=maximum:break
     return definitions
-
 
 def offline_generate(tid,data):
     book=require_book(tid,data.get('bookId'))
