@@ -69,7 +69,15 @@ def validate_payload(raw):
         if not q or not a:raise ValueError('incomplete_question')
         key=(q.casefold(),a.casefold())
         if key in seen:continue
-        seen.add(key);result.append({'q':q,'a':a,'g':g})
+        seen.add(key)
+        question={'q':q,'a':a,'g':g}
+        page=row.get('sourcePage')
+        if page is not None:
+            try:page=int(page)
+            except (TypeError,ValueError):raise ValueError('invalid_source_page')
+            if not 1<=page<=350:raise ValueError('invalid_source_page')
+            question['sourcePage']=page
+        result.append(question)
     if len(result)<4:raise ValueError('too_few_unique_questions')
     mode=str(raw.get('mode') or 'quiz')
     if mode not in MODES:raise ValueError('invalid_game_mode')
