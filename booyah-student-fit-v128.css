@@ -105,7 +105,7 @@ body.v105-student[data-bo-question="solo"] #soloView>.bo-solo-card{
  min-height:0!important;overflow:hidden!important;width:100%!important;max-width:100%!important;
  padding:clamp(7px,1.3vh,16px)!important;border-radius:clamp(12px,1.8vw,20px)!important
 }
-body.v105-student[data-bo-question="solo"] #soloView .bo-solo-card>:is(.bo-solo-kicker,h1,p,.bo-solo-login,.bo-solo-student-info,.bo-solo-quizzes){
+body.v105-student[data-bo-question="solo"] #soloView .bo-solo-card>:is(.bo-solo-kicker,h1,p:not(.bo-solo-error),.bo-solo-login,.bo-solo-student-info,.bo-solo-quizzes){
  display:none!important
 }
 body.v105-student[data-bo-question="solo"] #soloView .bo-solo-error:empty{display:none!important}
