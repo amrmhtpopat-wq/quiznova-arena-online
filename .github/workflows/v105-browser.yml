@@ -27,6 +27,12 @@ on:
       - booyah-responsive-v122.css
       - avatar-names-v121.js
       - solo_api.py
+      - student_quiz_scope_v128.py
+      - booyah-card-quizzes-v128.js
+      - booyah-student-fit-v128.js
+      - booyah-student-fit-v128.css
+      - tests/browser_student_grade_fit_v128.py
+      - tests/test_student_grade_scope_v128.py
       - solo-student-v120.js
       - booyah-entry-v120.css
       - booyah-student-v120.css
@@ -90,6 +96,7 @@ jobs:
           python tests/browser_studio_routing_v112.py
           python tests/browser_mascot_badge_v112.py
           python tests/browser_student_entry_v120.py
+          python tests/browser_student_grade_fit_v128.py
           python tests/browser_admin_v1.py
           python tests/browser_admin_v2.py
           python tests/browser_visitor_v125.py
