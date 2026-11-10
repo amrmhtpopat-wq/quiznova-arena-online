@@ -27,13 +27,13 @@ question={'id':'long-but-readable','type':'single',
  'correct':[0],'time':120,'points':1000}
 quizzes=[
  {'id':'all-ninth','title':'اختبار التاسع لجميع الشعب','subject':'المهارات الرقمية','grade':'التاسع',
-  'section':'','settings':{'publishedSolo':True},'questions':[question]},
+  'section':'','settings':{'publishedSolo':True,'soloMaxAttempts':10},'questions':[question]},
  {'id':'ninth-a','title':'تحدي التاسع أ','subject':'المهارات الرقمية','grade':'التاسع',
-  'section':'أ','settings':{'publishedSolo':True},'questions':[question]},
+  'section':'أ','settings':{'publishedSolo':True,'soloMaxAttempts':10},'questions':[question]},
  {'id':'ninth-b','title':'تحدي التاسع ب','subject':'المهارات الرقمية','grade':'التاسع',
-  'section':'ب','settings':{'publishedSolo':True},'questions':[question]},
+  'section':'ب','settings':{'publishedSolo':True,'soloMaxAttempts':10},'questions':[question]},
  {'id':'eighth','title':'اختبار الصف الثامن','subject':'المهارات الرقمية','grade':'الثامن',
-  'section':'','settings':{'publishedSolo':True},'questions':[question]},
+  'section':'','settings':{'publishedSolo':True,'soloMaxAttempts':10},'questions':[question]},
  {'id':'secret','title':'اختبار غير منشور','subject':'المهارات الرقمية','grade':'التاسع',
   'section':'','settings':{'publishedSolo':False},'questions':[question]}
 ]
