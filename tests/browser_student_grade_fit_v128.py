@@ -142,6 +142,7 @@ try:
     live.screenshot(path=str(screens/('v128-live-'+str(width)+'.png')),full_page=True)
    live.locator('.answer').first.click()
    live.locator('.qn-answer-wait').wait_for(state='visible',timeout=17000)
+   live.wait_for_function("document.body.dataset.boQuestion!=='live'",timeout=3500)
    check(live.locator('body').get_attribute('data-bo-question')!='live',
          'One-screen layout must reset after sending answer')
    check(not live_errors,'Live JS errors '+str((width,live_errors)))
