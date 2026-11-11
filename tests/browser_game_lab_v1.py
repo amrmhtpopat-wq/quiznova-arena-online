@@ -94,7 +94,7 @@ def run():
                 'bingo':('بينغو المصطلحات','.extra-bingo-cell')}
               for gid,(title,selector) in catalog_extra.items():
                 card=page.locator('#gameGrid .game').filter(has=page.locator('h3',has_text=title)).first
-                card.locator('button').click()
+                card.locator('button').first.click()
                 page.locator('#playOverlay').wait_for(state='visible',timeout=7000)
                 if page.locator(selector).count()<1:
                   page.screenshot(path=str(ROOT/'browser-qa-artifacts'/('gamelab-broken-'+gid+'-'+str(width)+'.png')),full_page=True)
