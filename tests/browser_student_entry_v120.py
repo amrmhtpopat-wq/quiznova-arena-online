@@ -47,7 +47,7 @@ with sync_playwright() as playwright:
         page.on('pageerror',lambda e:errors.append(str(e)))
         page.goto(base+'/',wait_until='domcontentloaded')
         page.locator('#studentWelcome').wait_for(state='visible',timeout=15000)
-        assert page.locator('title').text_content().startswith('BOOYAHJO')
+        assert page.locator('title').text_content().startswith('عندس')
         assert page.locator('#studentWelcome a.bo-entry-option').count()==3
         assert page.locator('#authWall').is_hidden()
         page.screenshot(path=str(out/('home-student-mobile.png' if mobile else 'home-student-desktop.png')),full_page=True)
