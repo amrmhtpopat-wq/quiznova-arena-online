@@ -26,6 +26,7 @@ jobs:
           node --check game-lab-extra-v2.js
           node --check game-lab-cloud-v2.js
           node --check game-lab-pro-v3.js
+          node --check game-lab-v4.js
           node --check game-lab-grade7-pilot.js
           node --check admin-v1.js
           node --check avatar-names-v121.js
