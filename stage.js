@@ -46,7 +46,7 @@ async function load(){
  finally{stageLoading=false}
 }
 function leaders(r){const x=r.playType==='teams'?r.teams:r.leaders;return (x||[]).slice(0,3).map((p,i)=>`<div class="leaders-row"><div class="rank">${i+1}</div><b>${esc(p.name)}</b><b>${p.score}</b></div>`).join('')||'بانتظار النقاط...'}
-function head(){return `<div class="stage-head"><div class="brand"><div class="logo">TG</div><div>TeachGame<br><small>QUIZ ARENA</small></div></div><button type="button" class="bo-fullscreen" onclick="booyahStageFullscreen()">⛶ ملء الشاشة</button><div class="pin">PIN ${esc(code)}</div></div>`}
+function head(){return `<div class="stage-head"><div class="brand"><div class="logo">TG</div><div>TeachGame<br><small>تعلّم • العب • تفوّق</small></div></div><button type="button" class="bo-fullscreen" onclick="booyahStageFullscreen()">⛶ ملء الشاشة</button><div class="pin">PIN ${esc(code)}</div></div>`}
 let stageLobbySignature='',stageFinalSignature='';
 function replayStageVictory(){const layer=document.getElementById('v104VictoryParticles');if(!layer)return;layer.replaceChildren();if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;for(let i=0;i<42;i++){const p=document.createElement('i');p.style.setProperty('--left',(Math.random()*100)+'%');p.style.setProperty('--delay',(Math.random()*1.8)+'s');p.style.setProperty('--hue',String(Math.round(Math.random()*300+35)));layer.appendChild(p)}}
 window.replayStageVictory=replayStageVictory;
