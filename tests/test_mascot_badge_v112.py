@@ -67,7 +67,7 @@ class MascotsAndBadgeTests(unittest.TestCase):
         student=read('student.html')
         css=read('booyah-badge-v112.css')
         mascot_css=read('booyah-mascots-v112.css')
-        self.assertIn('booyah-badge-v112.css?v=11.3',index)
+        self.assertIn('booyah-badge-v112.css?v=13.1',index)
         self.assertIn('booyah-mascots-v112.css?v=11.3',student)
         self.assertGreater(index.index('booyah-badge-v112.css'),index.index('portal.css'))
         self.assertIn('@page{size:A4 portrait;margin:8mm}',css)
