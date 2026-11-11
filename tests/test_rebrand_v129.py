@@ -23,7 +23,7 @@ class BrandRegression(unittest.TestCase):
         content=(ROOT/'index.html').read_text(encoding='utf-8')
         self.assertIn('<title>عندس |',content)
         self.assertIn('<meta property="og:site_name" content="عندس',content)
-        match=re.search(r'<script type="application/ld\\+json">\\s*(\\{.*?\\})\\s*</script>',content,re.S)
+        match=re.search(r'<script type="application/ld\+json">\s*(\{.*?\})\s*</script>',content,re.S)
         self.assertIsNotNone(match)
         data=json.loads(match.group(1))
         self.assertEqual(data['name'],NEW)
