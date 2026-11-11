@@ -61,6 +61,14 @@ with sync_playwright() as playwright:
     assert images_load(page,'.bo-badge-avatar img')
     card_img=page.locator('.bo-student-id').nth(7).locator('.bo-badge-avatar img')
     assert card_img.get_attribute('src').endswith('/m07.svg'),card_img.get_attribute('src')
+    # Reissue button only refreshes presentation and opens the print dialog;
+    # never deletes or rotates student cards.
+    page.evaluate("window.__tgPrintCalls=0;window.print=()=>{window.__tgPrintCalls++}")
+    page.locator('#reissueTeachGameCards').click()
+    page.wait_for_function("window.__tgPrintCalls===1",timeout=27000)
+    assert page.locator('.bo-badge-access-id').all_text_contents()==codes,'Card codes changed during brand-only reissue'
+    assert page.locator('.bo-badge-brand strong').first.inner_text()=='TeachGame'
+    assert page.locator('.bo-student-id').count()==9
     page.screenshot(path=str(dest/('badj-cards-mobile.png' if mobile else 'badj-cards-desktop.png')),full_page=True)
 
     page.locator('button.nav[data-panel="school"]').click()
