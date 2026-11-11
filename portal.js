@@ -62,7 +62,7 @@ async function boot(){
   try{await loadAll()}catch(e){notify('تعذر تحديث بيانات لوحة القيادة مؤقتًا. جرّب زر التحديث.')}
 }
 function showWorkspace(){$('#studentWelcome').classList.add('hidden');$('#authWall').classList.add('hidden');$('#workspace').classList.remove('hidden');$('#teacherSideName').textContent=teacher.name;$('#teacherSubject').textContent=teacher.subject;$('#schoolFoot').textContent=teacher.school;$('#schoolModeEditor').value=teacher.school_type||'mixed';renderAvatarChoices();$('#welcome').textContent='أهلًا '+teacher.name+'، المادة: '+teacher.subject+' • '+teacher.school}
-$('#downloadBackup').onclick=async()=>{try{const data=await api('/api/teacher/backup');const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='BOOYAH_Backup_'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);notify('تم تنزيل نسخة البيانات. احتفظ بها في مكان آمن.')}catch(e){notify(err(e))}};
+$('#downloadBackup').onclick=async()=>{try{const data=await api('/api/teacher/backup');const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='TeachGame_Backup_'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);notify('تم تنزيل نسخة البيانات. احتفظ بها في مكان آمن.')}catch(e){notify(err(e))}};
 $('#logout').onclick=async()=>{try{await api('/api/auth/logout',{method:'POST',body:'{}'})}catch(e){}localStorage.removeItem(TOKEN_KEY);location.reload()};
 const panels={school:['إعدادات المدرسة','إدارة صور الطلاب حسب نوع المدرسة'],home:['لوحة القيادة','نظرة شاملة على فصولك وتقدم طلابك'],classes:['حرب الشعب','منافسات مميزة بين شعب المادة'],mastery:['إتقان المهارات','تابع نتاجات التعلم بالتفصيل'],students:['الطلاب والبطاقات','إدارة الهويات الرقمية وصور الشخصيات'],history:['سجل الاختبارات','نتائج محفوظة تحت حسابك']};
 function go(name){$$('.panel-view').forEach(e=>e.classList.toggle('active',e.id==='panel-'+name));$$('button.nav').forEach(e=>e.classList.toggle('active',e.dataset.panel===name));$('#pageTitle').textContent=panels[name][0];$('#pageDesc').textContent=panels[name][1];window.scrollTo({top:0,behavior:'smooth'})}$$('button.nav').forEach(b=>b.onclick=()=>go(b.dataset.panel));$$('[data-jump]').forEach(b=>b.onclick=()=>go(b.dataset.jump));$('#refresh').onclick=()=>loadAll().then(()=>notify('تم تحديث البيانات')).catch(e=>notify(err(e)));
@@ -102,7 +102,7 @@ $('#saveSchoolMode').onclick=async()=>{try{const res=await api('/api/teacher/sch
 function renderStudents(){
   const list=cache.students;
   $('#studentCount').textContent=list.length;
-  const base=location.origin+'/student.html?card=';
+  const base=location.hostname.endsWith('.onrender.com')?'https://teachgame.onrender.com/student.html?card=':location.origin+'/student.html?card=';
   const folders=[...new Set(list.map(s=>s.className||'شعبة غير محددة'))].sort((a,b)=>a.localeCompare(b,'ar'));
   $('#studentsBoard').innerHTML=folders.map((cls,i)=>{
   const group=list.filter(s=>(s.className||'شعبة غير محددة')===cls).map(student=>{
@@ -118,8 +118,8 @@ function renderStudents(){
     return `<article class="idcard bo-student-id" dir="rtl" aria-label="بطاقة الطالب ${name}">
       <header class="bo-badge-header">
         <span class="bo-badge-icon" aria-hidden="true">🎮</span>
-        <div class="bo-badge-brand"><strong>TeachGame</strong><small>QUIZ ARENA · بطاقة الطالب الذكية</small></div>
-        <span class="bo-badge-edition" title="إصدار تصميم البطاقة">BADJ-TH42</span>
+        <div class="bo-badge-brand"><strong>TeachGame</strong><small>تيتش جيم · بطاقة الطالب الذكية</small></div>
+        <span class="bo-badge-edition" title="بطاقة TeachGame الجديدة" data-card-version="BADJ-TH42">TG 2026</span>
       </header>
       <div class="bo-badge-content">
         <div class="bo-badge-avatar"><img class="avatar-pic" loading="lazy" src="${avatarPath(student.avatar)}" alt="شخصية ${characterName}"><span>${characterName}</span></div>
@@ -223,6 +223,22 @@ $('#shortenCards').onclick=async()=>{
     notify('تم إصدار رموز مختصرة لـ '+result.updated+' طالب. الرموز القديمة ما زالت تعمل.');
   }catch(e){notify(err(e))}
   finally{btn.disabled=false}
+};
+// Reissue all existing cards with the current TeachGame identity without deleting or changing a card code.
+$('#reissueTeachGameCards').onclick=async()=>{
+  if(!cache.students.length)return notify('لا توجد بطاقات لإعادة طباعتها.');
+  const btn=$('#reissueTeachGameCards'),label=btn.textContent;
+  btn.disabled=true;btn.textContent='جارٍ تحديث بطاقات TeachGame...';
+  try{
+    await loadAll();
+    const cards=[...document.querySelectorAll('#studentsBoard .bo-student-id')];
+    if(cards.length!==cache.students.length||cards.some(card=>!card.querySelector('.bo-badge-brand strong')?.textContent.includes('TeachGame'))){
+      throw Error('card_refresh_incomplete');
+    }
+    notify('تم تحديث '+cards.length+' بطاقة باسم TeachGame؛ رموز الطلاب القديمة لم تتغير. افتح الطباعة لحفظ النسخة الجديدة.');
+    $('#printCards').click();
+  }catch(error){notify('تعذر تحديث معاينات البطاقات. يرجى تحديث الصفحة والمحاولة مجددًا.')}
+  finally{btn.disabled=false;btn.textContent=label}
 };
 $('#printCards').onclick=async()=>{
   if(!cache.students.length)return notify('أضف الطلاب أولًا');

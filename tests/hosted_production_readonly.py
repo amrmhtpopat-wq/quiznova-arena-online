@@ -8,7 +8,7 @@ import urllib.request
 BASE='https://quiznova-arena-online.onrender.com'
 def get(path):
     request=urllib.request.Request(BASE+path,headers={'Accept':'application/json, text/html;q=0.9',
-                         'User-Agent':'BOOYAHJO-Release-ReadOnlySmoke/2.1'})
+                         'User-Agent':'TeachGame-Release-ReadOnlySmoke/13.1'})
     try:
         with urllib.request.urlopen(request,timeout=60) as response:
             return response.status,response.headers.get('Content-Type',''),response.read(300000)
@@ -20,7 +20,7 @@ for path in ('/','/admin.html','/student.html','/studio.html','/admin-v1.js','/a
     assert code==200,(path,code,data[:160])
     assert len(data)>500,(path,len(data))
     if path=='/admin.html':
-        assert b'BOOYAHJO CONTROL CENTER' in data
+        assert b'TeachGame CONTROL CENTER' in data
 print('PUBLIC FILES: PASS (home, owner, student, studio, admin JS/CSS)')
 
 status,_,raw=get('/api/health')

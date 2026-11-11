@@ -398,6 +398,11 @@ def question_report(room):
 
 class Handler(SimpleHTTPRequestHandler):
     def end_headers(self):
+        # Revalidate HTML after each release; student cards and teacher screens
+        # must not remain on an old cached brand or bundled script references.
+        requested=urlparse(self.path).path
+        if requested=='/' or requested.lower().endswith('.html'):
+            self.send_header('Cache-Control','no-cache, max-age=0, must-revalidate')
         self.send_header('X-Content-Type-Options','nosniff')
         self.send_header('X-Frame-Options','DENY')
         self.send_header('Referrer-Policy','same-origin')

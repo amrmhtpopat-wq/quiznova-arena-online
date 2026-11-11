@@ -59,7 +59,7 @@ class MascotsAndBadgeTests(unittest.TestCase):
         self.assertIn("await Promise.all(images.map(img=>",portal)
         self.assertIn('window.print()',portal)
         # BADJ-TH42 is design version, NOT a shared student login credential.
-        self.assertIn('title="إصدار تصميم البطاقة"',portal)
+        self.assertIn('title="بطاقة TeachGame الجديدة"',portal)
         self.assertIn("code=new_card_code()",read('platform_store.py'))
 
     def test_print_and_mobile_styles_are_loaded(self):
@@ -67,7 +67,7 @@ class MascotsAndBadgeTests(unittest.TestCase):
         student=read('student.html')
         css=read('booyah-badge-v112.css')
         mascot_css=read('booyah-mascots-v112.css')
-        self.assertIn('booyah-badge-v112.css?v=11.3',index)
+        self.assertIn('booyah-badge-v112.css?v=13.1',index)
         self.assertIn('booyah-mascots-v112.css?v=11.3',student)
         self.assertGreater(index.index('booyah-badge-v112.css'),index.index('portal.css'))
         self.assertIn('@page{size:A4 portrait;margin:8mm}',css)

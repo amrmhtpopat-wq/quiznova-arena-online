@@ -41,7 +41,7 @@
     const pending=localStorage.getItem(pendingKey);
     for(const k of keys)localStorage.setItem(prefix+k,JSON.stringify(s.data[k]??(k==='settings'?{}:[])));
     function keepDraft(patch){localStorage.setItem(pendingKey,JSON.stringify({date:new Date().toISOString(),patch}));}
-    function downloadDraft(){const txt=localStorage.getItem(pendingKey);if(!txt)return;const link=document.createElement('a');const url=URL.createObjectURL(new Blob([txt],{type:'application/json'}));link.href=url;link.download='QuizNova_unsynced_changes.json';link.click();URL.revokeObjectURL(url)}
+    function downloadDraft(){const txt=localStorage.getItem(pendingKey);if(!txt)return;const link=document.createElement('a');const url=URL.createObjectURL(new Blob([txt],{type:'application/json'}));link.href=url;link.download='TeachGame_unsynced_changes.json';link.click();URL.revokeObjectURL(url)}
     if(pending&&confirm('هناك تعديلات محلية من جلسة سابقة لم يتم حفظها في السحابة. هل تريد تنزيل نسخة احتياطية منها؟'))downloadDraft();
     let debounce=null;const dirty=new Set();let savingPromise=null;
     const readLocal=k=>{try{return JSON.parse(localStorage.getItem(prefix+k)||'null')}catch{return null}};
@@ -113,7 +113,7 @@
       return originalFetch(input,init);
     };
     document.documentElement.style.visibility='visible';
-    let script=document.createElement('script');script.src='/app.js?v=12.4';script.onload=()=>{const view=location.hash.slice(1);if(view&&window.go)window.go(['dashboard','generator','builder','bank','media','library','live','play','results','settings'].includes(view)?view:'dashboard')};document.body.appendChild(script);
+    let script=document.createElement('script');script.src='/app.js?v=13.1';script.onload=()=>{const view=location.hash.slice(1);if(view&&window.go)window.go(['dashboard','generator','builder','bank','media','library','live','play','results','settings'].includes(view)?view:'dashboard')};document.body.appendChild(script);
   }catch(e){
     if(e.message==='login_required'){
       localStorage.removeItem('qn9_teacher_token');
