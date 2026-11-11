@@ -1,4 +1,4 @@
-/* BOOYAHJO Control Center V1. Admin cookie is HttpOnly; CSRF from separate same-site cookie. */
+/* TeachGame Control Center V1. Admin cookie is HttpOnly; CSRF from separate same-site cookie. */
 (()=>{
 'use strict';
 const $=id=>document.getElementById(id);
@@ -236,7 +236,7 @@ async function changeTeacher(button){
 }
 $('teacherRefresh').addEventListener('click',loadTeachers);
 $('teacherActivityFilter').addEventListener('change',()=>{teachersPage=1;void loadTeachers()});
-$('teachersExport').addEventListener('click',()=>csvDownload('booyahjo-teachers-page-'+teachersPage+'.csv',
+$('teachersExport').addEventListener('click',()=>csvDownload('teachgame-teachers-page-'+teachersPage+'.csv',
  ['المعلم','البريد','المدرسة','المادة','الطلاب','الجلسات','آخر دخول','آخر نشاط','الحالة','خطة الوصول'],
  visibleTeachers.map(t=>[t.name,t.email,t.school,t.subject,t.students,t.sessions,fmtDate(t.last_login),
  fmtDate(t.lastActivity),t.admin_disabled?'موقوف':(activityName[t.activityStatus]||'نشط'),t.access_plan||'free'])));
@@ -337,10 +337,10 @@ $('prevStudents').addEventListener('click',()=>{if(studentsPage>1){studentsPage-
 $('nextStudents').addEventListener('click',()=>{if(studentsPage*50<studentsTotal){studentsPage++;void loadStudents()}});
 $('prevSessions').addEventListener('click',()=>{if(sessionsPage>1){sessionsPage--;void loadSessions()}});
 $('nextSessions').addEventListener('click',()=>{if(sessionsPage*50<sessionsTotal){sessionsPage++;void loadSessions()}});
-$('studentsExport').addEventListener('click',()=>csvDownload('booyahjo-students-page-'+studentsPage+'.csv',
+$('studentsExport').addEventListener('click',()=>csvDownload('teachgame-students-page-'+studentsPage+'.csv',
  ['الطالب','الشعبة','المعلم','المدرسة','المحاولات','XP','آخر مشاركة'],
  studentData.map(x=>[x.name,x.class_name,x.teacher_name,x.school,x.attempts,x.xp,fmtDate(x.last_attempt)])));
-$('sessionsExport').addEventListener('click',()=>csvDownload('booyahjo-sessions-page-'+sessionsPage+'.csv',
+$('sessionsExport').addEventListener('click',()=>csvDownload('teachgame-sessions-page-'+sessionsPage+'.csv',
  ['الاختبار','المعلم','المدرسة','الشعبة','النمط','المشاركات','التاريخ'],
  sessionData.map(x=>[x.quiz_title,x.teacher_name,x.school,x.section,x.game_mode,x.attempts,fmtDate(x.played_at)])));
 function openDrawer(title,html){

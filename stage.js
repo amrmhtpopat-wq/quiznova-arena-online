@@ -46,7 +46,7 @@ async function load(){
  finally{stageLoading=false}
 }
 function leaders(r){const x=r.playType==='teams'?r.teams:r.leaders;return (x||[]).slice(0,3).map((p,i)=>`<div class="leaders-row"><div class="rank">${i+1}</div><b>${esc(p.name)}</b><b>${p.score}</b></div>`).join('')||'بانتظار النقاط...'}
-function head(){return `<div class="stage-head"><div class="brand"><div class="logo">BJ</div><div>BOOYAHJO<br><small>QUIZ ARENA</small></div></div><button type="button" class="bo-fullscreen" onclick="booyahStageFullscreen()">⛶ ملء الشاشة</button><div class="pin">PIN ${esc(code)}</div></div>`}
+function head(){return `<div class="stage-head"><div class="brand"><div class="logo">TG</div><div>TeachGame<br><small>QUIZ ARENA</small></div></div><button type="button" class="bo-fullscreen" onclick="booyahStageFullscreen()">⛶ ملء الشاشة</button><div class="pin">PIN ${esc(code)}</div></div>`}
 let stageLobbySignature='',stageFinalSignature='';
 function replayStageVictory(){const layer=document.getElementById('v104VictoryParticles');if(!layer)return;layer.replaceChildren();if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;for(let i=0;i<42;i++){const p=document.createElement('i');p.style.setProperty('--left',(Math.random()*100)+'%');p.style.setProperty('--delay',(Math.random()*1.8)+'s');p.style.setProperty('--hue',String(Math.round(Math.random()*300+35)));layer.appendChild(p)}}
 window.replayStageVictory=replayStageVictory;
@@ -59,7 +59,7 @@ if(r.status==='finished'){
  const winner=ranked[0];
  const cards=ranked.slice(0,3).map((p,i)=>`<div class="v104-stage-pod place-${i+1}" style="--delay:${i*.2}s"><div class="v104-stage-medal">${medals[i]}</div><span class="v104-stage-place">المركز ${i+1}</span><h2>${esc(p.name)}</h2><strong>${Number(p.score)||0} نقطة</strong>${p.percent!=null?'<small>'+p.percent+'% دقة</small>':''}</div>`).join('');
  const participants=r.playType==='teams'?(r.players||[]).length:ranked.length;
- $('#stage').innerHTML=`<div class="stage-wrap v104-stage-final">${head()}<div id="v104VictoryParticles" class="v104-confetti"></div><div class="v104-victory"><span class="v104-champion-label">🏆 BOOYAHJO CHAMPIONS</span><h1>انتهى التحدي .. وبدأ الاحتفال!</h1><p>${winner?'مبارك لـ '+esc(winner.name)+' المركز الأول!':'أداء رائع من جميع المشاركين'}</p><div class="v104-stage-podium">${cards}</div><div class="v104-stage-summary"><span>👥 ${participants} مشارك</span><span>🎯 ${r.total} سؤال</span></div><button type="button" class="v104-encore" onclick="replayStageVictory()">🎉 احتفلوا مجددًا</button></div></div>`;
+ $('#stage').innerHTML=`<div class="stage-wrap v104-stage-final">${head()}<div id="v104VictoryParticles" class="v104-confetti"></div><div class="v104-victory"><span class="v104-champion-label">🏆 TeachGame CHAMPIONS</span><h1>انتهى التحدي .. وبدأ الاحتفال!</h1><p>${winner?'مبارك لـ '+esc(winner.name)+' المركز الأول!':'أداء رائع من جميع المشاركين'}</p><div class="v104-stage-podium">${cards}</div><div class="v104-stage-summary"><span>👥 ${participants} مشارك</span><span>🎯 ${r.total} سؤال</span></div><button type="button" class="v104-encore" onclick="replayStageVictory()">🎉 احتفلوا مجددًا</button></div></div>`;
  replayStageVictory();return;
 }
 if(r.status==='results'&&(r.examMode||!r.showFeedback)){$('#stage').innerHTML=`<div class="stage-wrap">${head()}<div class="round-stage"><h1>🛡️ انتهت الجولة ${r.index+1}</h1><p>${r.examMode?'نتائج الامتحان سرية حتى النهاية.':'أخفى المعلم التصحيح والترتيب لهذه الغرفة.'}</p>${stageNextControl()}</div></div>`;return}
