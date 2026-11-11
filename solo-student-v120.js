@@ -1,4 +1,4 @@
-/* BOOYAH! student solo access and secure teacher-published practice. */
+/* TeachGame student solo access and secure teacher-published practice. */
 (()=>{
 'use strict';
 const el=id=>document.getElementById(id);
