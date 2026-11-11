@@ -27,7 +27,7 @@ def new_card_code():
     raw=''.join(secrets.choice(CARD_ALPHABET) for _ in range(8))
     return raw[:4]+'-'+raw[4:]
 
-LEVEL_TITLES=('مبتدئ','متقدم','منافس','بطل الصف','نجم الشعبة','أسطورة بويا')
+LEVEL_TITLES=('مبتدئ','متقدم','منافس','بطل الصف','نجم الشعبة','أسطورة عندس')
 
 def xp_progress(xp):
     """Return the exact level bounds so every client uses one XP scale."""
@@ -186,7 +186,7 @@ def create_teacher(email,password,name,school,subject,school_type='mixed'):
     if existing:raise ValueError('email_taken')
     tid=uuid.uuid4().hex; salt=secrets.token_hex(16)
     exec_sql('INSERT INTO teachers(id,email,password_hash,salt,name,school,subject,school_type,created_at) VALUES(?,?,?,?,?,?,?,?,?)',(tid,email,password_hash(password,salt),salt,name,school,subject,school_type,epoch()))
-    exec_sql('INSERT INTO datasets (teacher_id,quizzes,bank,settings,results,updated_at) VALUES(?,?,?,?,?,?)',(tid,'[]','[]',jdump({'teacherName':name,'schoolName':school,'platformName':'BOOYAHJO','scene':'cartoon'}),'[]',epoch()))
+    exec_sql('INSERT INTO datasets (teacher_id,quizzes,bank,settings,results,updated_at) VALUES(?,?,?,?,?,?)',(tid,'[]','[]',jdump({'teacherName':name,'schoolName':school,'platformName':'عندس','scene':'cartoon'}),'[]',epoch()))
     return login(email,password)
 
 def login(email,password):
