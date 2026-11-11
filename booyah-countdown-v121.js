@@ -22,7 +22,7 @@
   const el=document.createElement('div');
   el.className='bo-launch-countdown';
   el.setAttribute('role','status');el.setAttribute('aria-live','polite');
-  el.innerHTML='<small>BOOYAHJO • استعد للانطلاق</small><strong>3</strong>';
+  el.innerHTML='<small>TeachGame • استعد للانطلاق</small><strong>3</strong>';
   document.body.appendChild(el);active=el;
   let last='';
   const tick=()=>{
