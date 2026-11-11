@@ -1,0 +1,112 @@
+/* BOOYAHJO Game Lab v4 unified student/card/live visual identity.
+   Scoped to page classes to avoid changing legacy public student portal. */
+:root{font-family:"Segoe UI",Tahoma,Arial,sans-serif;color-scheme:light}
+.lab-v4-card,.lab-v4-play,.lab-v4-live{background:linear-gradient(180deg,#f6f9ff,#edf3fb);color:#2b3e60}
+.lab-v4-card a,.lab-v4-play a,.lab-v4-live a{color:#4058c8}
+.lab-v4-card button:focus-visible,.lab-v4-card input:focus-visible,
+.lab-v4-play button:focus-visible,.lab-v4-play input:focus-visible,
+.lab-v4-live button:focus-visible,.lab-v4-live input:focus-visible{outline:3px solid #6577ee;outline-offset:3px}
+.lab-v4-card .bar,.lab-v4-play .header,.lab-v4-live .top{background:#fff;border:1px solid #e2e8f4;border-radius:16px;padding:13px 17px;box-shadow:0 4px 15px #1b326a0d}
+.lab-v4-card .logo,.lab-v4-play .header strong,.lab-v4-live .brand{color:#2a4078}
+.lab-v4-card .logo span,.lab-v4-play .header em,.lab-v4-live .brand em{color:#4e60e4}
+.lab-v4-card .pill,.lab-v4-play .badge,.lab-v4-live .pill{color:#54709e;background:#eef3ff;border:1px solid #dfe8f7}
+.lab-v4-card .hero h1{color:#253c78;font-size:clamp(1.8rem,4vw,2.65rem)}
+.lab-v4-card .hero p{color:#71839e}
+.lab-v4-card .card,.lab-v4-play .box,.lab-v4-live .panel{background:#fff;border:1px solid #dfe6f3;box-shadow:0 7px 24px #2c437519;color:#2e416d}
+.lab-v4-card input,.lab-v4-play input,.lab-v4-live .field input,.lab-v4-live .field select{background:#fff;color:#293c63;border:1.5px solid #d9e2f2}
+.lab-v4-card input::placeholder,.lab-v4-play input::placeholder,.lab-v4-live input::placeholder{color:#8295b0}
+.lab-v4-card .btn,.lab-v4-play .btn,.lab-v4-live .btn{background:#5267e9;color:#fff;border:1px solid #5267e9;box-shadow:none}
+.lab-v4-card .btn:hover:not(:disabled),.lab-v4-play .btn:hover:not(:disabled),.lab-v4-live .btn:hover:not(:disabled){background:#3e53c9}
+.lab-v4-card .btn.alt,.lab-v4-play .btn.alt,.lab-v4-live .btn.alt{background:#edf1ff;color:#4059bb;border:1px solid #d9e1fa}
+.lab-v4-card .btn.alt:hover,.lab-v4-play .btn.alt:hover,.lab-v4-live .btn.alt:hover{background:#dee6ff;color:#354bae}
+.lab-v4-card .status,.lab-v4-play .muted,.lab-v4-live .good{color:#486a8c}
+.lab-v4-card .notice,.lab-v4-play .note{background:#fff9e9;border:1px solid #f4e1b3;color:#8a6930}
+.lab-v4-card .profile h2{color:#2d4377}
+.lab-v4-card .profile small{color:#758bac}
+.lab-v4-card .game{border:1px solid #dfe6f3;background:#fff;border-radius:18px;box-shadow:0 5px 15px #324a7b10;overflow:hidden;padding:17px;transition:transform .16s,border-color .16s}
+.lab-v4-card .game:hover{transform:translateY(-2px);border-color:#b9c7ee}
+.lab-v4-card .game h3{color:#2b416b}
+.lab-v4-card .game p{color:#7386a1}
+.lab-v4-card .game .mode{font-size:2.8rem;padding:10px;width:100%;text-align:center;border-radius:14px;background:#ebf0ff}
+.lab-v4-card .game:nth-child(4n+2) .mode{background:#e3f9ef}
+.lab-v4-card .game:nth-child(4n+3) .mode{background:#fff1de}
+.lab-v4-card .game:nth-child(4n+4) .mode{background:#fae8fa}
+.lab-v4-card .remaining{color:#237654;background:#e2f8ed}
+.lab-v4-card .remaining.closed{color:#b9435f;background:#fce8ed}
+.lab-v4-card .footer,.lab-v4-play .footer,.lab-v4-live .footer{color:#7d8ea8}
+.lab-v4-play .wrap{max-width:1250px;padding:15px 18px;gap:12px}
+.lab-v4-play .box{border-radius:21px}
+.lab-v4-play .intro h1,.lab-v4-play .prompt,.lab-v4-play .end h2{color:#283d75}
+.lab-v4-play .intro p{color:#778ba6}
+.lab-v4-play .badge{font-weight:720}
+.lab-v4-play .progress{background:#e2e9f8}
+.lab-v4-play .progress span{background:linear-gradient(90deg,#6674ed,#32c4ad)}
+.lab-v4-play .prompt{font-size:clamp(1.5rem,3.1vw,2.55rem);line-height:1.45;text-align:center}
+.lab-v4-play .choices{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.lab-v4-play .choice{background:#f6f8ff;color:#2c426d;border:2px solid #dce4f3;border-radius:14px;min-height:clamp(70px,11vh,115px);font-weight:830;font-size:clamp(.98rem,1.7vw,1.25rem)}
+.lab-v4-play .choice:hover:not(:disabled){background:#eaf0ff;border-color:#8796ed}
+.lab-v4-play .choice.correct{background:#e1f8ee;border-color:#79ceaa;color:#247651}
+.lab-v4-play .choice.wrong{background:#ffeaed;border-color:#eb9bad;color:#ae435f}
+.lab-v4-play .message{color:#546b93}
+.lab-v4-play .timebar{background:#e3e8f3}
+.lab-v4-play .timebar i{background:#6176e9}
+.lab-v4-play .bigscore{color:#415fe0}
+.lab-v4-play .scene-panel,.lab-v4-play .scene-label,.lab-v4-play .scene-letter{background:#f1f5ff;color:#31466f;border-color:#d3def3}
+.lab-v4-play .scene-flip{background:linear-gradient(125deg,#d4e4ff,#d5f6ec);color:#304975;border-color:#73b9cb}
+.lab-v4-play .scene-wheel{border-color:#99aff0;box-shadow:0 6px 18px #283e7a18;color:#fff}
+.lab-v4-play .scene-box{background:#e9f0ff;color:#3d57b5;border-color:#a9bee7}
+.lab-v4-play .scene-box.open{background:#dcf7e9;color:#267450}
+.lab-v4-play .scene-tile{background:#dfe9ff;border-color:#aec3e8}
+.lab-v4-play .scene-entry{background:#fff;border-color:#c9d7ed;color:#30466d}
+.lab-v4-play .scene-cross input{background:#e9f0ff;border-color:#a8b9e2;color:#2c4380}
+.lab-v4-play #questionPanel{min-height:0;overflow-y:auto}
+.lab-v4-play .end{max-width:750px;margin:auto;width:100%;text-align:center}
+.lab-v4-live{--mint:#536be7;--ink:#2e436d;--muted:#8091a7}
+.lab-v4-live .top{flex-shrink:0}
+.lab-v4-live .panel{border-radius:17px}
+.lab-v4-live .login h1{color:#2c427a}
+.lab-v4-live .login p{color:#7186a5}
+.lab-v4-live .code{color:#435be4}
+.lab-v4-live .btn.clear{background:#fff;border:1px solid #dae3f1;color:#536585}
+.lab-v4-live .btn.gold{background:#ffd98a;border:1px solid #ffd079;color:#5a430f}
+.lab-v4-live .live-title,.lab-v4-live .leader-title h3{color:#2d467a}
+.lab-v4-live .count{color:#3e59c4}
+.lab-v4-live .q-option{background:#eef3ff;color:#2d4577;border:2px solid #d7e2f6;min-height:clamp(68px,10vh,105px)}
+.lab-v4-live .q-option:hover:not(:disabled){background:#e2ebff;border-color:#8599ee}
+.lab-v4-live .q-option.correct{color:#196943;background:#ddf7e9;border-color:#65c89e}
+.lab-v4-live .q-option.selected{color:#885b16;background:#fff0d2;border-color:#f4c66a}
+.lab-v4-live .q-option.wrong{color:#9a3854;background:#ffe8ed;border-color:#eba1ad}
+.lab-v4-live .rank{background:#f7f9ff;border-color:#dce5f5;color:#304a7a}
+.lab-v4-live .rank:first-child{background:#fff7df;border-color:#e9d5a2}
+.lab-v4-live .rank strong{color:#4d61c9}
+.lab-v4-live .teamrank{background:#f2f6ff;border-color:#d9e4f3;color:#334e78}
+.lab-v4-live .waiting strong{color:#314b8f}
+.lab-v4-live .status{color:#405b92}
+.lab-v4-live .image{background:#f0f4ff;border-color:#cedded}
+.lab-v4-live .session-url{color:#7990ab}
+.lab-v4-live .error{background:#fff0f2;border-color:#e8a6ad;color:#a83c55}
+.lab-v4-live .student-stage{max-width:1100px}
+.lab-v4-live #teacherLobbyLinks{box-shadow:none}
+@media(max-width:700px){
+ .lab-v4-card .game .mode{font-size:2.3rem}
+ .lab-v4-play .wrap{padding:10px;gap:8px}
+ .lab-v4-play .header{padding:10px 12px}
+ .lab-v4-play .header strong{font-size:1.15rem}
+ .lab-v4-play .box{padding:clamp(13px,3vw,21px)}
+ .lab-v4-play .choices{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .lab-v4-play .choice{min-height:66px;font-size:clamp(.82rem,3.1vw,1.03rem);padding:9px 6px}
+ .lab-v4-play .prompt{font-size:clamp(1.2rem,4vw,1.75rem)}
+ .lab-v4-live .q-options{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .lab-v4-live .q-option{font-size:clamp(.83rem,3vw,1.13rem);min-height:70px;padding:8px}
+ .lab-v4-live .top{padding:8px 10px}
+ .lab-v4-live .brand{font-size:1.1rem}
+ .lab-v4-live .panel{padding:12px}
+ .lab-v4-live .leader-title h3{font-size:1.02rem}
+}
+@media(max-width:375px){
+ .lab-v4-live .q-options,.lab-v4-play .choices{grid-template-columns:1fr}
+ .lab-v4-live .q-option,.lab-v4-play .choice{min-height:54px}
+}
+@media(prefers-reduced-motion:reduce){
+ *{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
