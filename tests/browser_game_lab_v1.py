@@ -46,7 +46,7 @@ def run():
                   "quiz":"تحدي الاختيار","fast":"سباق الوقت","pairs":"توصيل الأزواج",
                   "flash":"بطاقات الذاكرة","wheel":"عجلة الحظ","boxes":"الصناديق الغامضة",
                   "sort":"فرز وتصنيف","truth":"صح أم خطأ؟"}[game])).first
-                card.locator("button").click()
+                card.locator("button").first.click()
                 page.locator("#playOverlay").wait_for(state="visible",timeout=7000)
                 assert page.locator("#playBody").inner_text().strip(),game
                 if game in ("quiz","fast"):
