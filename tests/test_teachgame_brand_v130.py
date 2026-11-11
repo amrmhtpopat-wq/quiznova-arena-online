@@ -37,8 +37,8 @@ class TeachGameBrandChecks(unittest.TestCase):
         js=(ROOT/'app.js').read_text(encoding='utf-8')
         self.assertIn('teachgame-results.csv',js)
         self.assertIn('teachgame-backup.json',js)
-        self.assertIn("'BOOYAHJO'",js) # old saved teacher settings still load
-        self.assertIn('بويا جو',js)  # old Arabic teacher value also migrates
+        self.assertIn("platform='TeachGame'",js) # global public identity is not overridden by historical teacher settings
+        self.assertIn('value="TeachGame" readonly',(ROOT/'studio.html').read_text(encoding='utf-8'))
         self.assertIn('TeachGame',(ROOT/'portal.js').read_text(encoding='utf-8'))
         self.assertIn('TeachGame_{code}_report.xlsx',(ROOT/'server.py').read_text(encoding='utf-8'))
 
