@@ -36,7 +36,7 @@
 <link rel="stylesheet" href="/v107-prelaunch.css?v=10.5">
 <link rel="stylesheet" href="/booyah-classroom.css?v=10.8">
 <link rel="stylesheet" href="/booyah-contrast-v109.css?v=10.9">
-<link rel="stylesheet" href="/booyah-badge-v112.css?v=11.3">
+<link rel="stylesheet" href="/booyah-badge-v112.css?v=13.1">
 <link rel="stylesheet" href="/booyah-entry-v120.css?v=12.0">
 <link rel="stylesheet" href="/booyah-v121.css?v=12.1">
   <link rel="stylesheet" href="/booyah-mobile-v123.css?v=12.3">
@@ -132,7 +132,7 @@
    <section id="panel-students" class="panel-view"><div class="page-hero"><span class="kicker">SMART SCHOOL ID</span><h2>🪪 بطاقات الطلاب الذكية</h2><p>أضف الطالب مرة واحدة، وامنحه بطاقة QR ثابتة وشخصية ثلاثية الأبعاد ومستوى خبرة.</p></div>
       <div class="grid-two"><div class="pane"><h3>➕ إضافة طالب</h3><form id="addStudentForm" class="student-form"><label for="newStudentName">اسم الطالب</label><input id="newStudentName" required maxlength="120" placeholder="اكتب اسم الطالب"><label for="newStudentClass">الصف والشعبة</label><input id="newStudentClass" required maxlength="80" placeholder="مثال: التاسع أ"><label for="newStudentAvatar">الصورة الشخصية</label><select id="newStudentAvatar"></select><img id="studentAvatarPreview" class="v10-avatar-preview" alt="معاينة الشخصية المختارة"><button class="primary" type="submit">إنشاء البطاقة</button></form></div>
       <div class="pane"><h3>📥 إضافة شعبة كاملة</h3><label for="bulkClass">الصف والشعبة</label><input id="bulkClass" maxlength="80" placeholder="مثال: التاسع ب"><label for="bulkNames">أسماء الطلاب (كل اسم في سطر)</label><textarea id="bulkNames" rows="5" placeholder="أحمد محمد&#10;سارة خالد&#10;..." ></textarea><button class="secondary" id="bulkImport" type="button">إضافة جميع الطلاب</button></div></div>
-      <div class="pane"><div class="pane-head"><h3>بطاقات الطلاب <small>(<span id="studentCount">0</span>)</small></h3><button class="minibtn" id="shortenCards" type="button">🔑 تقصير الرموز القديمة</button><button class="minibtn" id="printCards" type="button">🖨 طباعة بطاقات QR</button></div><div class="cards-board" id="studentsBoard"></div></div>
+      <div class="pane"><div class="pane-head"><h3>بطاقات الطلاب <small>(<span id="studentCount">0</span>)</small></h3><button class="minibtn" id="shortenCards" type="button">🔑 تقصير الرموز القديمة</button><button class="minibtn" id="reissueTeachGameCards" type="button" title="تحديث البطاقات بهوية TeachGame مع الحفاظ على أرقامها ورموز QR القديمة">🔄 تحديث وإعادة طباعة بطاقات TeachGame</button><button class="minibtn" id="printCards" type="button">🖨 طباعة بطاقات QR</button></div><div class="cards-board" id="studentsBoard"></div></div>
    </section>
    <section id="panel-history" class="panel-view"><div class="page-hero"><span class="kicker">SESSION ARCHIVE</span><h2>▤ سجل الاختبارات</h2><p>نتائج الجلسات المكتملة محفوظة في قاعدة بيانات حساب المعلم.</p></div><div class="pane"><div class="pane-head"><h3>الجلسات السابقة</h3><button type="button" class="bo-reset-view" data-reset-view="history" title="تصفير العرض فقط مع الاحتفاظ بسجلات الطلاب">🧹 تصفير العرض</button><button type="button" class="bo-restore-view" data-restore-view="history" title="استرجاع العناصر القديمة من السجل">↶ استعادة</button></div><div id="historyBoard"></div></div></section>
    <section id="panel-school" class="panel-view"><div class="page-hero"><span class="kicker">SCHOOL IDENTITY</span><h2>⚙ إعدادات المدرسة والشخصيات</h2><p>يمكن للمعلم ضبط قائمة شخصيات الطلاب حسب نوع مدرسته. لا يؤثر ذلك على سجلاتهم القديمة.</p></div>
@@ -144,7 +144,7 @@
 <div id="notification" class="toast hidden" role="status" aria-live="polite"></div>
 
 <script src="/avatar-names-v121.js?v=12.4" defer></script>
-<script src="/portal.js?v=12.4" defer></script>
+<script src="/portal.js?v=13.1" defer></script>
 <script src="/portal-security.js?v=10.4" defer></script>
 </body>
 </html>
