@@ -27,7 +27,7 @@ def new_card_code():
     raw=''.join(secrets.choice(CARD_ALPHABET) for _ in range(8))
     return raw[:4]+'-'+raw[4:]
 
-LEVEL_TITLES=('مبتدئ','متقدم','منافس','بطل الصف','نجم الشعبة','أسطورة بويا')
+LEVEL_TITLES=('مبتدئ','متقدم','منافس','بطل الصف','نجم الشعبة','أسطورة تيتش جيم')
 
 def xp_progress(xp):
     """Return the exact level bounds so every client uses one XP scale."""
