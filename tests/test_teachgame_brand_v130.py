@@ -62,5 +62,56 @@ class TeachGameBrandChecks(unittest.TestCase):
                      'solo-student-v120.js']:
             self.assertIn(part,html)
 
+
+    def test_remaining_public_modules_do_not_display_old_brand(self):
+        targets={
+            'booyah-countdown-v121.js':['TeachGame • استعد للانطلاق'],
+            'media_library.js':['مكتبة TeachGame'],
+            'portal.js':['تيتش جيم · بطاقة الطالب الذكية','reissueTeachGameCards','https://teachgame.onrender.com/student.html?card='],
+            'studio-auth.js':['TeachGame_unsynced_changes.json',"/app.js?v=13.1"],
+            'platform_security.py':['TeachGame | تيتش جيم — إعادة تعيين كلمة المرور','حسابك في TeachGame'],
+        }
+        for name,phrases in targets.items():
+            content=(ROOT/name).read_text(encoding='utf-8')
+            for phrase in phrases:
+                with self.subTest(file=name,phrase=phrase):
+                    self.assertIn(phrase,content)
+        self.assertNotIn('BOOYAHJO • استعد',(ROOT/'booyah-countdown-v121.js').read_text(encoding='utf-8'))
+        self.assertNotIn('مكتبة BOOYAHJO',(ROOT/'media_library.js').read_text(encoding='utf-8'))
+        self.assertNotIn('QuizNova Arena - إعادة تعيين',(ROOT/'platform_security.py').read_text(encoding='utf-8'))
+        self.assertIn('id="reissueTeachGameCards"',(ROOT/'index.html').read_text(encoding='utf-8'))
+        self.assertIn("window.print()",(ROOT/'portal.js').read_text(encoding='utf-8'))
+        for n in range(1,8):
+            asset=(ROOT/f'assets/avatars-game/m{n:02}.svg').read_text(encoding='utf-8')
+            self.assertIn('TeachGame game mascot',asset)
+            self.assertNotIn('BOOYAH game mascot',asset)
+
+    def test_updated_assets_and_cache_control(self):
+        refs={
+          'index.html':['portal.js?v=13.1','booyah-badge-v112.css?v=13.1'],
+          'studio.html':['media_library.js?v=13.1','studio-auth.js?v=13.1','booyah-countdown-v121.js?v=13.1'],
+          'student.html':['booyah-countdown-v121.js?v=13.1'],
+          'stage.html':['booyah-countdown-v121.js?v=13.1']
+        }
+        for path,assets in refs.items():
+            html=(ROOT/path).read_text(encoding='utf-8')
+            for asset in assets:
+                with self.subTest(file=path,asset=asset):self.assertIn(asset,html)
+        code=(ROOT/'server.py').read_text(encoding='utf-8')
+        self.assertIn("'Cache-Control','no-cache, max-age=0, must-revalidate'",code)
+        self.assertIn("requested.lower().endswith('.html')",code)
+
+    def test_no_student_records_rotated_for_visual_reprint(self):
+        js=(ROOT/'portal.js').read_text(encoding='utf-8')
+        start=js.index("$('#reissueTeachGameCards').onclick")
+        end=js.index("$('#printCards').onclick",start)
+        refresh=js[start:end]
+        self.assertIn('await loadAll()',refresh)
+        self.assertIn("$('#printCards').click()",refresh)
+        self.assertNotIn('/api/teacher/students/delete',refresh)
+        self.assertNotIn('/api/teacher/students/shorten-codes',refresh)
+        self.assertIn('student.cardCode',js)
+        self.assertIn('encodeURIComponent(student.card)',js)
+
 if __name__=='__main__':
     unittest.main()
