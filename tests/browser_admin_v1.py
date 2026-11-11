@@ -64,7 +64,7 @@ with sync_playwright() as p:
         page.locator('.metric').first.wait_for(state='visible',timeout=12000)
         assert page.locator('.metric').count()==4
         assert 'Neon' in page.locator('#databaseBadge').inner_text() or 'SQLite' in page.locator('#databaseBadge').inner_text()
-        assert 'BOOYAHJO' in page.locator('.sidebar-brand').inner_text()
+        assert 'عندس' in page.locator('.sidebar-brand').inner_text()
         assert 'الطلاب' in page.locator('#metricsGrid').inner_text()
         page.screenshot(path=str(screens/('admin-home-phone.png' if mobile else 'admin-home-desktop.png')),full_page=True)
         if mobile:page.locator('#menuToggle').click()
