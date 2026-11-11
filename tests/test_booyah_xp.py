@@ -23,7 +23,7 @@ class BooyahProgressTests(unittest.TestCase):
                 self.assertLessEqual(result['percent'],100)
         self.assertEqual(store.xp_progress(0)['title'],'مبتدئ')
         self.assertEqual(store.xp_progress(700)['title'],'نجم الشعبة')
-        self.assertEqual(store.xp_progress(1000)['title'],'أسطورة بويا')
+        self.assertEqual(store.xp_progress(1000)['title'],'أسطورة عندس')
 
     def test_correct_fast_completion_and_first_place_xp(self):
         def answer(correct,elapsed,index):
