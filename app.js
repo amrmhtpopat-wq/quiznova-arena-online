@@ -761,7 +761,7 @@ function saveLiveSession(room){
 function liveReportCsv(room){
   if(!liveRoom||!liveHostToken)return toast('مفتاح الغرفة غير متاح');
   const url='/api/room/export.xlsx?code='+encodeURIComponent(liveRoom)+'&host='+encodeURIComponent(liveHostToken);
-  const a=document.createElement('a');a.href=url;a.download='BOOYAH_'+liveRoom+'_report.xlsx';document.body.appendChild(a);a.click();a.remove();
+  const a=document.createElement('a');a.href=url;a.download='TeachGame_'+liveRoom+'_report.xlsx';document.body.appendChild(a);a.click();a.remove();
   toast('جارٍ تنزيل تقرير Excel الملوّن');
 }
 

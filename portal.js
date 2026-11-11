@@ -102,7 +102,7 @@ $('#saveSchoolMode').onclick=async()=>{try{const res=await api('/api/teacher/sch
 function renderStudents(){
   const list=cache.students;
   $('#studentCount').textContent=list.length;
-  const base=location.hostname.endsWith('.onrender.com')?'https://teachgame.onrender.com/student.html?card=':location.origin+'/student.html?card=';
+  const base=location.origin+'/student.html?card=';
   const folders=[...new Set(list.map(s=>s.className||'شعبة غير محددة'))].sort((a,b)=>a.localeCompare(b,'ar'));
   $('#studentsBoard').innerHTML=folders.map((cls,i)=>{
   const group=list.filter(s=>(s.className||'شعبة غير محددة')===cls).map(student=>{
