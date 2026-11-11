@@ -65,9 +65,8 @@
    // The catalog's original Play button is intentionally preserved.
    const launch=card.querySelector('button.button');
    if(!launch)return;
-   const index=[...card.parentNode.children].indexOf(card);
    const label=card.querySelector('h3')?.textContent?.trim()||'قالب';
-   const mode=Object.keys(choices).find(x=>choices[x]===label)
+   const mode=card.dataset.gameMode||Object.keys(choices).find(x=>choices[x]===label)
      ||(
        // The original catalog always renders in its known deterministic order
        // before the optional search/filter changes the visible subset. ID mapping
