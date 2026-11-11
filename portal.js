@@ -224,6 +224,22 @@ $('#shortenCards').onclick=async()=>{
   }catch(e){notify(err(e))}
   finally{btn.disabled=false}
 };
+// Reissue all existing cards with the current TeachGame identity without deleting or changing a card code.
+$('#reissueTeachGameCards').onclick=async()=>{
+  if(!cache.students.length)return notify('لا توجد بطاقات لإعادة طباعتها.');
+  const btn=$('#reissueTeachGameCards'),label=btn.textContent;
+  btn.disabled=true;btn.textContent='جارٍ تحديث بطاقات TeachGame...';
+  try{
+    await loadAll();
+    const cards=[...document.querySelectorAll('#studentsBoard .bo-student-id')];
+    if(cards.length!==cache.students.length||cards.some(card=>!card.querySelector('.bo-badge-brand strong')?.textContent.includes('TeachGame'))){
+      throw Error('card_refresh_incomplete');
+    }
+    notify('تم تحديث '+cards.length+' بطاقة باسم TeachGame؛ رموز الطلاب القديمة لم تتغير. افتح الطباعة لحفظ النسخة الجديدة.');
+    $('#printCards').click();
+  }catch(error){notify('تعذر تحديث معاينات البطاقات. يرجى تحديث الصفحة والمحاولة مجددًا.')}
+  finally{btn.disabled=false;btn.textContent=label}
+};
 $('#printCards').onclick=async()=>{
   if(!cache.students.length)return notify('أضف الطلاب أولًا');
   const button=$('#printCards'),original=button.textContent;
