@@ -1,4 +1,4 @@
-/* BOOYAHJO V12.8 — show only server-approved, teacher-published tests on a student's card. */
+/* TeachGame V12.8 — show only server-approved, teacher-published tests on a student's card. */
 (()=>{
 'use strict';
 const section=document.getElementById('boCardQuizzes');
