@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#0099d5" />
-  <title>BOOYAHJO | استوديو المعلم — بويا جو</title>
+  <title>عندس | استوديو المعلم — عندس</title>
 <style>html{visibility:hidden}</style>
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="arena.css" />
@@ -30,7 +30,7 @@
   <aside class="sidebar" id="sidebar">
     <div class="brand">
       <div class="brand-logo"><span>🏆</span></div>
-      <div><h1>BOOYAHJO</h1><p>QUIZ ARENA · بويا جو</p></div>
+      <div><h1>عندس</h1><p>ساحة التحديات · عندس</p></div>
     </div>
     <button type="button" id="mobileCloseNav" class="bo-mobile-menu-close" aria-label="إغلاق قائمة الأدوات">✕ إغلاق القائمة</button>
     <div class="edition-badge"><span class="dot-live"></span> ARENA • مختبر المدرسة</div>
@@ -210,7 +210,7 @@
 
     <section class="view" id="view-media">
       <div class="panel">
-        <div class="sky-media-hero"><span class="sky-media-icon">🖼</span><div><h3>مكتبة صور BOOYAHJO</h3><p>صور توضيحية أصلية لمكونات الحاسوب والشبكات والبرمجة والأمن الرقمي، ورسومات جاهزة للاختبارات.</p></div><strong class="sky-count" id="mediaCount">—</strong></div>
+        <div class="sky-media-hero"><span class="sky-media-icon">🖼</span><div><h3>مكتبة صور عندس</h3><p>صور توضيحية أصلية لمكونات الحاسوب والشبكات والبرمجة والأمن الرقمي، ورسومات جاهزة للاختبارات.</p></div><strong class="sky-count" id="mediaCount">—</strong></div>
         <div class="sky-media-toolbar"><input id="mediaSearch" type="search" placeholder="ابحث عن CPU أو ذاكرة أو شبكة أو أمن رقمي..." oninput="renderMediaLibrary()"><select id="mediaCategory" onchange="renderMediaLibrary()"><option value="all">جميع التصنيفات</option><option>مكونات الحاسوب</option><option>الشبكات</option><option>الأمن الرقمي</option><option>البرمجة</option><option>الملفات</option><option>التقنيات الحديثة</option><option>الصيانة</option><option>رسومات عامة</option><option>صوري المضافة</option></select><label class="sky-upload-btn">⬆ إضافة صور من جهازك<input type="file" accept="image/png,image/jpeg,image/webp" multiple hidden onchange="uploadCustomMedia(this)"></label><button class="btn btn-secondary" onclick="qnMediaMigrateLegacy()">☁️ نقل صوري القديمة للسحابة</button></div>
         <p class="sky-media-help">اضغط على أي صورة لاستخدامها في سؤال جديد، أو افتح السؤال واضغط «مكتبة الصور» لاختيار صورة له. الصور الجديدة تُحفظ في حساب المعلم السحابي وتبقى متاحة بعد تسجيل الدخول من أي جهاز. يمكنك نقل الصور القديمة من المتصفح للسحابة بالزر أعلاه.</p>
         <div class="sky-media-grid" id="mediaGallery"></div>
@@ -222,7 +222,7 @@
     </section>
 
     <section class="view" id="view-live">
-      <div id="liveOffline" class="panel live-offline hidden"><div class="live-icon">◉</div><h3>الخادم المباشر غير متصل</h3><p>في النسخة المنشورة على الإنترنت يجب أن يكون خادم BOOYAHJO Online يعمل. بعد النشر لا يحتاج المعلم إلى تشغيل ملف BAT على جهازه.</p><div class="steps-inline"><span><b>1</b> افتح الموقع</span><span><b>2</b> اختر الاختبار</span><span><b>3</b> شارك QR أو PIN</span></div></div>
+      <div id="liveOffline" class="panel live-offline hidden"><div class="live-icon">◉</div><h3>الخادم المباشر غير متصل</h3><p>في النسخة المنشورة على الإنترنت يجب أن يكون خادم عندس Online يعمل. بعد النشر لا يحتاج المعلم إلى تشغيل ملف BAT على جهازه.</p><div class="steps-inline"><span><b>1</b> افتح الموقع</span><span><b>2</b> اختر الاختبار</span><span><b>3</b> شارك QR أو PIN</span></div></div>
       <div id="liveSetup" class="live-layout hidden">
         <div class="panel live-launch-card">
           <div class="section-title"><div><div class="overline">LIVE GAME</div><h3>أنشئ غرفة لعب مباشرة</h3><p>بعد الضغط سيظهر لك QR ورمز من 6 أرقام ليدخل الطلاب فورًا.</p></div></div>
@@ -263,7 +263,7 @@
     </section>
 
     <section class="view" id="view-settings">
-      <div class="grid-2"><div class="panel"><div class="overline">BRANDING</div><h3>الهوية</h3><div class="form-stack"><label>اسم المعلم<input id="teacherName" value=""></label><label>اسم المدرسة<input id="schoolName" value=""></label><label>اسم المنصة<input id="platformName" value="BOOYAHJO"></label><label>خلفية لوحة المعلم<select id="teacherBackground"><option value="cartoon">☁️ كرتونية سماوية</option><option value="anime">🌸 أنمي</option><option value="cinematic">🌌 سينمائية</option></select></label><button class="btn btn-primary" id="saveSettings">حفظ الإعدادات</button></div></div><div class="panel"><div class="overline">BACKUP</div><h3>النسخ الاحتياطي</h3><p>يحفظ الاختبارات وبنك الأسئلة والنتائج والإعدادات في ملف واحد.</p><div class="form-stack"><button class="btn btn-secondary" id="exportBackup">تصدير نسخة احتياطية</button><button class="btn btn-secondary" id="importBackup">استعادة نسخة احتياطية</button><input type="file" id="backupFile" accept="application/json" hidden></div><div class="tip-box"><strong>🔒 الخصوصية</strong><p>الاختبارات والنتائج متزامنة مع حساب المعلم في قاعدة بيانات المنصة. الجلسة المباشرة تمر عبر خادم BOOYAHJO أثناء اللعب؛ لا يحتاج الطالب إلى حساب.</p></div></div></div>
+      <div class="grid-2"><div class="panel"><div class="overline">BRANDING</div><h3>الهوية</h3><div class="form-stack"><label>اسم المعلم<input id="teacherName" value=""></label><label>اسم المدرسة<input id="schoolName" value=""></label><label>اسم المنصة<input id="platformName" value="عندس"></label><label>خلفية لوحة المعلم<select id="teacherBackground"><option value="cartoon">☁️ كرتونية سماوية</option><option value="anime">🌸 أنمي</option><option value="cinematic">🌌 سينمائية</option></select></label><button class="btn btn-primary" id="saveSettings">حفظ الإعدادات</button></div></div><div class="panel"><div class="overline">BACKUP</div><h3>النسخ الاحتياطي</h3><p>يحفظ الاختبارات وبنك الأسئلة والنتائج والإعدادات في ملف واحد.</p><div class="form-stack"><button class="btn btn-secondary" id="exportBackup">تصدير نسخة احتياطية</button><button class="btn btn-secondary" id="importBackup">استعادة نسخة احتياطية</button><input type="file" id="backupFile" accept="application/json" hidden></div><div class="tip-box"><strong>🔒 الخصوصية</strong><p>الاختبارات والنتائج متزامنة مع حساب المعلم في قاعدة بيانات المنصة. الجلسة المباشرة تمر عبر خادم عندس أثناء اللعب؛ لا يحتاج الطالب إلى حساب.</p></div></div></div>
     </section>
   </main>
 </div>
