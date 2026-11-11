@@ -15,6 +15,10 @@ on:
       - tests/browser_v121_features.py
       - tests/browser_responsive_v122.py
       - game-lab-preview.html
+      - game-lab-v4.css
+      - game-lab-v4.js
+      - game-lab-v4-student.css
+      - tests/browser_game_lab_v4_design.py
       - tests/browser_game_lab_v1.py
       - game-lab-play.html
       - game-lab-cloud-v2.js
@@ -87,6 +91,7 @@ jobs:
       - name: Test actual browser on desktop and mobile
         run: |
           python tests/browser_game_lab_v1.py
+          python tests/browser_game_lab_v4_design.py
           python tests/browser_game_lab_cloud_v2.py
           python tests/browser_game_lab_pro_v3.py
           python tests/browser_grade7_pilot.py
