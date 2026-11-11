@@ -49,6 +49,7 @@ jobs:
           python -m unittest discover -s tests -p 'test_feature_v104.py' -v
           python -m unittest discover -s tests -p 'test_reference_v105.py' -v
           python -m unittest discover -s tests -p 'test_teachgame_brand_v130.py' -v
+          python -m unittest discover -s tests -p 'test_teachgame_ui_v132.py' -v
           python -m unittest discover -s tests -p 'test_v105_final.py' -v
           python -m unittest discover -s tests -p 'test_prelaunch_v105.py' -v
           python -m unittest discover -s tests -p 'test_booyah_xp.py' -v
