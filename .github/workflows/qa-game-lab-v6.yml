@@ -1,0 +1,37 @@
+name: QA Game Lab Interaction V6 tests
+
+on:
+  push:
+    branches:
+      - v10-5-final-candidate
+    paths:
+      - game-lab-preview.html
+      - game-lab-interaction-v6.css
+      - game-lab-interaction-v6.js
+      - tests/browser_game_lab_interaction_v6.py
+      - .github/workflows/qa-game-lab-v6.yml
+  workflow_dispatch:
+
+jobs:
+  six-games-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: JavaScript syntax validation
+        run: |
+          node --check game-lab-interaction-v6.js
+          node --check game-lab-visual-v5.js
+      - name: Install browser requirements
+        run: |
+          python -m pip install playwright
+          python -m playwright install --with-deps chromium
+      - name: Game Lab V6 six-game desktop and mobile QA
+        run: python tests/browser_game_lab_interaction_v6.py
+      - name: Game Lab V5 visual regression
+        run: python tests/browser_game_lab_visual_v5.py
+      - name: Game Lab V4 preserved workflows
+        run: python tests/browser_game_lab_v4_design.py
