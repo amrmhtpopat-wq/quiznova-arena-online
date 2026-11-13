@@ -1,5 +1,5 @@
 (async()=>{
-  const allowedViews=['dashboard','generator','builder','bank','media','library','live','play','results','settings'];
+  const allowedViews=['dashboard','generator','gamelab','builder','bank','media','library','live','play','results','settings'];
   const requestedView=location.hash.slice(1);
   const safeView=allowedViews.includes(requestedView)?requestedView:'dashboard';
   const loginTarget='/?next='+encodeURIComponent('/studio.html#'+safeView);
@@ -113,7 +113,7 @@
       return originalFetch(input,init);
     };
     document.documentElement.style.visibility='visible';
-    let script=document.createElement('script');script.src='/app.js?v=13.1';script.onload=()=>{const view=location.hash.slice(1);if(view&&window.go)window.go(['dashboard','generator','builder','bank','media','library','live','play','results','settings'].includes(view)?view:'dashboard')};document.body.appendChild(script);
+    let script=document.createElement('script');script.src='/app.js?v=13.1';script.onload=()=>{const labScript=document.createElement('script');labScript.src='/teachgame-lab-v2.js?v=2.0';const launch=()=>{const view=location.hash.slice(1);if(view&&window.go)window.go(['dashboard','generator','gamelab','builder','bank','media','library','live','play','results','settings'].includes(view)?view:'dashboard')};labScript.onload=launch;labScript.onerror=()=>{console.warn('Game Lab V2 script unavailable');launch()};document.body.appendChild(labScript)};document.body.appendChild(script);
   }catch(e){
     if(e.message==='login_required'){
       localStorage.removeItem('qn9_teacher_token');

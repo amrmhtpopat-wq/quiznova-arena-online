@@ -31,6 +31,7 @@ let serverInfo = null;
 const viewMeta = {
   dashboard:['لوحة التحكم','اختبارات صفية أكثر تنوعًا وتحكمًا'],
   generator:['المولّد الذكي','أنشئ اختبارًا متوازنًا من بنك الأسئلة بضغطة واحدة'],
+  gamelab:['مختبر الألعاب','اختر قالبًا مصورًا وأنشئ لعبة تعليمية بخطوات بسيطة'],
   builder:['إنشاء اختبار','استوديو متقدم للأسئلة والوسائط والمهارات العملية'],
   bank:['بنك الأسئلة','صنّف أسئلتك وأعد استخدامها بذكاء'],
   media:['مكتبة الصور','صور جاهزة مصنفة وصورك المضافة؛ اخترها للأسئلة بسهولة'],
@@ -63,14 +64,14 @@ function go(view,options={}){
   $$('.view').forEach(v=>v.classList.remove('active')); const target=$('#view-'+view); if(target)target.classList.add('active');
   $$('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
   $('#pageTitle').textContent=viewMeta[view][0]; $('#pageSubtitle').textContent=viewMeta[view][1]; $('#sidebar').classList.remove('open');
-  if(view==='dashboard')renderDashboard(); if(view==='generator')renderGenerator(); if(view==='library')renderLibrary(); if(view==='play')renderPlaySelect(options.quizId); if(view==='results')renderResults(); if(view==='bank')renderBank(); if(view==='media')renderMediaLibrary(); if(view==='live')renderLiveLanding(options.quizId);
+  if(view==='dashboard')renderDashboard(); if(view==='generator')renderGenerator(); if(view==='gamelab'&&window.TG_LAB_V2)window.TG_LAB_V2.render(); if(view==='library')renderLibrary(); if(view==='play')renderPlaySelect(options.quizId); if(view==='results')renderResults(); if(view==='bank')renderBank(); if(view==='media')renderMediaLibrary(); if(view==='live')renderLiveLanding(options.quizId);
 }
 window.go=go;
 $$('.nav-item').forEach(b=>b.onclick=()=>b.dataset.view==='builder'?openNewQuiz():go(b.dataset.view));
 $$('[data-jump]').forEach(b=>b.onclick=()=>b.dataset.jump==='builder'?openNewQuiz():go(b.dataset.jump));
 $('#menuBtn').onclick=()=>$('#sidebar').classList.toggle('open');
 const mobileCloseNav=$('#mobileCloseNav');if(mobileCloseNav)mobileCloseNav.onclick=()=>$('#sidebar').classList.remove('open');
-$('#quickGenerate').onclick=()=>go('generator');
+$('#quickGenerate').textContent='🎮 إنشاء نشاط'; $('#quickGenerate').onclick=()=>go('gamelab');
 $$('[data-modejump]').forEach(b=>b.onclick=()=>{ go('play'); setTimeout(()=>$('#playMode').value=b.dataset.modejump,0) });
 $$('.book-chip').forEach(b=>b.addEventListener('click',()=>setTimeout(()=>{if($('#genGrade')){$('#genGrade').value=b.dataset.grade;renderGeneratorUnits();updateGeneratorPool()}},20)));
 

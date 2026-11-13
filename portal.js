@@ -8,7 +8,7 @@ function pendingStudioDestination(){
   if(!raw)return '';
   try{
     const url=new URL(raw,location.origin);
-    const allowed=['dashboard','generator','builder','bank','media','library','live','play','results','settings'];
+    const allowed=['dashboard','generator','gamelab','builder','bank','media','library','live','play','results','settings'];
     const target=url.hash.slice(1);
     return url.origin===location.origin&&url.pathname==='/studio.html'&&allowed.includes(target)
       ?'/studio.html#'+target:'';

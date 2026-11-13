@@ -1,0 +1,121 @@
+/* TeachGame Game Lab — Visual Redesign V2.
+   Scoped visuals for the teacher studio; existing gameplay, student cards, APIs and data remain intact. */
+:root{--tg2-ink:#17304c;--tg2-muted:#53657d;--tg2-border:#d9e4f1;--tg2-blue:#2563eb;--tg2-soft:#f4f8ff}
+#view-gamelab{color:var(--tg2-ink);font-family:Cairo,"Noto Kufi Arabic",Tahoma,Arial,sans-serif}
+#view-gamelab *{box-sizing:border-box}
+#view-gamelab .tg2-banner{background:linear-gradient(122deg,#0e397c,#1455a0 56%,#157d9b);border-radius:25px;color:#fff;padding:clamp(20px,3vw,36px);display:grid;grid-template-columns:minmax(0,1.3fr) minmax(220px,.7fr);gap:22px;align-items:center;overflow:hidden;position:relative;box-shadow:0 14px 40px #0d376122}
+#view-gamelab .tg2-banner:before{content:"";position:absolute;inset:auto -5% -95% 30%;height:300px;border:3px solid #ffffff2e;border-radius:50%;pointer-events:none}
+#view-gamelab .tg2-kicker{color:#bbf4ff!important;font-size:12px;font-weight:900;letter-spacing:.03em}
+#view-gamelab .tg2-banner h3{color:#fff!important;font-size:clamp(24px,3.4vw,36px)!important;line-height:1.45;margin:10px 0}
+#view-gamelab .tg2-banner p{color:#e6f5ff!important;line-height:1.9;font-size:14px;max-width:690px}
+#view-gamelab .tg2-banner-art{width:100%;min-height:165px;position:relative;display:flex;align-items:center;justify-content:center}
+#view-gamelab .tg2-banner-art:before{content:"";position:absolute;width:190px;height:190px;border-radius:50%;background:conic-gradient(#ffb653 0 25%,#ec5b8d 25% 50%,#62ccf3 50% 75%,#8fe0a5 75%);border:10px solid #fff;box-shadow:0 0 0 14px #ffffff22,0 17px 50px #00183688;transform:rotate(-15deg)}
+#view-gamelab .tg2-banner-art:after{content:"★";position:relative;font-size:65px;color:#fff;text-shadow:0 3px 10px #082d6c88}
+#view-gamelab .tg2-banner-art span{position:absolute;z-index:2;padding:9px 14px;background:#fff;border-radius:16px;box-shadow:0 7px 20px #00183644;color:#13447a;font-weight:900;transform:rotate(8deg);bottom:0;right:0}
+#view-gamelab .tg2-shell{margin-top:18px;background:#fff;border:1px solid #dce8f5;border-radius:24px;box-shadow:0 14px 35px #0b366719;padding:clamp(16px,2.8vw,28px);color:#18324e}
+#view-gamelab .tg2-stepbar{display:flex;align-items:center;gap:10px;margin:0 0 26px;padding:9px;border-radius:16px;background:#f1f6fd;flex-wrap:wrap}
+#view-gamelab .tg2-step{flex:1;display:flex;align-items:center;justify-content:center;gap:9px;min-width:130px;min-height:49px;background:transparent;border:0;border-radius:12px;color:#526681;font-weight:900;cursor:pointer}
+#view-gamelab .tg2-step b{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#e1eaf7;color:#305374}
+#view-gamelab .tg2-step.is-active{background:#fff;color:#0d4aa1;box-shadow:0 4px 16px #244e8222}
+#view-gamelab .tg2-step.is-active b{background:#2762d7;color:#fff}
+#view-gamelab .tg2-step:focus-visible,#view-gamelab button:focus-visible,#view-gamelab input:focus-visible,#view-gamelab select:focus-visible{outline:3px solid #ffbb46!important;outline-offset:2px}
+#view-gamelab .tg2-section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:0 0 16px}
+#view-gamelab .tg2-section-head h3{font-size:clamp(20px,2.4vw,27px)!important;color:#182f51!important;margin:0 0 5px}
+#view-gamelab .tg2-section-head p{font-size:13px;color:#60718b!important;line-height:1.8;margin:0}
+#view-gamelab .tg2-source-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:18px}
+#view-gamelab .tg2-source{display:flex;align-items:center;text-align:right;gap:12px;min-height:104px;background:#f8fbff!important;border:2px solid #dce7f4!important;border-radius:17px;padding:17px;color:#17334d!important;cursor:pointer;transition:transform .2s,border-color .2s}
+#view-gamelab .tg2-source:hover{transform:translateY(-2px)}
+#view-gamelab .tg2-source.is-active{border-color:#3276df!important;background:#eff6ff!important;box-shadow:0 0 0 3px #3276df17}
+#view-gamelab .tg2-source-ico{display:grid;place-items:center;flex:none;border-radius:15px;background:#dceafb;font-size:30px;width:63px;height:63px}
+#view-gamelab .tg2-source strong{display:block;font-size:16px;color:#18334f!important}
+#view-gamelab .tg2-source small{display:block;font-size:12px;color:#60748c!important;line-height:1.8;margin-top:3px}
+#view-gamelab .tg2-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+#view-gamelab .tg2-field{display:grid;gap:7px;font-size:13px;font-weight:800;color:#24425f!important}
+#view-gamelab input:not([type="checkbox"]),#view-gamelab select{width:100%;min-height:48px;border:1.5px solid #c7d6e7!important;border-radius:12px!important;background:#fff!important;color:#17334e!important;-webkit-text-fill-color:#17334e!important;padding:10px 13px;font:700 14px/1.5 Cairo,Tahoma,Arial}
+#view-gamelab input[type="radio"]{width:19px!important;min-height:19px!important;height:19px!important;padding:0!important;accent-color:#2264cf!important;flex:none!important}
+#view-gamelab input::placeholder{color:#718097!important;-webkit-text-fill-color:#718097!important}
+#view-gamelab .tg2-note{font-size:12px!important;color:#526b87!important;background:#f0f6ff;padding:12px 16px;border-radius:12px;border:1px solid #e0eaf7;line-height:1.8;margin:12px 0}
+#view-gamelab .tg2-questions{display:grid;gap:10px;margin-top:14px}
+#view-gamelab .tg2-question{border:1.5px solid #d8e4ef;border-radius:16px;padding:16px;background:#f9fbff;display:grid;gap:12px}
+#view-gamelab .tg2-qhead{display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:900}
+#view-gamelab .tg2-qhead span{color:#1c4b83}
+#view-gamelab .tg2-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#view-gamelab .tg2-opt{display:grid;grid-template-columns:18px 1fr;align-items:center;gap:7px;font-size:13px;color:#314963}
+#view-gamelab .tg2-opt input[type="radio"]{accent-color:#2264cf}
+#view-gamelab .tg2-opt input[type="text"]{min-width:0}
+#view-gamelab .tg2-add{display:inline-flex;justify-content:center;align-items:center;border:2px dashed #8fb4e0!important;border-radius:14px;min-height:48px;background:#f1f7ff!important;color:#225598!important;font-weight:900;cursor:pointer}
+#view-gamelab .tg2-gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+#view-gamelab .tg2-game-card{position:relative;border:2px solid #e0e9f4!important;border-radius:21px;background:#fff!important;padding:10px 10px 16px;min-width:0;text-align:right;cursor:pointer;overflow:hidden;box-shadow:0 6px 19px #1e496615;transition:transform .2s,box-shadow .2s,border-color .2s;color:#18334f!important}
+#view-gamelab .tg2-game-card:hover{transform:translateY(-4px);box-shadow:0 15px 30px #1e496629}
+#view-gamelab .tg2-game-card.is-active{border-color:#2379e3!important;box-shadow:0 0 0 4px #2d75da23,0 15px 30px #1e496622}
+#view-gamelab .tg2-game-card h4{color:#18334f!important;font-size:18px!important;margin:13px 9px 3px}
+#view-gamelab .tg2-game-card p{font-size:12px;color:#5a718a!important;margin:0 9px;line-height:1.8}
+#view-gamelab .tg2-selection{position:absolute;z-index:2;left:19px;top:19px;border-radius:50%;width:28px;height:28px;background:#fff;color:#4270aa;display:grid;place-items:center;font-weight:900;font-size:18px;box-shadow:0 4px 12px #173a7633}
+#view-gamelab .tg2-game-card.is-active .tg2-selection{background:#2563eb;color:#fff}
+#view-gamelab .tg2-art{height:185px;position:relative;display:grid;place-items:center;overflow:hidden;border-radius:15px;isolation:isolate}
+#view-gamelab .tg2-art:before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(circle at 20% 25%,#fff7,transparent 35%)}
+#view-gamelab .tg2-art-wheel{background:linear-gradient(135deg,#a588f7,#d4afff)}
+#view-gamelab .tg2-art-wheel .tg2-disc{display:grid;place-items:center;width:142px;height:142px;border-radius:50%;border:9px solid #fff;background:conic-gradient(#ef6996 0deg 60deg,#fabb53 60deg 120deg,#68c5ed 120deg 180deg,#7bdbac 180deg 240deg,#aa95ff 240deg 300deg,#fd8a71 300deg);box-shadow:0 12px 20px #51317666;transform:rotate(-15deg)}
+#view-gamelab .tg2-art-wheel .tg2-disc:after{content:"★";display:grid;place-items:center;width:49px;height:49px;border-radius:50%;background:#fff;color:#6b52b2;font-size:26px;box-shadow:0 4px 8px #5b479d55}
+#view-gamelab .tg2-art-wheel .tg2-arrow{position:absolute;top:8px;font-size:33px;color:#fff;text-shadow:0 3px 6px #664ba5}
+#view-gamelab .tg2-art-boxes{background:linear-gradient(130deg,#ffd5a6,#ffb8cb)}
+#view-gamelab .tg2-art-boxes .tg2-boxes{display:grid;grid-template-columns:repeat(3,60px);gap:10px;transform:rotate(-8deg)}
+#view-gamelab .tg2-art-boxes i{font-style:normal;display:grid;place-items:center;width:60px;height:60px;background:linear-gradient(#fff6,#fff0),#ee739c;border:4px solid #fff;border-radius:14px;box-shadow:0 8px 0 #cd5487;font-size:29px;color:#fff;font-weight:900}
+#view-gamelab .tg2-art-pairs{background:linear-gradient(130deg,#95e9e5,#7dbdef)}
+#view-gamelab .tg2-art-pairs .tg2-pair-art{display:grid;grid-template-columns:repeat(3,65px);gap:9px;transform:rotate(6deg)}
+#view-gamelab .tg2-art-pairs .tg2-pair-art i{font-style:normal;display:grid;place-items:center;width:65px;height:67px;background:#fff;border-radius:14px;box-shadow:0 6px 0 #4e9dcf;font-size:30px}
+#view-gamelab .tg2-art-quiz{background:linear-gradient(135deg,#98b7ff,#9e8cf1)}
+#view-gamelab .tg2-art-quiz .tg2-quiz-art{width:220px;padding:15px;background:#fff;border-radius:17px;box-shadow:0 12px 0 #6c71bd;display:grid;gap:9px;transform:rotate(-5deg)}
+#view-gamelab .tg2-art-quiz .tg2-quiz-art b{font-size:13px;color:#394f73}
+#view-gamelab .tg2-art-quiz .tg2-quiz-art span{background:#6a84ea;border-radius:7px;height:20px}
+#view-gamelab .tg2-art-quiz .tg2-quiz-art span:nth-child(3){background:#ffb65d}#view-gamelab .tg2-art-quiz .tg2-quiz-art span:nth-child(4){background:#60caad}
+#view-gamelab .tg2-actions{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:25px;padding-top:18px;border-top:1px solid #e1e9f3}
+#view-gamelab .tg2-btn{border:0!important;min-height:47px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 23px;border-radius:13px;font:900 14px Cairo,Tahoma,Arial;cursor:pointer}
+#view-gamelab .tg2-btn-primary{background:#245ed9!important;color:#fff!important}
+#view-gamelab .tg2-btn-primary:hover{background:#1748af!important}
+#view-gamelab .tg2-btn-subtle{background:#eaf1fb!important;color:#1d4d87!important}
+#view-gamelab .tg2-btn:disabled{opacity:.5;cursor:not-allowed}
+#view-gamelab .tg2-badge{font-size:12px;color:#235c99;background:#e8f2ff;padding:7px 10px;border-radius:12px;font-weight:900}
+#view-gamelab .tg2-arena{background:radial-gradient(circle at 30% 15%,#255dab,#0c224a 70%);color:#fff;border-radius:20px;min-height:350px;padding:clamp(14px,3vw,28px);overflow:hidden;box-shadow:0 18px 40px #0a28512e}
+#view-gamelab .tg2-arena h4,#view-gamelab .tg2-arena p{color:#fff!important}
+#view-gamelab .tg2-arena-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;color:#d6edff;font-size:13px;margin-bottom:20px}
+#view-gamelab .tg2-prompt{font-size:clamp(19px,2.8vw,29px);font-weight:900;line-height:1.65;color:#fff;text-align:center;padding:15px;overflow-wrap:anywhere}
+#view-gamelab .tg2-answergrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:20px 0}
+#view-gamelab .tg2-answer{border:3px solid #ffffff24!important;border-radius:16px;padding:17px 12px;min-height:83px;color:#fff!important;font:900 clamp(15px,2vw,21px)/1.45 Cairo,Tahoma,Arial;overflow-wrap:anywhere;cursor:pointer}
+#view-gamelab .tg2-answer:nth-child(4n+1){background:#db4e70!important}#view-gamelab .tg2-answer:nth-child(4n+2){background:#286dd3!important}#view-gamelab .tg2-answer:nth-child(4n+3){background:#df9c27!important}#view-gamelab .tg2-answer:nth-child(4n+4){background:#22896b!important}
+#view-gamelab .tg2-answer:disabled{cursor:default;opacity:.68}
+#view-gamelab .tg2-answer.is-correct{border-color:#c8ffd1!important;box-shadow:0 0 0 3px #91ffac!important;opacity:1}
+#view-gamelab .tg2-answer.is-wrong{border-color:#ffb3bb!important}
+#view-gamelab .tg2-feedback{min-height:37px;text-align:center;font-weight:900;color:#fff;background:#ffffff20;border-radius:10px;padding:8px;margin:12px 0}
+#view-gamelab .tg2-wheel-wrap{display:grid;place-items:center;padding:30px 0}
+#view-gamelab .tg2-wheel{width:min(270px,70vw);height:min(270px,70vw);border-radius:50%;background:conic-gradient(#ff7c83 0 45deg,#ffbf55 45deg 90deg,#8fdfab 90deg 135deg,#67c3ec 135deg 180deg,#ad9eff 180deg 225deg,#ff8dba 225deg 270deg,#59d9c6 270deg 315deg,#ffcc66 315deg);border:12px solid #fff;box-shadow:0 14px 36px #0008;transition:transform 1.4s cubic-bezier(.15,.72,.1,1);display:grid;place-items:center}
+#view-gamelab .tg2-wheel:after{content:"★";font-size:38px;display:grid;place-items:center;width:75px;height:75px;border-radius:50%;background:#fff;color:#3b4d8e;box-shadow:0 4px 10px #0003}
+#view-gamelab .tg2-wheel-wrap:before{content:"▼";color:#ffe88f;z-index:1;font-size:32px;margin-bottom:-15px}
+#view-gamelab .tg2-box-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:13px;margin:24px 0}
+#view-gamelab .tg2-game-box{min-height:100px;background:linear-gradient(145deg,#ffb4d3,#e55f9f)!important;border:4px solid #fff!important;border-radius:16px;box-shadow:0 9px 0 #aa3574;color:#fff!important;font-size:30px;font-weight:900;cursor:pointer}
+#view-gamelab .tg2-game-box.is-done{background:#314c77!important;box-shadow:none;opacity:.5}
+#view-gamelab .tg2-pair-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:20px 0}
+#view-gamelab .tg2-pair-tile{min-height:100px;border:3px solid #ffffff66!important;border-radius:14px;background:#3959a6!important;color:#fff!important;font-size:19px;font-weight:900;cursor:pointer;overflow-wrap:anywhere;padding:12px}
+#view-gamelab .tg2-pair-tile.is-open{background:#fff!important;color:#1d3f6d!important}
+#view-gamelab .tg2-pair-tile.is-matched{background:#2e956d!important;color:#fff!important;cursor:default}
+#view-gamelab .tg2-arena .tg2-btn-subtle{background:#fff!important;color:#163c79!important}
+#view-gamelab .tg2-arena .tg2-btn-primary{background:#ffbe57!important;color:#162d4f!important}
+#view-gamelab .tg2-arena .tg2-btn-primary:hover{background:#ffe4a2!important}
+#view-gamelab .tg2-arena-foot{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin:18px 0 0}
+#view-gamelab .tg2-empty{text-align:center;border:2px dashed #b4cee9;border-radius:15px;padding:30px;color:#58718e!important}
+#view-gamelab .tg2-hidden{display:none!important}
+/* Contrast fixes in the legacy editor and generator: scoped, not applied to student/live screens. */
+body.v105-studio #view-builder .bo-question-editor :is(label,small,.bo-editor-help,.bo-question-hint){color:#263e58!important;-webkit-text-fill-color:currentColor!important}
+body.v105-studio #view-builder .bo-question-editor :is(input,textarea,select){color:#162f4b!important;background-color:#fff!important;-webkit-text-fill-color:#162f4b!important}
+body.v105-studio #view-builder .bo-question-editor :is(input,textarea)::placeholder{color:#667c95!important;-webkit-text-fill-color:#667c95!important}
+body.v105-studio #view-builder .bo-quiz-config :is(input,select){background:#fff!important;color:#172f4a!important;-webkit-text-fill-color:#172f4a!important}
+body.v105-studio #view-generator .generator-panel :is(input,select){background:#fff!important;color:#17334e!important;-webkit-text-fill-color:#17334e!important}
+body.v105-studio #view-generator .generator-panel :is(input,select)::placeholder{color:#64748b!important;-webkit-text-fill-color:#64748b!important}
+body.v105-studio #view-library .quiz-card .card-meta .chip{color:#183859!important;-webkit-text-fill-color:#183859!important}
+@media(max-width:900px){#view-gamelab .tg2-banner{grid-template-columns:1fr}#view-gamelab .tg2-banner-art{display:none}}
+@media(max-width:650px){#view-gamelab .tg2-shell{padding:13px;border-radius:16px}#view-gamelab .tg2-source-grid,#view-gamelab .tg2-gallery,#view-gamelab .tg2-fields{grid-template-columns:1fr}#view-gamelab .tg2-options{grid-template-columns:1fr}#view-gamelab .tg2-answergrid{grid-template-columns:1fr 1fr;gap:8px}#view-gamelab .tg2-answer{min-height:68px;font-size:14px;padding:10px 6px}#view-gamelab .tg2-pair-grid{grid-template-columns:repeat(3,minmax(0,1fr))}#view-gamelab .tg2-pair-tile{min-height:85px;font-size:14px}#view-gamelab .tg2-step{min-width:90px;font-size:12px;padding:8px 4px}#view-gamelab .tg2-game-card .tg2-art{height:170px}}
+@media(prefers-reduced-motion:reduce){#view-gamelab .tg2-game-card,#view-gamelab .tg2-source,#view-gamelab .tg2-wheel{transition:none!important}}
+
+/* Guard against inherited dark-theme form colors inside Game Lab. */
+#view-gamelab .tg2-field,#view-gamelab .tg2-qhead,#view-gamelab .tg2-opt{color:#23415f!important;-webkit-text-fill-color:currentColor!important}
+#view-gamelab .tg2-source:disabled,#view-gamelab .tg2-game-card:disabled{opacity:.6}
