@@ -29,7 +29,7 @@ try:
      launch.click()
      overlay=page.locator('#playOverlay')
      overlay.wait_for(state='visible')
-     page.wait_for_function("(m)=>document.querySelector('#playOverlay')?.dataset.v6Mode===m",mode,timeout=5000)
+     page.wait_for_function("(m)=>document.querySelector('#playOverlay')?.dataset.v6Mode===m",arg=mode,timeout=5000)
      body=page.locator('#playBody')
      if mode in ('quiz','fast'):
       assert body.locator('#answers button.choice').count()==4
