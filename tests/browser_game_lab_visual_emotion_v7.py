@@ -92,7 +92,7 @@ try:
       page.locator('#playBody .v7-mascot svg').wait_for()
      page.locator('#closePlay').click()
      overlay.wait_for(state='hidden')
-     assert not overlay.evaluate("(n)=>n.classList.contains('v7-game')")
+     page.wait_for_function("()=>!document.querySelector('#playOverlay').classList.contains('v7-game')",timeout=2500)
     assert not errors,(width,errors)
     print('PASS V7 responsive, scoring, animations and contrast '+str(width)+'x'+str(height),flush=True)
     page.close()
