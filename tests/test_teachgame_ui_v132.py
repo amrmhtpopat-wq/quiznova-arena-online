@@ -1,4 +1,4 @@
-"""TeachGame V13.2: old public brand does not survive in screens or reprinted cards."""
+"""TEACH AND GAME V13.2: old public brand does not survive in screens or reprinted cards."""
 import unittest
 from pathlib import Path
 
@@ -10,18 +10,18 @@ class UnifiedBrand(unittest.TestCase):
   for path in PAGES+COPY:
    with self.subTest(page=path):
     text=(ROOT/path).read_text(encoding='utf-8')
-    self.assertIn('TeachGame',text)
+    self.assertIn('TEACH AND GAME',text)
     if path!='index.html':
      self.assertNotIn('QUIZ ARENA',text)
      self.assertNotIn('BOOYAHJO',text)
      self.assertNotIn('بويا جو',text)
   self.assertIn('تعلّم • العب • تفوّق',(ROOT/'stage.js').read_text(encoding='utf-8'))
   self.assertIn('stage.js?v=13.2',(ROOT/'stage.html').read_text(encoding='utf-8'))
-  self.assertIn("a.download='TeachGame_'+liveRoom+'_report.xlsx';",(ROOT/'app.js').read_text(encoding='utf-8'))
+  self.assertIn("a.download='TAG_'+liveRoom+'_report.xlsx';",(ROOT/'app.js').read_text(encoding='utf-8'))
  def test_cards_reissued_without_deletion(self):
   text=(ROOT/'portal.js').read_text(encoding='utf-8')
-  self.assertIn('<strong>TeachGame</strong>',text)
-  self.assertIn('تيتش جيم · بطاقة الطالب الذكية',text)
+  self.assertIn('<strong>TEACH AND GAME</strong>',text)
+  self.assertIn('تيتش آند جيم · بطاقة الطالب الذكية',text)
   self.assertIn('encodeURIComponent(student.card)',text)
   self.assertIn('student.cardCode',text)
   self.assertIn("const base=location.origin+'/student.html?card=';",text)
@@ -33,11 +33,11 @@ class UnifiedBrand(unittest.TestCase):
  def test_original_site_and_short_alias_unchanged(self):
   content=(ROOT/'index.html').read_text(encoding='utf-8')
   self.assertIn('https://quiznova-arena-online.onrender.com/',content)
-  self.assertIn('"name": "TeachGame"',content)
+  self.assertIn('"name": "TEACH AND GAME"',content)
   self.assertNotIn('BOOYAHJO',content)
   self.assertNotIn('بويا جو',content)
   redirect=(ROOT/'short-link/index.html').read_text(encoding='utf-8')
   self.assertIn('location.replace(target+location.search+location.hash)',redirect)
-  self.assertIn('TeachGame',redirect)
+  self.assertIn('TEACH AND GAME',redirect)
 if __name__=='__main__':
  unittest.main()

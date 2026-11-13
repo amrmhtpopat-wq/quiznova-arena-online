@@ -1,4 +1,4 @@
-"""TeachGame global branding + backwards-compatible free short-address redirects."""
+"""TEACH AND GAME global branding + backwards-compatible free short-address redirects."""
 import json
 import re
 import unittest
@@ -12,35 +12,35 @@ class TeachGameBrandChecks(unittest.TestCase):
         for path in PAGES:
             with self.subTest(path=path):
                 html=(ROOT/path).read_text(encoding='utf-8')
-                self.assertIn('TeachGame',html)
+                self.assertIn('TEACH AND GAME',html)
                 self.assertNotIn('BOOYAHJO',html) if path!='index.html' else None
                 self.assertNotIn('بويا جو',html) if path!='index.html' else None
-        self.assertIn('value="TeachGame"',(ROOT/'studio.html').read_text(encoding='utf-8'))
-        self.assertIn('TeachGame',(ROOT/'portal.js').read_text(encoding='utf-8'))
-        self.assertIn('TeachGame',(ROOT/'stage.js').read_text(encoding='utf-8'))
+        self.assertIn('value="TEACH AND GAME"',(ROOT/'studio.html').read_text(encoding='utf-8'))
+        self.assertIn('TEACH AND GAME',(ROOT/'portal.js').read_text(encoding='utf-8'))
+        self.assertIn('TEACH AND GAME',(ROOT/'stage.js').read_text(encoding='utf-8'))
 
     def test_google_metadata_uses_new_brand_and_preserves_old_alias(self):
         text=(ROOT/'index.html').read_text(encoding='utf-8')
-        self.assertIn('<title>TeachGame | تيتش جيم',text)
-        self.assertIn('og:site_name" content="TeachGame | تيتش جيم"',text)
+        self.assertIn('<title>TEACH AND GAME | TAG',text)
+        self.assertIn('og:site_name" content="TEACH AND GAME | TAG"',text)
         data_match=re.search(r'<script type="application/ld\+json">\s*(\{.*?\})\s*</script>',text,re.S)
         self.assertIsNotNone(data_match)
         data=json.loads(data_match.group(1))
-        self.assertEqual(data['name'],'TeachGame')
-        self.assertIn('تيتش جيم',data['alternateName'])
-        self.assertIn('BOOYAHJO',data['alternateName'])
+        self.assertEqual(next(item for item in data['@graph'] if item.get('@type')=='WebSite')['name'],'TEACH AND GAME')
+        self.assertIn('تيتش آند جيم',next(item for item in data['@graph'] if item.get('@type')=='WebSite')['alternateName'])
+        self.assertIn('TAG',next(item for item in data['@graph'] if item.get('@type')=='WebSite')['alternateName'])
         self.assertIn('https://quiznova-arena-online.onrender.com/',text)
 
     def test_badges_exports_progress_and_new_defaults(self):
-        self.assertIn('أسطورة تيتش جيم',(ROOT/'platform_store.py').read_text(encoding='utf-8'))
-        self.assertIn("'platformName':'TeachGame'",(ROOT/'platform_store.py').read_text(encoding='utf-8'))
+        self.assertIn('أسطورة تيتش آند جيم',(ROOT/'platform_store.py').read_text(encoding='utf-8'))
+        self.assertIn("'platformName':'TEACH AND GAME'",(ROOT/'platform_store.py').read_text(encoding='utf-8'))
         js=(ROOT/'app.js').read_text(encoding='utf-8')
-        self.assertIn('teachgame-results.csv',js)
-        self.assertIn('teachgame-backup.json',js)
-        self.assertIn("platform='TeachGame'",js) # global public identity is not overridden by historical teacher settings
-        self.assertIn('value="TeachGame" readonly',(ROOT/'studio.html').read_text(encoding='utf-8'))
-        self.assertIn('TeachGame',(ROOT/'portal.js').read_text(encoding='utf-8'))
-        self.assertIn('TeachGame_{code}_report.xlsx',(ROOT/'server.py').read_text(encoding='utf-8'))
+        self.assertIn('tag-results.csv',js)
+        self.assertIn('tag-backup.json',js)
+        self.assertIn("platform='TEACH AND GAME'",js) # global public identity is not overridden by historical teacher settings
+        self.assertIn('value="TEACH AND GAME" readonly',(ROOT/'studio.html').read_text(encoding='utf-8'))
+        self.assertIn('TEACH AND GAME',(ROOT/'portal.js').read_text(encoding='utf-8'))
+        self.assertIn('TAG_{code}_report.xlsx',(ROOT/'server.py').read_text(encoding='utf-8'))
 
     def test_redirect_alias_pages_are_static_safe_and_preserve_query(self):
         for path in ['index.html','student.html','studio.html','admin.html','about.html','for-teachers.html']:
@@ -50,7 +50,7 @@ class TeachGameBrandChecks(unittest.TestCase):
                 self.assertIn('content="noindex,nofollow,noarchive"',html)
                 self.assertIn('location.replace(target+location.search+location.hash)',html)
                 self.assertIn(dest,html)
-                self.assertIn('TeachGame | تيتش جيم',html)
+                self.assertIn('TEACH AND GAME | تيتش آند جيم',html)
         sitemap=(ROOT/'sitemap.xml').read_text(encoding='utf-8')
         self.assertEqual(sitemap.count('<url>'),3)
         self.assertNotIn('teachgame.onrender.com',sitemap)
@@ -65,11 +65,11 @@ class TeachGameBrandChecks(unittest.TestCase):
 
     def test_remaining_public_modules_do_not_display_old_brand(self):
         targets={
-            'booyah-countdown-v121.js':['TeachGame • استعد للانطلاق'],
-            'media_library.js':['مكتبة TeachGame'],
-            'portal.js':['تيتش جيم · بطاقة الطالب الذكية','reissueTeachGameCards','https://teachgame.onrender.com/student.html?card='],
-            'studio-auth.js':['TeachGame_unsynced_changes.json',"/app.js?v=13.1"],
-            'platform_security.py':['TeachGame | تيتش جيم — إعادة تعيين كلمة المرور','حسابك في TeachGame'],
+            'booyah-countdown-v121.js':['TEACH AND GAME • استعد للانطلاق'],
+            'media_library.js':['مكتبة TEACH AND GAME'],
+            'portal.js':['تيتش آند جيم · بطاقة الطالب الذكية','reissueTeachGameCards',"const base=location.origin+'/student.html?card=';"],
+            'studio-auth.js':['TAG_unsynced_changes.json',"/app.js?v=13.1"],
+            'platform_security.py':['TEACH AND GAME | تيتش آند جيم — إعادة تعيين كلمة المرور','حسابك في TEACH AND GAME'],
         }
         for name,phrases in targets.items():
             content=(ROOT/name).read_text(encoding='utf-8')
