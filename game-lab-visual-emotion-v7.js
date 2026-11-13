@@ -134,7 +134,16 @@ function feedback(){
  const key=mode+'|'+($('playCounter')?.textContent||'')+'|'+question;
  if(!(correct||wrong)||lastAward===key)return;
  lastAward=key;
- if(correct){streak++;celebrate();}else{streak=0;hideWin();}
+ if(correct){
+  // The original teacher-preview engine updates its internal score immediately
+  // but reprints the HUD on the next round. Mirror the awarded 100 points now.
+  const score=B.querySelector('.playinfo > b');
+  if(score){
+   const initial=Number((score.textContent.match(/\\d+/)||['0'])[0]);
+   score.textContent='⭐ '+(initial+100)+' نقطة';
+  }
+  streak++;celebrate();
+ }else{streak=0;hideWin();}
  if(mode==='truth'){
   const selected=B.querySelector('#truthActions .choice[data-v6-selected="1"]');
   const other=B.querySelector('#truthActions .choice:not([data-v6-selected="1"])');
