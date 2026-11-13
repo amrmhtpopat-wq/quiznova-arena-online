@@ -1,0 +1,32 @@
+name: QA Game Lab Visual V5 checks
+
+on:
+  push:
+    branches:
+      - v10-5-final-candidate
+    paths:
+      - game-lab-preview.html
+      - game-lab-visual-v5.css
+      - game-lab-visual-v5.js
+      - tests/browser_game_lab_visual_v5.py
+      - .github/workflows/qa-game-lab-v5.yml
+  workflow_dispatch:
+
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: JavaScript syntax
+        run: node --check game-lab-visual-v5.js
+      - name: Install browser tooling
+        run: |
+          python -m pip install playwright
+          python -m playwright install --with-deps chromium
+      - name: V5 visual authoring smoke tests
+        run: python tests/browser_game_lab_visual_v5.py
+      - name: V4 design regression
+        run: python tests/browser_game_lab_v4_design.py
