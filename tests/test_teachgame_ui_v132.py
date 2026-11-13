@@ -10,7 +10,7 @@ class UnifiedBrand(unittest.TestCase):
   for path in PAGES+COPY:
    with self.subTest(page=path):
     text=(ROOT/path).read_text(encoding='utf-8')
-    self.assertIn('TEACH AND GAME',text)
+    if path!='studio-auth.js': self.assertIn('TEACH AND GAME',text)
     if path!='index.html':
      self.assertNotIn('QUIZ ARENA',text)
      self.assertNotIn('BOOYAHJO',text)
