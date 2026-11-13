@@ -55,3 +55,45 @@ body.v105-studio .sidebar .brand h1{font-size:16px!important;overflow-wrap:anywh
   .bo-badge-icon .tag-official-icon{width:25px!important;height:25px!important}
   .tag-official-logo,.tag-card-logo{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
+
+
+/* TAG V16 – brand mark only; duplicate wording removed from all brand/header regions. */
+.tag-brand-only{display:flex!important;align-items:center!important;justify-content:center!important;min-width:0!important}
+body.v105-portal .bo-entry-head .bo-entry-logo.tag-brand-only{flex:0 0 auto!important;gap:0!important}
+body.v105-portal .bo-entry-head .bo-entry-logo.tag-brand-only img.tag-official-logo{width:225px!important;max-width:225px!important;min-width:225px!important;height:88px!important}
+body.v105-portal .auth-brand.tag-brand-only{justify-content:flex-start!important;min-height:92px!important;padding:3px 0!important}
+body.v105-portal .auth-brand.tag-brand-only img.tag-official-logo{width:220px!important;height:84px!important}
+body.v105-portal .sidebar-brand.tag-brand-only{width:100%!important;justify-content:center!important;min-height:87px!important}
+body.v105-portal .sidebar-brand.tag-brand-only img.tag-official-logo{width:195px!important;height:78px!important}
+body.v105-studio .sidebar .brand{justify-content:center!important;position:relative!important}
+body.v105-studio .sidebar .brand-logo{width:162px!important;flex:0 0 162px!important;height:76px!important}
+body.v105-studio .sidebar .brand-logo img.tag-studio-logo{width:162px!important;height:76px!important}
+.tag-brand-copy{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;clip-path:inset(50%)!important;white-space:nowrap!important;margin:-1px!important;padding:0!important;border:0!important}
+body.v105-student .student-brand{min-height:79px!important;height:auto!important}
+body.v105-student .student-brand .tag-student-logo .tag-official-logo{width:174px!important;height:68px!important}
+body .brand-hero{justify-content:center!important}
+body .brand-hero .brand-icon{width:185px!important;height:77px!important}
+body .brand-hero img.tag-admin-logo{width:185px!important;height:77px!important}
+body .sidebar-brand.tag-brand-only img.tag-official-logo{width:174px!important;height:73px!important}
+.site-header .logo img.tag-official-logo{width:183px!important;height:76px!important}
+.site-footer .footer-logo img.tag-official-logo{width:165px!important;height:68px!important}
+header nav a.brand img.tag-official-logo{width:210px!important;height:83px!important}
+body.v105-stage .stage-head .brand .logo.tag-stage-logo-wrap{width:151px!important;height:53px!important;max-height:53px!important;flex:0 0 151px!important;padding:0!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;transform:none!important;overflow:visible!important}
+body.v105-stage .stage-head .brand .logo img.tag-stage-logo{width:151px!important;height:53px!important;max-width:151px!important;padding:3px 6px!important;border-radius:9px!important}
+body.v105-portal .bo-student-id .bo-badge-header.tag-brand-only{justify-content:center!important;min-height:58px!important;gap:0!important}
+body.v105-portal .bo-student-id .bo-badge-brand.tag-brand-only{display:flex!important;justify-content:center!important;width:100%!important;max-width:100%!important}
+body.v105-portal .bo-student-id .bo-badge-brand.tag-brand-only .tag-card-logo{width:143px!important;height:49px!important;max-width:143px!important}
+.short-link h1.tag-brand-only{margin:0 auto 15px!important;font-size:0!important}
+.short-link h1.tag-brand-only .tag-official-logo{width:220px!important;height:85px!important}
+@media(max-width:680px){
+ body.v105-portal .bo-entry-head .bo-entry-logo.tag-brand-only img.tag-official-logo{width:160px!important;min-width:160px!important;max-width:160px!important;height:65px!important}
+ body.v105-portal .sidebar-brand.tag-brand-only img.tag-official-logo{width:150px!important;height:64px!important}
+ body.v105-studio .sidebar .brand-logo{width:126px!important;flex-basis:126px!important;height:60px!important}
+ body.v105-studio .sidebar .brand-logo img.tag-studio-logo{width:126px!important;height:60px!important}
+ body.v105-student .student-brand .tag-student-logo .tag-official-logo{width:140px!important;height:59px!important}
+ .site-header .logo img.tag-official-logo{width:130px!important;height:56px!important}
+}
+@media print{
+ body.v105-portal .bo-student-id .bo-badge-header.tag-brand-only{min-height:10mm!important;padding:1mm!important}
+ body.v105-portal .bo-student-id .bo-badge-brand.tag-brand-only .tag-card-logo{width:100px!important;height:32px!important;padding:2px 4px!important}
+}
