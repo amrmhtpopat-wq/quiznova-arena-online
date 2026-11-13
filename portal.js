@@ -116,10 +116,8 @@ function renderStudents(){
     const cardCode=esc(student.cardCode||'—');
     const characterName=esc(avatarDisplayName(student.avatar));
     return `<article class="idcard bo-student-id" dir="rtl" aria-label="بطاقة الطالب ${name}">
-      <header class="bo-badge-header">
-        <span class="bo-badge-icon"><img class="tag-official-icon" src="/assets/brand/tag-icon.svg?v=14.0" alt="TAG" width="30" height="30"></span>
-        <div class="bo-badge-brand"><img class="tag-card-logo" src="/assets/brand/tag-logo-v15.png?v=15.0" alt="TEACH AND GAME TAG"><strong>TEACH AND GAME</strong><small>تيتش آند جيم · بطاقة الطالب الذكية</small></div>
-        <span class="bo-badge-edition" title="بطاقة TEACH AND GAME الجديدة" data-card-version="BADJ-TH42">TAG 2026</span>
+      <header class="bo-badge-header tag-brand-only" data-card-version="BADJ-TH42">
+        <div class="bo-badge-brand tag-brand-only"><img class="tag-card-logo" src="/assets/brand/tag-logo-v15.png?v=16.0" alt="شعار TEACH AND GAME – TAG"></div>
       </header>
       <div class="bo-badge-content">
         <div class="bo-badge-avatar"><img class="avatar-pic" loading="lazy" src="${avatarPath(student.avatar)}" alt="شخصية ${characterName}"><span>${characterName}</span></div>
@@ -232,7 +230,7 @@ $('#reissueTeachGameCards').onclick=async()=>{
   try{
     await loadAll();
     const cards=[...document.querySelectorAll('#studentsBoard .bo-student-id')];
-    if(cards.length!==cache.students.length||cards.some(card=>!card.querySelector('.bo-badge-brand strong')?.textContent.includes('TEACH AND GAME'))){
+    if(cards.length!==cache.students.length||cards.some(card=>!card.querySelector('.bo-badge-brand img.tag-card-logo')?.getAttribute('src')?.includes('tag-logo-v15.png'))){
       throw Error('card_refresh_incomplete');
     }
     notify('تم تحديث '+cards.length+' بطاقة باسم TEACH AND GAME؛ رموز الطلاب القديمة لم تتغير. افتح الطباعة لحفظ النسخة الجديدة.');

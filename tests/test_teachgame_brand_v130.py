@@ -67,7 +67,7 @@ class TeachGameBrandChecks(unittest.TestCase):
         targets={
             'booyah-countdown-v121.js':['TEACH AND GAME • استعد للانطلاق'],
             'media_library.js':['مكتبة TEACH AND GAME'],
-            'portal.js':['تيتش آند جيم · بطاقة الطالب الذكية','reissueTeachGameCards',"const base=location.origin+'/student.html?card=';"],
+            'portal.js':['tag-card-logo','reissueTeachGameCards',"const base=location.origin+'/student.html?card=';"],
             'studio-auth.js':['TAG_unsynced_changes.json',"/app.js?v=13.1"],
             'platform_security.py':['TEACH AND GAME | تيتش آند جيم — إعادة تعيين كلمة المرور','حسابك في TEACH AND GAME'],
         }
@@ -88,7 +88,7 @@ class TeachGameBrandChecks(unittest.TestCase):
 
     def test_updated_assets_and_cache_control(self):
         refs={
-          'index.html':['portal.js?v=15.0','booyah-badge-v112.css?v=13.1'],
+          'index.html':['portal.js?v=16.0','booyah-badge-v112.css?v=13.1'],
           'studio.html':['media_library.js?v=13.1','studio-auth.js?v=13.1','booyah-countdown-v121.js?v=13.1'],
           'student.html':['booyah-countdown-v121.js?v=13.1'],
           'stage.html':['booyah-countdown-v121.js?v=13.1']

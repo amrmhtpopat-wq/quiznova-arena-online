@@ -180,7 +180,7 @@ class VisualAndDirectAnswerTests(unittest.TestCase):
         self.assertIn("function pendingStudioDestination()",portal)
         self.assertIn("if(resumeStudioAfterLogin())return",portal)
         self.assertIn("history.replaceState(null,'','#'+view)",app)
-        self.assertIn("portal.js?v=15.0",read('index.html'))
+        self.assertIn("portal.js?v=16.0",read('index.html'))
         self.assertIn("studio-auth.js?v=13.1",read('studio.html'))
         self.assertIn("script.src='/app.js?v=13.1'",studio_auth)
 

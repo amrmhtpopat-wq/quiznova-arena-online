@@ -36,3 +36,39 @@ class TagSeoChecks(unittest.TestCase):
   self.assertEqual((ROOT/'sitemap.xml').read_text(encoding='utf-8').count('<url>'),3)
 if __name__=='__main__':
  unittest.main()
+
+
+class TagLogoOnlyV16(unittest.TestCase):
+ def test_visible_brand_is_logo_only(self):
+  checks={
+   'index.html':['bo-entry-logo tag-brand-only','sidebar-brand tag-brand-only','auth-brand tag-brand-only'],
+   'about.html':['<a class="brand" href="/"><img'],
+   'for-teachers.html':['<a class="logo" href="/"','<a class="footer-logo" href="/"><img'],
+   'studio.html':['class="tag-brand-copy" aria-hidden="true"'],
+   'student.html':['class="logo tag-student-logo"'],
+   'admin.html':['sidebar-brand tag-brand-only'],
+   'stage.html':['stage.js?v=16.0'],
+  }
+  for path,needles in checks.items():
+   text=(ROOT/path).read_text(encoding='utf-8')
+   for word in needles:
+    with self.subTest(page=path,word=word):
+     self.assertIn(word,text)
+  home=(ROOT/'index.html').read_text(encoding='utf-8')
+  start=home.index('<div class="bo-entry-logo tag-brand-only"')
+  end=home.index('</div>',start)
+  self.assertNotIn('<strong>',home[start:end])
+  self.assertNotIn('<span>',home[start:end])
+  self.assertIn('tag-logo-v15.png',home[start:end])
+  js=(ROOT/'stage.js').read_text(encoding='utf-8')
+  head=js[js.index('function head(){'):js.index('let stageLobbySignature')]
+  self.assertIn('tag-stage-logo',head)
+  self.assertNotIn('<small>',head)
+  cards=(ROOT/'portal.js').read_text(encoding='utf-8')
+  start=cards.index('<header class="bo-badge-header tag-brand-only"')
+  end=cards.index('</header>',start)
+  self.assertNotIn('<strong>',cards[start:end])
+  self.assertNotIn('<small>',cards[start:end])
+  self.assertIn('tag-card-logo',cards[start:end])
+  self.assertIn("encodeURIComponent(student.card)",cards)
+  self.assertIn('student.cardCode',cards)
