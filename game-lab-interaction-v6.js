@@ -59,7 +59,7 @@ function decorateInfo(mode){
   const m=text.match(/(\d+)/),remaining=m?Math.max(0,Number(m[1])):total;
   const ratio=Math.max(0,Math.min(100,Math.round(remaining*100/total)));
   dial.style.setProperty('--v6-time',ratio+'%');
-  dial.firstElementChild.textContent=remaining;
+  if(dial.firstElementChild.textContent!==String(remaining))dial.firstElementChild.textContent=String(remaining);
   dial.classList.toggle('v6-critical',remaining<=5);
  }else{
   info.querySelector('.v6-timer')?.remove();
