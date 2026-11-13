@@ -1,0 +1,30 @@
+name: TeachGame Game Lab V2 checks
+
+on:
+  pull_request:
+    paths:
+      - 'studio.html'
+      - 'studio-auth.js'
+      - 'app.js'
+      - 'teachgame-lab-v2.*'
+      - 'tests/test_teachgame_gamelab_v2.py'
+      - '.github/workflows/gamelab-v2-checks.yml'
+  push:
+    branches:
+      - 'feature/teachgame-game-lab-visual-v2-*'
+
+jobs:
+  syntax-and-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check JavaScript syntax
+        run: |
+          node --check teachgame-lab-v2.js
+          node --check studio-auth.js
+          node --check app.js
+      - name: Verify game lab integration
+        run: python -m unittest discover -s tests -p 'test_teachgame_gamelab_v2.py' -v
