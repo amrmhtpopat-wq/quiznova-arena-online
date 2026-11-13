@@ -117,9 +117,9 @@ function renderStudents(){
     const characterName=esc(avatarDisplayName(student.avatar));
     return `<article class="idcard bo-student-id" dir="rtl" aria-label="بطاقة الطالب ${name}">
       <header class="bo-badge-header">
-        <span class="bo-badge-icon" aria-hidden="true">🎮</span>
-        <div class="bo-badge-brand"><strong>TeachGame</strong><small>تيتش جيم · بطاقة الطالب الذكية</small></div>
-        <span class="bo-badge-edition" title="بطاقة TeachGame الجديدة" data-card-version="BADJ-TH42">TG 2026</span>
+        <span class="bo-badge-icon"><img class="tag-official-icon" src="/assets/brand/tag-icon.svg?v=14.0" alt="TAG" width="30" height="30"></span>
+        <div class="bo-badge-brand"><img class="tag-card-logo" src="/assets/brand/tag-logo.png?v=14.0" alt="TEACH AND GAME TAG"><strong>TEACH AND GAME</strong><small>تيتش آند جيم · بطاقة الطالب الذكية</small></div>
+        <span class="bo-badge-edition" title="بطاقة TEACH AND GAME الجديدة" data-card-version="BADJ-TH42">TAG 2026</span>
       </header>
       <div class="bo-badge-content">
         <div class="bo-badge-avatar"><img class="avatar-pic" loading="lazy" src="${avatarPath(student.avatar)}" alt="شخصية ${characterName}"><span>${characterName}</span></div>
@@ -224,18 +224,18 @@ $('#shortenCards').onclick=async()=>{
   }catch(e){notify(err(e))}
   finally{btn.disabled=false}
 };
-// Reissue all existing cards with the current TeachGame identity without deleting or changing a card code.
+// Reissue all existing cards with the current TEACH AND GAME identity without deleting or changing a card code.
 $('#reissueTeachGameCards').onclick=async()=>{
   if(!cache.students.length)return notify('لا توجد بطاقات لإعادة طباعتها.');
   const btn=$('#reissueTeachGameCards'),label=btn.textContent;
-  btn.disabled=true;btn.textContent='جارٍ تحديث بطاقات TeachGame...';
+  btn.disabled=true;btn.textContent='جارٍ تحديث بطاقات TEACH AND GAME...';
   try{
     await loadAll();
     const cards=[...document.querySelectorAll('#studentsBoard .bo-student-id')];
-    if(cards.length!==cache.students.length||cards.some(card=>!card.querySelector('.bo-badge-brand strong')?.textContent.includes('TeachGame'))){
+    if(cards.length!==cache.students.length||cards.some(card=>!card.querySelector('.bo-badge-brand strong')?.textContent.includes('TEACH AND GAME'))){
       throw Error('card_refresh_incomplete');
     }
-    notify('تم تحديث '+cards.length+' بطاقة باسم TeachGame؛ رموز الطلاب القديمة لم تتغير. افتح الطباعة لحفظ النسخة الجديدة.');
+    notify('تم تحديث '+cards.length+' بطاقة باسم TEACH AND GAME؛ رموز الطلاب القديمة لم تتغير. افتح الطباعة لحفظ النسخة الجديدة.');
     $('#printCards').click();
   }catch(error){notify('تعذر تحديث معاينات البطاقات. يرجى تحديث الصفحة والمحاولة مجددًا.')}
   finally{btn.disabled=false;btn.textContent=label}

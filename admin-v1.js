@@ -1,4 +1,4 @@
-/* TeachGame Control Center V1. Admin cookie is HttpOnly; CSRF from separate same-site cookie. */
+/* TEACH AND GAME Control Center V1. Admin cookie is HttpOnly; CSRF from separate same-site cookie. */
 (()=>{
 'use strict';
 const $=id=>document.getElementById(id);

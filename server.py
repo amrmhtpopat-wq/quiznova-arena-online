@@ -490,7 +490,7 @@ class Handler(SimpleHTTPRequestHandler):
                 report=generate_report(room,final_report(room),question_report(room))
             self.send_response(200)
             self.send_header('Content-Type','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-            self.send_header('Content-Disposition',f'attachment; filename="TeachGame_{code}_report.xlsx"')
+            self.send_header('Content-Disposition',f'attachment; filename="TAG_{code}_report.xlsx"')
             self.send_header('Cache-Control','no-store')
             self.send_header('Content-Length',str(len(report)))
             self.end_headers();self.wfile.write(report);return

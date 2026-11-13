@@ -36,9 +36,9 @@ def _mail_reset(recipient,token):
     from urllib.parse import quote
     link=f'{base}/?reset={quote(token,safe="")}'
     message=EmailMessage()
-    message['Subject']='TeachGame | تيتش جيم — إعادة تعيين كلمة المرور'
+    message['Subject']='TEACH AND GAME | تيتش آند جيم — إعادة تعيين كلمة المرور'
     message['From']=os.environ['SMTP_FROM'];message['To']=recipient
-    message.set_content('تم طلب إعادة تعيين كلمة مرور حسابك في TeachGame (تيتش جيم).\n\n'+link+'\n\nينتهي الرابط خلال 20 دقيقة ويُستخدم مرة واحدة. إذا لم تطلب ذلك فتجاهل الرسالة.')
+    message.set_content('تم طلب إعادة تعيين كلمة مرور حسابك في TEACH AND GAME (تيتش آند جيم).\n\n'+link+'\n\nينتهي الرابط خلال 20 دقيقة ويُستخدم مرة واحدة. إذا لم تطلب ذلك فتجاهل الرسالة.')
     host=os.environ['SMTP_HOST'];port=int(os.getenv('SMTP_PORT','587'))
     context=ssl.create_default_context()
     if port==465:
