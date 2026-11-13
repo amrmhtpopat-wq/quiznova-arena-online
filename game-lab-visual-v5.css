@@ -138,3 +138,13 @@ body[data-lab-theme="projector"].game-lab-v5 #builder .v5-question label{color:#
 @media(max-width:700px){body.game-lab-v5 .games{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}body.game-lab-v5 #gameGrid .game .figure{height:142px;min-height:142px}body.game-lab-v5 #gameGrid .game h3{font-size:14px}body.game-lab-v5 #gameGrid .game p{min-height:58px;font-size:11.5px}body.game-lab-v5 #gameGrid .game .buttons{grid-template-columns:1fr}body.game-lab-v5 #gameGrid .game .button{min-height:41px}body.game-lab-v5 .v5-guide{grid-template-columns:1fr}body.game-lab-v5 .v5-question-fields{grid-template-columns:1fr}body.game-lab-v5 .v5-art-grid{transform:scale(.75) rotate(-5deg)}body.game-lab-v5 .v5-wheel{width:120px;height:120px}body.game-lab-v5 .v5-art .v5-board{transform:scale(.83) rotate(-5deg)}}
 @media(max-width:390px){body.game-lab-v5 .games{grid-template-columns:1fr}body.game-lab-v5 #gameGrid .game .figure{height:160px;min-height:160px}body.game-lab-v5 #gameGrid .game .buttons{grid-template-columns:1fr 1fr}}
 @media(prefers-reduced-motion:reduce){body.game-lab-v5 .game,body.game-lab-v5 .v5-art{transition:none!important}}
+
+/* Match the existing V4 game overlay's LIGHT surface; never force white-on-white text. */
+body.game-lab-v5 #playOverlay .playcard{color:#263a61!important}
+body.game-lab-v5 #playOverlay .playbody h3{color:#304472!important}
+body.game-lab-v5 #playOverlay .choice{color:#2d416f!important}
+body.game-lab-v5 #playOverlay .choice.correct{color:#14724e!important}
+body.game-lab-v5 #playOverlay .choice.wrong{color:#af3754!important}
+body.game-lab-v5 #playOverlay .status{color:#3b578c!important}
+body.game-lab-v5 #playOverlay .button.transparent{background:#fff!important;color:#2c4775!important;border-color:#bfd0e6!important}
+body.game-lab-v5 #playOverlay .playhead h2{color:#2c427c!important}
