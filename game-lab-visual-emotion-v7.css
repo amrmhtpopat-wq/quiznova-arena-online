@@ -386,3 +386,11 @@
 #playOverlay.v6-game.v7-game .v7-burst{overflow:hidden!important;max-width:100%!important}
 #playOverlay.v6-game.v7-game .playinfo{min-width:0!important;width:100%;max-width:100%}
 #playOverlay.v6-game.v7-game .playinfo>span:first-child{min-width:0;overflow-wrap:anywhere}
+
+/* Replace the idle empty feedback bar with a friendly instruction. */
+#playOverlay.v7-game #playStatus:empty::before{
+ content:"✨ اختر إجابتك وابدأ التحدي!";
+ color:#d9e9ff;font-size:clamp(13px,1.5vw,17px);font-weight:900;letter-spacing:.01em
+}
+#playOverlay.v7-game[data-v7-mode="fast"] #playStatus:empty::before{content:"⚡ جاهز؟ اختر الإجابة قبل انتهاء الوقت!"}
+#playOverlay.v7-game[data-v7-mode="truth"] #playStatus:empty::before{content:"🎯 قرّر بسرعة: صح أم خطأ؟"}
