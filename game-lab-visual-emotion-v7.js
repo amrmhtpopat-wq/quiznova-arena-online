@@ -139,7 +139,7 @@ function feedback(){
   // but reprints the HUD on the next round. Mirror the awarded 100 points now.
   const score=B.querySelector('.playinfo > b');
   if(score){
-   const initial=Number((score.textContent.match(/\\d+/)||['0'])[0]);
+   const initial=Number((score.textContent.match(/[0-9]+/)||['0'])[0]);
    score.textContent='⭐ '+(initial+100)+' نقطة';
   }
   streak++;celebrate();
