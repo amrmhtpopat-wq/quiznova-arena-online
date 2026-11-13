@@ -394,3 +394,16 @@
 }
 #playOverlay.v7-game[data-v7-mode="fast"] #playStatus:empty::before{content:"⚡ جاهز؟ اختر الإجابة قبل انتهاء الوقت!"}
 #playOverlay.v7-game[data-v7-mode="truth"] #playStatus:empty::before{content:"🎯 قرّر بسرعة: صح أم خطأ؟"}
+
+/* In Fast, keep the round, awarded points and countdown on the same HUD row. */
+#playOverlay.v6-game.v7-game[data-v7-mode="fast"] .playinfo{
+ grid-template-columns:auto minmax(0,1fr) auto!important;
+ grid-template-rows:auto 8px!important;
+}
+#playOverlay.v7-game[data-v7-mode="fast"] .playinfo>span:first-child{grid-column:1!important;grid-row:1!important}
+#playOverlay.v7-game[data-v7-mode="fast"] .playinfo>b{grid-column:2!important;grid-row:1!important;min-width:0}
+#playOverlay.v7-game[data-v7-mode="fast"] .playinfo .v6-timer{grid-column:3!important;grid-row:1!important}
+#playOverlay.v7-game[data-v7-mode="fast"] .playinfo .v6-progress{grid-column:1/-1!important;grid-row:2!important}
+#playOverlay.v7-game[data-v7-mode="fast"] .playinfo .v7-momentum:not([hidden]){
+ grid-column:1/-1!important;grid-row:3!important;justify-self:center
+}
