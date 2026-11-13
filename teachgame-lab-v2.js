@@ -178,7 +178,7 @@
         const q=r.questions[r.selected];html+=qHtml(q);
         if(r.showAnswer)html+='<div class="tg2-feedback">✅ الإجابة: '+esc(answerText(q))+'</div>';
         html+='<div class="tg2-arena-foot">'+(!r.showAnswer?'<button class="tg2-btn tg2-btn-subtle" data-tg-action="reveal">إظهار الإجابة</button>':'')+'<button class="tg2-btn tg2-btn-primary" data-tg-action="wheel-next">'+(r.used.length===r.questions.length?'إنهاء':'سؤال جديد')+'</button></div>';
-      }else html+='<div class="tg2-wheel-wrap"><div id="tg2SpinDisk" class="tg2-wheel" style="transform:rotate('+r.angle+'deg)"></div></div><p style="text-align:center">الأسئلة المتبقية: '+(r.questions.length-r.used.length)+'</p><div class="tg2-arena-foot"><button class="tg2-btn tg2-btn-primary" data-tg-action="spin" '+(r.spinning?'disabled':'')+'>'+(r.spinning?'تدور العجلة...':'🎡 أدر العجلة')+'</button></div>';
+      }else html+='<div class="tg2-wheel-wrap"><div id="tg2SpinDisk" class="tg2-wheel" style="transform:rotate('+(r.spinning?r.spinStart:r.angle)+'deg)"></div></div><p style="text-align:center">الأسئلة المتبقية: '+(r.questions.length-r.used.length)+'</p><div class="tg2-arena-foot"><button class="tg2-btn tg2-btn-primary" data-tg-action="spin" '+(r.spinning?'disabled':'')+'>'+(r.spinning?'تدور العجلة...':'🎡 أدر العجلة')+'</button></div>';
     }else if(r.type==='boxes'){
       html+='<p style="text-align:center">اختر صندوقًا لكشف السؤال الموجود بداخله</p><div class="tg2-box-grid">'+r.questions.map((q,i)=>'<button class="tg2-game-box '+(r.used.includes(i)?'is-done':'')+'" type="button" data-tg-action="box" data-idx="'+i+'" '+(r.used.includes(i)?'disabled':'')+'>'+(r.used.includes(i)?'✓':(i+1))+'</button>').join('')+'</div>';
       if(r.selected>=0){
@@ -197,7 +197,7 @@
     html+='</div><div class="tg2-arena-foot"><button class="tg2-btn tg2-btn-subtle" data-tg-action="close-game">إغلاق اللعبة والعودة للإعدادات</button></div>';
     slot.innerHTML=html;
   }
-  function sourceSelect(newSource){state.source=newSource;state.notice='';state.runtime=null;render()}
+  function sourceSelect(newSource){if(newSource!==state.source)state.quizId='';state.source=newSource;state.notice='';state.runtime=null;render()}
   async function handleAction(action,button){
     if(action==='source'){sourceSelect(button.dataset.source);return}
     if(action==='template'){state.template=button.dataset.template;render();return}
@@ -223,7 +223,7 @@
     }
     const r=state.runtime;if(!r)return;
     if(action==='close-game'){state.runtime=null;render();return}
-    if(action==='restart'){start(currentQuiz());return}
+    if(action==='restart'){start(state.source==='quick'?(existingQuiz()||currentQuiz()):currentQuiz());return}
     if(action==='answer'&&!r.answered){
       const q=r.questions[r.index],correct=q.type==='tf'?(q.correct===true?0:1):Number(Array.isArray(q.correct)?q.correct[0]:q.correct);
       r.chosen=Number(button.dataset.choice);r.answered=true;if(r.chosen===correct)r.score+=100;renderArena();return;
@@ -237,7 +237,7 @@
       const remaining=r.questions.map((_,i)=>i).filter(i=>!r.used.includes(i));
       if(!remaining.length)return;
       r.spinning=true;const selected=remaining[Math.floor(Math.random()*remaining.length)];
-      r.angle+=1440+Math.floor(Math.random()*8)*45;renderArena();
+      r.spinStart=r.angle;r.angle+=1440+Math.floor(Math.random()*8)*45;renderArena();
       requestAnimationFrame(()=>{const wheel=$('#tg2SpinDisk');if(wheel)wheel.style.transform='rotate('+r.angle+'deg)'});
       setTimeout(()=>{if(state.runtime!==r)return;r.spinning=false;r.selected=selected;r.used.push(selected);renderArena()},1500);
       return;
