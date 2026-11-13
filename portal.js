@@ -118,7 +118,7 @@ function renderStudents(){
     return `<article class="idcard bo-student-id" dir="rtl" aria-label="بطاقة الطالب ${name}">
       <header class="bo-badge-header">
         <span class="bo-badge-icon"><img class="tag-official-icon" src="/assets/brand/tag-icon.svg?v=14.0" alt="TAG" width="30" height="30"></span>
-        <div class="bo-badge-brand"><img class="tag-card-logo" src="/assets/brand/tag-logo.png?v=14.0" alt="TEACH AND GAME TAG"><strong>TEACH AND GAME</strong><small>تيتش آند جيم · بطاقة الطالب الذكية</small></div>
+        <div class="bo-badge-brand"><img class="tag-card-logo" src="/assets/brand/tag-logo-v15.png?v=15.0" alt="TEACH AND GAME TAG"><strong>TEACH AND GAME</strong><small>تيتش آند جيم · بطاقة الطالب الذكية</small></div>
         <span class="bo-badge-edition" title="بطاقة TEACH AND GAME الجديدة" data-card-version="BADJ-TH42">TAG 2026</span>
       </header>
       <div class="bo-badge-content">

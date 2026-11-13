@@ -6,7 +6,7 @@ ROOT=Path(__file__).resolve().parents[1]
 BASE='https://quiznova-arena-online.onrender.com'
 class TagSeoChecks(unittest.TestCase):
  def test_logo_files(self):
-  image=(ROOT/'assets/brand/tag-logo.png').read_bytes()
+  image=(ROOT/'assets/brand/tag-logo-v15.png').read_bytes()
   self.assertTrue(image.startswith(b'\x89PNG'))
   self.assertGreater(len(image),1000)
   self.assertIn('<svg',(ROOT/'assets/brand/tag-icon.svg').read_text(encoding='utf-8'))
@@ -16,7 +16,7 @@ class TagSeoChecks(unittest.TestCase):
     html=(ROOT/name).read_text(encoding='utf-8')
     self.assertIn('TEACH AND GAME',html)
     self.assertIn('tag-brand-v2.css',html)
-    self.assertIn('tag-logo.png',html)
+    self.assertIn('tag-logo-v15.png',html)
     dest=BASE+('/' if name=='index.html' else '/'+name)
     self.assertIn('<link rel="canonical" href="'+dest+'">',html)
     self.assertIn('og:image',html)
