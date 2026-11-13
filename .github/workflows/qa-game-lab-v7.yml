@@ -1,0 +1,47 @@
+name: QA Game Lab Visual Emotion V7
+
+on:
+  push:
+    branches: [v10-5-final-candidate]
+    paths:
+      - game-lab-preview.html
+      - game-lab-visual-emotion-v7.css
+      - game-lab-visual-emotion-v7.js
+      - tests/browser_game_lab_visual_emotion_v7.py
+      - .github/workflows/qa-game-lab-v7.yml
+  workflow_dispatch:
+
+jobs:
+  arcade-browser-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate JavaScript syntax
+        run: |
+          node --check game-lab-visual-emotion-v7.js
+          node --check game-lab-interaction-v6.js
+          node --check game-lab-visual-v5.js
+      - name: Install Playwright Chromium
+        run: |
+          python -m pip install playwright
+          python -m playwright install --with-deps chromium
+      - name: Test V7 desktop and phone experiences
+        run: python tests/browser_game_lab_visual_emotion_v7.py
+      - name: Preserve all six V6 game modes
+        run: python tests/browser_game_lab_interaction_v6.py
+      - name: Preserve V5 quiz creation and V4 catalog
+        run: |
+          python tests/browser_game_lab_visual_v5.py
+          python tests/browser_game_lab_v4_design.py
+      - name: Export visual QA screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: game-lab-v7-screenshots
+          path: browser-qa-artifacts/gamelab-v7-*.png
+          if-no-files-found: ignore
+          retention-days: 7
