@@ -20,6 +20,8 @@ class GameLabV2(unittest.TestCase):
     def test_auth_and_navigation_load_after_existing_app(self):
         auth=read('studio-auth.js')
         app=read('app.js')
+        portal=read('portal.js')
+        self.assertIn("'generator','gamelab','builder'", portal)
         self.assertIn("'gamelab'", auth)
         self.assertIn("labScript.src='/teachgame-lab-v2.js?v=2.0'", auth)
         self.assertIn('script.onload=()=>{const labScript=', auth)
