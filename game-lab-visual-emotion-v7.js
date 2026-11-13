@@ -164,7 +164,7 @@ function start(){
  if(title)observer.observe(title,{childList:true,characterData:true});
  if(status)observer.observe(status,{childList:true,subtree:true,characterData:true});
  observer.observe(O,{attributes:true,attributeFilter:['hidden','data-v6-mode']});
- O.addEventListener('click',e=>{if(e.target.closest('#closePlay')){streak=0;lastAward='';lastText='';hideWin()}},true);
+ O.addEventListener('click',e=>{if(e.target.closest('#closePlay'))change('')},true);
  schedule();
 }
 if(D.readyState==='loading')D.addEventListener('DOMContentLoaded',start,{once:true});else start();
