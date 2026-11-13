@@ -54,6 +54,7 @@ function setup(){
 function change(next){
  if(mode===next)return;
  mode=next;streak=0;lastAward='';lastText='';
+ if(!next){clearTimeout(confettiTimer);O.querySelector('.v7-burst')?.remove();}
  O.classList.toggle('v7-game',Boolean(mode));O.classList.remove('v7-urgent','v7-finished');
  if(mode){O.dataset.v7Mode=mode;setup()}else delete O.dataset.v7Mode;
  hideWin();
