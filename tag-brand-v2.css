@@ -1,0 +1,19 @@
+/* TAG V14 official logo on all public and private screens */
+.tag-official-logo,.tag-official-icon{display:block;max-width:100%;object-fit:contain;flex-shrink:0}
+.tag-official-logo{width:205px;height:92px}
+.tag-official-icon{width:48px;height:48px}
+.bo-entry-logo{display:flex!important;align-items:center;gap:9px;flex-wrap:wrap}
+.bo-entry-logo .tag-official-logo{width:170px;height:75px}
+.bo-entry-logo strong{font-size:clamp(13px,1.6vw,21px)}
+.brandmark .tag-official-logo{width:210px;height:130px}
+.sidebar-brand .tag-official-icon,.auth-brand .tag-official-icon{width:44px;height:44px;display:inline-block;vertical-align:middle}
+.site-header .tag-official-logo{width:145px;height:65px}
+.site-header .logo-lines b{font-size:clamp(14px,1.5vw,20px);letter-spacing:0}
+footer .tag-official-icon{width:30px;height:30px;display:inline-block;vertical-align:middle}
+header .brand .tag-official-logo{width:185px;height:76px;display:inline-block;vertical-align:middle}
+.student-brand .tag-official-icon,.brand-logo .tag-official-icon,.brand-icon .tag-official-icon{width:50px;height:50px}
+.stage-head .tag-official-icon{width:48px;height:48px}
+.bo-badge-brand .tag-card-logo{width:88px;height:39px;object-fit:contain;display:block;margin:0 auto}
+.bo-badge-icon .tag-official-icon{width:30px;height:30px}
+@media(max-width:680px){.bo-entry-logo .tag-official-logo{width:125px;height:57px}.site-header .tag-official-logo{width:92px;height:43px}.site-header .logo-lines small{display:none}}
+@media print{.bo-badge-brand .tag-card-logo{width:70px;height:28px}.bo-badge-icon .tag-official-icon{width:24px;height:24px}}
