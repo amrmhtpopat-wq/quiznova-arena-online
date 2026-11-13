@@ -356,3 +356,27 @@
  #playOverlay.v7-game *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
  #playOverlay.v7-game .v7-ambience i{animation:none!important}
 }
+
+/* A single grid cell owns all question copy, including the statement for True/False. */
+#playOverlay.v6-game.v7-game .playbody>.playcard .v7-question-content{
+ grid-area:question!important;min-width:0;align-self:center;position:relative;z-index:2;
+ display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:6px;
+}
+#playOverlay.v7-game .playbody>.playcard .v7-question-content>h3{width:100%;max-width:100%;margin:0!important;grid-area:auto!important}
+#playOverlay.v7-game .playbody>.playcard .v7-question-content>p{margin:0 0 5px!important;grid-area:auto!important;font-size:clamp(12px,1.6vw,17px)!important}
+#playOverlay.v7-game .playbody>.playcard .v7-question-content>h2{
+ grid-area:auto!important;display:block!important;align-self:flex-start;
+ margin:7px 0 0!important;padding:8px 19px!important;font-size:clamp(19px,2.6vw,30px)!important;
+ border-radius:12px!important;box-shadow:0 3px 10px #59459e1e
+}
+#playOverlay.v6-game.v7-game.v7-finished .playbody>.playcard{
+ display:flex!important;flex-direction:column!important;min-height:330px!important;
+ justify-content:center!important;align-items:center!important;gap:13px!important;text-align:center!important;
+}
+#playOverlay.v7-game.v7-finished .playbody>.playcard h3{grid-area:auto!important;text-align:center!important}
+#playOverlay.v7-game.v7-finished .playbody>.playcard h2{grid-area:auto!important}
+#playOverlay.v7-game.v7-finished .playbody>.playcard p{grid-area:auto!important;color:#445a78!important}
+@media(max-width:520px){
+ #playOverlay.v7-game .playbody>.playcard .v7-question-content>p{font-size:11px!important}
+ #playOverlay.v7-game .playbody>.playcard .v7-question-content>h2{font-size:17px!important;margin:3px 0 0!important;padding:4px 9px!important}
+}
