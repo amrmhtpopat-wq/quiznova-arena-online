@@ -79,7 +79,7 @@ try:
       page.locator('#answers button[data-answer="CPU"]').click()
       page.locator('#playStatus[data-v6-result="correct"]').wait_for()
       page.locator('#answers .choice.correct').wait_for()
-      assert page.locator('#playBody .playinfo > b').inner_text().find('100')!=-1
+      page.wait_for_function("()=>document.querySelector('#playBody .playinfo > b')?.textContent.includes('100')",timeout=3000)
       page.locator('#playBody #nextWrap .button').click()
       page.locator('#playBody .v7-mascot svg').wait_for()
       assert page.locator('#playBody .playchoices .choice').count()==4
