@@ -380,3 +380,9 @@
  #playOverlay.v7-game .playbody>.playcard .v7-question-content>p{font-size:11px!important}
  #playOverlay.v7-game .playbody>.playcard .v7-question-content>h2{font-size:17px!important;margin:3px 0 0!important;padding:4px 9px!important}
 }
+
+/* Keep celebratory particles INSIDE the stage so they cannot create
+   a horizontal scroll area when one game follows another on a phone. */
+#playOverlay.v6-game.v7-game .v7-burst{overflow:hidden!important;max-width:100%!important}
+#playOverlay.v6-game.v7-game .playinfo{min-width:0!important;width:100%;max-width:100%}
+#playOverlay.v6-game.v7-game .playinfo>span:first-child{min-width:0;overflow-wrap:anywhere}
