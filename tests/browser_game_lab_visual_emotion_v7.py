@@ -87,6 +87,7 @@ try:
      else:
       page.locator('#truthActions .choice').first.click()
       page.locator('#truthNext .button').wait_for()
+      page.locator('#truthActions .choice.correct').wait_for(timeout=2500)
       assert page.locator('#truthActions .choice.correct').count()==1
       page.locator('#truthNext .button').click()
       page.locator('#playBody .v7-mascot svg').wait_for()
