@@ -519,7 +519,7 @@ async function renderLiveLanding(preferredQuizId=null){
           if(data.ok && data.room?.status !== 'finished'){
             liveRoom=prior.code;liveHostToken=prior.hostToken;liveStageToken=prior.stageToken||'';liveSaved=false;
             $('#liveSetup').classList.add('hidden');$('#liveHost').classList.remove('hidden');
-            renderLiveHost({...prior,join_url:location.origin+'/student.html?code='+prior.code,student_url:location.origin+'/student.html'},DB.quizzes.find(x=>x.id===prior.quizId)||{title:data.room.quizTitle});
+            renderLiveHost({...prior,join_url:(location.hostname==='quiznova-arena-online.onrender.com'?'https://teachgame.onrender.com/play/?code='+prior.code:location.origin+'/student.html?code='+prior.code),student_url:(location.hostname==='quiznova-arena-online.onrender.com'?'https://teachgame.onrender.com/student/':location.origin+'/student.html')},DB.quizzes.find(x=>x.id===prior.quizId)||{title:data.room.quizTitle});
             startLivePolling();return;
           }
           if(data.ok && data.room?.status === 'finished'){
@@ -537,7 +537,7 @@ async function renderLiveLanding(preferredQuizId=null){
     const preferred=available.find(q=>q.id===preferredQuizId);
     if(preferred)$('#liveQuizSelect').value=preferred.id;
     $('#createLiveRoom').disabled=!available.length;
-    $('#serverAddress').textContent=serverInfo.student_url||location.origin+'/student.html';
+    $('#serverAddress').textContent=serverInfo.student_url||(location.hostname==='quiznova-arena-online.onrender.com'?'https://teachgame.onrender.com/student/':location.origin+'/student.html');
     const teamSel=$('#liveTeamCount'); const modeSel=$('#liveMode'); const assignmentSel=$('#liveTeamAssignment');
     $('#liveQuizSelect').onchange=()=>{const selected=DB.quizzes.find(x=>x.id===$('#liveQuizSelect').value);$('#liveSection').value=selected?.section||''};$('#liveQuizSelect').onchange();$('#liveBackground').value=DB.settings?.scene||'cartoon';
     // Result privacy and identity cards are independent. An exam never auto-requires a card.

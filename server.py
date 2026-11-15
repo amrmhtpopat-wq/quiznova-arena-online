@@ -443,7 +443,11 @@ class Handler(SimpleHTTPRequestHandler):
                 return self.send_json({'ok':False,'service':'quiznova-arena','version':'10.5-beta','database':'unavailable'},503)
             return self.send_json({'ok':True,'service':'quiznova-arena','version':'10.5-beta','storage':platform_store.DATABASE_KIND,'database':'ready','rooms':len(ROOMS)})
         if u.path=='/api/status':
-            base=public_base(self); return self.send_json({'ok':True,'mode':('cloud' if IS_CLOUD else 'local'),'student_url':base+'/student.html','teacher_url':base+'/', 'features':['qr','pin','teams','live-analytics','powerups','reactions','internet','auth','student-cards','solo-practice','exams','classwars','mastery','persistent-reports']})
+            base=public_base(self)
+            production=base.rstrip('/')=='https://quiznova-arena-online.onrender.com'
+            share_student='https://teachgame.onrender.com/student/' if production else base+'/student.html'
+            share_teacher='https://teachgame.onrender.com/teacher/' if production else base+'/'
+            return self.send_json({'ok':True,'mode':('cloud' if IS_CLOUD else 'local'),'student_url':share_student,'teacher_url':share_teacher, 'features':['qr','pin','teams','live-analytics','powerups','reactions','internet','auth','student-cards','solo-practice','exams','classwars','mastery','persistent-reports']})
         if u.path=='/api/qr':
             qs=parse_qs(u.query);text=(qs.get('text') or [''])[0]
             if not text or len(text)>2000: return self.send_json({'ok':False,'error':'invalid_qr_content'},400)
@@ -573,7 +577,9 @@ class Handler(SimpleHTTPRequestHandler):
                           'showFeedback':(bool(data.get('showFeedback',True)) and not exam),'powerupsEnabled':(bool(data.get('powerups',True)) and not exam),'examMode':exam,'maxAttempts':max(1,min(5,int(data.get('maxAttempts',1) or 1))),'requireCard':bool(data.get('requireCard',False)),'cooperative':(bool(data.get('cooperative')) and play_type=='teams' and not exam),'teacherId':teacher['id'],'schoolType':teacher.get('school_type','mixed'),'_persisted':False,'variantMode':variant_mode,'bossFinal':bool(variant_mode=='models4' and (game_mode=='boss' or quiz.get('settings',{}).get('bossEnabled'))),
                           'teamNames':TEAM_NAMES[:team_count] if play_type=='teams' else [],'teamAssignment':team_assignment,'reactions':{},'hostToken':host_token,'stageToken':stage_token,'section':section,'background':background,'roundDurationMs':20000,'roundEndReason':''}
             snapshot_room(ROOMS[c])
-            root=public_base(self); base=root+'/student.html'; join=f'{base}?code={c}'
+            root=public_base(self)
+            base=('https://teachgame.onrender.com/play/' if root.rstrip('/')=='https://quiznova-arena-online.onrender.com' else root+'/student.html')
+            join=f'{base}?code={c}'
             return self.send_json({'ok':True,'code':c,'student_url':base,'join_url':join,'playType':play_type,'teamNames':ROOMS[c]['teamNames'],'teamAssignment':team_assignment,'variantMode':variant_mode,'hostToken':host_token,'stageToken':stage_token})
         if u.path=='/api/room/team':
             code=str(data.get('code','')).strip()
