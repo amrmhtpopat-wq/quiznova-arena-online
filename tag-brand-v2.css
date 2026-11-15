@@ -1,19 +1,22 @@
-/* TAG V15 — clear approved official mark: high-contrast light surface, safe responsive sizing. */
+/* TAG V20 — approved official transparent PNG, no logo background, border, padding or card frame. */
 .tag-official-logo,.tag-card-logo{
   display:block!important;box-sizing:border-box!important;object-fit:contain!important;
   object-position:center!important;flex-shrink:0!important;max-width:100%!important;
-  background:linear-gradient(160deg,#fff,#f1f8ff)!important;
-  border:1px solid #bbddf5!important;border-radius:14px!important;
-  padding:6px 9px!important;box-shadow:0 3px 14px rgba(0,15,48,.20)!important;
-  filter:none!important;transform:none!important;opacity:1!important;
+  background:transparent!important;background-image:none!important;
+  border:0!important;border-radius:0!important;outline:0!important;
+  padding:0!important;box-shadow:none!important;
+  filter:drop-shadow(0 1px 2px rgba(212,246,255,.18))!important;
+  transform:none!important;opacity:1!important;
 }
 .tag-official-logo{width:205px!important;height:82px!important}
 .tag-card-logo{width:102px!important;height:44px!important}
 .tag-official-icon{
   display:block!important;box-sizing:border-box!important;object-fit:contain!important;
   width:48px;height:48px;max-width:100%;flex-shrink:0;
-  background:#f8fcff!important;border:1px solid #bbddf5!important;
-  border-radius:12px!important;padding:4px!important;filter:none!important;
+  background:transparent!important;background-image:none!important;
+  border:0!important;border-radius:0!important;outline:0!important;
+  padding:0!important;box-shadow:none!important;
+  filter:drop-shadow(0 1px 2px rgba(212,246,255,.18))!important;
 }
 body.v105-portal .bo-entry-head{min-height:92px!important;overflow:visible!important}
 body.v105-portal .bo-entry-logo{display:flex!important;align-items:center!important;gap:9px!important;flex-wrap:wrap!important;min-width:0!important}
@@ -36,8 +39,8 @@ body.v105-studio .sidebar .brand h1{font-size:16px!important;overflow-wrap:anywh
 .brand-hero .brand-icon{width:142px!important;height:66px!important;background:transparent!important;box-shadow:none!important;border:0!important;border-radius:0!important}
 .brand-hero .tag-admin-logo{width:142px!important;height:66px!important}
 .stage-head .tag-official-icon{width:42px!important;height:42px!important}
-.bo-badge-icon .tag-official-icon{width:30px!important;height:30px!important;border-radius:7px!important;padding:2px!important}
-.bo-badge-brand .tag-card-logo{width:102px!important;height:41px!important;margin:0 auto 2px!important;border-radius:9px!important;padding:3px 5px!important;box-shadow:none!important}
+.bo-badge-icon .tag-official-icon{width:30px!important;height:30px!important;border-radius:0!important;padding:0!important}
+.bo-badge-brand .tag-card-logo{width:102px!important;height:41px!important;margin:0 auto 2px!important;border-radius:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important}
 .short-link h1 .tag-official-logo{margin:0 auto 13px!important}
 @media(max-width:680px){
   body.v105-portal .bo-entry-head{min-height:70px!important;gap:10px!important;flex-wrap:wrap!important}
@@ -51,7 +54,7 @@ body.v105-studio .sidebar .brand h1{font-size:16px!important;overflow-wrap:anywh
   body.v105-studio .sidebar .brand-logo img.tag-studio-logo{width:106px!important;height:53px!important}
 }
 @media print{
-  .bo-badge-brand .tag-card-logo{width:76px!important;height:30px!important;border:1px solid #bbb!important;padding:2px!important}
+  .bo-badge-brand .tag-card-logo{width:76px!important;height:30px!important;border:0!important;padding:0!important}
   .bo-badge-icon .tag-official-icon{width:25px!important;height:25px!important}
   .tag-official-logo,.tag-card-logo{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
@@ -79,7 +82,7 @@ body .sidebar-brand.tag-brand-only img.tag-official-logo{width:174px!important;h
 .site-footer .footer-logo img.tag-official-logo{width:165px!important;height:68px!important}
 header nav a.brand img.tag-official-logo{width:210px!important;height:83px!important}
 body.v105-stage .stage-head .brand .logo.tag-stage-logo-wrap{width:151px!important;height:53px!important;max-height:53px!important;flex:0 0 151px!important;padding:0!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;transform:none!important;overflow:visible!important}
-body.v105-stage .stage-head .brand .logo img.tag-stage-logo{width:151px!important;height:53px!important;max-width:151px!important;padding:3px 6px!important;border-radius:9px!important}
+body.v105-stage .stage-head .brand .logo img.tag-stage-logo{width:151px!important;height:53px!important;max-width:151px!important;padding:0!important;border-radius:0!important}
 body.v105-portal .bo-student-id .bo-badge-header.tag-brand-only{justify-content:center!important;min-height:58px!important;gap:0!important}
 body.v105-portal .bo-student-id .bo-badge-brand.tag-brand-only{display:flex!important;justify-content:center!important;width:100%!important;max-width:100%!important}
 body.v105-portal .bo-student-id .bo-badge-brand.tag-brand-only .tag-card-logo{width:143px!important;height:49px!important;max-width:143px!important}
@@ -95,32 +98,16 @@ body.v105-portal .bo-student-id .bo-badge-brand.tag-brand-only .tag-card-logo{wi
 }
 @media print{
  body.v105-portal .bo-student-id .bo-badge-header.tag-brand-only{min-height:10mm!important;padding:1mm!important}
- body.v105-portal .bo-student-id .bo-badge-brand.tag-brand-only .tag-card-logo{width:100px!important;height:32px!important;padding:2px 4px!important}
+ body.v105-portal .bo-student-id .bo-badge-brand.tag-brand-only .tag-card-logo{width:100px!important;height:32px!important;padding:0!important;border:0!important}
 }
 
 
-/* TAG V17 — replace the detached pure-white logo rectangle with a cool cyan/blue glass surface.
-   Preserve the approved TAG artwork and its original navy/green colors. */
-.tag-official-logo,.tag-card-logo{
-  background:linear-gradient(135deg,rgba(127,198,229,.92) 0%,rgba(178,228,237,.88) 58%,rgba(126,211,223,.90) 100%)!important;
-  border:1px solid rgba(81,217,233,.56)!important;
-  border-radius:13px!important;
-  box-shadow:inset 0 1px 0 rgba(222,250,255,.36),0 3px 16px rgba(0,83,136,.16)!important;
-  filter:none!important;
-  padding:5px 8px!important;
-}
-.tag-official-icon{
-  background:linear-gradient(140deg,rgba(142,203,226,.94),rgba(152,226,220,.90))!important;
-  border-color:rgba(86,218,224,.56)!important;
-  box-shadow:0 2px 10px rgba(0,73,135,.14)!important;
-}
-body.v105-portal .bo-entry-logo.tag-brand-only .tag-official-logo,
-body.v105-portal .sidebar-brand.tag-brand-only .tag-official-logo,
-body.v105-studio .sidebar .tag-official-logo{
-  box-shadow:0 4px 17px rgba(0,114,177,.17)!important;
-}
+/* TAG V20: ensure printed student badges also retain the transparent mark. */
 @media print{
- .tag-official-logo,.tag-card-logo,.tag-official-icon{
-  background:#b4dfe9!important;print-color-adjust:exact;-webkit-print-color-adjust:exact;
+ .tag-official-logo,.tag-card-logo,.tag-official-icon,
+ body.v105-portal .bo-student-id .bo-badge-brand .tag-card-logo{
+  background:transparent!important;border:0!important;box-shadow:none!important;
+  padding:0!important;border-radius:0!important;filter:none!important;
+  print-color-adjust:exact;-webkit-print-color-adjust:exact;
  }
 }
