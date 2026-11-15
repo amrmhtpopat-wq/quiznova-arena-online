@@ -49,7 +49,7 @@ jobs:
         run: |
           python - <<'PY'
           from game_lab_pro import explicit_qa_draft
-          text='[صفحة 2]\\nس: ما عاصمة الأردن؟\\nج: عمّان\\n[صفحة 3]\\nس: كم حاصل ضرب 5 في 6؟ ج: 30'
+          text='[صفحة 2]\nس: ما عاصمة الأردن؟\nج: عمّان\n[صفحة 3]\nس: كم حاصل ضرب 5 في 6؟ ج: 30'
           rows=explicit_qa_draft(text,8)
           assert len(rows)==2, rows
           assert [row['sourcePage'] for row in rows]==[2,3], rows
