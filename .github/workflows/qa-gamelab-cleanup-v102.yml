@@ -1,0 +1,75 @@
+name: QA Game Lab V10.2 UI Cleanup Hotfix
+
+on:
+  push:
+    branches: [feature/qa-v102-ui-cleanup-20261116]
+    paths:
+      - game-lab-preview.html
+      - game-lab-overhaul-v101.js
+      - game-lab-cleanup-v102.js
+      - game-lab-cleanup-v102.css
+      - tests/browser_game_lab_cleanup_v102.py
+      - tests/browser_game_lab_visual_v101.py
+      - .github/workflows/qa-gamelab-cleanup-v102.yml
+  pull_request:
+    branches: [v10-5-final-candidate]
+  workflow_dispatch:
+
+jobs:
+  qa-v102:
+    runs-on: ubuntu-latest
+    timeout-minutes: 34
+    env:
+      QUIZNOVA_ALLOW_EPHEMERAL: 'yes'
+      PYTHONPATH: .
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile Python and all new plus existing game JavaScript
+        run: |
+          node --check game-lab-cleanup-v102.js
+          node --check game-lab-overhaul-v101.js
+          python -m py_compile tests/browser_game_lab_cleanup_v102.py tests/browser_game_lab_visual_v101.py
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          src=Path('game-lab-preview.html').read_text(encoding='utf-8')
+          inline=[block for block in re.findall(r'<script(?:\s[^>]*)?>([\s\S]*?)</script>',src) if 'function wheelGame(' in block]
+          assert len(inline)==1
+          Path('/tmp/qa-v102-game.js').write_text(inline[0],encoding='utf-8')
+          assert 'game-lab-cleanup-v102.css?v=10.2.0' in src
+          assert 'game-lab-cleanup-v102.js?v=10.2.0' in src
+          PY
+          node --check /tmp/qa-v102-game.js
+      - name: Install real Chromium and QR encoder
+        run: |
+          python -m pip install playwright 'qrcode>=8,<9'
+          python -m playwright install --with-deps chromium
+      - name: V10.2 actual-server UI — 24 modes, no overlays, winning wheel and phone
+        run: python tests/browser_game_lab_cleanup_v102.py
+      - name: V10.1 responsive theme, readable wheel and 24 modes regression
+        run: python tests/browser_game_lab_visual_v101.py
+      - name: V10 same-origin creator preview security regression
+        run: python tests/browser_game_lab_realserver_preview_v10.py
+      - name: 24 template creator and publish-safe preview tests
+        run: python tests/browser_game_lab_creator_v8.py
+      - name: V9 teacher dashboard and games
+        run: python tests/browser_game_lab_complete_v9.py
+      - name: V10 multiplayer card, grade and results regressions
+        run: python tests/test_game_lab_classroom_v10.py
+      - name: V4–V7 preview interaction and visual regressions
+        run: |
+          python tests/browser_game_lab_visual_emotion_v7.py
+          python tests/browser_game_lab_interaction_v6.py
+          python tests/browser_game_lab_visual_v5.py
+          python tests/browser_game_lab_v4_design.py
+      - name: QA screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: teachgame-gamelab-v102-ui-screenshots
+          path: browser-qa-artifacts/gamelab-v102-*.png
+          if-no-files-found: ignore
+          retention-days: 7
