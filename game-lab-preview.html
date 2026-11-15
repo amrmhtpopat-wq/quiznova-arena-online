@@ -29,6 +29,7 @@
 <link rel="stylesheet" href="/game-lab-interaction-v6.css?v=6.0">
 <link rel="stylesheet" href="/game-lab-visual-emotion-v7.css?v=7.0">
 <link rel="stylesheet" href="/game-lab-premium-v9.css?v=9.0">
+<link rel="stylesheet" href="/game-lab-overhaul-v101.css?v=10.1.0">
 </head>
 <body>
 <div class="mobilebar"><b>🎮 BOOYAHJO GAME LAB</b><button class="button alt small" id="mobileMenu" aria-label="القائمة">☰</button></div><div id="shade" class="shade"></div>
@@ -231,8 +232,8 @@ function container(html){$('playBody').innerHTML=html}
 function shuffle(ar){const out=[...ar];for(let i=out.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[out[i],out[j]]=[out[j],out[i]]}return out}
 function stopClock(){if(timer){clearInterval(timer);timer=null}}
 function updateCounter(v){$('playCounter').textContent=v}
-function openGame(id){const g=catalog.find(x=>x.id===id);if(!g||!g.ready)return;if(!apply())return;type=id;round=0;score=0;selection=null;openBox=new Set();stopClock();$('playOverlay').dataset.v9Mode=id;$('playOverlay').hidden=false;document.body.style.overflow='hidden';$('playTitle').textContent=g.icon+' '+g.name;status('');renderGame()}
-function closeGame(){stopClock();window.BOOYAH_EXTRA?.stop();mixerState=null;$('playOverlay').hidden=true;delete $('playOverlay').dataset.v9Mode;document.body.style.overflow='';type=null}
+function openGame(id){const g=catalog.find(x=>x.id===id);if(!g||!g.ready)return;if(!apply())return;type=id;round=0;score=0;selection=null;openBox=new Set();stopClock();$('playOverlay').dataset.v9Mode=id;$('playOverlay').hidden=false;document.body.style.overflow='hidden';$('playTitle').textContent=g.icon+' '+g.name;status('');$('playOverlay').classList.add('v101-overhaul');$('playOverlay').scrollTop=0;renderGame()}
+function closeGame(){stopClock();window.BOOYAH_EXTRA?.stop();mixerState=null;$('playOverlay').hidden=true;delete $('playOverlay').dataset.v9Mode;document.body.style.overflow='';$('playOverlay').classList.remove('v101-overhaul');type=null}
 function renderGame(){
  stopClock();status('');
  if(!content.length)return;
@@ -302,33 +303,83 @@ function pairsGame(){
  paint();
 }
 function wheelGame(){
- const asked=new Set();
- wheelTurn=0;
+ // Up to eight readable questions on the wheel at once; never reuse a question.
+ const remaining=content.map((_,i)=>i),palette=['#ffd176','#78dcc4','#9fbaff','#f4a6c9','#aab1fc','#fbb58a','#a4e4f5','#c9b4f2'];
+ let spinning=false,selected=null,rotation=0,answered=0;
+ const reduced=()=>window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
  updateCounter('0 / '+content.length);
- container('<div class="playcard"><h3>🎡 عجلة الأسئلة العشوائية</h3><p>كل دورة تختار سؤالًا جديدًا بدون تكرار. اكشف الإجابة ثم انتقل للسؤال التالي.</p><div class="wheel" id="spinWheel"><strong>TeachGame</strong></div><div class="buttons" style="justify-content:center" id="wheelArea"></div><div id="wheelReveal" style="margin-top:12px"></div></div>');
- const area=$('wheelArea');
- const btn=textButton('🎡 أدر العجلة',()=>{
-  if(asked.size>=content.length)return;
-  btn.disabled=true;wheelTurn+=1440+Math.floor(Math.random()*360);
-  $('spinWheel').style.transform='rotate('+wheelTurn+'deg';status('🎡 العجلة تدور...');
-  const t=setTimeout(()=>{
-   if(type!=='wheel'||!$('wheelReveal'))return;
-   const available=content.map((r,i)=>i).filter(i=>!asked.has(i));
-   const ix=available[Math.floor(Math.random()*available.length)];
-   const row=content[ix];asked.add(ix);
-   $('wheelReveal').replaceChildren();
-   const question=document.createElement('h3');question.textContent=row.q;
-   $('wheelReveal').append(question);
-   $('wheelReveal').append(textButton('👀 كشف الإجابة',()=>{
-    status('الإجابة: '+row.a+(row.explanation?' — '+row.explanation:''));
-    score+=10;updateCounter(asked.size+' / '+content.length);
-    btn.disabled=false;btn.textContent=asked.size===content.length?'🏆 عرض النتيجة':'🎡 السؤال التالي';
-    if(asked.size===content.length){btn.onclick=gameEnd}
-   },'button alt'));
-   status('✨ سؤال جديد من العجلة');
-  },3150);
- },'button gold');
- area.append(btn);
+ container('<div class="playinfo v101-wheel-info"><span>🎡 الأسئلة المتبقية <strong id="wheelLeft">'+remaining.length+'</strong></span><b id="wheelScore">⭐ 0 نقطة</b></div>'+
+ '<div class="v101-wheel-stage"><section class="playcard v101-wheel-board"><div class="v101-wheel-caption"><h3>🎡 عجلة الأسئلة</h3><p>اقرأ الأسئلة من قطاعات العجلة. كل سؤال يتم اختياره يختفي بعد توقفها.</p></div>'+
+ '<div class="v101-wheel-frame"><div class="v101-wheel-pointer" aria-hidden="true"></div><div class="wheel v101-wheel" id="spinWheel" role="img" aria-label="عجلة الأسئلة">'+
+ '<div id="wheelRotor" class="v101-wheel-rotor"></div><div class="v101-wheel-hub" aria-hidden="true">TG <span>🎲</span></div></div></div>'+
+ '<div class="buttons v101-wheel-buttons" id="wheelArea"></div><small id="wheelTotal" class="v101-wheel-total"></small></section>'+
+ '<section class="playcard v101-wheel-question" id="wheelReveal" aria-live="polite"><span class="v101-question-chip">✨ سؤال الحظ</span>'+
+ '<div class="v101-wheel-placeholder"><div class="v101-wheel-dice" aria-hidden="true">🎲</div><p>السؤال الذي تختاره العجلة سيظهر هنا بحجم كبير وواضح.</p></div></section></div>');
+ const wheel=$('spinWheel'),rotor=$('wheelRotor'),reveal=$('wheelReveal'),actions=$('wheelArea'),left=$('wheelLeft');
+ const polar=(a,r)=>({x:160+Math.cos(a*Math.PI/180)*r,y:160+Math.sin(a*Math.PI/180)*r});
+ const textLines=(str,limit)=>{
+  const words=String(str).trim().split(/\s+/).filter(Boolean),lines=[''];
+  for(const word of words){
+   let i=lines.length-1;
+   if(lines[i]&&[...lines[i]+' '+word].length>limit&&lines.length<2){lines.push('');i++}
+   lines[i]+=(lines[i]?' ':'')+word;
+  }
+  return lines.map(t=>[...t].length>limit?[...t].slice(0,limit-1).join('')+'…':t);
+ };
+ function drawWheel(){
+  const items=remaining.slice(0,8);rotor.replaceChildren();
+  if(!items.length){wheel.classList.add('v101-wheel-done');$('wheelTotal').textContent='🏆 انتهت جميع الأسئلة';return}
+  wheel.classList.remove('v101-wheel-done');
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 320 320');svg.classList.add('v101-wheel-svg');svg.setAttribute('aria-hidden','true');
+  items.forEach((ix,j)=>{
+   const n=items.length,start=-90+j*360/n,end=-90+(j+1)*360/n,center=(start+end)/2;
+   const p1=polar(start,147),p2=polar(end,147),point=polar(center,n>=7?95:90);
+   const group=document.createElementNS(svg.namespaceURI,'g');group.setAttribute('data-question',String(ix));
+   const sector=document.createElementNS(svg.namespaceURI,'path');
+   sector.setAttribute('d','M160 160 L'+p1.x.toFixed(3)+' '+p1.y.toFixed(3)+' A147 147 0 '+(end-start>180?1:0)+' 1 '+p2.x.toFixed(3)+' '+p2.y.toFixed(3)+' Z');
+   sector.setAttribute('fill',palette[j%palette.length]);sector.setAttribute('stroke','#fff');sector.setAttribute('stroke-width','2.5');group.append(sector);
+   const title=document.createElementNS(svg.namespaceURI,'title');title.textContent=content[ix].q;group.append(title);
+   const text=document.createElementNS(svg.namespaceURI,'text');text.setAttribute('x',point.x.toFixed(2));text.setAttribute('y',(point.y-6).toFixed(2));text.setAttribute('class','v101-slice-label');text.setAttribute('text-anchor','middle');text.setAttribute('font-size',n>=7?'10.5':n>=5?'12':'13');
+   textLines(content[ix].q,n>=7?12:n>=5?15:18).forEach((line,k)=>{
+    const span=document.createElementNS(svg.namespaceURI,'tspan');span.setAttribute('x',point.x.toFixed(2));span.setAttribute('dy',k===0?'0':'15');span.textContent=line;text.append(span);
+   });group.append(text);svg.append(group);
+  });
+  const rim=document.createElementNS(svg.namespaceURI,'circle');rim.setAttribute('cx','160');rim.setAttribute('cy','160');rim.setAttribute('r','149');rim.setAttribute('fill','none');rim.setAttribute('stroke','#fff6d8');rim.setAttribute('stroke-width','7');svg.append(rim);rotor.append(svg);
+  rotor.style.transition='none';rotor.style.transform='rotate(0deg)';rotation=0;void rotor.offsetHeight;
+  $('wheelTotal').textContent='تظهر '+items.length+' أسئلة في العجلة • '+remaining.length+' متبقية من '+content.length;
+  wheel.setAttribute('aria-label',items.map(ix=>content[ix].q).join('، '));left.textContent=String(remaining.length);
+ }
+ function spin(){
+  if(spinning||selected!==null)return;
+  const items=remaining.slice(0,8);if(!items.length)return gameEnd();
+  spinning=true;spinButton.disabled=true;
+  const position=Math.floor(Math.random()*items.length),ix=items[position];
+  const aim=(360-((position+.5)*360/items.length)%360)%360;
+  rotation+=360*(reduced()?0:4)+((aim-rotation%360+360)%360);
+  rotor.style.transition=reduced()?'transform .01s linear':'transform 2.2s cubic-bezier(.16,.75,.18,1)';
+  rotor.style.transform='rotate('+rotation+'deg)';status('🎡 العجلة تدور وتختار سؤالًا جديدًا...');
+  setTimeout(()=>{
+   if(type!=='wheel'||$('spinWheel')!==wheel)return;
+   spinning=false;selected=ix;const at=remaining.indexOf(ix);if(at>=0)remaining.splice(at,1);
+   drawWheel();
+   reveal.replaceChildren();
+   const chip=document.createElement('span');chip.className='v101-question-chip';chip.textContent='🎯 السؤال '+(answered+1)+' من '+content.length;
+   const heading=document.createElement('h3');heading.textContent=content[ix].q;
+   const detail=document.createElement('p');detail.className='v101-wheel-guidance';detail.textContent='فكّر في إجابتك، ثم اكشف الإجابة الصحيحة.';
+   reveal.append(chip,heading,detail);
+   const button=textButton('👀 كشف الإجابة',()=>{
+    if(selected===null||type!=='wheel')return;
+    const row=content[selected];selected=null;answered++;score+=10;button.remove();
+    const answer=document.createElement('div');answer.className='v101-wheel-answer';answer.textContent='✅ الإجابة: '+row.a+(row.explanation?' • '+row.explanation:'');reveal.append(answer);
+    updateCounter(answered+' / '+content.length);$('wheelScore').textContent='⭐ '+score+' نقطة';
+    status('✅ الإجابة: '+row.a+(row.explanation?' — '+row.explanation:''));
+    spinButton.disabled=false;spinButton.textContent=remaining.length?'🎡 أدر للسؤال التالي':'🏆 عرض النتيجة';
+    if(!remaining.length)spinButton.onclick=gameEnd;
+   },'button gold v101-wheel-reveal');
+   reveal.append(button);button.focus({preventScroll:true});status('✨ سؤال جديد من العجلة');
+  },reduced()?70:2290);
+ }
+ const spinButton=textButton('🎡 أدر العجلة',spin,'button gold v101-spin-button');actions.append(spinButton);drawWheel();
 }
 function boxesGame(){
  const rows=content.slice(0,12),revealed=new Set(),solved=new Set();
@@ -399,4 +450,5 @@ renderCatalog();apply();refreshSaved();
 <script defer src="/game-lab-visual-emotion-v7.js?v=7.0"></script>
 <script defer src="/game-lab-creator-bridge-v8.js?v=8.0"></script>
 <script defer src="/game-lab-premium-v9.js?v=9.0"></script>
+<script defer src="/game-lab-overhaul-v101.js?v=10.1.0"></script>
 </body></html>
