@@ -1,0 +1,71 @@
+name: QA Game Lab V10.1 Visual and UX Overhaul
+
+on:
+  push:
+    branches: [feature/qa-visual-ux-overhaul-v101-20261115]
+    paths:
+      - game-lab-preview.html
+      - game-lab-overhaul-v101.css
+      - game-lab-overhaul-v101.js
+      - tests/browser_game_lab_visual_v101.py
+      - .github/workflows/qa-gamelab-visual-v101.yml
+  pull_request:
+    branches: [v10-5-final-candidate]
+  workflow_dispatch:
+
+jobs:
+  qa-visual:
+    runs-on: ubuntu-latest
+    timeout-minutes: 29
+    env:
+      PYTHONPATH: .
+      QUIZNOVA_ALLOW_EPHEMERAL: 'yes'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate JS, CSS assets and Python syntax
+        run: |
+          node --check game-lab-overhaul-v101.js
+          python -m py_compile tests/browser_game_lab_visual_v101.py
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          source=Path('game-lab-preview.html').read_text(encoding='utf-8')
+          scripts=re.findall(r'<script(?:\s[^>]*)?>([\s\S]*?)</script>',source)
+          scripts=[js for js in scripts if 'function wheelGame(' in js]
+          assert len(scripts)==1, len(scripts)
+          Path('/tmp/teachgame-v101-preview.js').write_text(scripts[0],encoding='utf-8')
+          for file in ('game-lab-overhaul-v101.js','game-lab-overhaul-v101.css'):
+              assert '/'+file+'?' in source
+          PY
+          node --check /tmp/teachgame-v101-preview.js
+      - name: Setup real browser and QR runtime dependencies
+        run: |
+          python -m pip install playwright 'qrcode>=8,<9'
+          python -m playwright install --with-deps chromium
+      - name: V10.1 real-server frame, question wheel, 24 games and color themes
+        run: python tests/browser_game_lab_visual_v101.py
+      - name: Existing V10 frame-security regression
+        run: python tests/browser_game_lab_realserver_preview_v10.py
+      - name: Existing V8 editor and all 24 authoring/preview flows
+        run: python tests/browser_game_lab_creator_v8.py
+      - name: V9 teacher dashboard and custom games
+        run: python tests/browser_game_lab_complete_v9.py
+      - name: Classroom V10 card/grade/live backend contract
+        run: python tests/test_game_lab_classroom_v10.py
+      - name: Old V4–V7 preview design and interactions
+        run: |
+          python tests/browser_game_lab_visual_emotion_v7.py
+          python tests/browser_game_lab_interaction_v6.py
+          python tests/browser_game_lab_visual_v5.py
+          python tests/browser_game_lab_v4_design.py
+      - name: Collect screenshots for visual review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: teachgame-v101-visual-QA
+          path: browser-qa-artifacts/teachgame-ux-v101-*.png
+          retention-days: 7
+          if-no-files-found: ignore
