@@ -22,3 +22,13 @@
  .v10-room-actions .btn{flex:1 1 100%}
  .v10-classroom-launch{padding:14px;border-radius:16px}
 }
+.v10-room-history{display:grid;gap:9px;border-top:1px dashed #c3d6f1;padding-top:13px;margin-top:15px}
+.v10-room-history[hidden]{display:none!important}
+.v10-room-record{display:flex;align-items:center;justify-content:space-between;gap:12px;
+ background:#fff;border:1px solid #d7e5f4;border-radius:13px;padding:12px}
+.v10-room-record strong,.v10-room-record small{display:block}
+.v10-room-record strong{font-size:13px;color:#24466d}
+.v10-room-record small{font-size:11px;color:#7588a0}
+@media(max-width:560px){.v10-room-record{align-items:stretch;flex-direction:column}
+ .v10-room-record .btn{width:100%}
+}
