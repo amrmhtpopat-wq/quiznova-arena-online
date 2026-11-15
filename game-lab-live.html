@@ -213,7 +213,7 @@ $('teacherEnd').onclick=()=>{if(confirm('هل تريد إنهاء المبارا
 let currentReport=null;
 const secureCSV=v=>{
  let text=String(v??'');
- if(/^[\\s]*[=+\\-@]/.test(text))text="'"+text;
+ if(/^\s*[=+\-@]/.test(text))text="'"+text;
  return '"'+text.replace(/"/g,'""')+'"';
 };
 function displayRoomReport(data){
@@ -252,7 +252,7 @@ function csvRoomReport(){
  const header=['الترتيب','اسم الطالب','الشعبة','الصحيح','الأسئلة','العلامة من 100','النقاط','الفريق'];
  const ordered=[...currentReport.results].sort((a,b)=>b.score-a.score||b.correct-a.correct);
  const values=[header,...ordered.map((r,i)=>[i+1,r.name,r.className,r.correct,r.total,r.percent,r.score,r.team])];
- const csv='\\uFEFF'+values.map(row=>row.map(secureCSV).join(',')).join('\\r\\n');
+ const csv='\uFEFF'+values.map(row=>row.map(secureCSV).join(',')).join('\r\n');
  const href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
  const anchor=document.createElement('a');anchor.href=href;anchor.download='TeachGame-Classroom-'+code+'.csv';
  document.body.append(anchor);anchor.click();anchor.remove();setTimeout(()=>URL.revokeObjectURL(href),1500);
