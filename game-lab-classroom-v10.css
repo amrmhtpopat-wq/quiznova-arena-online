@@ -118,7 +118,7 @@ body.lab-v4-live{
 .lab-v4-live .stage-left>.question-card{min-height:0}
 .lab-v4-live .ranks .rank:first-child{border-color:#fed980;background:#776a3661}
 @keyframes tg10spin{from{transform:rotate(-810deg) scale(.72)}to{transform:rotate(0deg) scale(1)}}
-@keyframes tg10pulse{from{transform:translateY(-3px)}to{transform:translateY(4px)}}
+@keyframes tg10pulse{from{box-shadow:0 5px 0 #b07c43,0 0 0 0 #fff2a44d}to{box-shadow:0 5px 0 #b07c43,0 0 22px 8px #fff2a48c}}
 @media(max-width:720px){
  .lab-v4-live .wrap{padding:8px!important;gap:8px}
  .lab-v4-live .top{gap:6px;padding-bottom:7px}
