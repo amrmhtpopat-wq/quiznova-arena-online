@@ -187,17 +187,27 @@ def join(h,data):
     student=solo_api.find_student(card) if card else None
     if card and not student:return error(h,'invalid_card',403)
     if student and student['teacher_id']!=room['teacher_id']:return error(h,'card_other_teacher',403)
+    if s.get('cardRequired') and not student:return error(h,'card_required',403)
+    if student and s.get('enforceGrade') and s.get('targetGrade'):
+        grade=s['targetGrade'].strip().casefold()
+        numeric={'4':'الرابع','5':'الخامس','6':'السادس','7':'السابع',
+                 '8':'الثامن','9':'التاسع','10':'العاشر',
+                 '11':'الحادي عشر','12':'الثاني عشر'}
+        target=numeric.get(grade,grade)
+        student_class=str(student['class_name']).casefold()
+        if target not in student_class and grade not in student_class:
+            return error(h,'card_wrong_grade',403)
     name=student['name'] if student else str(data.get('guestName') or '').strip()[:40]
     if len(name)<2:return error(h,'name_required')
-    if student:
-        old=db.query('SELECT id FROM game_lab_live_players WHERE code=? AND student_id=?',
-                     (code,student['id']))
-        if old:return error(h,'already_joined',409)
     token=secrets.token_urlsafe(36)
     with db.DB_LOCK:
         with db.db_connection() as conn:
             cur=conn.execute(db.sql('SELECT COUNT(*) FROM game_lab_live_players WHERE code=?'),(code,))
             count=int(cur.fetchone()[0])
+            if student:
+                cur.execute(db.sql('SELECT id FROM game_lab_live_players WHERE code=? AND student_id=?'),
+                            (code,student['id']))
+                if cur.fetchone():return error(h,'already_joined',409)
             if count>=200:return error(h,'room_full',403)
             team=s['teamNames'][count%len(s['teamNames'])] if s['teams'] else ''
             conn.execute(db.sql('INSERT INTO game_lab_live_players '
@@ -272,22 +282,66 @@ def answer(h,data):
             cols=[x[0] for x in cur.description];player=dict(zip(cols,found))
             answers=db.jload(player['answers'],{})
             if str(idx) in answers:return error(h,'already_answered',409)
-            expected=s['rows'][idx]['a']
-            valid_options=question(s)['options']
-            if choice not in valid_options:return error(h,'invalid_answer')
+            q=question(s,with_answers=True)
+            expected=q['correctAnswer']
+            if choice not in q['options']:return error(h,'invalid_answer')
             correct=choice.casefold()==expected.casefold()
-            # Deadline score is never reported to clients until the server records it.
-            gained=(100+max(0,int(s['deadline'])-stamp())*2) if correct else 0
-            answers[str(idx)]={'correct':correct,'answer':choice,'score':gained}
+            # Time bonus is for Fast only; all points are server-authoritative.
+            gained=(100+max(0,int(s['deadline'])-stamp())*4
+                    if s['mode']=='fast' else 100) if correct else 0
+            answers[str(idx)]={'correct':correct,'answer':choice,'score':gained,
+                               'group':str(s['rows'][idx].get('g') or 'عام')[:60],
+                               'at':stamp()}
             conn.execute(db.sql('UPDATE game_lab_live_players SET answers=?,score=score+?,updated_at=? '
                      'WHERE id=?'),(db.jdump(answers),gained,stamp(),player['id']))
     h.send_json({'ok':True,'submitted':True})
     return True
 
 
+def room_report(room,players):
+    """Completed/in-progress room report, available to the owning teacher only."""
+    s=state(room);rows=s.get('rows',[])
+    skills={}
+    questions=[{'index':i,'question':r['q'],'group':r.get('g','عام'),
+                'answered':0,'correct':0,'accuracy':0} for i,r in enumerate(rows)]
+    output=[]
+    for player in players:
+        answers=db.jload(player['answers'],{})
+        right=0
+        for index,record in answers.items():
+            try:i=int(index)
+            except (TypeError,ValueError):continue
+            if not 0<=i<len(rows):continue
+            yes=record.get('correct') is True
+            right+=int(yes)
+            questions[i]['answered']+=1;questions[i]['correct']+=int(yes)
+            group=str(rows[i].get('g') or 'عام')[:60]
+            skill=skills.setdefault(group,{'name':group,'answered':0,'correct':0})
+            skill['answered']+=1;skill['correct']+=int(yes)
+        output.append({'name':player['student_name'],'className':player['class_name'],
+                       'team':player['team'],'score':player['score'],'correct':right,
+                       'answered':len(answers),'total':len(rows),
+                       'percent':round(100*right/max(1,len(rows)),1),
+                       'joinedAt':player['joined_at']})
+    for q in questions:q['accuracy']=round(q['correct']*100/max(1,q['answered']),1)
+    for skill in skills.values():
+        skill['accuracy']=round(skill['correct']*100/max(1,skill['answered']),1)
+    return {'code':room['code'],'title':s['title'],'mode':s['mode'],
+            'status':phase(room,players),'totalQuestions':len(rows),
+            'totalPlayers':len(players),'results':output,
+            'skills':sorted(skills.values(),key=lambda x:x['name']),
+            'questions':questions,'createdAt':room['created_at']}
+
 def handle_get(h,u):
     if u.path not in GET:return False
     params=parse_qs(u.query);code=(params.get('code') or [''])[0]
+    if u.path.endswith('/report'):
+        t=auth.authorized(h)
+        if not t:return True
+        room=load(code)
+        if not room or room['teacher_id']!=t['id']:return error(h,'room_not_found',404)
+        h.send_json({'ok':True,**room_report(room,roster(code))})
+        return True
     if u.path.endswith('/rooms'):
         t=auth.authorized(h)
         if not t:return True
@@ -303,9 +357,6 @@ def handle_get(h,u):
         h.send_json({'ok':True,'state':snapshot(room,roster(room['code']),role='teacher')});return True
     # Participant session tokens must not appear in URLs or access logs.
     return error(h,'use_post_state',405)
-    if not person:return error(h,'invalid_session',403)
-    h.send_json({'ok':True,'state':snapshot(room,roster(room['code']),person=person)})
-    return True
 
 
 def post_state(h,data):
