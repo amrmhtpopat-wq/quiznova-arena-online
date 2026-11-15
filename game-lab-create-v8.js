@@ -332,7 +332,15 @@ function start(){
  $('addQuestion').onclick=addRow;$('addQuestionTop').onclick=addRow;
  $('sampleQuestions').onclick=()=>{
   if(rows.some(r=>norm(r.q))&&!confirm('استبدال الأسئلة الحالية بالمثال؟'))return;
-  rows=sample.map(normalizeRow);if(!norm($('activityTitle').value))$('activityTitle').value='تحدي مكونات الحاسوب';
+  const words=['معالج','ذاكرة','مفاتيح','تخزين','شاشة','لوحة','فأرة','صوت'];
+  rows=sample.map((row,i)=>{
+   const r=normalizeRow(row);
+   if(mode==='crossword'||mode==='wordsearch'||mode==='anagram')r.a=words[i];
+   if(mode==='cloze')r.q='أكمل العبارة: وظيفة الجزء ____ هي '+row.g;
+   if(mode==='survey')r.q='ما موضوع المهارات الرقمية الأكثر فائدة بالنسبة لك؟';
+   return r;
+  });
+  if(!norm($('activityTitle').value))$('activityTitle').value='تحدي مكونات الحاسوب';
   localSave();renderRows();alertMsg('✓ أضفت 8 أسئلة نموذجية.');
  };
  $('importText').onclick=showImport;$('closeImport').onclick=hideImport;$('applyImport').onclick=importBulk;
