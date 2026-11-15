@@ -150,3 +150,21 @@ body.lab-v4-live{
 @media(prefers-reduced-motion:reduce){
  .lab-v4-live *{animation:none!important;transition:none!important}
 }
+/* The desktop projector container is viewport-clipped by the old Veyon-friendly
+   full-screen layout. Keep teacher-only reports in a fixed, scrollable overlay. */
+.lab-v4-live #v10Report:not(.hidden){
+ position:fixed!important;z-index:120!important;top:4dvh!important;left:50%!important;
+ transform:translateX(-50%)!important;display:block!important;
+ width:min(1200px,96vw)!important;max-width:1200px!important;
+ height:auto!important;max-height:92dvh!important;
+ overflow:auto!important;overscroll-behavior:contain;
+ background:linear-gradient(140deg,#eaf4ff,#fff)!important;color:#1c3f67!important;
+ border:2px solid #a7c6ed!important;padding:clamp(15px,2vw,28px)!important;
+ box-shadow:0 0 0 100vmax #061128ae,0 25px 90px #030b2c9e!important
+}
+.lab-v4-live #v10Report .v10-report-head h2{color:#234e80!important}
+.lab-v4-live #v10Report #v10ReportSummary{color:#406889!important}
+@media(max-width:600px){
+ .lab-v4-live #v10Report:not(.hidden){top:2dvh!important;max-height:96dvh!important;width:98vw!important;padding:12px!important}
+ .lab-v4-live #v10Report .v10-report-head{align-items:stretch}
+}
