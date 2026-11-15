@@ -40,6 +40,11 @@ try:
     first=page.locator('#questionList .question-card').first
     assert first.locator('[data-field=q]').input_value().startswith('ما الجزء')
     first.locator('[data-wrong="0"]').fill('المعالج الرسومي')
+    rect=page.locator('#questionList .question-card').first.bounding_box()
+    input_rect=page.locator('#questionList .question-card').first.locator('[data-wrong="0"]').bounding_box()
+    assert rect['x']>=-2 and rect['x']+rect['width']<=width+2,(width,'card',rect)
+    assert input_rect['x']>=-2 and input_rect['x']+input_rect['width']<=width+2,(width,'option',input_rect)
+    page.evaluate('window.scrollTo(0,0);document.querySelector("#toast").hidden=true')
     page.screenshot(path=str(OUT/('game-lab-creator-v8-'+str(width)+'.png')),full_page=True,animations='disabled')
     page.locator('#goPreview').click()
     assert page.locator('#stepThree').is_visible()
