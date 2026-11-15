@@ -1,0 +1,73 @@
+name: QA V10 Classroom Pilot — gated integration
+
+on:
+  push:
+    branches: [feature/qa-classroom-pilot-v10-20261115]
+    paths:
+      - game_lab_live.py
+      - game-lab-live.html
+      - game-lab-classroom-v10.css
+      - game-lab-create-v8.js
+      - game-lab-create.html
+      - game-lab-create-v10.css
+      - tests/test_game_lab_classroom_v10.py
+      - tests/browser_game_lab_classroom_v10.py
+      - .github/workflows/qa-classroom-v10.yml
+  pull_request:
+    branches: [v10-5-final-candidate]
+  workflow_dispatch:
+
+jobs:
+  classroom-candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      QUIZNOVA_ALLOW_EPHEMERAL: 'yes'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate server and classroom JavaScript syntax
+        run: |
+          python -m py_compile game_lab_live.py tests/test_game_lab_classroom_v10.py tests/browser_game_lab_classroom_v10.py
+          node --check game-lab-create-v8.js
+          python - <<'PY'
+          import re
+          from pathlib import Path
+          body=Path('game-lab-live.html').read_text(encoding='utf-8')
+          scripts=re.findall(r'<script(?:\s[^>]*)?>([\s\S]*?)</script>',body)
+          assert len(scripts)==1, f'Expected one inline script, got {len(scripts)}'
+          Path('/tmp/game-lab-v10-inline.js').write_text(scripts[0],encoding='utf-8')
+          PY
+          node --check /tmp/game-lab-v10-inline.js
+      - name: Six live rooms, multiple students, card and class security, reports
+        run: python tests/test_game_lab_classroom_v10.py
+      - name: Existing 24 game-mode and activity API regressions
+        run: |
+          python tests/test_game_lab_modes_v3.py
+          python tests/test_game_lab_api.py
+      - name: Install headless Chromium and Playwright
+        run: |
+          python -m pip install playwright
+          python -m playwright install --with-deps chromium
+      - name: Browser — real teacher, two players, PIN, QR, six mobile game modes
+        run: python tests/browser_game_lab_classroom_v10.py
+      - name: Preserve all 24 authoring/preview modes and V9 reports
+        run: |
+          python tests/browser_game_lab_creator_v8.py
+          python tests/browser_game_lab_complete_v9.py
+      - name: Existing V7/V6/V5/V4 regression
+        run: |
+          python tests/browser_game_lab_visual_emotion_v7.py
+          python tests/browser_game_lab_interaction_v6.py
+          python tests/browser_game_lab_visual_v5.py
+          python tests/browser_game_lab_v4_design.py
+      - name: Save disposable test screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: classroom-v10-qa-screenshots
+          path: browser-qa-artifacts/game-lab-classroom-v10-*.png
+          retention-days: 7
+          if-no-files-found: ignore
