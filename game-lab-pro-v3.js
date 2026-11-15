@@ -127,7 +127,7 @@ function requestDraft(){
    subject:$('subject').value,grade:$('grade').value}
 }
 async function generate(){
- const b=$('labBookGenerate');b.disabled=true;message('labBookStatus','جارٍ استخراج الأسئلة من الكتاب المحدد...');
+ const b=$('labBookGenerate');b.disabled=true;bookDraftReady=false;$('labBookSaveCloud').disabled=true;message('labBookStatus','جارٍ استخراج الأسئلة من الكتاب المحدد...');
  try{
   const mode=$('labBookMode').value,params=requestDraft();
   if(mode==='ai'&&!$('labAiConsent').checked)throw Error('ai_consent_required');
