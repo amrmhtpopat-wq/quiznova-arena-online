@@ -71,6 +71,27 @@ class ModeContract(unittest.TestCase):
     self.assertEqual(replied['state']['index'],1)
 
 
+ def test_custom_distractors_reach_student_unchanged(self):
+  rows=[{'q':'مفهوم '+str(i),'a':'حل'+str(i),'g':'الوحدة الأولى'} for i in range(4)]
+  choices=['الاختيار الأوّل','حل0','الاختيار الثاني','الاختيار الثالث']
+  rows[0]['choices']=choices
+  status,created=self.api('/api/game-lab/teacher/save',{'activity':{
+   'title':'نشاط الخيارات المخصصة','subject':'المهارات الرقمية',
+   'grade':'السابع','mode':'quiz','rows':rows}},self.token)
+  self.assertEqual(status,200,created)
+  status,pub=self.api('/api/game-lab/teacher/publish',{'id':created['id']},self.token)
+  self.assertEqual(status,200,pub)
+  status,started=self.api('/api/game-lab/student/start',{'code':pub['publicCode'],
+   'card':self.student['cardCode']})
+  self.assertEqual(status,200,started)
+  question=started['state']['question']
+  self.assertCountEqual(question['choices'],choices)
+  self.assertNotIn('correctAnswer',question)
+  status,replied=self.api('/api/game-lab/student/answer',{
+   'token':started['token'],'index':0,'answer':'حل0'})
+  self.assertEqual(status,200,replied)
+  self.assertTrue(replied['correct'])
+
  def test_bulk_templates_share_one_xp_entitlement(self):
   source={'title':'درس واحد لجميع الألعاب','subject':'المهارات الرقمية','grade':'السابع',
    'mode':'quiz','rows':[{'q':'سؤال'+str(i),'a':'حل'+str(i),'g':'عام'} for i in range(4)]}
