@@ -17,7 +17,7 @@ class TagWakeSplashChecks(unittest.TestCase):
     self.assertIn('location.replace(window.TAG_ENTRY_URL())',p)
     self.assertIn('wake-loader.js?v=18',p)
     self.assertIn('id="wakeStatus"',p)
-    self.assertIn('src="/assets/brand/tag-logo-v15.png"',p)
+    self.assertIn('src="/assets/brand/tag-logo-dark-v21.png"',p)
   self.assertTrue((ROOT/'short-link/assets/brand/tag-logo-v15.png').is_file())
  def test_loader_avoids_cors_and_user_redirection(self):
   js=(ROOT/'short-link/wake-loader.js').read_text(encoding='utf-8')
