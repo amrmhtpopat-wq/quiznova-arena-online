@@ -1,0 +1,28 @@
+/* TAG LAB V11: shared visual language with TAG official platform */
+:root{--tag-ink:#eaf8ff;--tag-blue:#277ce6;--tag-turquoise:#31d1ce;--tag-gold:#ffc66a}
+body{background:radial-gradient(circle at 85% 4%,#164782 0,transparent 35%),radial-gradient(circle at 4% 32%,#083d58 0,transparent 30%),#07152e}
+.brand .tag-lab-lockup{display:flex;align-items:center;gap:12px;min-width:0}
+.brand .tag-lab-lockup img{display:block;width:94px;max-height:65px;object-fit:contain;filter:drop-shadow(0 3px 10px #0004)}
+.brand .tag-lab-lockup strong{font-size:1.25rem;color:#fff;letter-spacing:.02em}
+.brand .tag-lab-lockup small{display:block;color:#b7d3e9;font-weight:650}
+.mobilebar .tag-mobile-mark{width:63px;max-height:34px;vertical-align:middle;object-fit:contain;margin-inline-end:6px}
+.rail{background:#081b35}
+.nav.sel{background:linear-gradient(110deg,#096e98,#2069b8);border-right-color:#81f6ed}
+.button:not(.alt):not(.transparent):not(.gold){background:linear-gradient(120deg,#48e4d0,#75d2ff)}
+.mast{background:linear-gradient(125deg,#104071,#17688c 55%,#0c3159);border-color:#377eac}
+.mast .mascot{font-size:5.7rem}
+.v101-wheel-frame{width:min(100%,650px)!important;max-width:650px!important;margin-inline:auto}
+.v101-wheel{width:100%!important;aspect-ratio:1;max-width:650px!important;max-height:650px!important}
+.v101-wheel-stage{grid-template-columns:minmax(0,1.4fr) minmax(280px,.75fr)!important}
+.extra-balloons{gap:clamp(12px,2vw,24px);padding:22px 10px 32px}
+.extra-balloon{border:1px solid #ffffff66;border-radius:49% 49% 48% 48%;min-height:205px;overflow:visible;isolation:isolate;background:radial-gradient(ellipse at 27% 18%,#fff8 0 3%,#fff3 5%,transparent 27%),linear-gradient(140deg,#f15fa2 0%,#c22874 66%,#70295d 100%);box-shadow:inset 12px 9px 26px #fff3,inset -13px -15px 30px #32052465,0 15px 24px #0005;transition:opacity .26s,transform .3s,filter .25s}
+.extra-balloon:nth-child(2){background:radial-gradient(ellipse at 27% 18%,#fff8 0 3%,transparent 27%),linear-gradient(140deg,#64d4fc,#2075d1 68%,#143c8b)}
+.extra-balloon:nth-child(3){background:radial-gradient(ellipse at 27% 18%,#fff8 0 3%,transparent 27%),linear-gradient(140deg,#8ff4a3,#16a778 70%,#106b73)}
+.extra-balloon:nth-child(4){background:radial-gradient(ellipse at 27% 18%,#fff8 0 3%,transparent 27%),linear-gradient(140deg,#ffd879,#f18b36 70%,#bc4369)}
+.extra-balloon::before{content:"";position:absolute;inset:8% auto auto 16%;height:36%;width:19%;border-radius:50%;background:#fff5;filter:blur(6px);transform:rotate(28deg);pointer-events:none}
+.extra-balloon::after{bottom:-10px}
+.extra-balloon.popped{transform:scale(1.24);opacity:0;filter:blur(8px);pointer-events:none}
+#tagLabStartNote{padding:12px 16px;border-radius:14px;background:#123756;border:1px solid #437895;color:#daefff;margin-top:10px;font-size:.91rem}
+@media(max-width:950px){.v101-wheel-stage{grid-template-columns:1fr!important}.v101-wheel-frame{width:min(100%,490px)!important}}
+@media(max-width:650px){.brand .tag-lab-lockup img{width:74px}.v101-wheel{max-width:100%!important}.extra-balloon{min-height:140px}.mast .mascot{display:none}}
+@media(prefers-reduced-motion:reduce){.extra-balloon{animation:none!important}}
