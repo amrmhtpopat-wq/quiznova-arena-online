@@ -92,6 +92,62 @@ class ModeContract(unittest.TestCase):
   self.assertEqual(status,200,replied)
   self.assertTrue(replied['correct'])
 
+ def test_v9_explanations_marker_skills_and_formative_reports(self):
+  from game_lab_api import validate_payload
+  payload={'title':'تدريب مهارات وتحليلات','subject':'المهارات الرقمية','grade':'السابع',
+   'mode':'quiz','teamNames':[],'rows':[
+    {'q':'مفهوم '+str(i),'a':'جواب'+str(i),'g':'الوحدة أ' if i<2 else 'الوحدة ب',
+     'explanation':'الشرح الصحيح '+str(i)} for i in range(4)]}
+  status,created=self.api('/api/game-lab/teacher/save',{'activity':payload},self.token)
+  self.assertEqual(status,200,created)
+  status,pub=self.api('/api/game-lab/teacher/publish',{'id':created['id']},self.token)
+  self.assertEqual(status,200,pub)
+  status,started=self.api('/api/game-lab/student/start',{
+   'code':pub['publicCode'],'card':self.student['cardCode']})
+  self.assertEqual(status,200,started)
+  for i in range(4):
+   status,reply=self.api('/api/game-lab/student/answer',{
+    'token':started['token'],'index':i,'answer':'جواب'+str(i)})
+   self.assertEqual(status,200,reply)
+   self.assertEqual(reply['explanation'],'الشرح الصحيح '+str(i))
+   self.assertTrue(reply['correct'])
+  req=Request(self.base+'/api/game-lab/teacher/reports?id='+created['id'],
+   headers={'Authorization':'Bearer '+self.token})
+  with urlopen(req,timeout=15) as res:report=json.load(res)
+  self.assertTrue(report['ok'])
+  self.assertEqual(report['total'],1)
+  self.assertEqual(report['averagePercent'],100)
+  self.assertEqual(len(report['skillSummary']),2)
+  self.assertEqual(report['skillSummary'][0]['percent'],100)
+  self.assertEqual(len(report['questionStats']),4)
+  self.assertEqual(report['questionStats'][0]['answers'],1)
+  diagram=validate_payload({'title':'مواضع الأجزاء','mode':'diagram',
+   'rows':[{'q':'رسم'+str(i),'a':'جزء'+str(i),'g':'عام','markerX':15+i,'markerY':70+i} for i in range(4)]})
+  self.assertEqual(diagram['rows'][0]['markerX'],15)
+  bad={'title':'غير صالح','mode':'diagram',
+   'rows':[{'q':'رسم'+str(i),'a':'جزء'+str(i),'markerX':140,'markerY':5} for i in range(4)]}
+  with self.assertRaises(ValueError):validate_payload(bad)
+  exit_activity={'title':'بطاقة خروج تحليلية','mode':'exit',
+   'rows':[{'q':'ما تعلمته '+str(i),'a':'إجابة إرشادية'+str(i),'g':'وحدة أ'} for i in range(4)]}
+  status,saved=self.api('/api/game-lab/teacher/save',{'activity':exit_activity},self.token)
+  self.assertEqual(status,200,saved)
+  status,published=self.api('/api/game-lab/teacher/publish',{'id':saved['id']},self.token)
+  self.assertEqual(status,200,published)
+  status,session=self.api('/api/game-lab/student/start',{
+   'code':published['publicCode'],'card':self.student['cardCode']})
+  self.assertEqual(status,200,session)
+  for i in range(4):
+   status,res=self.api('/api/game-lab/student/answer',{
+    'token':session['token'],'index':i,'answer':'تعلمت اليوم موضوع '+str(i)})
+   self.assertEqual(status,200,res)
+   self.assertIsNone(res['correct'])
+  req=Request(self.base+'/api/game-lab/teacher/reports?id='+saved['id'],
+   headers={'Authorization':'Bearer '+self.token})
+  with urlopen(req,timeout=15) as response:report=json.load(response)
+  self.assertEqual(report['total'],1)
+  self.assertEqual(len(report['results'][0]['responses']),4)
+  self.assertEqual(report['results'][0]['responses'][0]['text'],'تعلمت اليوم موضوع 0')
+
  def test_bulk_templates_share_one_xp_entitlement(self):
   source={'title':'درس واحد لجميع الألعاب','subject':'المهارات الرقمية','grade':'السابع',
    'mode':'quiz','rows':[{'q':'سؤال'+str(i),'a':'حل'+str(i),'g':'عام'} for i in range(4)]}
