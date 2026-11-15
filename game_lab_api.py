@@ -71,6 +71,20 @@ def validate_payload(raw):
         if key in seen:continue
         seen.add(key)
         question={'q':q,'a':a,'g':g}
+        # Optional teacher-authored distractors. Keep the legacy auto-generated
+        # alternatives whenever 'choices' is absent (backward compatibility).
+        custom=row.get('choices')
+        if custom is not None:
+            if not isinstance(custom,list) or not 2<=len(custom)<=4:
+                raise ValueError('invalid_question_choices')
+            clean=[str(choice).strip()[:100] for choice in custom]
+            if any(not choice for choice in clean):
+                raise ValueError('invalid_question_choices')
+            if len({choice.casefold() for choice in clean})!=len(clean):
+                raise ValueError('duplicate_question_choices')
+            if sum(choice.casefold()==a.casefold() for choice in clean)!=1:
+                raise ValueError('correct_answer_missing_from_choices')
+            question['choices']=clean
         page=row.get('sourcePage')
         if page is not None:
             try:page=int(page)
@@ -264,8 +278,12 @@ def question_state(state,token_hash):
                 'choices':['صح','خطأ'],'total':len(rows),'mode':mode,
                 'duration':state['duration'],'score':state['score']}
     else:
-        choices=list(dict.fromkeys(r['a'] for r in rows if r['a']!=item['a']))
-        rng.shuffle(choices);choices=choices[:3]+[item['a']]
+        custom=item.get('choices')
+        if isinstance(custom,list) and len(custom)>=2:
+            choices=list(custom)
+        else:
+            choices=list(dict.fromkeys(r['a'] for r in rows if r['a']!=item['a']))
+            rng.shuffle(choices);choices=choices[:3]+[item['a']]
         correct=item['a']
     rng.shuffle(choices)
     return {'index':idx,'question':item['q'],'group':item['g'] if mode=='sort' else '',
