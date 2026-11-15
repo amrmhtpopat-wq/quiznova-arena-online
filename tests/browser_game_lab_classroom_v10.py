@@ -88,7 +88,7 @@ try:
    report=teacher.locator('#v10Report')
    report.wait_for(state='visible',timeout=7000)
    assert report.locator('#v10ReportTable tr').count()==2
-   assert 'الوحدة الأولى' in report.locator('#v10ReportSkills').inner_text()
+   assert 'مكونات الحاسوب' in report.locator('#v10ReportSkills').inner_text()
    teacher.screenshot(path=str(ARTIFACT/'game-lab-classroom-v10-report-1440.png'),animations='disabled')
    teacher.locator('#v10ReportClose').click()
    teacher.locator('#teacherNext').click()
