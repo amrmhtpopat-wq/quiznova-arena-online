@@ -32,14 +32,14 @@ const modes=new Map(MODES.map(a=>[a[0],a])),choiceModes=new Set(['quiz','fast','
 const params=new URL(location.href).searchParams;
 let mode=modes.has(params.get('mode'))?params.get('mode'):'quiz',rows=[],cloudId='',token='',activeStep=2,toastTimer=0;
 const sample=[
- {q:'ما الجزء الذي ينفذ التعليمات؟',a:'CPU',g:'مكونات الحاسوب',wrongs:['RAM','SSD','الشاشة']},
- {q:'أين تُخزن البيانات مؤقتًا أثناء التشغيل؟',a:'RAM',g:'مكونات الحاسوب',wrongs:['CPU','SSD','لوحة المفاتيح']},
- {q:'ما أداة إدخال النصوص؟',a:'لوحة المفاتيح',g:'إدخال',wrongs:['الفأرة','الشاشة','السماعات']},
- {q:'ما وحدة تخزين الملفات الدائمة؟',a:'SSD',g:'تخزين',wrongs:['RAM','CPU','الكاميرا']},
- {q:'ما الجهاز الذي يعرض الصور؟',a:'الشاشة',g:'إخراج',wrongs:['المايكروفون','الفأرة','المعالج']},
- {q:'ما وظيفة اللوحة الأم؟',a:'ربط المكونات',g:'مكونات الحاسوب',wrongs:['طباعة الصور','إخراج الصوت','إدخال الأحرف']},
- {q:'ما أداة تحريك مؤشر الشاشة؟',a:'الفأرة',g:'إدخال',wrongs:['الشاشة','السماعات','الطابعة']},
- {q:'ما الجهاز المستخدم لإخراج الصوت؟',a:'السماعات',g:'إخراج',wrongs:['لوحة المفاتيح','الكاميرا','الفأرة']}
+ {q:'ما عاصمة الأردن؟',a:'عمّان',g:'جغرافيا',wrongs:['إربد','الزرقاء','العقبة']},
+ {q:'كم يساوي 7 × 8؟',a:'56',g:'رياضيات',wrongs:['54','48','64']},
+ {q:'ما الكوكب المعروف بالكوكب الأحمر؟',a:'المريخ',g:'علوم',wrongs:['الزهرة','زحل','الأرض']},
+ {q:'ما ضد كلمة كبير؟',a:'صغير',g:'لغة عربية',wrongs:['طويل','واسع','قريب']},
+ {q:'كم عدد أيام الأسبوع؟',a:'7',g:'معارف عامة',wrongs:['5','6','8']},
+ {q:'ما الحيوان الذي يُعرف بسفينة الصحراء؟',a:'الجمل',g:'علوم',wrongs:['الحصان','الأسد','الغزال']},
+ {q:'ما ناتج 15 + 9؟',a:'24',g:'رياضيات',wrongs:['23','25','26']},
+ {q:'أي لون ينتج من مزج الأزرق والأصفر؟',a:'الأخضر',g:'فنون',wrongs:['الأحمر','البرتقالي','البنفسجي']}
 ];
 const blank=()=>({q:'',a:'',g:'عام',wrongs:['','',''],explanation:'',sourcePage:'',markerX:50,markerY:50});
 const norm=s=>String(s??'').trim();
@@ -396,16 +396,16 @@ function start(){
  $('addQuestion').onclick=addRow;$('addQuestionTop').onclick=addRow;
  $('sampleQuestions').onclick=()=>{
   if(rows.some(r=>norm(r.q))&&!confirm('استبدال الأسئلة الحالية بالمثال؟'))return;
-  const words=['معالج','ذاكرة','مفاتيح','تخزين','شاشة','لوحة','فأرة','صوت'];
+  const words=['أردن','رياضة','كوكب','صغير','أسبوع','جمل','جمع','لون'];
   rows=sample.map((row,i)=>{
    const r=normalizeRow(row);
    if(mode==='crossword'||mode==='wordsearch'||mode==='anagram')r.a=words[i];
-   if(mode==='cloze')r.q='أكمل العبارة: وظيفة الجزء ____ هي '+row.g;
-   if(mode==='survey')r.q='ما موضوع المهارات الرقمية الأكثر فائدة بالنسبة لك؟';
+   if(mode==='cloze')r.q='أكمل: '+row.q+' ____';
+   if(mode==='survey')r.q='أي جانب من هذا الدرس وجدته أكثر فائدة؟';
    return r;
   });
-  if(!norm($('activityTitle').value))$('activityTitle').value='تحدي مكونات الحاسوب';
-  localSave();renderRows();alertMsg('✓ أضفت 8 أسئلة نموذجية.');
+  if(!norm($('activityTitle').value))$('activityTitle').value='تجربة ألعاب لمباحث متنوعة';
+  localSave();renderRows();alertMsg('✓ أضفت 8 أسئلة توضيحية من مباحث متنوعة.');
  };
  $('importText').onclick=showImport;$('closeImport').onclick=hideImport;$('applyImport').onclick=importBulk;
  $('textImportOverlay').addEventListener('click',e=>{if(e.target===$('textImportOverlay'))hideImport()});
