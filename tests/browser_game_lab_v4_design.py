@@ -34,9 +34,11 @@ try:
     assert light['card']=='rgb(255, 255, 255)',light
     assert light['scroll']<=light['w']+3,(width,light)
     page.locator('#gameGrid .game[data-game-mode="pairs"] .v4-use-template').click()
-    assert 'مطابقة' in page.locator('#v4ChosenTemplate').inner_text()
-    assert page.locator('#cloudMode').input_value()=='pairs'
-    page.locator('#v4TrySelected').click()
+    page.wait_for_url('**/game-lab-create.html?mode=pairs')
+    assert page.locator('#modeSelect').input_value()=='pairs'
+    assert page.locator('#stepTwo').is_visible()
+    page.go_back()
+    page.locator('#gameGrid .game[data-game-mode="pairs"] .button:not(.v4-use-template)').first.click()
     page.locator('#playOverlay').wait_for(state='visible',timeout=5000)
     assert 'توصيل الأزواج' in page.locator('#playTitle').inner_text()
     assert page.locator('#playBody').is_visible()
