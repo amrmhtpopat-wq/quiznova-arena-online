@@ -200,7 +200,9 @@ function preview(){
  catch(_){alertMsg('يلزم السماح بالتخزين المؤقت للمعاينة.',true);return}
  $('previewOverlay').hidden=false;D.body.classList.add('modal-open');
  $('previewTopTitle').textContent='🎮 معاينة '+modes.get(mode)[1];
- $('gameFrame').src='/game-lab-preview.html?creatorPreview=1&mode='+encodeURIComponent(mode)+'&v=9';
+ const previewUrl='/game-lab-preview.html?creatorPreview=1&mode='+encodeURIComponent(mode)+'&v=10.1';
+ $('previewNewTab').href=previewUrl;
+ $('gameFrame').src=previewUrl;
  $('closePreview').focus({preventScroll:true});
 }
 function closePreview(){
