@@ -83,7 +83,9 @@
    card.dataset.gameMode=mode;
    const controls=doc.createElement('div');controls.className='buttons';
    const create=clickable('button','button v4-use-template','✏️ أنشئ بهذا القالب',()=>{
-    markTemplate(mode);go('builder');$('activityTitle')?.focus({preventScroll:true});
+    // Each of the 24 modes opens its own focused authoring experience.
+    // The old in-page builder remains available for books and legacy drafts.
+    window.location.assign('/game-lab-create.html?mode='+encodeURIComponent(mode));
    });
    launch.textContent='▶ جرّب';
    launch.setAttribute('aria-label','تجربة '+label);
