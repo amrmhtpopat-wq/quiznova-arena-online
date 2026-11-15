@@ -34,6 +34,7 @@ jobs:
           import re
           source=Path('game-lab-preview.html').read_text(encoding='utf-8')
           scripts=re.findall(r'<script(?:\s[^>]*)?>([\s\S]*?)</script>',source)
+          scripts=[js for js in scripts if 'function wheelGame(' in js]
           assert len(scripts)==1, len(scripts)
           Path('/tmp/teachgame-v101-preview.js').write_text(scripts[0],encoding='utf-8')
           for file in ('game-lab-overhaul-v101.js','game-lab-overhaul-v101.css'):
