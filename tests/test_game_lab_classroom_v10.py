@@ -128,6 +128,32 @@ class ClassroomV10(unittest.TestCase):
     self.assertEqual(self.req('/api/game-lab/live/report?code='+code)[0],401)
     self.assertEqual(self.req('/api/game-lab/live/state?code='+code)[0],405)
     print('PASS V10 synchronized '+mode+' with two simultaneous players, four rounds and report',flush=True)
+ def test_join_after_completed_round_stays_in_results(self):
+  code,_=self.room('quiz')
+  tokens=[]
+  for student in self.good[:2]:
+   status,res=self.req('/api/game-lab/live/join',{'code':code,'card':student['cardCode']})
+   self.assertEqual(status,200,res)
+   tokens.append(res['token'])
+  self.assertEqual(self.req('/api/game-lab/live/start',{'code':code},self.teacher)[0],200)
+  teacher=self.roomstate(code)[1]['state']
+  answer=teacher['question']['correctAnswer']
+  for token in tokens:
+   self.assertEqual(self.req('/api/game-lab/live/answer',{
+    'code':code,'token':token,'index':0,'answer':answer})[0],200)
+  self.assertEqual(self.roomstate(code)[1]['state']['status'],'results')
+  status,late=self.req('/api/game-lab/live/join',{
+   'code':code,'card':self.good[2]['cardCode']})
+  self.assertEqual(status,200,late)
+  self.assertEqual(late['state']['status'],'results')
+  self.assertTrue(late['state']['me']['answered'])
+  self.assertIsNone(late['state']['me']['answerCorrect'])
+  self.assertEqual(self.roomstate(code)[1]['state']['status'],'results')
+  self.assertEqual(self.req('/api/game-lab/live/answer',{
+   'code':code,'token':late['token'],'index':0,'answer':answer})[0],409)
+  self.assertEqual(self.req('/api/game-lab/live/next',{'code':code},self.teacher)[0],200)
+  self.assertEqual(self.roomstate(code)[1]['state']['status'],'question')
+  print('PASS V10 late join cannot roll back classroom results',flush=True)
  def test_grade_teacher_and_card_security(self):
   code,aid=self.room('quiz',cardRequired=True)
   self.assertEqual(self.req('/api/game-lab/live/join',{'code':code,'guestName':'Guest Person'})[1]['error'],'card_required')
