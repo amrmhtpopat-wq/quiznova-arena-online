@@ -294,6 +294,30 @@ async function startLive(){
  const saved=await cloudSave();if(!saved)return;
  await launchSavedLive(saved.id);
 }
+async function classroomHistory(){
+ const holder=$('v10Rooms');holder.hidden=false;holder.replaceChildren();
+ holder.textContent='جارٍ استرجاع جلسات الفصل...';
+ if(!(await authCheck())){holder.textContent='سجّل الدخول إلى حساب المعلم لعرض سجل الجلسات.';return}
+ try{
+  const data=await api('/api/game-lab/live/rooms');
+  holder.replaceChildren();
+  const list=Array.isArray(data.rooms)?data.rooms:[];
+  if(!list.length){holder.textContent='لم تنشئ جلسات مباشرة بعد.';return}
+  for(const room of list){
+   if(!/^[A-Z2-9]{6}$/.test(room.code))continue;
+   const row=D.createElement('div');row.className='v10-room-record';
+   const detail=D.createElement('div');const title=D.createElement('strong');
+   title.textContent=room.title||'جلسة تعليمية';
+   const sub=D.createElement('small');
+   sub.textContent=room.code+' · '+({lobby:'انتظار',question:'جارية',results:'نتائج الجولة',finished:'مكتملة'}[room.status]||'محفوظة');
+   detail.append(title,sub);
+   const open=D.createElement('a');open.className='btn btn-soft';
+   open.href='/game-lab-live.html?host='+encodeURIComponent(room.code);
+   open.textContent='↗ الغرفة والنتائج';
+   row.append(detail,open);holder.append(row);
+  }
+ }catch(e){holder.textContent='تعذر عرض الجلسات: '+e.message}
+}
 async function allModes(){
  if(!confirm('سيتم إنشاء 24 لعبة بهذا الدرس على حسابك. هل تريد المتابعة؟'))return;
  const saved=await cloudSave();if(!saved)return;
@@ -390,6 +414,7 @@ function start(){
  $('loginForm').addEventListener('submit',login);
  $('saveCloud').onclick=cloudSave;$('publishCloud').onclick=publish;$('generateAll').onclick=allModes;
  $('v10StartLive').onclick=startLive;
+ $('v10History').onclick=classroomHistory;
  $('v10ClassroomLaunch').hidden=!CLASSROOM_MODES.has(mode);
  $('v10LiveDuration').value=$('roundTime').value||'25';
  $('copyLink').onclick=async()=>{
