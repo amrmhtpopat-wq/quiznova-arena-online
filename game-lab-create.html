@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101e45">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>صانع الألعاب | TeachGame Game Lab</title>
+<link rel="stylesheet" href="/game-lab-create-v8.css?v=8.0">
+<script defer src="/game-lab-create-v8.js?v=8.0"></script>
+</head>
+<body>
+<a class="skip-link" href="#creatorForm">تجاوز إلى محرر النشاط</a>
+<header class="topbar">
+ <div class="brand"><span class="brand-icon" aria-hidden="true">TG</span><div><strong>TeachGame <em>Game Lab</em></strong><small>استوديو الألعاب التعليمية</small></div></div>
+ <div class="top-actions">
+  <a href="/game-lab-preview.html?v=8#catalog" class="nav-back">↗ مكتبة القوالب</a>
+  <button type="button" id="myLibrary" class="btn btn-ghost">📚 مكتبتي</button>
+  <button type="button" id="helpToggle" class="btn btn-ghost">❔ مساعدة</button>
+ </div>
+</header>
+<main class="studio">
+ <section class="hero">
+  <div class="hero-copy"><span class="eyebrow">🎮 TEACHGAME CREATOR STUDIO V8</span>
+   <h1>أنشئ لعبتك <span>بطريقتك</span></h1>
+   <p>اختر القالب، اكتب أسئلتك وخياراتها، شاهد تجربة اللعب، ثم احفظ وانشر من المكان نفسه.</p>
+  </div>
+  <div class="hero-visual" aria-hidden="true"><div class="floating-bubble bubble-one">★</div><div class="floating-controller">🎮</div><div class="floating-bubble bubble-two">✦</div></div>
+ </section>
+ <nav class="steps" aria-label="خطوات إنشاء اللعبة">
+  <button type="button" class="step active" data-step="1"><span>1</span><strong>القالب</strong><small>اختر اللعبة</small></button>
+  <button type="button" class="step" data-step="2"><span>2</span><strong>المحتوى</strong><small>الأسئلة والخيارات</small></button>
+  <button type="button" class="step" data-step="3"><span>3</span><strong>المعاينة</strong><small>جرّب قبل النشر</small></button>
+  <button type="button" class="step" data-step="4"><span>4</span><strong>الحفظ والنشر</strong><small>على حساب المعلم</small></button>
+ </nav>
+ <div class="layout">
+  <aside class="side">
+   <section class="side-card current-template" id="templatePanel">
+    <div class="small-overline">القالب الذي اخترته</div>
+    <div class="mode-icon" id="modeIcon">🎯</div>
+    <h2 id="modeTitle">تحدي الاختيار</h2>
+    <p id="modeDesc">أسئلة ممتعة وخيارات بألوان الألعاب.</p>
+    <label for="modeSelect" class="field-label">تغيير القالب</label>
+    <select id="modeSelect" aria-label="اختر قالب اللعبة"></select>
+    <div class="mode-capability" id="modeCapability">يقبل أسئلة بإجابات واختيارات متعددة.</div>
+   </section>
+   <section class="side-card metrics">
+    <h3>ملخص نشاطك</h3>
+    <div class="metric"><span>عدد الأسئلة</span><strong id="questionCount">4</strong></div>
+    <div class="metric"><span>القالب</span><strong id="modeShort">Quiz</strong></div>
+    <div class="metric"><span>حالة الحفظ</span><strong id="draftStatus">مسودة جديدة</strong></div>
+    <div class="meter"><span id="progressFill"></span></div>
+    <p class="small-hint">يُحفظ عملك مؤقتًا في هذا المتصفح أثناء الكتابة، ويمكن حفظه أيضًا في حسابك.</p>
+   </section>
+   <section class="side-card side-links">
+    <a href="/game-lab-preview.html?v=8#bookLab">📖 استيراد أسئلة من كتاب</a>
+    <a href="/game-lab-preview.html?v=8#cloud">☁️ مكتبة الحساب القديمة</a>
+    <a href="/game-lab-preview.html?v=8#catalog">🧩 عرض جميع الألعاب الـ24</a>
+   </section>
+  </aside>
+  <section class="workspace" id="creatorForm">
+   <section class="panel" id="stepOne" data-panel="1">
+    <div class="panel-head"><span class="panel-icon">1</span><div><h2>القالب جاهز للانطلاق</h2><p>كل قالب من مكتبة الألعاب له صفحة إنشاء خاصة وإعدادات ملائمة له.</p></div></div>
+    <div class="selected-overview"><span id="selectedLargeIcon">🎯</span><div><h3 id="selectedLargeName">تحدي الاختيار</h3><p id="selectedLargeDesc">المسابقة التفاعلية ذات الخيارات الأربع.</p></div><span class="available-tag">● متاح للتجربة</span></div>
+    <button type="button" class="btn btn-primary" id="startQuestions">التالي: إنشاء الأسئلة ←</button>
+   </section>
+   <section class="panel" id="stepTwo" data-panel="2" hidden>
+    <div class="panel-head"><span class="panel-icon">2</span><div><h2>صمّم محتوى لعبتك</h2><p>كل سؤال يظهر داخل بطاقة مستقلة، دون فواصل أو صيغة معقدة.</p></div></div>
+    <div class="details-grid">
+     <label class="field"><span>اسم النشاط <sup>*</sup></span><input id="activityTitle" maxlength="90" placeholder="مثال: تحدي مكونات الحاسوب" autocomplete="off"></label>
+     <label class="field"><span>المبحث</span><select id="subject"><option>المهارات الرقمية</option><option>العلوم</option><option>الرياضيات</option><option>اللغة العربية</option><option>اللغة الإنجليزية</option><option>التربية الإسلامية</option><option>الدراسات الاجتماعية</option><option>أخرى</option></select></label>
+     <label class="field"><span>الصف</span><select id="grade"><option>الرابع</option><option>الخامس</option><option>السادس</option><option selected>السابع</option><option>الثامن</option><option>التاسع</option><option>العاشر</option><option>الحادي عشر</option><option>الثاني عشر</option></select></label>
+     <label class="field"><span>زمن السؤال (للألعاب المؤقتة)</span><select id="roundTime"><option value="15">15 ثانية</option><option value="25" selected>25 ثانية</option><option value="45">45 ثانية</option><option value="60">60 ثانية</option></select></label>
+    </div>
+    <div class="questions-header"><div><h3>✏️ بنك أسئلتك</h3><p id="modeHelp">اكتب السؤال وإجابته الصحيحة؛ الخيارات الإضافية متاحة لهذا القالب.</p></div><div class="question-tools"><button type="button" class="btn btn-ghost" id="sampleQuestions">✨ تعبئة مثال</button><button type="button" class="btn btn-ghost" id="importText">📋 لصق أسئلة</button><button type="button" class="btn btn-soft" id="addQuestionTop">＋ سؤال جديد</button></div></div>
+    <div id="questionList" class="question-list" aria-live="polite"></div>
+    <div class="question-footer"><button type="button" class="btn btn-soft" id="addQuestion">＋ إضافة سؤال</button><span>الحد: 4 إلى 80 سؤالًا. يمكن ترك المشتتات فارغة لتوليدها من الإجابات الأخرى.</span></div>
+    <div class="foot-actions"><button type="button" class="btn btn-ghost" id="goBackOne">السابق</button><button type="button" class="btn btn-primary" id="goPreview">▶ جرّب لعبتك الآن</button></div>
+   </section>
+   <section class="panel" id="stepThree" data-panel="3" hidden>
+    <div class="panel-head"><span class="panel-icon">3</span><div><h2>عاين لعبتك قبل الحفظ</h2><p>التجربة تعمل بمحرك Game Lab الحقيقي، وليس صورة شكلية للعبة.</p></div></div>
+    <div class="preview-poster"><div class="preview-art"><span id="posterIcon">🎯</span><i>✦</i></div><div class="preview-copy"><span class="eyebrow">PREVIEW GAME MODE</span><h3 id="previewName">تحدي الاختيار</h3><p id="previewSummary">ستشاهد أسئلتك داخل القالب الذي اخترته.</p><button type="button" class="btn btn-glow" id="launchPreview">▶ بدء التجربة الكاملة</button></div></div>
+    <div class="preview-tip">💡 جرّب الإجابة الصحيحة والخاطئة، ثم ارجع للمحرر لتغيير الأسئلة أو القالب.</div>
+    <div class="foot-actions"><button type="button" class="btn btn-ghost" id="goBackTwo">✏️ تعديل الأسئلة</button><button type="button" class="btn btn-primary" id="goSave">التالي: الحفظ والنشر</button></div>
+   </section>
+   <section class="panel" id="stepFour" data-panel="4" hidden>
+    <div class="panel-head"><span class="panel-icon">4</span><div><h2>احفظ نشاطك وانشره</h2><p>يمكنك تجربة النشاط دون حساب، لكن الحفظ الدائم والنشر يحتاجان حساب معلم.</p></div></div>
+    <div id="authStatus" class="auth-status" role="status" aria-live="polite">جارٍ التحقق من جلسة المعلم...</div>
+    <section id="loginBox" class="login-box" hidden>
+     <h3>🔐 تسجيل دخول المعلم</h3>
+     <p>استخدم حساب المعلم في نسخة QA التجريبية. لا تضع بيانات طلاب حقيقية هنا.</p>
+     <form id="loginForm" class="login-form">
+      <label class="field"><span>البريد الإلكتروني</span><input id="loginEmail" type="email" autocomplete="username" required></label>
+      <label class="field"><span>كلمة المرور</span><input id="loginPassword" type="password" autocomplete="current-password" required></label>
+      <button class="btn btn-primary" type="submit" id="loginButton">دخول الحساب</button>
+     </form>
+     <a href="/?teacher=1" class="link">إنشاء حساب معلم أو إدارته</a>
+    </section>
+    <section id="saveBox" class="save-box" hidden>
+     <div class="saved-summary"><span>🎮</span><div><strong id="saveActivityName">نشاط تعليمي</strong><small id="saveActivityMeta"></small></div></div>
+     <label class="field"><span>محاولات الطالب المسموحة</span><select id="maxAttempts"><option value="1">محاولة واحدة</option><option value="2">محاولتان</option><option value="3">3 محاولات</option><option value="5">5 محاولات</option><option value="10">10 محاولات</option></select></label>
+     <div class="publish-actions"><button type="button" class="btn btn-primary" id="saveCloud">☁️ حفظ على حساب المعلم</button><button type="button" class="btn btn-glow" id="publishCloud">🚀 حفظ ونشر للطلاب</button><button type="button" class="btn btn-ghost" id="generateAll">🧩 تحويل إلى 24 لعبة</button></div>
+     <div class="info-line">الحفظ لا ينشر تلقائيًا؛ زر النشر مستقل. المعاينة لا تحتسب نقاطًا للطلاب.</div>
+    </section>
+    <div id="shareBox" class="share-box" hidden><h3>🎉 نشاطك جاهز للمشاركة</h3><label class="field"><span>رابط اللعب</span><input id="shareUrl" dir="ltr" readonly></label><div class="share-actions"><button type="button" class="btn btn-soft" id="copyLink">📋 نسخ الرابط</button><a id="openStudentLink" class="btn btn-ghost" href="#" target="_blank" rel="noopener noreferrer">↗ فتح صفحة الطالب</a></div><img id="shareQr" alt="رمز QR للعبة المنشورة" width="160" height="160"></div>
+    <div class="foot-actions"><button type="button" class="btn btn-ghost" id="goBackThree">السابق</button><button type="button" class="btn btn-soft" id="newGame">＋ إنشاء لعبة أخرى</button></div>
+   </section>
+   <section class="panel library-panel" id="libraryPanel" hidden>
+    <div class="panel-head"><span class="panel-icon">📚</span><div><h2>أنشطتي على الحساب</h2><p>افتح أنشطتك القديمة للتعديل أو تابع مشاركة المنشورة منها.</p></div><button type="button" class="btn btn-ghost" id="closeLibrary">✕ إغلاق</button></div>
+    <div id="libraryItems" class="library-items"></div>
+   </section>
+  </section>
+ </div>
+ <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+</main>
+<div id="textImportOverlay" class="overlay" hidden role="dialog" aria-modal="true" aria-labelledby="importTitle">
+ <div class="dialog import-dialog"><div class="dialog-head"><h2 id="importTitle">📋 استيراد الأسئلة دفعة واحدة</h2><button type="button" class="btn btn-ghost" id="closeImport">✕ إغلاق</button></div>
+ <p>كل سطر: <strong>السؤال | الإجابة الصحيحة | المجموعة (اختياري)</strong> ويمكنك استيراد أسئلة من ملفك أو كتابك بعد تجهيز النص.</p>
+ <label class="field"><span>الصق نص الأسئلة</span><textarea id="bulkText" rows="9" placeholder="ما وظيفة CPU؟ | تنفيذ التعليمات | مكونات الحاسوب"></textarea></label>
+ <button type="button" class="btn btn-primary" id="applyImport">استيراد الأسئلة</button></div>
+</div>
+<div id="previewOverlay" class="overlay preview-overlay" hidden role="dialog" aria-modal="true" aria-label="تجربة اللعبة">
+ <div class="preview-dialog"><div class="preview-toolbar"><strong id="previewTopTitle">🎮 تجربة اللعبة</strong><button type="button" id="closePreview" class="btn btn-soft">✕ العودة إلى المحرر</button></div><iframe title="معاينة فعلية للعبة" id="gameFrame" src="about:blank"></iframe></div>
+</div>
+</body>
+</html>
