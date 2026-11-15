@@ -102,7 +102,7 @@ def wheel(page,frame,width):
   assert frame.locator('#playCounter').inner_text().startswith(str(turn+1)+' /')
   no_floating_status(frame,'wheel revealed')
  # Screenshot with an actual selected question, not an empty placeholder.
- page.screenshot(path=str(ARTIFACT/'gamelab-v102-wheel-'+str(width)+'.png'),animations='disabled')
+ page.screenshot(path=str(ARTIFACT/('gamelab-v102-wheel-'+str(width)+'.png')),animations='disabled')
 
 try:
  with sync_playwright() as playwright:
