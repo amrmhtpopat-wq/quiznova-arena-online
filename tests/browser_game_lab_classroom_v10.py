@@ -45,7 +45,7 @@ try:
   try:
    # Full creator-to-live lesson flow as a teacher.
    context=browser.new_context(viewport={'width':1440,'height':900})
-   context.add_init_script("(token)=>localStorage.setItem('qn9_teacher_token',token)",TEACHER)
+   context.add_init_script("localStorage.setItem('qn9_teacher_token',"+json.dumps(TEACHER)+");")
    teacher=context.new_page()
    errors=[]
    teacher.on('pageerror',lambda e:errors.append(str(e)))
@@ -74,15 +74,15 @@ try:
     page.locator('#student').wait_for(state='visible',timeout=13000)
     assert STUDENTS[i]['name'] in page.locator('#studentTeam').inner_text()
     students.append((ctx,page))
-   teacher.locator('#teacherMembers').get_by_text('2 لاعب').wait_for(timeout=7000)
+   teacher.wait_for_function("()=>document.querySelector('#teacherMembers')?.textContent.includes('2 لاعب')",timeout=7000)
    teacher.locator('#teacherStart').click()
    for ctx,page in students:
     page.locator('.v10-mode-chip').wait_for(state='visible',timeout=7000)
    for i,(ctx,page) in enumerate(students):
     choice='CPU' if i==0 else 'RAM'
     page.locator('#studentQuestionCard .q-option[data-value="'+choice+'"]').click()
-   teacher.locator('#teacherStatus').get_by_text('انتهى السؤال').wait_for(timeout=7000)
-   teacher.locator('#teacherAnswered').get_by_text('2 / 2 أجابوا').wait_for(timeout=7000)
+   teacher.wait_for_function("()=>document.querySelector('#teacherStatus')?.textContent.includes('انتهى السؤال')",timeout=7000)
+   teacher.wait_for_function("()=>document.querySelector('#teacherAnswered')?.textContent.includes('2 / 2 أجابوا')",timeout=7000)
    assert 'CPU' in students[0][1].locator('#studentMessage').inner_text() or True
    teacher.locator('#teacherReport').click()
    report=teacher.locator('#v10Report')
@@ -103,7 +103,7 @@ try:
    for mode in ('quiz','fast','truth','pairs','wheel','boxes'):
     created=room(mode);code=created['code']
     host_ctx=browser.new_context(viewport={'width':1280,'height':800})
-    host_ctx.add_init_script("(token)=>localStorage.setItem('qn9_teacher_token',token)",TEACHER)
+    host_ctx.add_init_script("localStorage.setItem('qn9_teacher_token',"+json.dumps(TEACHER)+");")
     host=host_ctx.new_page()
     host.goto(BASE+'/game-lab-live.html?host='+code,wait_until='domcontentloaded')
     host.locator('#teacherStart').click()
