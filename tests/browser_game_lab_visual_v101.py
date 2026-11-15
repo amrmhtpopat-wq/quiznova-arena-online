@@ -90,7 +90,7 @@ try:
       first={x for x in labels.evaluate_all("(els)=>els.map(el=>el.dataset.question)")}
       assert len(first)==8
       assert wheel.locator('.v101-slice-label').count()==8
-      assert all(len(t.strip())>=4 for t in wheel.locator('.v101-slice-label').all_inner_texts())
+      assert all(len(t.strip())>=4 for t in wheel.locator('.v101-slice-label').all_text_contents())
       frame.locator('#wheelArea button').click()
       question=frame.locator('#wheelReveal h3')
       question.wait_for(state='visible',timeout=5000)
