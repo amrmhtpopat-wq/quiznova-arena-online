@@ -1,0 +1,332 @@
+/* TeachGame V10.1 — readable, coherent 24-game visual system.
+ * Loaded only by QA Game Lab preview after V4–V9. No changes to official site.
+ */
+#playOverlay.v101-overhaul{
+ --tg-ink:#223b61;--tg-muted:#476487;--tg-paper:#fffefa;--tg-border:#d5e2f8;
+ --tg-glass:#f5f9ff;--tg-action:#6a54dc;--tg-edge:#b1bff1;
+ color:#f8fcff!important;box-sizing:border-box!important;
+ position:fixed!important;inset:0!important;height:100dvh!important;min-height:0!important;
+ width:100%!important;padding:clamp(8px,1.25vw,17px)!important;
+ display:flex!important;flex-direction:column!important;justify-content:flex-start!important;
+ gap:12px!important;overflow-x:hidden!important;overflow-y:auto!important;
+ overscroll-behavior:contain;scroll-behavior:auto;
+ background:radial-gradient(circle at 91% 7%,#a677f76b,transparent 38%),
+ radial-gradient(circle at 13% 81%,#4bbfce45,transparent 35%),
+ linear-gradient(145deg,#17244b,#1d3268 60%,#202453)!important
+}
+#playOverlay.v101-overhaul[hidden]{display:none!important}
+#playOverlay.v101-overhaul[data-v101-theme=dark]{
+ --tg-ink:#f1f7ff;--tg-muted:#c0d2e9;--tg-paper:#192948;--tg-border:#516b91;
+ --tg-glass:#15223d;--tg-action:#b0a0ff;--tg-edge:#394b7b;
+ background:radial-gradient(circle at 89% 2%,#6554bf59,transparent 38%),
+ radial-gradient(circle at 8% 85%,#1e658d55,transparent 38%),
+ linear-gradient(130deg,#080d22,#131d39 54%,#0b1834)!important
+}
+#playOverlay.v101-overhaul .playhead,
+#playOverlay.v101-overhaul.v7-game .playhead{
+ width:min(100%,1270px)!important;min-width:0!important;flex:0 0 auto!important;
+ padding:8px clamp(10px,1.5vw,22px)!important;min-height:58px!important;
+ border:1px solid #ffffffc7!important;border-radius:18px!important;
+ background:linear-gradient(130deg,#fffffff5,#e9f1ffed)!important;
+ color:#213b62!important;box-shadow:0 8px 25px #050d2c65!important;
+ position:sticky!important;top:0!important;z-index:50!important;
+ display:flex!important;flex-wrap:wrap!important;align-items:center!important;
+ justify-content:space-between!important;gap:9px!important;
+ backdrop-filter:blur(14px)
+}
+#playOverlay.v101-overhaul .playhead :is(.eyebrow,h2){color:#263e69!important;overflow-wrap:anywhere}
+#playOverlay.v101-overhaul .playhead h2{font-size:clamp(18px,2.05vw,27px)!important;font-weight:950!important;line-height:1.4!important}
+#playOverlay.v101-overhaul .playhead .eyebrow{font-size:10px!important;letter-spacing:.08em}
+#playOverlay.v101-overhaul .playhead .buttons{align-items:center!important;justify-content:flex-end!important;gap:7px!important}
+#playOverlay.v101-overhaul .playhead .pill{background:#e6f1ff!important;color:#244e78!important;font-weight:950!important}
+#playOverlay.v101-overhaul .playhead :is(#playFull,#v101ThemeButton){background:#e5ebff!important;color:#263a6d!important;border:1px solid #c6d6f8!important}
+#playOverlay.v101-overhaul .playhead #closePlay{background:#ffebf0!important;color:#9c2d51!important;border:1px solid #f2aaca!important}
+#playOverlay.v101-overhaul .playbody,
+#playOverlay.v101-overhaul.v6-game.v7-game .playbody,
+#playOverlay.v101-overhaul.v9-stage .playbody{
+ flex:0 0 auto!important;min-height:0!important;overflow:visible!important;
+ width:min(100%,1150px)!important;max-width:1150px!important;min-width:0!important;
+ margin:0 auto!important;padding:5px 3px 18px!important;
+ display:flex!important;flex-direction:column!important;justify-content:flex-start!important;
+ align-items:stretch!important;gap:clamp(11px,1.6vh,20px)!important;
+ position:relative!important;z-index:2!important
+}
+#playOverlay.v101-overhaul .playbody>.playcard,
+#playOverlay.v101-overhaul.v6-game.v7-game .playbody>.playcard{
+ min-height:unset!important;max-height:none!important;overflow:visible!important;
+ margin:0!important;align-self:stretch!important;width:100%!important;
+ background:var(--tg-paper)!important;border:2px solid var(--tg-border)!important;
+ box-shadow:0 8px 0 var(--tg-edge),0 17px 36px #0b16374a!important;
+ color:var(--tg-ink)!important;padding:clamp(15px,2.2vw,27px)!important;
+ border-radius:21px!important;position:relative!important;
+ grid-template-areas:unset!important;grid-template-columns:unset!important;
+ grid-template-rows:unset!important;display:block!important
+}
+#playOverlay.v101-overhaul .playbody>.playcard :is(h2,h3,p,li),
+#playOverlay.v101-overhaul .playcard .v101-wheel-caption :is(h3,p){
+ color:var(--tg-ink)!important;position:relative;z-index:2;
+ text-shadow:none!important;opacity:1!important;overflow-wrap:anywhere;
+}
+#playOverlay.v101-overhaul .playbody>.playcard p,
+#playOverlay.v101-overhaul .playcard .v101-wheel-caption p{color:var(--tg-muted)!important;line-height:1.65!important}
+#playOverlay.v101-overhaul .playbody>.playcard h3,
+#playOverlay.v101-overhaul.v6-game.v7-game .playbody>.playcard h3{
+ font-size:clamp(22px,3.05vw,36px)!important;font-weight:950!important;
+ line-height:1.55!important;margin:7px 0!important;
+ position:relative!important;top:auto!important;bottom:auto!important;transform:none!important;
+ visibility:visible!important;opacity:1!important;max-height:none!important;
+ overflow-wrap:anywhere!important;text-wrap:balance
+}
+#playOverlay.v101-overhaul .playbody>.playcard .v7-mascot{
+ width:min(21vw,105px)!important;height:auto!important;
+ float:left;max-width:22%;margin:0 0 2px 9px;
+}
+#playOverlay.v101-overhaul.v7-game .playbody>.playcard .v7-question-content{
+ max-width:100%!important;min-width:0!important;position:relative!important;
+ overflow:visible!important;grid-area:unset!important
+}
+#playOverlay.v101-overhaul .playinfo{
+ display:flex!important;flex-wrap:wrap!important;min-height:45px!important;
+ align-items:center!important;gap:9px!important;
+ border-radius:15px!important;padding:9px 13px!important;
+ background:#fff1!important;border:1px solid #ffffff51!important;
+ color:#fff!important;box-shadow:0 6px 16px #09163338!important
+}
+#playOverlay.v101-overhaul .playinfo :is(span,b,strong){color:#f9fcff!important;font-weight:900}
+#playOverlay.v101-overhaul .playinfo>span:first-child{
+ background:linear-gradient(130deg,#7565d9,#4b80ce)!important;color:#fff!important;
+ padding:7px 13px!important;border-radius:11px!important
+}
+#playOverlay.v101-overhaul #playStatus{
+ width:min(100%,1150px)!important;max-width:1150px!important;
+ min-height:47px!important;margin:0 auto!important;
+ padding:10px 15px!important;
+ position:sticky!important;bottom:0!important;z-index:45!important;
+ background:linear-gradient(125deg,#172c58f4,#342762f4)!important;
+ color:#fff!important;border:1px solid #ffffff8a!important;
+ border-radius:14px!important;box-shadow:0 7px 22px #030e32b2!important;
+ backdrop-filter:blur(10px);font-size:clamp(13px,1.55vw,18px)!important;
+ line-height:1.55!important;font-weight:950!important;overflow-wrap:anywhere!important;
+}
+#playOverlay.v101-overhaul #playStatus.v9-success,
+#playOverlay.v101-overhaul #playStatus[data-v6-result=correct]{background:#c6f8dd!important;color:#0a5436!important;border-color:#7adab4!important}
+#playOverlay.v101-overhaul #playStatus.v9-error,
+#playOverlay.v101-overhaul #playStatus[data-v6-result=wrong]{background:#ffe4e4!important;color:#843749!important;border-color:#f4b5bc!important}
+#playOverlay.v101-overhaul :is(.playchoices,.sortopts,.matchgrid,.boxes){min-width:0!important;max-width:100%!important;overflow:visible!important}
+#playOverlay.v101-overhaul .playchoices .choice,
+#playOverlay.v101-overhaul .sortopts .choice{
+ color:#fff!important;text-shadow:0 1px 3px #0005!important;min-width:0;
+ font-size:clamp(15px,1.7vw,22px)!important;line-height:1.55!important;
+ overflow-wrap:anywhere!important;white-space:normal!important
+}
+#playOverlay.v101-overhaul .button,
+#playOverlay.v101-overhaul .choice{touch-action:manipulation}
+#playOverlay.v101-overhaul :is(button,input,textarea,a):focus-visible{
+ outline:4px solid #ffe39b!important;outline-offset:3px!important
+}
+#playOverlay.v101-overhaul .v101-buddy{
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ flex:none!important;width:56px;height:52px;filter:drop-shadow(0 5px 7px #192c6a40);
+ animation:v101-float 3.8s ease-in-out infinite alternate;pointer-events:none
+}
+#playOverlay.v101-overhaul .v101-buddy svg{width:100%;height:100%;overflow:visible;display:block}
+#playOverlay.v101-overhaul .v101-theme-switch{
+ min-width:76px!important;font-size:12px!important;font-weight:900!important;
+ padding:7px 11px!important;border-radius:10px!important;min-height:35px!important
+}
+#playOverlay.v101-overhaul .v101-scene-token{
+ position:absolute;inset-inline-start:10px;bottom:12px;z-index:-1;
+ font-size:clamp(44px,7vw,88px);opacity:.13;
+ filter:drop-shadow(0 9px 13px #001b4280);pointer-events:none;
+ transform:rotate(-15deg);
+}
+#playOverlay.v101-overhaul .v101-wheel-stage{
+ display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,.95fr)!important;
+ gap:clamp(11px,1.4vw,20px)!important;align-items:start!important;
+ width:100%!important;min-width:0!important;direction:rtl;
+}
+#playOverlay.v101-overhaul .v101-wheel-stage .playcard{
+ color:var(--tg-ink)!important;background:var(--tg-paper)!important;
+ border:2px solid var(--tg-border)!important;border-radius:24px!important;
+ box-shadow:0 9px 0 var(--tg-edge),0 20px 34px #090e3257!important;
+ padding:clamp(13px,2vw,23px)!important;max-height:none!important;
+ min-height:0!important;min-width:0!important;
+ overflow:visible!important;position:relative!important;text-align:center!important
+}
+#playOverlay.v101-overhaul .v101-wheel-caption h3{
+ color:var(--tg-ink)!important;font-size:clamp(19px,2vw,27px)!important;
+ margin:0!important;font-weight:950;line-height:1.35!important
+}
+#playOverlay.v101-overhaul .v101-wheel-caption p{
+ font-size:clamp(11px,1.08vw,14px)!important;margin:4px auto 8px!important;
+ max-width:420px;color:var(--tg-muted)!important;line-height:1.6!important
+}
+#playOverlay.v101-overhaul .v101-wheel-board{display:flex;flex-direction:column;gap:9px;align-items:center}
+#playOverlay.v101-overhaul .v101-wheel-frame{position:relative;width:min(100%,365px);aspect-ratio:1;margin:0 auto 3px;flex:none}
+#playOverlay.v101-overhaul .wheel.v101-wheel,
+#playOverlay.v101-overhaul.v6-game .wheel.v101-wheel{
+ display:block!important;position:relative!important;width:100%!important;height:100%!important;
+ aspect-ratio:1!important;margin:0 auto!important;
+ border:11px solid #fdf4d4!important;border-radius:50%!important;
+ background:radial-gradient(circle,#fff 0%,#eef4ff 100%)!important;
+ box-shadow:inset 0 0 0 4px #cbaddd,0 10px 0 #c59e63,0 23px 29px #00000053!important;
+ transform:none!important;transition:none!important;isolation:isolate;
+ overflow:hidden!important
+}
+#playOverlay.v101-overhaul .v101-wheel.v101-wheel-done{filter:saturate(.35);opacity:.7}
+#playOverlay.v101-overhaul .wheel.v101-wheel:before,
+#playOverlay.v101-overhaul.v6-game .wheel.v101-wheel::before{display:none!important}
+#playOverlay.v101-overhaul .v101-wheel-pointer{
+ position:absolute;top:-15px;left:50%;transform:translateX(-50%);width:0;height:0;z-index:9;
+ border-left:20px solid transparent;border-right:20px solid transparent;border-top:33px solid #7949d2;
+ filter:drop-shadow(0 4px 3px #2b286080)
+}
+#playOverlay.v101-overhaul .v101-wheel-rotor{position:absolute;inset:0;transform-origin:50% 50%;will-change:transform}
+#playOverlay.v101-overhaul .v101-wheel-svg{display:block;width:100%;height:100%;overflow:visible}
+#playOverlay.v101-overhaul .v101-wheel-svg .v101-slice-label{
+ fill:#243654!important;color:#243654!important;font-family:Tahoma,"Segoe UI",Arial,sans-serif!important;
+ font-weight:900!important;paint-order:stroke;stroke:#ffffff4d;stroke-width:.55px;
+ unicode-bidi:plaintext;pointer-events:none
+}
+#playOverlay.v101-overhaul .v101-wheel-hub{
+ position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+ width:24%;height:24%;z-index:3;border-radius:50%;
+ background:radial-gradient(circle at 35% 30%,#fff,#f8e8ff 70%,#a798d9)!important;
+ color:#55349e!important;display:flex;align-items:center;justify-content:center;
+ flex-direction:column;font-size:clamp(12px,1.5vw,18px);font-weight:950;
+ border:5px solid #fff;box-shadow:0 3px 8px #5e388a8c
+}
+#playOverlay.v101-overhaul .v101-wheel-hub span{font-size:clamp(16px,2vw,26px)}
+#playOverlay.v101-overhaul .v101-wheel-buttons{display:flex;justify-content:center!important;width:100%;gap:10px}
+#playOverlay.v101-overhaul .v101-spin-button{
+ min-height:50px!important;padding:11px 27px!important;
+ border:2px solid #fff3c0!important;border-radius:14px!important;
+ background:linear-gradient(125deg,#ffe2a1,#ffad70)!important;
+ color:#513063!important;box-shadow:0 6px 0 #bd8753,0 14px 20px #190f3254!important;
+ font-size:clamp(15px,1.5vw,20px)!important;font-weight:950!important
+}
+#playOverlay.v101-overhaul .v101-spin-button:disabled{opacity:.67!important;filter:saturate(.6)}
+#playOverlay.v101-overhaul .v101-wheel-total{color:var(--tg-muted)!important;font-size:12px!important;font-weight:800!important;line-height:1.6}
+#playOverlay.v101-overhaul .v101-wheel-question{
+ display:flex;flex-direction:column;align-items:stretch;justify-content:center!important;
+ gap:13px;text-align:center!important;
+ min-height:300px!important;align-self:stretch!important;position:relative!important;
+}
+#playOverlay.v101-overhaul .v101-question-chip,
+#playOverlay.v101-overhaul .v6-question-label{
+ display:inline-flex;justify-content:center;align-items:center;align-self:center!important;
+ max-width:100%;width:fit-content;background:#e9e2ff!important;color:#523994!important;
+ border:1px solid #c9b5ef!important;border-radius:99px!important;padding:6px 13px!important;
+ font-size:12px!important;line-height:1.6!important;font-weight:950!important;z-index:4
+}
+#playOverlay.v101-overhaul #wheelReveal h3,
+#playOverlay.v101-overhaul.v6-game #wheelReveal h3{
+ color:var(--tg-ink)!important;font-size:clamp(23px,2.75vw,36px)!important;
+ line-height:1.65!important;font-weight:950!important;margin:5px 0!important;
+ text-align:center!important;overflow:visible!important;max-height:none!important;
+ opacity:1!important;visibility:visible!important;text-wrap:balance;
+ word-break:normal!important;overflow-wrap:anywhere!important
+}
+#playOverlay.v101-overhaul .v101-wheel-guidance,
+#playOverlay.v101-overhaul .v101-wheel-placeholder p{
+ color:var(--tg-muted)!important;font-size:clamp(14px,1.4vw,18px)!important;
+ font-weight:800;line-height:1.7!important
+}
+#playOverlay.v101-overhaul .v101-wheel-dice{
+ font-size:clamp(62px,8vw,116px);filter:drop-shadow(0 14px 16px #5546a75d);
+ animation:v101-float 3s ease-in-out infinite alternate
+}
+#playOverlay.v101-overhaul .v101-wheel-answer{
+ color:#126347!important;background:#d5ffea!important;border:2px solid #7bdbb0!important;
+ font-weight:950!important;line-height:1.8;padding:15px!important;border-radius:15px!important;
+ text-align:center;overflow-wrap:anywhere;font-size:clamp(15px,1.7vw,22px);
+}
+#playOverlay.v101-overhaul .v101-wheel-reveal{
+ background:linear-gradient(120deg,#9b7cff,#604ad1)!important;color:#fff!important;
+ border-radius:14px!important;min-height:50px;align-self:center!important
+}
+/* Keep every other arcade mode readable and a little more dimensional. */
+#playOverlay.v101-overhaul .mystery{
+ transform-style:preserve-3d;box-shadow:0 9px 0 #614da2,0 18px 22px #060d2e6c!important;
+ font-weight:950!important;border:3px solid #ffffffad!important;
+}
+#playOverlay.v101-overhaul .mystery:not(:disabled):hover{filter:brightness(1.1);transform:translateY(-3px)}
+#playOverlay.v101-overhaul .flipcard,
+#playOverlay.v101-overhaul .extra-memory-card{
+ transform-style:preserve-3d;backface-visibility:hidden;
+ box-shadow:0 9px 0 #92a8d1,0 17px 24px #010b2962!important
+}
+#playOverlay.v101-overhaul .extra-balloon{filter:drop-shadow(0 10px 14px #091a4a66)}
+#playOverlay.v101-overhaul :is(.extra-memory-card,.extra-letter,.extra-word-letter,.extra-cross-letter,.extra-bingo-cell,.matchitem,.mystery){
+ font-weight:950!important;overflow-wrap:anywhere!important
+}
+#playOverlay.v101-overhaul .countnote{color:#e6f7ff!important;font-size:13px!important;font-weight:850!important}
+#playOverlay.v101-overhaul :is(.extra-score-team,.extra-order-line,.extra-survey-row){
+ background:#f8fbff!important;color:#204060!important;border:2px solid #b7d3ef!important;
+ box-shadow:0 7px 15px #0b1c3d28!important;border-radius:15px!important
+}
+#playOverlay.v101-overhaul :is(.extra-score-team,.extra-order-line,.extra-survey-row) :is(b,strong,p,span){color:#204060!important}
+#playOverlay.v101-overhaul .extra-diagram-mark{color:#623d1c!important}
+#playOverlay.v101-overhaul .extra-cross-letter{color:#213b5e!important}
+#playOverlay.v101-overhaul .extra-letter{color:#214362!important}
+#playOverlay.v101-overhaul :is(.extra-gap,.extra-slots,.extra-letters,.extra-word-label){
+ color:#263f61!important;line-height:1.7!important
+}
+#playOverlay.v101-overhaul[data-v101-theme=dark] .playbody>.playcard,
+#playOverlay.v101-overhaul[data-v101-theme=dark] .v101-wheel-stage .playcard{
+ background:#1b2d4c!important;border-color:#6075a0!important;color:#f2f7ff!important
+}
+#playOverlay.v101-overhaul[data-v101-theme=dark] .playbody>.playcard :is(h2,h3,p,li),
+#playOverlay.v101-overhaul[data-v101-theme=dark] .v101-wheel-caption :is(h3,p),
+#playOverlay.v101-overhaul[data-v101-theme=dark] #wheelReveal h3{
+ color:#f1f7ff!important
+}
+#playOverlay.v101-overhaul[data-v101-theme=dark] .playcard .v101-wheel-guidance,
+#playOverlay.v101-overhaul[data-v101-theme=dark] .playcard .v101-wheel-placeholder p{color:#d2ddf3!important}
+#playOverlay.v101-overhaul[data-v101-theme=dark] #wheelReveal .v101-wheel-answer{
+ background:#174c40!important;border-color:#5ec9a1!important;color:#ddffeb!important
+}
+#playOverlay.v101-overhaul[data-v101-theme=dark] :is(.extra-gap,.extra-slots,.extra-letters,.extra-word-label){color:#e9f4ff!important}
+@keyframes v101-float{from{transform:translateY(-3px)}to{transform:translateY(5px)}}
+@media(max-width:860px){
+ #playOverlay.v101-overhaul .v101-wheel-stage{grid-template-columns:minmax(0,1fr)!important}
+ #playOverlay.v101-overhaul .v101-wheel-board{width:100%!important}
+ #playOverlay.v101-overhaul .v101-wheel-frame{width:min(100%,320px)}
+ #playOverlay.v101-overhaul .v101-wheel-question{min-height:145px!important}
+ #playOverlay.v101-overhaul .v101-wheel-placeholder{display:flex;align-items:center;gap:15px;justify-content:center}
+ #playOverlay.v101-overhaul .v101-wheel-dice{font-size:52px}
+}
+@media(max-width:620px){
+ #playOverlay.v101-overhaul{padding:7px!important;gap:9px!important}
+ #playOverlay.v101-overhaul .playhead{min-height:53px!important;padding:7px 9px!important;border-radius:12px!important}
+ #playOverlay.v101-overhaul .playhead h2{font-size:17px!important}
+ #playOverlay.v101-overhaul .playhead .eyebrow{font-size:9px!important}
+ #playOverlay.v101-overhaul .playhead .buttons{gap:4px!important}
+ #playOverlay.v101-overhaul .playhead .buttons .button{padding:6px 8px!important;font-size:11px!important;min-height:32px!important}
+ #playOverlay.v101-overhaul .playhead .v101-theme-switch{padding:6px!important;min-width:66px!important}
+ #playOverlay.v101-overhaul .v101-buddy{width:41px;height:39px}
+ #playOverlay.v101-overhaul .playbody{padding:0 2px 15px!important;gap:10px!important}
+ #playOverlay.v101-overhaul .playbody>.playcard{padding:14px!important;border-radius:15px!important}
+ #playOverlay.v101-overhaul .playbody>.playcard h3{font-size:clamp(20px,5vw,26px)!important}
+ #playOverlay.v101-overhaul .v101-wheel-stage .playcard{padding:13px!important;border-radius:15px!important}
+ #playOverlay.v101-overhaul .v101-wheel-frame{width:min(100%,280px)}
+ #playOverlay.v101-overhaul .v101-wheel-question{min-height:130px!important}
+ #playOverlay.v101-overhaul #wheelReveal h3{font-size:clamp(21px,5.4vw,28px)!important}
+ #playOverlay.v101-overhaul .v101-wheel-caption p{font-size:12px!important}
+ #playOverlay.v101-overhaul .v101-wheel-total{font-size:11px!important}
+ #playOverlay.v101-overhaul .v101-question-chip{font-size:11px!important}
+ #playOverlay.v101-overhaul .playinfo{padding:7px 9px!important;gap:6px!important;font-size:12px!important}
+ #playOverlay.v101-overhaul .playchoices{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
+ #playOverlay.v101-overhaul .playchoices .choice{min-height:81px!important;font-size:clamp(13px,3.5vw,17px)!important;padding:9px!important}
+ #playOverlay.v101-overhaul .matchgrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ #playOverlay.v101-overhaul #playStatus{font-size:12px!important;min-height:40px!important;padding:8px!important}
+}
+@media(max-width:400px){
+ #playOverlay.v101-overhaul .v101-wheel-frame{width:min(100%,255px)}
+ #playOverlay.v101-overhaul .v101-buddy{display:none!important}
+ #playOverlay.v101-overhaul .playhead{gap:4px!important}
+ #playOverlay.v101-overhaul .playhead .buttons .button{font-size:10px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ #playOverlay.v101-overhaul *{animation:none!important;transition-duration:.01ms!important}
+}
