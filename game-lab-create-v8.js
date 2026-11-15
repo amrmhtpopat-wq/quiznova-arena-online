@@ -200,7 +200,7 @@ function preview(){
  catch(_){alertMsg('يلزم السماح بالتخزين المؤقت للمعاينة.',true);return}
  $('previewOverlay').hidden=false;D.body.classList.add('modal-open');
  $('previewTopTitle').textContent='🎮 معاينة '+modes.get(mode)[1];
- $('gameFrame').src='/game-lab-preview.html?creatorPreview=1&mode='+encodeURIComponent(mode)+'&v=8';
+ $('gameFrame').src='/game-lab-preview.html?creatorPreview=1&mode='+encodeURIComponent(mode)+'&v=9';
  $('closePreview').focus({preventScroll:true});
 }
 function closePreview(){
@@ -237,6 +237,9 @@ async function login(e){
 }
 async function cloudSave(){
  if(!valid())return null;
+ if((mode==='diagram'||mode==='hidden')&&$('v9ImageUpload')?.files?.length&&!$('v9ImageId')?.value){
+  alertMsg('ارفَع الصورة للحفظ الدائم قبل حفظ هذا النشاط.',true);return null
+ }
  if(!(await authCheck())){alertMsg('سجّل الدخول قبل الحفظ.',true);return null}
  const b=$('saveCloud');b.disabled=true;
  try{
@@ -284,7 +287,9 @@ async function library(){
    const info=D.createElement('div'),title=D.createElement('h3'),meta=D.createElement('p'),b=D.createElement('button');
    title.textContent=a.title;meta.textContent=(modes.get(a.mode)?.[1]||a.mode)+' · '+a.questionCount+' سؤال · '+(a.published?'منشور':'مسودة');
    info.append(title,meta);b.className='btn btn-soft';b.textContent='✏️ تعديل';b.type='button';b.onclick=()=>loadSaved(a);
-   el.append(info,b);div.append(el);
+   const reports=D.createElement('button');reports.type='button';reports.className='btn btn-ghost v9-open-report';reports.dataset.id=a.id;reports.dataset.title=a.title;reports.textContent='📊 النتائج';
+   const actions=D.createElement('div');actions.className='v9-library-actions';actions.append(b,reports);
+   el.append(info,actions);div.append(el);
   }
  }catch(e){div.textContent='تعذر فتح المكتبة: '+e.message}
 }
