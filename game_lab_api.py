@@ -300,9 +300,13 @@ def question_state(state,token_hash):
             rng.shuffle(choices);choices=choices[:3]+[item['a']]
         correct=item['a']
     rng.shuffle(choices)
-    return {'index':idx,'question':item['q'],'group':item['g'] if mode=='sort' else '',
+    response={'index':idx,'question':item['q'],'group':item['g'] if mode=='sort' else '',
             'choices':choices,'total':len(rows),'mode':mode,
             'duration':state['duration'],'score':state['score']}
+    if mode=='diagram':
+        response['markerX']=item.get('markerX',50)
+        response['markerY']=item.get('markerY',50)
+    return response
 
 
 def expected_answer(state,token_hash):
@@ -421,7 +425,8 @@ def answer(data,h):
                 state['correct']+=1;state['score']+=100
             state.setdefault('history',[]).append({
                 'index':idx,'group':str(state['rows'][idx].get('g') or 'عام')[:60],
-                'correct':correct if graded else None})
+                'correct':correct if graded else None,
+                'response':raw[:120] if not graded else None})
             state['index']+=1
             finished=state['index']>=len(state['rows'])
             state['finished']=finished
@@ -480,7 +485,9 @@ def teacher_reports(tid,aid):
         output.append({'name':rec['student_name'],'className':rec['class_name'],
             'correct':state.get('correct',0),'questions':len(state.get('rows',[])),
             'score':state.get('score',0),'xpGain':state.get('xpGain',0),
-            'guest':not bool(rec['student_id']),'finishedAt':rec['finished_at']})
+            'guest':not bool(rec['student_id']),'finishedAt':rec['finished_at'],
+            'responses':[{'group':h.get('group','عام'),'text':h.get('response','')}
+                         for h in state.get('history',[]) if h.get('response') is not None]})
     return {'results':output,'total':len(output),
             'averagePercent':round(sum(100*x['correct']/max(x['questions'],1) for x in output)/len(output),1) if output else 0,
             'skillSummary':[{'group':key,'correct':v['correct'],'answers':v['answers'],
