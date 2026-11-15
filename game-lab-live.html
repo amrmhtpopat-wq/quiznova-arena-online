@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow,noarchive"><meta name="theme-color" content="#0b2241">
-<title>BOOYAHJO GAME LAB | المنافسة المباشرة</title>
+<title>TeachGame | Classroom Pilot V10</title>
 <style>
 :root{font-family:Tahoma,"Segoe UI",Arial,sans-serif;--bg:#07172f;--panel:#123b61;--line:#386c91;--ink:#effbff;--muted:#b9d4e7;--mint:#7bffe2;color-scheme:dark}
 *{box-sizing:border-box}body{margin:0;min-height:100dvh;background:radial-gradient(ellipse at 85% 0,#15547e,transparent 38%),var(--bg);color:var(--ink);line-height:1.5}
@@ -26,27 +26,27 @@ button:focus-visible,input:focus-visible,a:focus-visible,select:focus-visible{ou
 .teams-mates{font-size:.8rem;color:#bce8f9}.count{color:#ffdd89;font-weight:900;font-size:clamp(1.25rem,2.4vw,1.85rem)}.session-url{direction:ltr;font-size:.72rem;word-break:break-all;color:#b4dfed}
 @media(max-width:1000px){.stage{grid-template-columns:minmax(0,1fr) 250px;gap:9px}.stage-left,.stage-right{max-height:none}.stage .panel{padding:12px}.stage-left{min-height:550px}}@media(max-width:700px){.stage{display:flex;flex-direction:column}.stage-left,.stage-right{max-height:none;min-height:0}.wrap{padding:11px}.q-options{grid-template-columns:1fr;gap:8px}.q-option{min-height:59px}.question-card{min-height:0}.row2{grid-template-columns:1fr}.rank{padding:7px 9px}}
 @media(min-width:1000px) and (min-height:700px){.wrap{max-height:100dvh;overflow:hidden}.stage-left,.stage-right{height:calc(100dvh - 116px)}.question-card{overflow:auto}.ranks{max-height:40vh}}
-</style><link rel="stylesheet" href="/game-lab-v4-student.css?v=4.0"></head><body class="lab-v4-live">
-<div class="wrap"><header class="top"><div class="brand">⚡ BOOYAH<em>JO</em> <span style="color:#bbdaec;font-size:.62em">LIVE GAME LAB</span></div><div class="actions"><span class="pill" id="roomBadge">رمز الغرفة: —</span><button id="fullButton" class="btn alt">⛶ ملء الشاشة</button><a class="pill" href="/game-lab-preview.html">مختبر الألعاب</a></div></header>
+</style><link rel="stylesheet" href="/game-lab-v4-student.css?v=4.0"><link rel="stylesheet" href="/game-lab-classroom-v10.css?v=10.0"></head><body class="lab-v4-live">
+<div class="wrap"><header class="top"><div class="brand">🎮 Teach<em>Game</em> <span style="color:#bbdaec;font-size:.62em">CLASSROOM V10</span></div><div class="actions"><span class="pill" id="roomBadge">رمز الغرفة: —</span><button id="fullButton" class="btn alt">⛶ ملء الشاشة</button><a class="pill" href="/game-lab-preview.html">مختبر الألعاب</a></div></header>
 <section id="join" class="panel login"><div style="font-size:3.2rem;text-align:center">🏆</div><h1 id="joinTitle">انضم للمنافسة المباشرة</h1><p id="joinHelp">اكتب رمز الغرفة ورمز بطاقة الطالب للمنافسة، أو ادخل باسم تجريبي بدون نقاط XP.</p>
 <div class="field"><label for="roomCode">🔢 رمز الغرفة</label><input id="roomCode" autocomplete="off" maxlength="8" placeholder="ABC123" dir="ltr" style="text-align:center;letter-spacing:.12em"></div>
 <div class="row2"><div class="field"><label for="joinCard">🪪 رمز بطاقة الطالب</label><input id="joinCard" autocomplete="off" maxlength="90" placeholder="اختياري عند تجربة الضيف"></div><div class="field"><label for="joinName">👨‍🎓 الاسم (للضيف فقط)</label><input id="joinName" autocomplete="name" maxlength="40" placeholder="طالب تجريبي"></div></div><button class="btn" id="joinButton">🚀 انضم الآن</button><p class="good" role="status" id="joinStatus"></p></section>
 <section id="teacher" class="stage hidden"><div class="stage-left"><div class="panel"><div class="live-head"><h2 id="teacherTitle" class="live-title">المنافسة المباشرة</h2><div class="actions"><span id="teacherStatus" class="pill">انتظار</span><span id="teacherTimer" class="count">—</span></div></div><div class="round"><span id="teacherRound" class="pill">الجولة 0</span><span id="teacherAnswered" class="pill">0 / 0 أجابوا</span></div></div>
 <div id="teacherLobbyLinks" class="panel" style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap"><div class="code" id="teacherPin">------</div><img id="teacherQr" alt="رمز QR الخاص بالغرفة" style="max-height:105px;background:white;border-radius:12px;padding:6px"><small id="teacherJoinUrl" class="session-url"></small></div><div class="panel question-card" id="teacherQuestionCard"><div class="waiting"><strong>🎯 شارك PIN مع طلابك</strong><span>بعد انضمامهم اضغط «بدء التحدي»</span></div></div>
-<div class="panel live-actionbar"><button id="teacherStart" class="btn gold">▶ بدء التحدي</button><button id="teacherNext" class="btn hidden">السؤال التالي ⟵</button><button id="teacherEnd" class="btn clear">⏹ إنهاء الجلسة</button></div></div>
+<div class="panel live-actionbar"><button id="teacherStart" class="btn gold">▶ بدء التحدي</button><button id="teacherNext" class="btn hidden">السؤال التالي ⟵</button><button id="teacherEnd" class="btn clear">⏹ إنهاء الجلسة</button><button id="teacherReport" class="btn gold" type="button">📊 نتائج الجلسة</button></div></div>
 <div class="stage-right"><div class="panel" style="display:flex;flex-direction:column;flex:1;min-height:0"><div class="leader-title"><h3>🏅 أفضل خمسة طلاب</h3><span id="teacherMembers" class="pill">0 لاعب</span></div><div id="teacherRanks" class="ranks"></div></div><div class="panel"><div class="leader-title"><h3>👥 ترتيب المجموعات</h3></div><div id="teacherTeamRanks"></div></div></div></section>
 <section id="student" class="student-stage hidden"><div class="panel live-head"><div><h2 class="live-title" id="studentTitle">تحدّي تعليمي مباشر</h2><p style="margin:3px 0;color:#a9d6e4;font-size:.8rem" id="studentTeam"></p></div><div class="actions"><span id="studentRound" class="pill">الجولة</span><span id="studentTimer" class="count">—</span><span id="studentScore" class="pill">0 ⭐</span></div></div>
 <div class="panel question-card" id="studentQuestionCard"><div class="waiting"><strong>✅ تم الانضمام بنجاح</strong><p>أنت الآن في غرفة الانتظار، استعد للسؤال التالي.</p></div></div>
 <div id="studentMessage" class="panel status" role="status" aria-live="polite">جارٍ مزامنة الجلسة...</div>
 <div class="panel"><div class="leader-title"><h3>🏆 الترتيب الحالي</h3></div><div id="studentRanks" class="ranks"></div><div id="studentMates" class="teams-mates"></div></div></section>
-<footer class="footer">BOOYAHJO GAME LAB · الأسئلة والنقاط متزامنة مع الخادم · نتائج الفرق والفردي دون تكرار نقاط XP</footer></div>
+<section id="v10Report" class="panel v10-report hidden" aria-label="تقرير الفصل المباشر"><header class="v10-report-head"><h2>📊 تقرير الفصل المباشر</h2><div class="actions"><button id="v10ReportRefresh" class="btn alt" type="button">تحديث النتائج</button><button id="v10ReportCsv" class="btn gold" type="button">⬇️ تصدير Excel (CSV)</button><button id="v10ReportClose" class="btn clear" type="button">✕ إغلاق</button></div></header><p id="v10ReportSummary" role="status"></p><div id="v10ReportSkills" class="v10-report-skills"></div><div class="v10-table-scroll"><table class="v10-table"><thead><tr><th>المركز</th><th>الطالب</th><th>الشعبة</th><th>الصحيح</th><th>الدرجة /100</th><th>النقاط</th><th>الفريق</th></tr></thead><tbody id="v10ReportTable"></tbody></table></div><div id="v10ReportQuestions" class="v10-report-questions"></div></section><footer class="footer">TeachGame Classroom · مزامنة آمنة للأسئلة والنقاط · تقارير محفوظة للمعلم · دون إضافة XP مرتين</footer></div>
 <script>
 (()=>{'use strict';const $=id=>document.getElementById(id);
 const params=new URLSearchParams(location.search),teacherCode=params.get('host')||'',playerCode=params.get('code')||'';
 const code=(teacherCode||playerCode).trim().toUpperCase();
 const host=!!teacherCode,tokenKey='qn9_teacher_token',runKey='lab_room_session_'+code;
 let studentToken=sessionStorage.getItem(runKey)||'',state=null,polling=null,pending=false,shownIndex=-1,teacherRenderKey='',studentRenderKey='';
-const map={room_not_found:'الغرفة غير موجودة أو انتهت صلاحيتها.',invalid_card:'رمز البطاقة غير صحيح.',card_other_teacher:'هذه البطاقة تخص معلمًا آخر.',already_joined:'هذه البطاقة دخلت الغرفة بالفعل. افتح الغرفة على الجهاز الذي دخلت منه.',room_full:'اكتملت سعة الغرفة.',invalid_session:'تعذر استعادة الجلسة. ادخل مجددًا.',question_closed:'انتهى الوقت أو انتقل السؤال.',already_answered:'لقد أجبت عن السؤال بالفعل.',rate_limited:'طلبات كثيرة، جرّب بعد قليل.'};
+const map={room_not_found:'الغرفة غير موجودة أو انتهت صلاحيتها.',invalid_card:'رمز البطاقة غير صحيح.',card_other_teacher:'هذه البطاقة تخص معلمًا آخر.',card_wrong_grade:'البطاقة تخص صفًا آخر غير المستهدف في النشاط.',card_required:'هذه الغرفة تتطلب بطاقة طالب صالحة.',live_mode_not_supported:'هذا القالب غير متاح للمنافسة المباشرة بعد.',already_joined:'هذه البطاقة دخلت الغرفة بالفعل. افتح الغرفة على الجهاز الذي دخلت منه.',room_full:'اكتملت سعة الغرفة.',invalid_session:'تعذر استعادة الجلسة. ادخل مجددًا.',question_closed:'انتهى الوقت أو انتقل السؤال.',already_answered:'لقد أجبت عن السؤال بالفعل.',rate_limited:'طلبات كثيرة، جرّب بعد قليل.'};
 function err(e){return map[e.message]||'تعذّر الاتصال بالخادم: '+e.message}
 async function api(url,data){
  const opts={cache:'no-store',headers:{}};
@@ -67,20 +67,57 @@ function rankList(target,items,max=5){target.replaceChildren();const best=(items
 function teams(target,items){target.replaceChildren();if(!items?.length){target.append(element('div','pill','وضع اللعب فردي'));return}items.forEach(x=>{const row=element('div','teamrank');row.append(element('b','',x.name),element('strong','',x.score+' ⭐'));target.append(row)})}
 function createQuestion(target,s,isTeacher){
  target.replaceChildren();const q=s.question;
- if(!q){const section=element('div','waiting');section.append(element('strong','',s.status==='finished'?'🏆 انتهت المنافسة':'🎯 انتظر بدء الجلسة'));target.append(section);return}
- const heading=element('h2','',q.text);target.append(heading);
- if(q.imageUrl){const img=element('img','image');img.src=q.imageUrl;img.alt='صورة السؤال';target.append(img)}
- const buttons=element('div','q-options');
- for(const text of q.options){
-  const btn=button(text,()=>submit(q.index,text,btn));
-  btn.className='q-option';btn.dataset.value=text;
-  if(isTeacher||s.status==='results'||s.me?.answered)btn.disabled=true;
-  if((isTeacher||s.status==='results')&&s.correctAnswer===text)btn.classList.add('correct');
-  buttons.append(btn)
- }target.append(buttons);
+ if(!q){const panel=element('div','waiting');panel.append(element('strong','',s.status==='finished'?'🏆 اكتملت المنافسة!':'🎯 انتظر بدء الجولة'));target.append(panel);return}
+ target.dataset.v10Mode=q.mode||s.mode||'quiz';
+ const theme={quiz:'🎯 تحدي الاختيار',fast:'⚡ سباق الوقت',truth:'✅ صح أم خطأ',
+             pairs:'🧩 مطابقة الأزواج',wheel:'🎡 عجلة الحظ',boxes:'🎁 الصناديق الغامضة'};
+ target.append(element('div','v10-mode-chip',theme[q.mode]||'🎮 تحدي الفصل'));
+ const hero=element('div','v10-question-hero');
+ if(q.mode==='wheel'){
+  const circle=element('div','v10-spinning-wheel','TG');circle.setAttribute('aria-hidden','true');
+  hero.append(circle);
+ }else if(q.mode==='boxes'){
+  const box=element('div','v10-box-art','🎁');box.setAttribute('aria-hidden','true');hero.append(box);
+ }else if(q.mode==='pairs'){
+  const symbol=element('div','v10-match-symbol','🧩');symbol.setAttribute('aria-hidden','true');hero.append(symbol);
+ }
+ const label=element('h2','',q.text);hero.append(label);
+ if(q.mode==='truth'){
+  const candidate=element('div','v10-truth-candidate','🔎 '+(q.candidate||''));
+  hero.append(candidate);
+ }
+ if(q.imageUrl){const image=element('img','image');image.src=q.imageUrl;image.alt='صورة السؤال';hero.append(image)}
+ target.append(hero);
+ const options=element('div','q-options v10-options');
+ if(q.mode==='truth')options.classList.add('v10-truth-options');
+ if(q.mode==='pairs')options.classList.add('v10-pair-options');
+ const canAnswer=!isTeacher&&s.status==='question'&&!s.me?.answered;
+ const build=()=>{
+  for(const value of q.options){
+   const text=q.mode==='pairs'?'🔗 '+value:q.mode==='truth'?(value==='صح'?'✓ صح':'✕ خطأ'):value;
+   const action=button(text,()=>submit(q.index,value,action));
+   action.className='q-option';action.dataset.value=value;
+   action.disabled=!canAnswer;
+   if((isTeacher||s.status==='results')&&s.correctAnswer===value)action.classList.add('correct');
+   options.append(action);
+  }
+ };
+ if(q.mode==='boxes'&&s.status==='question'&&canAnswer){
+  const open=button('🎁 افتح الصندوق رقم '+(q.index+1),()=>{
+    open.classList.add('hidden');hero.querySelector('.v10-box-art')?.classList.add('v10-opened');
+    options.classList.remove('hidden');target.append(element('p','v10-hint','✨ اختر الإجابة الصحيحة من البطاقات'));
+  },'btn gold v10-open-box');
+  options.classList.add('hidden');target.append(open);
+ }
+ if(q.mode==='pairs')target.append(element('p','v10-hint','اختر البطاقة التي تطابق المفهوم المعروض'));
+ if(q.mode==='fast')target.append(element('div','v10-timebar',''));
+ build();target.append(options);
+ if(q.mode==='wheel')target.append(element('p','v10-hint','🎡 دارت العجلة واختارت هذا السؤال دون تكرار'));
  if(s.status==='results'){
-  const feedback=element('div','status',s.correctAnswer?'✅ الإجابة الصحيحة: '+s.correctAnswer:'اكتملت الجولة. استعد للسؤال التالي.');target.append(feedback)
- }else if(!isTeacher&&s.me?.answered)target.append(element('div','status','✅ تم تسجيل إجابتك. استعد للجولة التالية.'));
+  target.append(element('div','status v10-result',s.correctAnswer?'✅ الإجابة الصحيحة: '+s.correctAnswer:'انتهت الجولة، استعد للسؤال التالي'));
+ }else if(!isTeacher&&s.me?.answered){
+  target.append(element('div','status v10-waiting','✅ تم تسجيل إجابتك. انتظر الجولة القادمة.'));
+ }
 }
 async function submit(index,choice,b){
  if(pending||!studentToken||!state||state.status!=='question'||state.me?.answered)return;
@@ -105,11 +142,11 @@ function renderTeacher(s){
  if($('teacherQr').dataset.forUrl!==playerUrl){$('teacherQr').src='/api/qr?format=svg&text='+encodeURIComponent(playerUrl);$('teacherQr').dataset.forUrl=playerUrl;}
  $('teacherStart').classList.toggle('hidden',s.status!=='lobby');
  $('teacherNext').classList.toggle('hidden',!['question','results'].includes(s.status));
- $('teacherNext').textContent=s.index+1>=s.total?'🏆 إظهار الترتيب النهائي':'السؤال التالي ⟵';
- $('teacherNext').disabled=s.status==='question';
+ $('teacherNext').textContent=s.index+1>=s.total?'🏆 إظهار الترتيب النهائي':s.status==='question'?'⏭ تخطي السؤال':'السؤال التالي ⟵';
+ $('teacherNext').disabled=false;
  $('teacherEnd').disabled=s.status==='finished';
  $('teacherLobbyLinks').classList.toggle('hidden',s.status!=='lobby');
- const renderKey=s.status+':'+s.index;
+ const renderKey=s.status+':'+s.index+':'+s.mode;
  if(teacherRenderKey!==renderKey){
   teacherRenderKey=renderKey;
   if(s.status==='lobby'){const target=$('teacherQuestionCard');target.innerHTML='<div class="waiting"><strong>شارك رمز الجلسة مع الطلاب</strong><p>عند اكتمال الانضمام اضغط «بدء التحدي»</p><div class="code" id="teacherPinLive"></div></div>';$('teacherPinLive').textContent=s.code;}
@@ -126,7 +163,7 @@ function renderStudent(s){
  $('studentTimer').textContent=s.status==='question'?'⏱ '+countdown(s.deadline)+' ث':statusText(s.status);
  $('studentScore').textContent=(s.me?.score||0)+' ⭐';
  $('studentTeam').textContent='👤 '+(s.me?.name||'طالب')+(s.me?.team?' · فريق '+s.me.team:'');
- const renderKey=s.status+':'+s.index+':'+Boolean(s.me?.answered);
+ const renderKey=s.status+':'+s.index+':'+Boolean(s.me?.answered)+':'+s.mode;
  if(studentRenderKey!==renderKey){
   studentRenderKey=renderKey;
   if(s.status==='lobby'){$('studentQuestionCard').innerHTML='<div class="waiting"><strong>✅ انضممت بنجاح</strong><p>استعد للسؤال الأول، ستظهر الأسئلة تلقائيًا.</p></div>'}
@@ -164,7 +201,7 @@ async function join(){
  $('joinButton').disabled=true;$('joinStatus').textContent='جارٍ الانضمام...';
  try{
   const data=await api('/api/game-lab/live/join',{code:room,card,guestName:name});
-  studentToken=data.token;sessionStorage.setItem('lab_room_session_'+room,studentToken);
+  studentToken=data.token;sessionStorage.setItem('lab_room_session_'+room,studentToken);if(card)sessionStorage.setItem('booyah_lab_card_code',card);
   location.replace('/game-lab-live.html?code='+encodeURIComponent(room))
  }catch(e){$('joinStatus').textContent=err(e);$('joinButton').disabled=false}
 }
@@ -172,14 +209,68 @@ $('joinButton').onclick=join;
 $('teacherStart').onclick=()=>command('start');
 $('teacherNext').onclick=()=>command('next');
 $('teacherEnd').onclick=()=>{if(confirm('هل تريد إنهاء المباراة وعرض الترتيب النهائي؟'))command('finish')};
+
+let currentReport=null;
+const secureCSV=v=>{
+ let text=String(v??'');
+ if(/^\s*[=+\-@]/.test(text))text="'"+text;
+ return '"'+text.replace(/"/g,'""')+'"';
+};
+function displayRoomReport(data){
+ currentReport=data;const target=$('v10ReportTable');target.replaceChildren();
+ const ordered=[...(data.results||[])].sort((a,b)=>b.score-a.score||b.correct-a.correct);
+ ordered.forEach((r,i)=>{
+  const tr=document.createElement('tr');
+  for(const value of [i+1,r.name,r.className,r.correct+' / '+r.total,r.percent+'%',r.score,r.team||'—']){
+   const td=document.createElement('td');td.textContent=String(value);tr.append(td);
+  }
+  target.append(tr);
+ });
+ $('v10ReportSummary').textContent='📋 '+data.title+' • '+data.totalPlayers+' مشارك • '+data.totalQuestions+' سؤال';
+ const skills=$('v10ReportSkills');skills.replaceChildren();
+ for(const item of data.skills||[]){
+  const part=element('div','v10-skill');part.append(element('strong','',item.name+' — '+item.accuracy+'%'));
+  const track=element('div','v10-skill-track');const fill=element('span','');fill.style.width=item.accuracy+'%';
+  track.append(fill);part.append(track,element('small','',item.correct+' صحيحة من '+item.answered));skills.append(part);
+ }
+ const low=$('v10ReportQuestions');low.replaceChildren();
+ for(const item of data.questions||[]){
+  if(item.answered&&item.accuracy<60)low.append(element('p','v10-needs-support','السؤال '+(item.index+1)+' • '+item.accuracy+'% صحة • يحتاج دعمًا: '+item.question));
+ }
+ $('v10Report').classList.remove('hidden');
+}
+async function refreshRoomReport(){
+ if(!host)return;
+ $('v10ReportSummary').textContent='جارٍ تحميل النتائج...';
+ try{
+  const data=await api('/api/game-lab/live/report?code='+encodeURIComponent(code));
+  displayRoomReport(data);
+ }catch(e){$('v10ReportSummary').textContent=err(e);$('v10Report').classList.remove('hidden')}
+}
+function csvRoomReport(){
+ if(!currentReport)return;
+ const header=['الترتيب','اسم الطالب','الشعبة','الصحيح','الأسئلة','العلامة من 100','النقاط','الفريق'];
+ const ordered=[...currentReport.results].sort((a,b)=>b.score-a.score||b.correct-a.correct);
+ const values=[header,...ordered.map((r,i)=>[i+1,r.name,r.className,r.correct,r.total,r.percent,r.score,r.team])];
+ const csv='\uFEFF'+values.map(row=>row.map(secureCSV).join(',')).join('\r\n');
+ const href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+ const anchor=document.createElement('a');anchor.href=href;anchor.download='TeachGame-Classroom-'+code+'.csv';
+ document.body.append(anchor);anchor.click();anchor.remove();setTimeout(()=>URL.revokeObjectURL(href),1500);
+}
+$('teacherReport').onclick=refreshRoomReport;
+$('v10ReportRefresh').onclick=refreshRoomReport;
+$('v10ReportCsv').onclick=csvRoomReport;
+$('v10ReportClose').onclick=()=>{$('v10Report').classList.add('hidden')};
+
 $('fullButton').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen()}catch(_){}};
 if(code){$('roomCode').value=code;$('roomBadge').textContent='PIN: '+code}
 else $('roomCode').value='';
-const cardSaved=sessionStorage.getItem('booyah_lab_card_code');if(cardSaved)$('joinCard').value=cardSaved;
+const cardSaved=sessionStorage.getItem('booyah_lab_card_code')||sessionStorage.getItem('tg_student_card_code')||'';if(cardSaved)$('joinCard').value=cardSaved;
 if(host){show('teacher');if(!localStorage.getItem(tokenKey))$('teacherStatus').textContent='سجل الدخول بحساب المعلم في هذا المتصفح أولًا.';void sync();}
 else if(code&&studentToken){void sync();}
 else show('join');
 polling=setInterval(()=>{if((host||studentToken)&&!document.hidden)void sync()},1350);
+if(host)document.addEventListener('keydown',e=>{if(e.key==='r'&&e.altKey){e.preventDefault();refreshRoomReport()}});
 window.addEventListener('pagehide',()=>clearInterval(polling));
 })();
 </script></body></html>

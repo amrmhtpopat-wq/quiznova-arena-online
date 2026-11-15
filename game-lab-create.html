@@ -8,6 +8,7 @@
 <title>صانع الألعاب | TeachGame Game Lab</title>
 <link rel="stylesheet" href="/game-lab-create-v8.css?v=8.0">
 <link rel="stylesheet" href="/game-lab-complete-v9.css?v=9.0">
+<link rel="stylesheet" href="/game-lab-create-v10.css?v=10.0">
 <script defer src="/game-lab-create-v8.js?v=8.0"></script>
 <script defer src="/game-lab-complete-v9.js?v=9.0"></script>
 </head>
@@ -118,6 +119,23 @@
      <div class="saved-summary"><span>🎮</span><div><strong id="saveActivityName">نشاط تعليمي</strong><small id="saveActivityMeta"></small></div></div>
      <label class="field"><span>محاولات الطالب المسموحة</span><select id="maxAttempts"><option value="1">محاولة واحدة</option><option value="2">محاولتان</option><option value="3">3 محاولات</option><option value="5">5 محاولات</option><option value="10">10 محاولات</option></select></label>
      <div class="publish-actions"><button type="button" class="btn btn-primary" id="saveCloud">☁️ حفظ على حساب المعلم</button><button type="button" class="btn btn-glow" id="publishCloud">🚀 حفظ ونشر للطلاب</button><button type="button" class="btn btn-ghost" id="generateAll">🧩 تحويل إلى 24 لعبة</button></div>
+     <section class="v10-classroom-launch" id="v10ClassroomLaunch">
+      <div><span class="v10-label">🎮 TEACHGAME CLASSROOM PILOT V10</span><h3>ابدأ منافسة مباشرة مع طلابك</h3>
+      <p>احفظ الاختبار، وأنشئ غرفة برمز PIN وQR. يشاهد الطلاب السؤال في الوقت نفسه، وتظهر النتائج لحظيًا في شاشة المعلم.</p></div>
+      <div class="v10-classroom-settings">
+       <label class="v10-toggle"><input type="checkbox" id="v10LiveTeams"> منافسة مجموعات</label>
+       <label class="v10-toggle"><input type="checkbox" id="v10LiveFeedback" checked> إظهار الإجابة الصحيحة بعد الجولة</label>
+       <label class="v10-toggle"><input type="checkbox" id="v10LiveCardsOnly"> الدخول ببطاقة الطالب فقط</label>
+       <label class="v10-toggle"><input type="checkbox" id="v10LiveGrade" checked> مطابقة بطاقة الطالب مع صف الاختبار</label>
+       <label class="field"><span>زمن السؤال المباشر</span><select id="v10LiveDuration">
+        <option value="15">15 ثانية</option><option value="25" selected>25 ثانية</option>
+        <option value="45">45 ثانية</option><option value="60">60 ثانية</option>
+        <option value="90">90 ثانية</option></select></label>
+      </div>
+      <div class="v10-room-actions"><button type="button" class="btn btn-glow" id="v10StartLive">🚀 حفظ وفتح غرفة الفصل</button><button type="button" class="btn btn-ghost" id="v10History">🗂 جلساتي السابقة</button>
+      <a href="#" class="btn btn-soft" id="v10OpenLive" hidden>↗ افتح غرفة المعلم</a></div>
+      <p id="v10LiveStatus" class="v10-live-status" role="status" aria-live="polite"></p><div id="v10Rooms" class="v10-room-history" hidden aria-label="جلساتي السابقة"></div>
+     </section>
      <div class="info-line">الحفظ لا ينشر تلقائيًا؛ زر النشر مستقل. المعاينة لا تحتسب نقاطًا للطلاب.</div>
     </section>
     <div id="shareBox" class="share-box" hidden><h3>🎉 نشاطك جاهز للمشاركة</h3><label class="field"><span>رابط اللعب</span><input id="shareUrl" dir="ltr" readonly></label><div class="share-actions"><button type="button" class="btn btn-soft" id="copyLink">📋 نسخ الرابط</button><a id="openStudentLink" class="btn btn-ghost" href="#" target="_blank" rel="noopener noreferrer">↗ فتح صفحة الطالب</a></div><img id="shareQr" alt="رمز QR للعبة المنشورة" width="160" height="160"></div>

@@ -1,0 +1,170 @@
+/* TeachGame Classroom Pilot V10 — immersive synchronized desktop + mobile games.
+   The official production site does not load this stylesheet. */
+:root{--tg10-ink:#1d355d;--tg10-glow:#83d8f7;--tg10-coral:#f28fb7}
+body.lab-v4-live{
+ background:radial-gradient(circle at 6% 15%,#12366d 0,transparent 37%),
+ radial-gradient(circle at 89% 81%,#334475 0,transparent 39%),
+ linear-gradient(125deg,#0c1640,#12295f 48%,#0e2346)!important
+}
+.lab-v4-live .top{border-bottom-color:#6689b04d}
+.lab-v4-live .brand{color:#fff;letter-spacing:0;font-weight:950;font-size:clamp(17px,2vw,23px)}
+.lab-v4-live .brand em{color:#7df5d8}
+.lab-v4-live .panel{border:1px solid #91bbd557!important;background:linear-gradient(135deg,#20456ac7,#102d51e8)!important;box-shadow:0 9px 22px #00062638}
+.lab-v4-live .btn{transition:transform .16s,filter .16s,box-shadow .16s;border-radius:13px!important}
+.lab-v4-live .btn:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.13)}
+.lab-v4-live .question-card{min-width:0;justify-content:flex-start;align-items:stretch;gap:12px!important;
+ background:radial-gradient(ellipse at 85% 12%,#666dda53,transparent 44%),
+ linear-gradient(125deg,#1c3668,#273f79 58%,#243a5e)!important;
+ border:2px solid #ffffff66!important;padding:clamp(14px,2vw,23px)!important;
+ border-radius:23px!important
+}
+.v10-mode-chip{align-self:center;background:#ffffff23;color:#d9f7ff;border:1px solid #b9e6ff91;
+ border-radius:99px;padding:6px 16px;font-size:clamp(12px,1.3vw,16px);font-weight:950;letter-spacing:.01em;
+ box-shadow:0 5px 13px #111f4a44
+}
+.v10-question-hero{display:flex;flex-direction:column;gap:10px;align-items:center;justify-content:center;
+ width:100%;padding:clamp(13px,2.6vw,27px);border-radius:21px;background:linear-gradient(135deg,#fffdfa,#e9edff);
+ border:3px solid #fff;box-shadow:0 9px 0 #cad3f13b,0 19px 35px #09102b7a;color:var(--tg10-ink);
+ isolation:isolate;position:relative
+}
+.lab-v4-live .v10-question-hero h2{color:#1d3561!important;font-size:clamp(21px,3vw,39px)!important;
+ line-height:1.55!important;font-weight:950!important;text-align:center!important;text-wrap:balance;
+ overflow-wrap:anywhere;margin:0!important
+}
+.v10-question-hero img.image{max-height:175px}
+.v10-truth-candidate{padding:11px 25px;background:linear-gradient(120deg,#e6dcff,#caedff);
+ border:2px solid #c1c6f5;border-radius:15px;color:#453a85;font-size:clamp(19px,2.2vw,27px);font-weight:950;
+ max-width:100%;text-align:center;box-shadow:0 5px 13px #7e67c43b;overflow-wrap:anywhere
+}
+.lab-v4-live .v10-options{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ gap:clamp(10px,1.4vw,18px)!important;max-width:100%;min-width:0
+}
+.lab-v4-live .v10-options .q-option{
+ min-height:clamp(83px,12vh,124px)!important;padding:clamp(12px,1.5vw,20px)!important;
+ border:2px solid #ffffff91!important;border-radius:19px!important;color:#fff!important;
+ background:linear-gradient(125deg,#557ceb,#24459d)!important;
+ box-shadow:inset 0 2px 0 #ffffff61,0 8px 0 #223b81,0 16px 23px #020b2a9c!important;
+ font-weight:950!important;font-size:clamp(16px,2vw,24px)!important;line-height:1.5!important;
+ text-shadow:0 1px 3px #060d2d5e;transition:transform .15s,filter .15s;
+ overflow-wrap:anywhere
+}
+.lab-v4-live .v10-options .q-option:nth-child(4n+2){
+ background:linear-gradient(130deg,#eb74a0,#ac3874)!important;box-shadow:inset 0 2px 0 #fff7,0 8px 0 #8d2b63,0 16px 23px #020b2a9c!important
+}
+.lab-v4-live .v10-options .q-option:nth-child(4n+3){
+ background:linear-gradient(130deg,#eeaa57,#ae662c)!important;box-shadow:inset 0 2px 0 #fff7,0 8px 0 #855327,0 16px 23px #020b2a9c!important
+}
+.lab-v4-live .v10-options .q-option:nth-child(4n+4){
+ background:linear-gradient(130deg,#38c29f,#117970)!important;box-shadow:inset 0 2px 0 #fff7,0 8px 0 #0a665e,0 16px 23px #020b2a9c!important
+}
+.lab-v4-live .v10-options .q-option:hover:not(:disabled){transform:translateY(-5px);filter:saturate(1.1) brightness(1.11)}
+.lab-v4-live .v10-options .q-option:focus-visible{outline:4px solid #ffe3a3;outline-offset:4px}
+.lab-v4-live .v10-options .q-option:disabled{opacity:.64!important}
+.lab-v4-live .v10-options .q-option.correct{
+ background:linear-gradient(130deg,#31d492,#087850)!important;border-color:#b8ffda!important;
+ opacity:1!important;box-shadow:0 7px 0 #0e6147,0 0 22px #4bf5aaa1!important
+}
+.lab-v4-live .v10-options .q-option.wrong{background:#b83a5f!important;opacity:1!important}
+.lab-v4-live .v10-truth-options .q-option{min-height:clamp(126px,21vh,202px)!important;font-size:clamp(26px,3vw,42px)!important}
+.lab-v4-live .v10-truth-options .q-option:first-child{background:linear-gradient(130deg,#32cda6,#057c67)!important;box-shadow:0 8px 0 #086858,0 17px 22px #010c2b85!important}
+.lab-v4-live .v10-truth-options .q-option:last-child{background:linear-gradient(130deg,#fd7f93,#992854)!important;box-shadow:0 8px 0 #832044,0 17px 22px #010c2b85!important}
+.v10-hint{margin:2px 0;color:#cef6ee;text-align:center;font-size:clamp(12px,1.4vw,16px);font-weight:900}
+.v10-result{margin-top:9px;color:#dcffef;background:#0f8e605c;padding:12px;border-radius:13px;border:1px solid #9df7cd;
+ font-size:clamp(15px,1.8vw,20px)!important;text-align:center;overflow-wrap:anywhere
+}
+.v10-waiting{margin-top:9px;color:#ffedab;text-align:center;font-weight:900}
+.v10-timebar{height:13px;border-radius:99px;background:#1c244d;border:1px solid #ffffff8a;
+ overflow:hidden;box-shadow:inset 0 2px 4px #080e2f80
+}
+.v10-timebar::before{content:"";display:block;width:var(--remaining,100%);height:100%;
+ background:linear-gradient(90deg,#52f4c3,#ffdc77,#ff667e);border-radius:99px;transition:width .8s linear
+}
+.lab-v4-live .v10-open-box{align-self:center;display:grid;place-items:center;
+ min-height:65px;min-width:min(260px,85%);font-size:20px!important;animation:tg10pulse 1.7s ease-in-out infinite alternate
+}
+.v10-box-art{font-size:clamp(53px,7vw,90px);filter:drop-shadow(0 9px 7px #534d8884);transition:transform .4s}
+.v10-box-art.v10-opened{transform:scale(1.25) rotate(-18deg);filter:drop-shadow(0 9px 17px #df9e6077)}
+.v10-spinning-wheel{width:clamp(75px,10vw,125px);height:clamp(75px,10vw,125px);
+ border-radius:50%;display:grid;place-items:center;flex:none;font-size:clamp(24px,3vw,38px);font-weight:950;
+ border:9px solid #fff4c0;color:#fff;background:conic-gradient(#fba959 0 60deg,#a06ce3 60deg 120deg,#48b6ea 120deg 180deg,#69d6b9 180deg 240deg,#ec76a8 240deg 300deg,#9b8aff 300deg);
+ box-shadow:0 8px 17px #2120544d,0 0 0 5px #f7c96c82;animation:tg10spin .8s cubic-bezier(.18,.7,.2,1.2) both
+}
+.v10-match-symbol{font-size:clamp(42px,6vw,70px)}
+.lab-v4-live .v10-pair-options{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.lab-v4-live .v10-pair-options .q-option{position:relative;border:3px dashed #ffffffb5!important}
+.lab-v4-live .v10-pair-options .q-option:before{content:"🔗";margin-inline-end:10px}
+.lab-v4-live .v10-pair-options .q-option.selected{border-color:#ffebaf!important;box-shadow:0 0 24px #fad16d9e!important}
+.lab-v4-live .waiting{min-height:160px}
+.lab-v4-live .waiting strong{color:#eaf8ff!important}
+.v10-report{width:min(100%,1520px);margin-inline:auto;background:linear-gradient(140deg,#edf4ff,#fff)!important;color:#203d66!important;border-radius:21px;max-height:min(85vh,900px);overflow:auto}
+.v10-report-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.v10-report-head h2{margin:0;color:#e8fdff}
+.v10-report .v10-report-head h2{color:#f6fbff}
+.v10-report #v10ReportSummary{color:#dff9ff;font-weight:900}
+.v10-table-scroll{max-width:100%;overflow-x:auto;background:#fff;border-radius:13px;border:1px solid #7798b7}
+.v10-table{border-collapse:collapse;width:100%;min-width:650px;font-size:13px}
+.v10-table th{padding:12px 9px;background:#294b85;color:#fff;text-align:right}
+.v10-table td{padding:10px;border-bottom:1px solid #e2ebf3;color:#285177;text-align:right}
+.v10-table tr:nth-child(even){background:#eff6ff}
+.v10-report-skills{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px;margin:12px 0}
+.v10-skill{background:#fff;border:1px solid #cadef3;padding:12px;border-radius:13px;color:#2a5180}
+.v10-skill strong,.v10-skill small{display:block}
+.v10-skill strong{font-size:13px}.v10-skill small{font-size:12px;color:#6b7e97}
+.v10-skill-track{margin:8px 0;background:#e3e8f4;border-radius:99px;height:9px;overflow:hidden}
+.v10-skill-track span{display:block;height:100%;background:linear-gradient(90deg,#46dfac,#5b91e2);border-radius:99px}
+.v10-needs-support{padding:11px;border:1px solid #d9b877;border-radius:9px;background:#fff4d4;color:#71472e;font-size:13px}
+.lab-v4-live .student-stage{max-width:1080px;min-width:0}
+.lab-v4-live .student-stage .question-card{min-height:clamp(390px,53vh,610px);max-height:none}
+.lab-v4-live .stage-left>.question-card{min-height:0}
+.lab-v4-live .ranks .rank:first-child{border-color:#fed980;background:#776a3661}
+@keyframes tg10spin{from{transform:rotate(-810deg) scale(.72)}to{transform:rotate(0deg) scale(1)}}
+@keyframes tg10pulse{from{box-shadow:0 5px 0 #b07c43,0 0 0 0 #fff2a44d}to{box-shadow:0 5px 0 #b07c43,0 0 22px 8px #fff2a48c}}
+@media(max-width:720px){
+ .lab-v4-live .wrap{padding:8px!important;gap:8px}
+ .lab-v4-live .top{gap:6px;padding-bottom:7px}
+ .lab-v4-live .brand{font-size:16px}
+ .lab-v4-live .stage{display:flex;flex-direction:column;min-height:0}
+ .lab-v4-live .stage-left,.lab-v4-live .stage-right{min-height:0;height:auto}
+ .lab-v4-live .question-card{padding:10px!important;gap:9px!important}
+ .lab-v4-live .v10-question-hero{padding:12px 10px;border-radius:15px;gap:6px}
+ .lab-v4-live .v10-question-hero h2{font-size:clamp(18px,4.8vw,25px)!important}
+ .lab-v4-live .v10-mode-chip{font-size:11px}
+ .lab-v4-live .v10-options{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
+ .lab-v4-live .v10-options .q-option{font-size:clamp(13px,3.5vw,17px)!important;
+ min-height:clamp(91px,14vh,113px)!important;padding:8px 6px!important;border-radius:14px!important;
+ box-shadow:0 5px 0 #254a8e,0 11px 18px #06143787!important
+ }
+ .lab-v4-live .v10-truth-options .q-option{min-height:clamp(126px,20vh,170px)!important;
+ font-size:clamp(24px,7vw,37px)!important}
+ .lab-v4-live .v10-box-art{font-size:47px}
+ .lab-v4-live .v10-spinning-wheel{width:75px;height:75px;border-width:6px;font-size:23px}
+ .lab-v4-live .student-stage .question-card{min-height:clamp(375px,54vh,570px)}
+ .lab-v4-live .q-options .q-option{overflow-wrap:anywhere}
+}
+@media(max-width:380px){
+ .lab-v4-live .top .actions{gap:3px}
+ .lab-v4-live .top .actions .btn{padding:5px;font-size:11px}
+ .lab-v4-live .v10-options .q-option{min-height:81px!important;font-size:12px!important}
+ .lab-v4-live .student-stage .question-card{min-height:320px}
+}
+@media(prefers-reduced-motion:reduce){
+ .lab-v4-live *{animation:none!important;transition:none!important}
+}
+/* The desktop projector container is viewport-clipped by the old Veyon-friendly
+   full-screen layout. Keep teacher-only reports in a fixed, scrollable overlay. */
+.lab-v4-live #v10Report:not(.hidden){
+ position:fixed!important;z-index:120!important;top:4dvh!important;left:50%!important;
+ transform:translateX(-50%)!important;display:block!important;
+ width:min(1200px,96vw)!important;max-width:1200px!important;
+ height:auto!important;max-height:92dvh!important;
+ overflow:auto!important;overscroll-behavior:contain;
+ background:linear-gradient(140deg,#eaf4ff,#fff)!important;color:#1c3f67!important;
+ border:2px solid #a7c6ed!important;padding:clamp(15px,2vw,28px)!important;
+ box-shadow:0 0 0 100vmax #061128ae,0 25px 90px #030b2c9e!important
+}
+.lab-v4-live #v10Report .v10-report-head h2{color:#234e80!important}
+.lab-v4-live #v10Report #v10ReportSummary{color:#406889!important}
+@media(max-width:600px){
+ .lab-v4-live #v10Report:not(.hidden){top:2dvh!important;max-height:96dvh!important;width:98vw!important;padding:12px!important}
+ .lab-v4-live #v10Report .v10-report-head{align-items:stretch}
+}

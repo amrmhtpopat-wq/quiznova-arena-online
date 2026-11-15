@@ -263,6 +263,61 @@ async function publish(){
  }catch(e){alertMsg('فشل النشر: '+e.message,true)}
  finally{b.disabled=false}
 }
+const CLASSROOM_MODES=new Set(['quiz','fast','truth','pairs','wheel','boxes']);
+function classroomSettings(){
+ return {duration:Number($('v10LiveDuration').value)||25,
+  teams:$('v10LiveTeams').checked,showFeedback:$('v10LiveFeedback').checked,
+  cardRequired:$('v10LiveCardsOnly').checked,enforceGrade:$('v10LiveGrade').checked};
+}
+async function launchSavedLive(activityId){
+ if(!CLASSROOM_MODES.has(mode)){
+  alertMsg('المنافسة المتزامنة متاحة حاليًا لست ألعاب: Quiz وFast وTrue/False وPairs وWheel وBoxes.',true);
+  return;
+ }
+ const btn=$('v10StartLive');btn.disabled=true;
+ $('v10LiveStatus').textContent='جارٍ إعداد غرفة الفصل...';
+ try{
+  const body={activityId,...classroomSettings()};
+  const room=await api('/api/game-lab/live/create',body);
+  if(!room.code||!room.teacherUrl)throw Error('لم يستطع الخادم إنشاء رمز الجلسة');
+  const roomUrl=room.teacherUrl;
+  $('v10OpenLive').href=roomUrl;$('v10OpenLive').hidden=false;
+  $('v10LiveStatus').textContent='✓ أُنشئت الغرفة: '+room.code+' — افتح شاشة المعلم للمشاركة';
+  window.location.assign(roomUrl);
+ }catch(e){
+  $('v10LiveStatus').textContent='تعذر بدء الحصة: '+e.message;
+  alertMsg('تعذر بدء الحصة: '+e.message,true);
+ }finally{btn.disabled=false}
+}
+async function startLive(){
+ if(!CLASSROOM_MODES.has(mode))return;
+ const saved=await cloudSave();if(!saved)return;
+ await launchSavedLive(saved.id);
+}
+async function classroomHistory(){
+ const holder=$('v10Rooms');holder.hidden=false;holder.replaceChildren();
+ holder.textContent='جارٍ استرجاع جلسات الفصل...';
+ if(!(await authCheck())){holder.textContent='سجّل الدخول إلى حساب المعلم لعرض سجل الجلسات.';return}
+ try{
+  const data=await api('/api/game-lab/live/rooms');
+  holder.replaceChildren();
+  const list=Array.isArray(data.rooms)?data.rooms:[];
+  if(!list.length){holder.textContent='لم تنشئ جلسات مباشرة بعد.';return}
+  for(const room of list){
+   if(!/^[A-Z2-9]{6}$/.test(room.code))continue;
+   const row=D.createElement('div');row.className='v10-room-record';
+   const detail=D.createElement('div');const title=D.createElement('strong');
+   title.textContent=room.title||'جلسة تعليمية';
+   const sub=D.createElement('small');
+   sub.textContent=room.code+' · '+({lobby:'انتظار',question:'جارية',results:'نتائج الجولة',finished:'مكتملة'}[room.status]||'محفوظة');
+   detail.append(title,sub);
+   const open=D.createElement('a');open.className='btn btn-soft';
+   open.href='/game-lab-live.html?host='+encodeURIComponent(room.code);
+   open.textContent='↗ الغرفة والنتائج';
+   row.append(detail,open);holder.append(row);
+  }
+ }catch(e){holder.textContent='تعذر عرض الجلسات: '+e.message}
+}
 async function allModes(){
  if(!confirm('سيتم إنشاء 24 لعبة بهذا الدرس على حسابك. هل تريد المتابعة؟'))return;
  const saved=await cloudSave();if(!saved)return;
@@ -287,8 +342,15 @@ async function library(){
    const info=D.createElement('div'),title=D.createElement('h3'),meta=D.createElement('p'),b=D.createElement('button');
    title.textContent=a.title;meta.textContent=(modes.get(a.mode)?.[1]||a.mode)+' · '+a.questionCount+' سؤال · '+(a.published?'منشور':'مسودة');
    info.append(title,meta);b.className='btn btn-soft';b.textContent='✏️ تعديل';b.type='button';b.onclick=()=>loadSaved(a);
+   const classroom=D.createElement('button');classroom.type='button';classroom.className='btn btn-primary';
+   classroom.textContent='🎮 حصة مباشرة';classroom.hidden=!CLASSROOM_MODES.has(a.mode);
+   classroom.onclick=async()=>{
+    if(!CLASSROOM_MODES.has(a.mode))return;
+    const oldMode=mode;mode=a.mode;
+    try{await launchSavedLive(a.id)}finally{mode=oldMode}
+   };
    const reports=D.createElement('button');reports.type='button';reports.className='btn btn-ghost v9-open-report';reports.dataset.id=a.id;reports.dataset.title=a.title;reports.textContent='📊 النتائج';
-   const actions=D.createElement('div');actions.className='v9-library-actions';actions.append(b,reports);
+   const actions=D.createElement('div');actions.className='v9-library-actions';actions.append(b,classroom,reports);
    el.append(info,actions);div.append(el);
   }
  }catch(e){div.textContent='تعذر فتح المكتبة: '+e.message}
@@ -351,6 +413,10 @@ function start(){
  $('goSave').onclick=()=>step(4);$('goBackThree').onclick=()=>step(3,true);
  $('loginForm').addEventListener('submit',login);
  $('saveCloud').onclick=cloudSave;$('publishCloud').onclick=publish;$('generateAll').onclick=allModes;
+ $('v10StartLive').onclick=startLive;
+ $('v10History').onclick=classroomHistory;
+ $('v10ClassroomLaunch').hidden=!CLASSROOM_MODES.has(mode);
+ $('v10LiveDuration').value=$('roundTime').value||'25';
  $('copyLink').onclick=async()=>{
   try{await navigator.clipboard.writeText($('shareUrl').value);alertMsg('✓ نُسخ الرابط.')}
   catch(_){$('shareUrl').select();alertMsg('حدّد الرابط وانسخه.',true)}
