@@ -1,6 +1,26 @@
 """V8 secure authored choices API: explicit distractors and legacy compatibility."""
-import unittest
-import game_lab_api as m
+import unittest,ast,hashlib,random,re
+from pathlib import Path
+# Use actual server validation and shuffle functions without initializing
+# unrelated platform tables at module import.
+source=Path(__file__).resolve().parents[1]/'game_lab_api.py'
+tree=ast.parse(source.read_text(encoding='utf-8'))
+names={'validate_payload','question_state','expected_answer'}
+consts={'MAX_ROWS','MODES','TEXT_MODES'}
+symbols={'hashlib':hashlib,'random':random,'re':re}
+for node in tree.body:
+ if isinstance(node,ast.Assign):
+  for target in node.targets:
+   if isinstance(target,ast.Name) and target.id in consts:
+    symbols[target.id]=ast.literal_eval(node.value)
+functions=[node for node in tree.body if isinstance(node,ast.FunctionDef) and node.name in names]
+exec(compile(ast.Module(body=functions,type_ignores=[]),str(source),'exec'),symbols)
+class Target:
+ validate_payload=staticmethod(symbols['validate_payload'])
+ question_state=staticmethod(symbols['question_state'])
+ expected_answer=staticmethod(symbols['expected_answer'])
+ MODES=symbols['MODES']
+m=Target
 
 class AuthoredChoices(unittest.TestCase):
  def sample(self,mode='quiz'):
