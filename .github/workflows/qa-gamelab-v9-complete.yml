@@ -1,0 +1,62 @@
+name: QA Game Lab V9 Complete Game Experience
+
+on:
+  push:
+    branches:
+      - feature/qa-complete-game-experience-v9-20261115
+    paths:
+      - 'game-lab*'
+      - 'game_lab_api.py'
+      - 'tests/browser_game_lab_complete_v9.py'
+      - 'tests/test_game_lab_modes_v3.py'
+      - '.github/workflows/qa-gamelab-v9-complete.yml'
+  pull_request:
+    branches: [v10-5-final-candidate]
+  workflow_dispatch:
+
+jobs:
+  qa-complete:
+    runs-on: ubuntu-latest
+    timeout-minutes: 26
+    env:
+      QUIZNOVA_ALLOW_EPHEMERAL: 'yes'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: V9 JavaScript and backend syntax
+        run: |
+          node --check game-lab-create-v8.js
+          node --check game-lab-complete-v9.js
+          node --check game-lab-premium-v9.js
+          node --check game-lab-student-v9.js
+          node --check game-lab-creator-bridge-v8.js
+          node --check game-lab-extra-v2.js
+          python -m py_compile game_lab_api.py tests/test_game_lab_modes_v3.py tests/browser_game_lab_complete_v9.py
+      - name: Secure 24-mode server-authoritative workflow on temporary SQLite
+        run: |
+          python tests/test_game_lab_modes_v3.py
+          python tests/test_game_lab_creator_v8.py
+      - name: Install Playwright and Chromium
+        run: |
+          python -m pip install playwright
+          python -m playwright install --with-deps chromium
+      - name: V9 browser — specific editors, game modes and actual teacher reports
+        run: python tests/browser_game_lab_complete_v9.py
+      - name: V8 end-to-end — all 24 template creation and cloud publication
+        run: python tests/browser_game_lab_creator_v8.py
+      - name: Regression — V7, V6, V5 and V4
+        run: |
+          python tests/browser_game_lab_visual_emotion_v7.py
+          python tests/browser_game_lab_interaction_v6.py
+          python tests/browser_game_lab_visual_v5.py
+          python tests/browser_game_lab_v4_design.py
+      - name: Save V9 screenshots
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: teachgame-v9-qa-screenshots
+          path: browser-qa-artifacts/gamelab-v9-*.png
+          if-no-files-found: ignore
+          retention-days: 7
