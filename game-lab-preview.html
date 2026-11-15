@@ -320,7 +320,7 @@ function wheelGame(){
    const question=document.createElement('h3');question.textContent=row.q;
    $('wheelReveal').append(question);
    $('wheelReveal').append(textButton('👀 كشف الإجابة',()=>{
-    status('💡 '+row.a+(row.explanation?' — '+row.explanation:''));
+    status('الإجابة: '+row.a+(row.explanation?' — '+row.explanation:''));
     score+=10;updateCounter(asked.size+' / '+content.length);
     btn.disabled=false;btn.textContent=asked.size===content.length?'🏆 عرض النتيجة':'🎡 السؤال التالي';
     if(asked.size===content.length){btn.onclick=gameEnd}
