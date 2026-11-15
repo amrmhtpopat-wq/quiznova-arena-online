@@ -20,8 +20,14 @@ function boot(){
  window.TG_CREATOR_PREVIEW_ROWS=d.rows.map(r=>({
   q:String(r.q||'').trim().slice(0,200),a:String(r.a||'').trim().slice(0,100),
   g:String(r.g||'عام').trim().slice(0,60),
-  choices:Array.isArray(r.choices)?r.choices.map(x=>String(x).trim().slice(0,100)).filter(Boolean).slice(0,4):undefined
+  choices:Array.isArray(r.choices)?r.choices.map(x=>String(x).trim().slice(0,100)).filter(Boolean).slice(0,4):undefined,
+  explanation:String(r.explanation||'').slice(0,240),markerX:Number(r.markerX??50),markerY:Number(r.markerY??50)
  }));
+ window.TG_CREATOR_PREVIEW_TEAM_NAMES=Array.isArray(d.teamNames)?d.teamNames.slice(0,3):[];
+ const previewImage=sessionStorage.getItem('tg_game_lab_v9_preview_image')||'';
+ if(/^data:image\/(png|jpeg|webp);base64,/.test(previewImage)&&previewImage.length<2100000){
+  window.BOOYAH_GAME_LAB_IMAGE=previewImage;
+ }
  byId('applyContent')?.click();
  let attempts=0;
  const launch=()=>{
