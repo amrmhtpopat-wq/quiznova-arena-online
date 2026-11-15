@@ -97,3 +97,30 @@ body.v105-portal .bo-student-id .bo-badge-brand.tag-brand-only .tag-card-logo{wi
  body.v105-portal .bo-student-id .bo-badge-header.tag-brand-only{min-height:10mm!important;padding:1mm!important}
  body.v105-portal .bo-student-id .bo-badge-brand.tag-brand-only .tag-card-logo{width:100px!important;height:32px!important;padding:2px 4px!important}
 }
+
+
+/* TAG V17 — replace the detached pure-white logo rectangle with a cool cyan/blue glass surface.
+   Preserve the approved TAG artwork and its original navy/green colors. */
+.tag-official-logo,.tag-card-logo{
+  background:linear-gradient(135deg,rgba(127,198,229,.92) 0%,rgba(178,228,237,.88) 58%,rgba(126,211,223,.90) 100%)!important;
+  border:1px solid rgba(81,217,233,.56)!important;
+  border-radius:13px!important;
+  box-shadow:inset 0 1px 0 rgba(222,250,255,.36),0 3px 16px rgba(0,83,136,.16)!important;
+  filter:none!important;
+  padding:5px 8px!important;
+}
+.tag-official-icon{
+  background:linear-gradient(140deg,rgba(142,203,226,.94),rgba(152,226,220,.90))!important;
+  border-color:rgba(86,218,224,.56)!important;
+  box-shadow:0 2px 10px rgba(0,73,135,.14)!important;
+}
+body.v105-portal .bo-entry-logo.tag-brand-only .tag-official-logo,
+body.v105-portal .sidebar-brand.tag-brand-only .tag-official-logo,
+body.v105-studio .sidebar .tag-official-logo{
+  box-shadow:0 4px 17px rgba(0,114,177,.17)!important;
+}
+@media print{
+ .tag-official-logo,.tag-card-logo,.tag-official-icon{
+  background:#b4dfe9!important;print-color-adjust:exact;-webkit-print-color-adjust:exact;
+ }
+}

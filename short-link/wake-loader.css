@@ -1,0 +1,20 @@
+/* TAG branded free-tier wake screen. Served by the always-available static site. */
+:root{color-scheme:dark;--navy:#071d42;--navy2:#0c3367;--aqua:#6ce8df;--green:#74d836;--ice:#d7f9ff}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Cairo,Tahoma,"Segoe UI",Arial,sans-serif}
+body{min-height:100dvh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 12% 22%,#1462a28e,transparent 40%),radial-gradient(circle at 90% 85%,#0d85837c,transparent 37%),linear-gradient(140deg,var(--navy),var(--navy2) 60%,#051a39);color:#eafaff;text-align:center;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;background:linear-gradient(125deg,transparent 27%,#30b3d306 28%,transparent 29%);pointer-events:none}
+.splash{position:relative;width:min(480px,100%);padding:clamp(26px,6vw,45px) clamp(20px,5vw,40px);border:1px solid #55c3dc45;border-radius:25px;background:linear-gradient(160deg,#114b7b54,#09213d8c);box-shadow:0 23px 80px #000a2b70, inset 0 1px 0 #a4f3ff19;backdrop-filter:blur(15px)}
+.splash-logo{display:block;width:min(275px,90%);height:auto;max-height:122px;object-fit:contain;margin:0 auto 25px;padding:12px 16px;border:1px solid #49cddd69;border-radius:19px;background:linear-gradient(135deg,#8dcee7,#bae6ed 55%,#89d9e0);box-shadow:0 6px 25px #0c719444}
+.spinner{width:52px;height:52px;margin:0 auto 20px;border:4px solid #c5fbef30;border-top-color:#72eddc;border-right-color:#8bd441;border-radius:50%;animation:spin .95s linear infinite;box-shadow:0 0 18px #1bdcb424}
+@keyframes spin{to{transform:rotate(360deg)}}
+h1{margin:0 0 12px;font-size:clamp(23px,4vw,29px);font-weight:900;line-height:1.45}
+.status{min-height:50px;margin:0 0 16px;color:#b6ddeb;font-size:14px;line-height:1.9}
+.hint{font-size:12px;color:#95c1d3;margin:14px 0}
+.actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.actions a,.actions button{border:1px solid #77c9df77;border-radius:12px;background:#0a4168;color:#e0faff;padding:10px 16px;font-size:13px;font-family:inherit;cursor:pointer;text-decoration:none}
+.actions button{background:linear-gradient(115deg,#1074af,#057872);font-weight:800}
+.actions a:focus-visible,.actions button:focus-visible{outline:3px solid #c3ffda;outline-offset:3px}
+[hidden]{display:none!important}
+@media(max-width:450px){.splash{padding:29px 19px}.splash-logo{width:min(225px,85%)}}
+@media(prefers-reduced-motion:reduce){.spinner{animation:none;border-top-color:#75eddb;border-right-color:#91d83b}}
