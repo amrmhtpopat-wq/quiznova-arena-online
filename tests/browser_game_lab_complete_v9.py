@@ -62,6 +62,7 @@ try:
     page.locator('.v9-open-report').click()
     panel=page.locator('#v9ReportPanel')
     panel.wait_for(state='visible',timeout=6000)
+    page.wait_for_function("()=>document.querySelectorAll('#v9ReportRows tr').length===2",timeout=6000)
     assert panel.locator('#v9ReportRows tr').count()==2
     assert '50%' in panel.locator('#v9ReportSkills').inner_text()
     assert 'يحتاج مراجعة' in panel.locator('#v9QuestionAnalysis').inner_text()
