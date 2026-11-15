@@ -47,7 +47,7 @@ class TagLogoOnlyV16(unittest.TestCase):
    'studio.html':['class="tag-brand-copy" aria-hidden="true"'],
    'student.html':['class="logo tag-student-logo"'],
    'admin.html':['sidebar-brand tag-brand-only'],
-   'stage.html':['stage.js?v=16.0'],
+   'stage.html':['stage.js?v=18.0'],
   }
   for path,needles in checks.items():
    text=(ROOT/path).read_text(encoding='utf-8')

@@ -48,10 +48,10 @@ class TeachGameBrandChecks(unittest.TestCase):
                 html=(ROOT/'short-link'/path).read_text(encoding='utf-8')
                 dest='https://quiznova-arena-online.onrender.com/'+('' if path=='index.html' else path)
                 self.assertIn('content="noindex,nofollow,noarchive"',html)
-                self.assertIn('location.replace(target+location.search+location.hash)',html)
+                self.assertIn('location.replace(window.TAG_ENTRY_URL())',html)
                 self.assertIn(dest,html)
                 self.assertIn('TEACH AND GAME',html)
-                self.assertIn('wake-loader.js?v=17',html)
+                self.assertIn('wake-loader.js?v=18',html)
         sitemap=(ROOT/'sitemap.xml').read_text(encoding='utf-8')
         self.assertEqual(sitemap.count('<url>'),3)
         self.assertNotIn('teachgame.onrender.com',sitemap)
@@ -68,8 +68,8 @@ class TeachGameBrandChecks(unittest.TestCase):
         targets={
             'booyah-countdown-v121.js':['TEACH AND GAME • استعد للانطلاق'],
             'media_library.js':['مكتبة TEACH AND GAME'],
-            'portal.js':['tag-card-logo','reissueTeachGameCards',"const base=location.origin+'/student.html?card=';"],
-            'studio-auth.js':['TAG_unsynced_changes.json',"/app.js?v=13.1"],
+            'portal.js':['tag-card-logo','reissueTeachGameCards',"const base=location.hostname==='quiznova-arena-online.onrender.com'?'https://teachgame.onrender.com/card/?card=':location.origin+'/student.html?card=';"],
+            'studio-auth.js':['TAG_unsynced_changes.json',"/app.js?v=18.0"],
             'platform_security.py':['TEACH AND GAME | تيتش آند جيم — إعادة تعيين كلمة المرور','حسابك في TEACH AND GAME'],
         }
         for name,phrases in targets.items():
@@ -89,7 +89,7 @@ class TeachGameBrandChecks(unittest.TestCase):
 
     def test_updated_assets_and_cache_control(self):
         refs={
-          'index.html':['portal.js?v=16.0','booyah-badge-v112.css?v=13.1'],
+          'index.html':['portal.js?v=18.0','booyah-badge-v112.css?v=13.1'],
           'studio.html':['media_library.js?v=13.1','studio-auth.js?v=13.1','booyah-countdown-v121.js?v=13.1'],
           'student.html':['booyah-countdown-v121.js?v=13.1'],
           'stage.html':['booyah-countdown-v121.js?v=13.1']

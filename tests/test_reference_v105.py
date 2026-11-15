@@ -96,7 +96,7 @@ class VisualAndDirectAnswerTests(unittest.TestCase):
         self.assertIn("if(!r.ok||!d.ok)throw Object.assign",source)
         self.assertIn("e.status===401||e.message==='login_required'",source)
         self.assertNotIn("تعذر إنشاء الغرفة. تحقق من اتصال الخادم بالإنترنت ثم حاول مرة أخرى",source)
-        self.assertIn("script.src='/app.js?v=13.1'",read('studio-auth.js'))
+        self.assertIn("script.src='/app.js?v=18.0'",read('studio-auth.js'))
         self.assertIn("studio-auth.js?v=13.1",read('studio.html'))
 
     def test_booyah_classroom_viewport_and_progress_contract(self):
@@ -180,9 +180,9 @@ class VisualAndDirectAnswerTests(unittest.TestCase):
         self.assertIn("function pendingStudioDestination()",portal)
         self.assertIn("if(resumeStudioAfterLogin())return",portal)
         self.assertIn("history.replaceState(null,'','#'+view)",app)
-        self.assertIn("portal.js?v=16.0",read('index.html'))
+        self.assertIn("portal.js?v=18.0",read('index.html'))
         self.assertIn("studio-auth.js?v=13.1",read('studio.html'))
-        self.assertIn("script.src='/app.js?v=13.1'",studio_auth)
+        self.assertIn("script.src='/app.js?v=18.0'",studio_auth)
 
     def test_studio_navigation_uses_collection_selectors(self):
         import re

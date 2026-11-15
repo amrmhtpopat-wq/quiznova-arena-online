@@ -14,8 +14,8 @@ class TagWakeSplashChecks(unittest.TestCase):
    with self.subTest(path=name):
     p=(ROOT/'short-link'/name).read_text(encoding='utf-8')
     self.assertIn('noindex,nofollow,noarchive',p)
-    self.assertIn('location.replace(target+location.search+location.hash)',p)
-    self.assertIn('wake-loader.js?v=17',p)
+    self.assertIn('location.replace(window.TAG_ENTRY_URL())',p)
+    self.assertIn('wake-loader.js?v=18',p)
     self.assertIn('id="wakeStatus"',p)
     self.assertIn('src="/assets/brand/tag-logo-v15.png"',p)
   self.assertTrue((ROOT/'short-link/assets/brand/tag-logo-v15.png').is_file())
