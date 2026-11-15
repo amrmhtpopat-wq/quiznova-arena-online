@@ -1,0 +1,43 @@
+name: QA Game Lab — Same-Origin Preview Frame Fix
+
+on:
+  push:
+    branches: [feature/qa-preview-frame-fix-v10-20261115]
+    paths:
+      - server.py
+      - game-lab-create.html
+      - game-lab-create-v8.js
+      - tests/browser_game_lab_realserver_preview_v10.py
+      - .github/workflows/qa-preview-frame-v10.yml
+  pull_request:
+    branches: [v10-5-final-candidate]
+  workflow_dispatch:
+
+jobs:
+  verified-preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    env:
+      QUIZNOVA_ALLOW_EPHEMERAL: 'yes'
+      PYTHONPATH: .
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate syntax and policy scope
+        run: |
+          python -m py_compile server.py tests/browser_game_lab_realserver_preview_v10.py
+          node --check game-lab-create-v8.js
+      - name: Install browser and production QR dependency
+        run: |
+          python -m pip install playwright 'qrcode>=8,<9'
+          python -m playwright install --with-deps chromium
+      - name: Real server — enforce iframe header isolation, all 24 templates and mobile preview
+        run: python tests/browser_game_lab_realserver_preview_v10.py
+      - name: Creator V8 all-template browser regression
+        run: python tests/browser_game_lab_creator_v8.py
+      - name: Classroom V10 multiplayer and grade/card contract
+        run: python tests/test_game_lab_classroom_v10.py
+      - name: V9 creator + game previews regression
+        run: python tests/browser_game_lab_complete_v9.py
