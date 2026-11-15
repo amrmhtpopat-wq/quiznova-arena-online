@@ -67,7 +67,7 @@ def anagram_contrast(frame,theme):
 
 def wheel(page,frame,width):
  assert frame.locator('.v102-mystery-emblem').count()==1
- assert frame.locator('.v102-mystery-emblem').inner_text().strip()=='؟'
+ assert frame.locator('.v102-mystery-emblem>span').inner_text().strip()=='؟'
  assert frame.locator('#spinWheel').get_attribute('aria-label')
  assert '🎲' not in frame.locator('#wheelReveal').inner_text()
  assert '🎲' not in frame.locator('#spinWheel').inner_text()
