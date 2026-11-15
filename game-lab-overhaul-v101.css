@@ -290,6 +290,7 @@
 @keyframes v101-float{from{transform:translateY(-3px)}to{transform:translateY(5px)}}
 @media(max-width:860px){
  #playOverlay.v101-overhaul .v101-wheel-stage{grid-template-columns:minmax(0,1fr)!important}
+ #playOverlay.v101-overhaul .v101-wheel-stage:has(#wheelReveal h3) .v101-wheel-question{order:-1!important;scroll-margin-top:80px!important}
  #playOverlay.v101-overhaul .v101-wheel-board{width:100%!important}
  #playOverlay.v101-overhaul .v101-wheel-frame{width:min(100%,320px)}
  #playOverlay.v101-overhaul .v101-wheel-question{min-height:145px!important}
