@@ -12,9 +12,19 @@ function button(t,fn,cl='button alt'){const b=document.createElement('button');b
 function finish(){ctx.finish(score)}
 function advance(){index++;if(index>=Math.min(rows.length,8))finish();else renderMode()}
 function root(html){ctx.container(html);ctx.status('')}
-function feedback(text){ctx.status(text)}
+function feedback(text){
+ const item=rows[index];const useful=['anagram','maze','balloons','cloze','diagram','story'].includes(mode)&&
+  /✅|الصحيحة|صحيح|فتحت المسار|الإجابة/.test(text);
+ const explanation=useful&&item&&item.explanation?' — '+String(item.explanation).slice(0,240):'';
+ ctx.status(text+explanation);
+}
 function count(text){ctx.updateCounter(text)}
-function choicesFor(row,n=4){const wrong=mix([...new Set(rows.map(x=>x.a).filter(x=>x!==row.a))]).slice(0,n-1);return mix([row.a,...wrong])}
+function choicesFor(row,n=4){
+ const authored=Array.isArray(row.choices)?[...new Set(row.choices.map(x=>String(x).trim()).filter(Boolean))]:[];
+ if(authored.length>=2&&authored.includes(row.a))return mix(authored.slice(0,n));
+ const wrong=mix([...new Set(rows.map(x=>x.a).filter(x=>x!==row.a))]).slice(0,n-1);
+ return mix([row.a,...wrong]);
+}
 function popupNext(host,fn=advance,lab='السؤال التالي ⟵'){host.append(button(lab,fn,'button'))}
 function clear(){cleanups.forEach(fn=>{try{fn()}catch(_){}});cleanups=[]}
 function playAnagram(){
@@ -57,18 +67,18 @@ function playCloze(){
 }
 function playDiagram(){
  const image=window.BOOYAH_GAME_LAB_IMAGE||'/assets/backgrounds/quiznova-learning.webp';const items=rows.slice(0,Math.min(rows.length,6));const row=items[index];if(!row)return finish();count('تسمية '+(index+1)+' / '+items.length);
- root('<div class="playcard"><h3>📍 تسمية الرسم</h3><p>اختر التسمية الصحيحة لموقع الرقم '+(index+1)+'؛ يمكنك رفع صورة الدرس من صانع الأنشطة.</p><div class="extra-diagram" id="diagramImage" style="background-image:url(&quot;'+esc(image)+'&quot;)"><span class="extra-diagram-mark" style="left:'+(18+(index%3)*28)+'%;top:'+(28+Math.floor(index/3)*35)+'%">'+(index+1)+'</span></div><p>'+esc(row.q)+'</p></div><div class="playchoices" id="diagramChoices"></div><div class="buttons extra-center" id="diagramNext"></div>');
+ root('<div class="playcard"><h3>📍 تسمية الرسم</h3><p>اختر التسمية الصحيحة لموقع الرقم '+(index+1)+'؛ يمكنك رفع صورة الدرس من صانع الأنشطة.</p><div class="extra-diagram" id="diagramImage" style="background-image:url(&quot;'+esc(image)+'&quot;)"><span class="extra-diagram-mark" style="left:'+Number(row.markerX??(18+(index%3)*28))+'%;top:'+Number(row.markerY??(28+Math.floor(index/3)*35))+'%">'+(index+1)+'</span></div><p>'+esc(row.q)+'</p></div><div class="playchoices" id="diagramChoices"></div><div class="buttons extra-center" id="diagramNext"></div>');
  choicesFor(row).forEach(a=>$('#diagramChoices').append(button(a,()=>{if($('#diagramNext').children.length)return;const yes=a===row.a;if(yes)score+=100;feedback(yes?'✅ تسمية صحيحة +100':'التسمية الصحيحة: '+row.a);$('#diagramChoices').querySelectorAll('button').forEach(b=>b.disabled=true);popupNext($('#diagramNext'),()=>{index++;if(index>=items.length)finish();else playDiagram()})},'choice')));
 }
 function playBoard(){
- let teams=[{name:'الفريق الأزرق',score:0},{name:'الفريق الذهبي',score:0},{name:'الفريق الأخضر',score:0}];let card=0;count('لوحة نقاط حرة');
+ let teams=[{name:ctx.teamNames?.[0]||'الفريق الأزرق',score:0},{name:ctx.teamNames?.[1]||'الفريق الذهبي',score:0},{name:ctx.teamNames?.[2]||'الفريق الأخضر',score:0}];let card=0;count('لوحة نقاط حرة');
  root('<div class="playcard"><h3>📈 لوحة نقاط المجموعات</h3><p>أضف النقاط أو اطرحها أثناء المناقشة. يمكن للمعلم تعديل أسماء الفرق.</p><div class="extra-score-teams" id="scoreTeams"></div><div class="extra-board-prompt" id="boardPrompt"></div><div class="buttons extra-center" id="boardControls"></div></div>');
  const paint=()=>{const host=$('#scoreTeams');host.replaceChildren();teams.forEach((t,i)=>{const div=document.createElement('div');div.className='extra-score-team';const field=document.createElement('input');field.maxLength=32;field.value=t.name;field.setAttribute('aria-label','اسم الفريق');field.onchange=()=>{t.name=field.value.slice(0,32)};const points=document.createElement('strong');points.textContent=t.score+' ⭐';div.append(field,points,button('＋ 10',()=>{t.score+=10;paint()},'button small'),button('− 10',()=>{t.score=Math.max(0,t.score-10);paint()},'button alt small'));host.append(div)});$('#boardPrompt').textContent='💬 سؤال المناقشة: '+rows[card%rows.length].q};
  const action=$('#boardControls');action.append(button('🎲 سؤال جديد',()=>{card++;paint()},'button'),button('↺ تصفير',()=>{if(confirm('تصفير نقاط العرض؟')){teams.forEach(t=>t.score=0);paint()}},'button alt'),button('🏆 إنهاء',()=>{score=Math.max(...teams.map(t=>t.score));finish()},'button gold'));paint();
 }
 function playTeams(){
- const totals=[0,0];let team=0;count('⚔️ الفريق الأول ضد الثاني');
- const draw=()=>{if(index>=Math.min(rows.length,8)){score=Math.max(...totals);return finish()}const row=rows[index];root('<div class="playinfo"><span>السؤال '+(index+1)+'</span><b>🔵 '+totals[0]+' — 🟡 '+totals[1]+'</b></div><div class="playcard"><h3>⚔️ دور الفريق '+(team===0?'الأزرق 🔵':'الذهبي 🟡')+'</h3><p>'+esc(row.q)+'</p></div><div class="playchoices" id="teamsOptions"></div><div class="buttons extra-center" id="teamsNext"></div>');choicesFor(row).forEach(a=>$('#teamsOptions').append(button(a,()=>{if($('#teamsNext').children.length)return;const yes=a===row.a;if(yes){totals[team]+=100;score=Math.max(...totals)}feedback(yes?'🎉 +100 للفريق '+(team===0?'الأزرق':'الذهبي'):'الإجابة الصحيحة: '+row.a);$('#teamsOptions').querySelectorAll('button').forEach(b=>b.disabled=true);popupNext($('#teamsNext'),()=>{index++;team=1-team;draw()})},'choice')))};draw();
+ const totals=[0,0],teamNames=[ctx.teamNames?.[0]||'الفريق الأزرق',ctx.teamNames?.[1]||'الفريق الذهبي'];let team=0;count('⚔️ '+teamNames.join(' ضد '));
+ const draw=()=>{if(index>=Math.min(rows.length,8)){score=Math.max(...totals);return finish()}const row=rows[index];root('<div class="playinfo"><span>السؤال '+(index+1)+'</span><b>🔵 '+totals[0]+' — 🟡 '+totals[1]+'</b></div><div class="playcard"><h3>⚔️ دور '+esc(teamNames[team])+'</h3><p>'+esc(row.q)+'</p></div><div class="playchoices" id="teamsOptions"></div><div class="buttons extra-center" id="teamsNext"></div>');choicesFor(row).forEach(a=>$('#teamsOptions').append(button(a,()=>{if($('#teamsNext').children.length)return;const yes=a===row.a;if(yes){totals[team]+=100;score=Math.max(...totals)}feedback(yes?'🎉 +100 للفريق '+teamNames[team]:'الإجابة الصحيحة: '+row.a);$('#teamsOptions').querySelectorAll('button').forEach(b=>b.disabled=true);popupNext($('#teamsNext'),()=>{index++;team=1-team;draw()})},'choice')))};draw();
 }
 function playSurvey(){
  const options=[...new Set(rows.map(r=>r.a))].slice(0,7),counts=options.map(()=>0);count('0 صوت');root('<div class="playcard"><h3>🗳️ استفتاء الصف</h3><p>سجّل أصوات الطلاب من الشاشة، وستظهر النسب فورًا.</p><div id="surveyBars" class="extra-survey"></div><div class="buttons extra-center" id="surveyControls"></div></div>');

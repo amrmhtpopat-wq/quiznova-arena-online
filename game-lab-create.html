@@ -7,7 +7,9 @@
 <meta name="robots" content="noindex,nofollow,noarchive">
 <title>صانع الألعاب | TeachGame Game Lab</title>
 <link rel="stylesheet" href="/game-lab-create-v8.css?v=8.0">
+<link rel="stylesheet" href="/game-lab-complete-v9.css?v=9.0">
 <script defer src="/game-lab-create-v8.js?v=8.0"></script>
+<script defer src="/game-lab-complete-v9.js?v=9.0"></script>
 </head>
 <body>
 <a class="skip-link" href="#creatorForm">تجاوز إلى محرر النشاط</a>
@@ -72,6 +74,22 @@
      <label class="field"><span>الصف</span><select id="grade"><option>الرابع</option><option>الخامس</option><option>السادس</option><option selected>السابع</option><option>الثامن</option><option>التاسع</option><option>العاشر</option><option>الحادي عشر</option><option>الثاني عشر</option></select></label>
      <label class="field"><span>زمن السؤال (للألعاب المؤقتة)</span><select id="roundTime"><option value="15">15 ثانية</option><option value="25" selected>25 ثانية</option><option value="45">45 ثانية</option><option value="60">60 ثانية</option></select></label>
     </div>
+    <section id="v9ModeOptions" class="v9-mode-options" aria-label="إعدادات القالب">
+     <div class="v9-mode-intro"><strong id="v9ModeIcon">🛠️</strong><div><h3 id="v9ModeHeading">إعدادات تناسب نوع اللعبة</h3><p id="v9ModeSubtitle">تظهر الأدوات الضرورية للقالب الذي اخترته فقط.</p></div></div>
+     <div id="v9ModeInstructions" class="v9-mode-instructions"></div>
+     <div class="v9-mode-fields" id="v9ImageControls" hidden>
+      <label class="field"><span>صورة اللعبة (PNG أو JPG أو WEBP)</span><input type="file" id="v9ImageUpload" accept="image/png,image/jpeg,image/webp"></label>
+      <input type="hidden" id="v9ImageId">
+      <div class="v9-media-row"><select id="v9MediaLibrary" aria-label="اختيار صورة محفوظة"><option value="">— صور حسابك المحفوظة —</option></select><button type="button" class="btn btn-ghost" id="v9LoadImages">📚 تحديث مكتبة الصور</button></div>
+      <div class="v9-media-row"><button type="button" class="btn btn-soft" id="v9UploadButton">☁️ رفع الصورة للحفظ الدائم</button><span id="v9ImageStatus" role="status">أضف صورة لإثراء النشاط؛ المعاينة المحلية لا تتطلب رفعها.</span></div>
+      <div class="v9-image-preview" id="v9ImagePreview" hidden></div>
+     </div>
+     <div class="v9-mode-fields" id="v9TeamsControls" hidden>
+      <label class="field"><span>الفريق الأول</span><input id="v9Team1" value="الفريق الأزرق" maxlength="32"></label>
+      <label class="field"><span>الفريق الثاني</span><input id="v9Team2" value="الفريق الذهبي" maxlength="32"></label>
+      <label class="field" id="v9Team3Field"><span>الفريق الثالث (اختياري)</span><input id="v9Team3" value="الفريق الأخضر" maxlength="32"></label>
+     </div>
+    </section>
     <div class="questions-header"><div><h3>✏️ بنك أسئلتك</h3><p id="modeHelp">اكتب السؤال وإجابته الصحيحة؛ الخيارات الإضافية متاحة لهذا القالب.</p></div><div class="question-tools"><button type="button" class="btn btn-ghost" id="sampleQuestions">✨ تعبئة مثال</button><button type="button" class="btn btn-ghost" id="importText">📋 لصق أسئلة</button><button type="button" class="btn btn-soft" id="addQuestionTop">＋ سؤال جديد</button></div></div>
     <div id="questionList" class="question-list" aria-live="polite"></div>
     <div class="question-footer"><button type="button" class="btn btn-soft" id="addQuestion">＋ إضافة سؤال</button><span>الحد: 4 إلى 80 سؤالًا. يمكن ترك المشتتات فارغة لتوليدها من الإجابات الأخرى.</span></div>
@@ -107,7 +125,14 @@
    </section>
    <section class="panel library-panel" id="libraryPanel" hidden>
     <div class="panel-head"><span class="panel-icon">📚</span><div><h2>أنشطتي على الحساب</h2><p>افتح أنشطتك القديمة للتعديل أو تابع مشاركة المنشورة منها.</p></div><button type="button" class="btn btn-ghost" id="closeLibrary">✕ إغلاق</button></div>
+    <div class="v9-results-info">📈 افتح نتائج أي نشاط منشور لعرض ترتيب الطلاب ونسب الإتقان والمهارات التي تحتاج متابعة، ثم صدّر النتائج بصيغة CSV المتوافقة مع Excel.</div>
     <div id="libraryItems" class="library-items"></div>
+    <section id="v9ReportPanel" class="v9-report-panel" hidden aria-label="نتائج النشاط">
+     <header class="v9-report-header"><div><h3 id="v9ReportTitle">نتائج النشاط</h3><span id="v9ReportSummary"></span></div><div class="v9-report-actions"><button type="button" id="v9ExportCsv" class="btn btn-soft">⬇️ تصدير Excel (CSV)</button><button type="button" id="v9CloseReport" class="btn btn-ghost">✕</button></div></header>
+     <div id="v9ReportSkills" class="v9-report-skills"></div>
+     <div class="v9-table-scroller"><table class="v9-table"><thead><tr><th>الترتيب</th><th>اسم الطالب</th><th>الشعبة</th><th>الصحيح</th><th>النتيجة</th><th>النقاط</th><th>التاريخ</th></tr></thead><tbody id="v9ReportRows"></tbody></table></div>
+     <div id="v9QuestionAnalysis" class="v9-question-analysis"></div>
+    </section>
    </section>
   </section>
  </div>

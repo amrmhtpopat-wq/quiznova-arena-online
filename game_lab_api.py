@@ -71,6 +71,15 @@ def validate_payload(raw):
         if key in seen:continue
         seen.add(key)
         question={'q':q,'a':a,'g':g}
+        explanation=str(row.get('explanation') or '').strip()[:240]
+        if explanation:question['explanation']=explanation
+        if 'markerX' in row or 'markerY' in row:
+            try:
+                x=float(row.get('markerX',50));y=float(row.get('markerY',50))
+                if not (0<=x<=100 and 0<=y<=100):raise ValueError
+            except (TypeError,ValueError):
+                raise ValueError('invalid_image_marker')
+            question['markerX']=round(x,1);question['markerY']=round(y,1)
         # Optional teacher-authored distractors. Keep the legacy auto-generated
         # alternatives whenever 'choices' is absent (backward compatibility).
         custom=row.get('choices')
@@ -106,8 +115,13 @@ def validate_payload(raw):
     book_id=str(raw.get('bookId') or '').strip()
     if image_id and not re.fullmatch('[a-f0-9]{32}',image_id):raise ValueError('invalid_image_id')
     if book_id and not re.fullmatch('[a-f0-9]{32}',book_id):raise ValueError('invalid_book_id')
+    names=raw.get('teamNames') or []
+    if not isinstance(names,list) or len(names)>3:raise ValueError('invalid_team_names')
+    names=[str(n).strip()[:32] for n in names if str(n).strip()]
+    if names and len(names)<2:raise ValueError('invalid_team_names')
     return {'title':title,'subject':subject,'grade':grade,'mode':mode,
             'time':max(10,min(90,seconds)),'rows':result,
+            'teamNames':names,
             'imageId':image_id,'bookId':book_id,'sourceGroup':source_group}
 
 
@@ -286,9 +300,13 @@ def question_state(state,token_hash):
             rng.shuffle(choices);choices=choices[:3]+[item['a']]
         correct=item['a']
     rng.shuffle(choices)
-    return {'index':idx,'question':item['q'],'group':item['g'] if mode=='sort' else '',
+    response={'index':idx,'question':item['q'],'group':item['g'] if mode=='sort' else '',
             'choices':choices,'total':len(rows),'mode':mode,
             'duration':state['duration'],'score':state['score']}
+    if mode=='diagram':
+        response['markerX']=item.get('markerX',50)
+        response['markerY']=item.get('markerY',50)
+    return response
 
 
 def expected_answer(state,token_hash):
@@ -405,6 +423,10 @@ def answer(data,h):
             correct=normalize(raw)==normalize(right) if graded else None
             if correct:
                 state['correct']+=1;state['score']+=100
+            state.setdefault('history',[]).append({
+                'index':idx,'group':str(state['rows'][idx].get('g') or 'عام')[:60],
+                'correct':correct if graded else None,
+                'response':raw[:120] if not graded else None})
             state['index']+=1
             finished=state['index']>=len(state['rows'])
             state['finished']=finished
@@ -437,6 +459,7 @@ def answer(data,h):
             cur.execute(db.sql('UPDATE game_lab_runs SET state=?,updated_at=?,finished_at=? WHERE token_hash=?'),
                         (db.jdump(state),timestamp,timestamp if finished else 0,key))
     h.send_json({'ok':True,'correct':correct,'correctAnswer':right if graded else None,
+                 'explanation':str(state['rows'][idx].get('explanation') or '')[:240],
                  'state':state_view(state,key)})
     return True
 
@@ -447,14 +470,32 @@ def teacher_reports(tid,aid):
              'FROM game_lab_runs WHERE teacher_id=? AND activity_id=? AND finished_at>0 '
              'ORDER BY finished_at DESC LIMIT 500',(tid,aid),True)
     output=[]
+    groups={}
+    questions={}
     for rec in records:
         state=db.jload(rec['state'],{})
+        for item in state.get('history',[]):
+            if item.get('correct') is None:continue
+            group=str(item.get('group') or 'عام')[:60]
+            slot=groups.setdefault(group,{'correct':0,'answers':0})
+            slot['answers']+=1;slot['correct']+=int(item['correct'] is True)
+            index=int(item.get('index',0))
+            qslot=questions.setdefault(index,{'index':index,'correct':0,'answers':0})
+            qslot['answers']+=1;qslot['correct']+=int(item['correct'] is True)
         output.append({'name':rec['student_name'],'className':rec['class_name'],
             'correct':state.get('correct',0),'questions':len(state.get('rows',[])),
             'score':state.get('score',0),'xpGain':state.get('xpGain',0),
-            'guest':not bool(rec['student_id']),'finishedAt':rec['finished_at']})
+            'guest':not bool(rec['student_id']),'finishedAt':rec['finished_at'],
+            'responses':[{'group':h.get('group','عام'),'text':h.get('response','')}
+                         for h in state.get('history',[]) if h.get('response') is not None]})
     return {'results':output,'total':len(output),
-            'averagePercent':round(sum(100*x['correct']/max(x['questions'],1) for x in output)/len(output),1) if output else 0}
+            'averagePercent':round(sum(100*x['correct']/max(x['questions'],1) for x in output)/len(output),1) if output else 0,
+            'skillSummary':[{'group':key,'correct':v['correct'],'answers':v['answers'],
+                             'percent':round(v['correct']*100/max(v['answers'],1),1)}
+                            for key,v in sorted(groups.items())],
+            'questionStats':[{'index':idx,'correct':v['correct'],'answers':v['answers'],
+                              'percent':round(v['correct']*100/max(v['answers'],1),1)}
+                             for idx,v in sorted(questions.items())]}
 
 
 def handle_get(h,u):

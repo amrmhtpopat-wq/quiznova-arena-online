@@ -41,7 +41,7 @@ const sample=[
  {q:'ما أداة تحريك مؤشر الشاشة؟',a:'الفأرة',g:'إدخال',wrongs:['الشاشة','السماعات','الطابعة']},
  {q:'ما الجهاز المستخدم لإخراج الصوت؟',a:'السماعات',g:'إخراج',wrongs:['لوحة المفاتيح','الكاميرا','الفأرة']}
 ];
-const blank=()=>({q:'',a:'',g:'عام',wrongs:['','','']});
+const blank=()=>({q:'',a:'',g:'عام',wrongs:['','',''],explanation:'',sourcePage:'',markerX:50,markerY:50});
 const norm=s=>String(s??'').trim();
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function alertMsg(msg,error=false){
@@ -51,7 +51,7 @@ function alertMsg(msg,error=false){
 function normalizeRow(r){
  const a=norm(r.a);const wrongs=Array.isArray(r.wrongs)?r.wrongs.slice(0,3):Array.isArray(r.choices)?r.choices.filter(x=>norm(x).toLocaleLowerCase()!==a.toLocaleLowerCase()).slice(0,3):[];
  while(wrongs.length<3)wrongs.push('');
- return {q:norm(r.q),a,g:norm(r.g)||'عام',wrongs,sourcePage:r.sourcePage||''};
+ return {q:norm(r.q),a,g:norm(r.g)||'عام',wrongs,sourcePage:r.sourcePage||'',explanation:norm(r.explanation||''),markerX:r.markerX??50,markerY:r.markerY??50};
 }
 function summary(){
  $('questionCount').textContent=String(rows.length);
@@ -63,13 +63,17 @@ function summary(){
  $('saveActivityMeta').textContent=rows.length+' أسئلة · '+modes.get(mode)[1]+' · '+$('grade').value;
 }
 function localSave(){
- try{localStorage.setItem(KEY+mode,JSON.stringify({version:8,mode,id:cloudId,title:$('activityTitle').value,subject:$('subject').value,grade:$('grade').value,time:$('roundTime').value,rows,updatedAt:Date.now()}))}catch(_){}
+ try{localStorage.setItem(KEY+mode,JSON.stringify({version:8,mode,id:cloudId,title:$('activityTitle').value,subject:$('subject').value,grade:$('grade').value,time:$('roundTime').value,rows,imageId:$('v9ImageId')?.value||'',teamNames:[$('v9Team1')?.value||'الفريق الأزرق',$('v9Team2')?.value||'الفريق الذهبي',$('v9Team3')?.value||''].filter(Boolean),updatedAt:Date.now()}))}catch(_){}
  summary();
 }
 function restore(){
  let d;try{d=JSON.parse(localStorage.getItem(KEY+mode)||'null')}catch(_){}
  if(d?.version===8&&Array.isArray(d.rows)&&d.rows.length>0&&d.rows.length<=80){
   rows=d.rows.map(normalizeRow);cloudId=d.id||'';
+  if($('v9ImageId'))$('v9ImageId').value=d.imageId||'';
+  if(Array.isArray(d.teamNames)){
+   ['v9Team1','v9Team2','v9Team3'].forEach((id,i)=>{if($(id))$(id).value=d.teamNames[i]||''});
+  }
   $('activityTitle').value=d.title||'';
   for(const id of ['subject','grade'])if([...$(id).options].some(x=>x.value===d[id]))$(id).value=d[id];
   if([...$('roundTime').options].some(x=>x.value===String(d.time)))$('roundTime').value=String(d.time);
@@ -98,10 +102,26 @@ function renderRows(){
  rows.forEach((r,i)=>{
   const d=D.createElement('details');d.className='question-card';d.dataset.index=i;d.open=i===0;
   const wrong=choiceModes.has(mode)?'<div class="question-options-title">🧩 خيارات خاطئة (اختيارية)</div><div class="question-grid">'+[0,1,2].map(j=>'<label class="field"><span>الخيار الخاطئ '+(j+1)+'</span><input data-wrong="'+j+'" maxlength="100" value="'+esc(r.wrongs[j])+'" placeholder="اكتب خيارًا غير صحيح"></label>').join('')+'</div>':'';
+  const labels={
+   pairs:['بطاقة السؤال / المفهوم','البطاقة المطابقة / تعريفه','الموضوع'],flash:['الوجه الأمامي للبطاقة','الوجه الخلفي (الإجابة)','الوحدة'],
+   memory:['البطاقة الأولى','البطاقة المطابقة','الوحدة'],sort:['السؤال التوضيحي','العنصر المطلوب تصنيفه','المجموعة الصحيحة'],
+   order:['الخطوة الصحيحة بالترتيب','وصف الخطوة (اختياري للشرح)','المرحلة'],anagram:['التعريف أو التلميح','الكلمة المطلوب ترتيب حروفها','الموضوع'],
+   crossword:['تعريف الكلمة','الكلمة في الشبكة (2–10 حروف)','الموضوع'],wordsearch:['تلميح الكلمة','الكلمة المطلوب العثور عليها','الموضوع'],
+   cloze:['اكتب الجملة مع ___ مكان الفراغ','الكلمة الناقصة','الموضوع'],truth:['العبارة أو السؤال','الإجابة المرجعية الصحيحة','الموضوع'],
+   diagram:['السؤال عن جزء الصورة','اسم الجزء الصحيح','الوحدة'],hidden:['السؤال المطلوب استنتاجه من الصورة','الإجابة عند الكشف','الموضوع'],
+   wheel:['سؤال يظهر عند توقف العجلة','الإجابة عند الكشف','الموضوع'],boxes:['سؤال مخفي داخل الصندوق','الإجابة عند الفتح','الموضوع'],
+   survey:['نص الاستفتاء (يمكن تكراره)','خيار التصويت','الموضوع'],exit:['سؤال تأمل / بطاقة خروج','إجابة إرشادية للمعلم','الموضوع'],
+   story:['قرار داخل الموقف التعليمي','المسار أو القرار الصحيح','مرحلة القصة'],
+   bingo:['تعريف المصطلح','المصطلح الموجود على البطاقة','الموضوع'],
+   board:['سؤال المنافسة','الإجابة المرجعية','الفريق / المحور'],teams:['سؤال التحدي','الإجابة الصحيحة','الموضوع']
+  };
+  const names=labels[mode]||['نص السؤال','الإجابة الصحيحة','المجموعة / الوحدة'];
+  const modeExtra=(mode==='diagram'?'<div class="question-grid"><label class="field"><span>موضع العلامة أفقيا X %</span><input data-field="markerX" type="number" min="0" max="100" step="1" value="'+esc(r.markerX)+'"></label><label class="field"><span>موضع العلامة عموديا Y %</span><input data-field="markerY" type="number" min="0" max="100" step="1" value="'+esc(r.markerY)+'"></label></div>':'')+
+  '<div class="question-grid"><label class="field"><span>💡 شرح أو تغذية راجعة بعد الإجابة (اختياري)</span><input data-field="explanation" maxlength="240" value="'+esc(r.explanation||'')+'" placeholder="لماذا الإجابة صحيحة؟"></label><label class="field"><span>رقم صفحة الكتاب (اختياري)</span><input data-field="sourcePage" type="number" min="1" max="350" value="'+esc(r.sourcePage||'')+'" placeholder="مثال: 24"></label></div>';
   d.innerHTML='<summary><span class="question-index">'+(i+1)+'</span><span class="question-summary'+(!r.q?' empty':'')+'">'+esc(r.q||'اضغط لكتابة السؤال')+'</span><span class="question-badge">'+(r.a?'✓ إجابة محددة':'مطلوب')+'</span></summary>'+
-  '<div class="question-content"><label class="field"><span>السؤال '+(i+1)+' <sup>*</sup></span><input data-field="q" maxlength="200" value="'+esc(r.q)+'" placeholder="نص السؤال"></label>'+
-  '<div class="question-grid"><label class="field"><span class="correct-label">✓ الإجابة الصحيحة <sup>*</sup></span><input data-field="a" class="correct-input" maxlength="100" value="'+esc(r.a)+'" placeholder="الإجابة المعتمدة"></label>'+
-  '<label class="field"><span>المجموعة / الوحدة</span><input data-field="g" maxlength="60" value="'+esc(r.g)+'" placeholder="مثال: الوحدة الأولى"></label></div>'+wrong+
+  '<div class="question-content"><label class="field"><span>'+esc(names[0])+' '+(i+1)+' <sup>*</sup></span><input data-field="q" maxlength="200" value="'+esc(r.q)+'" placeholder="نص السؤال"></label>'+
+  '<div class="question-grid"><label class="field"><span class="correct-label">✓ '+esc(names[1])+' <sup>*</sup></span><input data-field="a" class="correct-input" maxlength="100" value="'+esc(r.a)+'" placeholder="الإجابة المعتمدة"></label>'+
+  '<label class="field"><span>'+esc(names[2])+'</span><input data-field="g" maxlength="60" value="'+esc(r.g)+'" placeholder="مثال: الوحدة الأولى"></label></div>'+wrong+modeExtra+
   '<div class="question-actions"><div><button type="button" data-move="-1" class="btn btn-ghost move-question">↑ أعلى</button> <button type="button" data-move="1" class="btn btn-ghost move-question">↓ أسفل</button></div><button type="button" data-delete="'+i+'" class="btn btn-ghost delete-question">🗑 حذف السؤال</button></div></div>';
   holder.append(d);
  });
@@ -151,6 +171,10 @@ function valid(){
   const others=r.wrongs.map(norm).filter(Boolean);
   const keys=[a,...others].map(x=>x.toLocaleLowerCase());
   if(new Set(keys).size!==keys.length){alertMsg('في السؤال '+(i+1)+' خيار مكرر أو يساوي الإجابة الصحيحة.',true);return false}
+  if(r.sourcePage&&(Number(r.sourcePage)<1||Number(r.sourcePage)>350)){alertMsg('رقم صفحة المصدر غير صالح في السؤال '+(i+1),true);return false}
+  if(mode==='diagram'&&(!Number.isFinite(Number(r.markerX))||!Number.isFinite(Number(r.markerY))||Number(r.markerX)<0||Number(r.markerX)>100||Number(r.markerY)<0||Number(r.markerY)>100)){alertMsg('حدد موضع العلامة كنسبة مئوية بين 0 و100.',true);return false}
+  if(mode==='crossword'&&(Array.from(a.replace(/\s/g,'')).length<2||Array.from(a.replace(/\s/g,'')).length>10)){alertMsg('الكلمات المتقاطعة تحتاج إجابات من 2 إلى 10 حروف.',true);return false}
+  if(mode==='wordsearch'&&(Array.from(a.replace(/\s/g,'')).length<2||Array.from(a.replace(/\s/g,'')).length>12)){alertMsg('البحث عن الكلمات يحتاج إجابات من 2 إلى 12 حرفًا.',true);return false}
  }
  if(mode==='sort'&&groups.size<2){alertMsg('لعبة التصنيف تحتاج مجموعتين مختلفتين على الأقل.',true);return false}
  return true;
@@ -158,11 +182,15 @@ function valid(){
 function payload(){
  return {title:norm($('activityTitle').value).slice(0,90),subject:$('subject').value,grade:$('grade').value,
   mode,time:Number($('roundTime').value)||25,
+  imageId:$('v9ImageId')?.value||'',
+  teamNames:(mode==='board'||mode==='teams')?[$('v9Team1')?.value||'الفريق الأزرق',$('v9Team2')?.value||'الفريق الذهبي',...(mode==='board'&&$('v9Team3')?.value?[$('v9Team3').value]:[])]:[],
   rows:rows.map(r=>{
    const item={q:norm(r.q).slice(0,200),a:norm(r.a).slice(0,100),g:(norm(r.g)||'عام').slice(0,60)};
    const alts=r.wrongs.map(norm).filter(Boolean);
    if(choiceModes.has(mode)&&alts.length)item.choices=[item.a,...alts.slice(0,3)];
    if(r.sourcePage)item.sourcePage=Number(r.sourcePage);
+   if(norm(r.explanation))item.explanation=norm(r.explanation).slice(0,240);
+   if(mode==='diagram'){item.markerX=Number(r.markerX??50);item.markerY=Number(r.markerY??50)}
    return item;
   })};
 }
@@ -172,7 +200,7 @@ function preview(){
  catch(_){alertMsg('يلزم السماح بالتخزين المؤقت للمعاينة.',true);return}
  $('previewOverlay').hidden=false;D.body.classList.add('modal-open');
  $('previewTopTitle').textContent='🎮 معاينة '+modes.get(mode)[1];
- $('gameFrame').src='/game-lab-preview.html?creatorPreview=1&mode='+encodeURIComponent(mode)+'&v=8';
+ $('gameFrame').src='/game-lab-preview.html?creatorPreview=1&mode='+encodeURIComponent(mode)+'&v=9';
  $('closePreview').focus({preventScroll:true});
 }
 function closePreview(){
@@ -209,6 +237,9 @@ async function login(e){
 }
 async function cloudSave(){
  if(!valid())return null;
+ if((mode==='diagram'||mode==='hidden')&&$('v9ImageUpload')?.files?.length&&!$('v9ImageId')?.value){
+  alertMsg('ارفَع الصورة للحفظ الدائم قبل حفظ هذا النشاط.',true);return null
+ }
  if(!(await authCheck())){alertMsg('سجّل الدخول قبل الحفظ.',true);return null}
  const b=$('saveCloud');b.disabled=true;
  try{
@@ -256,14 +287,16 @@ async function library(){
    const info=D.createElement('div'),title=D.createElement('h3'),meta=D.createElement('p'),b=D.createElement('button');
    title.textContent=a.title;meta.textContent=(modes.get(a.mode)?.[1]||a.mode)+' · '+a.questionCount+' سؤال · '+(a.published?'منشور':'مسودة');
    info.append(title,meta);b.className='btn btn-soft';b.textContent='✏️ تعديل';b.type='button';b.onclick=()=>loadSaved(a);
-   el.append(info,b);div.append(el);
+   const reports=D.createElement('button');reports.type='button';reports.className='btn btn-ghost v9-open-report';reports.dataset.id=a.id;reports.dataset.title=a.title;reports.textContent='📊 النتائج';
+   const actions=D.createElement('div');actions.className='v9-library-actions';actions.append(b,reports);
+   el.append(info,actions);div.append(el);
   }
  }catch(e){div.textContent='تعذر فتح المكتبة: '+e.message}
 }
 function loadSaved(a){
  const p=a.activity||a,newMode=modes.has(p.mode)?p.mode:mode;
  const data={version:8,mode:newMode,id:a.id,title:p.title,subject:p.subject,grade:p.grade,time:p.time,updatedAt:Date.now(),
-  rows:(p.rows||[]).map(normalizeRow)};
+  rows:(p.rows||[]).map(normalizeRow),imageId:p.imageId||'',teamNames:p.teamNames||[]};
  try{localStorage.setItem(KEY+newMode,JSON.stringify(data))}catch(_){}
  location.href='/game-lab-create.html?mode='+encodeURIComponent(newMode)+'&edit='+encodeURIComponent(a.id);
 }
@@ -299,7 +332,15 @@ function start(){
  $('addQuestion').onclick=addRow;$('addQuestionTop').onclick=addRow;
  $('sampleQuestions').onclick=()=>{
   if(rows.some(r=>norm(r.q))&&!confirm('استبدال الأسئلة الحالية بالمثال؟'))return;
-  rows=sample.map(normalizeRow);if(!norm($('activityTitle').value))$('activityTitle').value='تحدي مكونات الحاسوب';
+  const words=['معالج','ذاكرة','مفاتيح','تخزين','شاشة','لوحة','فأرة','صوت'];
+  rows=sample.map((row,i)=>{
+   const r=normalizeRow(row);
+   if(mode==='crossword'||mode==='wordsearch'||mode==='anagram')r.a=words[i];
+   if(mode==='cloze')r.q='أكمل العبارة: وظيفة الجزء ____ هي '+row.g;
+   if(mode==='survey')r.q='ما موضوع المهارات الرقمية الأكثر فائدة بالنسبة لك؟';
+   return r;
+  });
+  if(!norm($('activityTitle').value))$('activityTitle').value='تحدي مكونات الحاسوب';
   localSave();renderRows();alertMsg('✓ أضفت 8 أسئلة نموذجية.');
  };
  $('importText').onclick=showImport;$('closeImport').onclick=hideImport;$('applyImport').onclick=importBulk;
