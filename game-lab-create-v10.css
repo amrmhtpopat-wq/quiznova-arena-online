@@ -1,0 +1,24 @@
+/* TeachGame Game Lab V10 teacher classroom launcher — QA only */
+.v10-classroom-launch{padding:clamp(15px,2.4vw,24px);border:2px solid #a4c8ea;
+ border-radius:22px;background:radial-gradient(circle at 95% 0%,#e8d5ff,transparent 40%),
+ linear-gradient(135deg,#f5faff,#e5f2ff);margin:21px 0;color:#27476e;
+ box-shadow:0 11px 24px #254b941c
+}
+.v10-classroom-launch .v10-label{font-size:11px;letter-spacing:1.5px;color:#6353be;font-weight:950}
+.v10-classroom-launch h3{font-size:clamp(19px,2.3vw,25px);font-weight:950;margin:7px 0 4px;color:#244674}
+.v10-classroom-launch p{color:#637b96;font-size:13px;line-height:1.85;margin:5px 0 15px}
+.v10-classroom-settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:14px 0 18px}
+.v10-classroom-settings .v10-toggle{display:flex;align-items:center;gap:9px;border:1px solid #d7e4f3;
+ background:#fff;padding:12px 14px;min-height:55px;border-radius:13px;color:#385676;font-size:13px;font-weight:900;cursor:pointer}
+.v10-classroom-settings .v10-toggle input{flex:none;accent-color:#6458d9;width:18px;height:18px;cursor:pointer}
+.v10-classroom-settings .field{grid-column:1/-1;max-width:360px}
+.v10-room-actions{display:flex;flex-wrap:wrap;gap:9px}
+.v10-room-actions .btn-glow{background:linear-gradient(110deg,#ffe18d,#f4a26d);color:#513361;border:2px solid #fff3c7}
+.v10-live-status{color:#166e56!important;font-size:12px!important;font-weight:850;min-height:18px;margin-bottom:0!important}
+.v10-classroom-launch[hidden]{display:none!important}
+@media(max-width:680px){
+ .v10-classroom-settings{grid-template-columns:minmax(0,1fr)}
+ .v10-classroom-settings .field{grid-column:auto;max-width:100%}
+ .v10-room-actions .btn{flex:1 1 100%}
+ .v10-classroom-launch{padding:14px;border-radius:16px}
+}
