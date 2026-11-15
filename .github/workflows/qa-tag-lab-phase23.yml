@@ -45,6 +45,17 @@ jobs:
               if part.strip():Path('/tmp/tag-lab-inline-'+str(index)+'.js').write_text(part,encoding='utf-8')
           PY
           for f in /tmp/tag-lab-inline-*.js; do node --check "$f"; done
+      - name: Verify explicit Arabic textbook Q&A and source pages
+        run: |
+          python - <<'PY'
+          from game_lab_pro import explicit_qa_draft
+          text='[صفحة 2]\\nس: ما عاصمة الأردن؟\\nج: عمّان\\n[صفحة 3]\\nس: كم حاصل ضرب 5 في 6؟ ج: 30'
+          rows=explicit_qa_draft(text,8)
+          assert len(rows)==2, rows
+          assert [row['sourcePage'] for row in rows]==[2,3], rows
+          assert [row['a'] for row in rows]==['عمّان','30'], rows
+          print('Explicit Arabic Q&A and page traceability OK')
+          PY
       - name: Textbook, privacy, activities and student regressions
         run: |
           python tests/test_game_lab_pro.py
