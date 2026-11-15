@@ -10,16 +10,18 @@ import secrets
 import time
 import uuid
 from urllib.parse import parse_qs
+from random import Random, SystemRandom
 import platform_store as db
 import platform_api as auth
 import solo_api
 import game_lab_api as games
 
-GET={'/api/game-lab/live/state','/api/game-lab/live/rooms'}
+GET={'/api/game-lab/live/state','/api/game-lab/live/rooms','/api/game-lab/live/report'}
 HOST={'/api/game-lab/live/create','/api/game-lab/live/next',
       '/api/game-lab/live/finish','/api/game-lab/live/start'}
 STUDENT={'/api/game-lab/live/join','/api/game-lab/live/answer','/api/game-lab/live/state'}
 TTL=5*3600
+LIVE_MODES=frozenset({'quiz','fast','truth','pairs','wheel','boxes'})
 
 
 def stamp():return int(time.time())
@@ -73,62 +75,68 @@ def phase(room,players):
 
 
 def question(s,with_answers=False):
+    """Shared deterministic question; correct key is teacher-only until results."""
     idx=int(s['index'])
     if idx<0 or idx>=len(s['rows']):return None
-    row=s['rows'][idx]
-    available=[]
-    for item in s['rows']:
-        if item['a'] not in available and item['a']!=row['a']:
-            available.append(item['a'])
-    rng=hashlib.sha256((s['seed']+str(idx)).encode()).digest()
-    from random import Random
-    random=Random(int.from_bytes(rng[:8],'big'))
-    random.shuffle(available)
-    opts=[row['a']]+available[:3]
-    random.shuffle(opts)
+    row=s['rows'][idx];mode=s['mode']
+    rng=Random(int.from_bytes(hashlib.sha256(
+        (s['seed']+':'+str(idx)).encode()).digest()[:8],'big'))
+    authored=row.get('choices')
+    if isinstance(authored,list) and 2<=len(authored)<=4 and row['a'] in authored:
+        options=authored[:]
+    else:
+        options=list(dict.fromkeys(x['a'] for x in s['rows'] if x['a']!=row['a']))
+        rng.shuffle(options);options=[row['a']]+options[:3]
+    answer=row['a'];candidate=None
+    if mode=='truth':
+        wrongs=list(dict.fromkeys(x['a'] for x in s['rows'] if x['a']!=row['a']))
+        truth=rng.randrange(2)==1 or not wrongs
+        candidate=row['a'] if truth else rng.choice(wrongs)
+        options=['صح','خطأ'];answer='صح' if candidate==row['a'] else 'خطأ'
+    else:rng.shuffle(options)
     result={'index':idx,'total':len(s['rows']),'text':row['q'],
-            'options':opts,'group':row['g'],'duration':s['duration'],
-            'imageUrl':s.get('imageUrl') or '',
-            'mode':s['mode']}
-    if with_answers:result['correctAnswer']=row['a']
+            'options':options,'group':row['g'],'duration':s['duration'],
+            'imageUrl':s.get('imageUrl') or '','mode':mode,
+            'roundSeed':hashlib.sha256((s['seed']+str(idx)).encode()).hexdigest()[:10]}
+    if mode=='truth':result['candidate']=candidate
+    if with_answers:result['correctAnswer']=answer
     return result
 
-
 def snapshot(room,players,role='',person=None):
-    s=state(room)
-    current=phase(room,players)
-    idx=int(s.get('index',0))
+    s=state(room);current=phase(room,players);idx=int(s.get('index',0))
     mine=db.jload(person['answers'],{}) if person else {}
     responded=bool(person and str(idx) in mine)
+    q=question(s,with_answers=role=='teacher') if current in ('question','results') else None
     correct=None
     if current=='results' and (s['showFeedback'] or role=='teacher'):
-        correct=s['rows'][idx]['a'] if idx<len(s['rows']) else None
-    answer_data=None
-    if role=='teacher':
-        answered=sum(1 for p in players if str(idx) in db.jload(p['answers'],{}))
-        answer_data={'answered':answered,'total':len(players)}
-    leaderboard=[{'name':x['student_name'],'className':x['class_name'],
-                  'team':x['team'],'score':x['score']} for x in players[:10]]
-    teams={}
+        correct=question(s,with_answers=True)['correctAnswer']
+    answered=sum(1 for p in players if str(idx) in db.jload(p['answers'],{}))
+    leaders=[{'name':p['student_name'],'className':p['class_name'],
+              'team':p['team'],'score':p['score']} for p in players[:10]]
+    totals={}
     for p in players:
-        if p['team']:teams[p['team']]=teams.get(p['team'],0)+int(p['score'])
-    grouped=sorted([{'name':name,'score':score} for name,score in teams.items()],
-                   key=lambda x:-x['score'])
+        if p['team']:totals[p['team']]=totals.get(p['team'],0)+int(p['score'])
+    teams=sorted(({'name':name,'score':score} for name,score in totals.items()),
+                 key=lambda x:(-x['score'],x['name']))
     data={'code':room['code'],'title':s['title'],'status':current,
           'index':idx,'total':len(s['rows']),'deadline':s.get('deadline',0),
           'duration':s['duration'],'showFeedback':s['showFeedback'],'teams':s['teams'],
-          'leaderboard':leaderboard,'teamLeaderboard':grouped,'participants':len(players),
-          'question':question(s,with_answers=role=='teacher') if current in ('question','results') else None,
-          'correctAnswer':correct,'roomUpdatedAt':room['updated_at']}
-    if role=='teacher':data['answerStats']=answer_data
+          'mode':s['mode'],'leaderboard':leaders,'teamLeaderboard':teams,
+          'participants':len(players),'question':q,'correctAnswer':correct,
+          'roomUpdatedAt':room['updated_at'],'targetGrade':s.get('targetGrade','')}
+    if role=='teacher':
+        data['answerStats']={'answered':answered,'total':len(players)}
+        data['activityId']=room['activity_id']
     if person and person['team']:
         data['teammates']=[p['student_name'] for p in players if p['team']==person['team']][:50]
-    if person:data['me']={'name':person['student_name'],'team':person['team'],
-             'score':person['score'],'answered':responded,
-             'answerCorrect':mine.get(str(idx),{}).get('correct') if current=='results' and s['showFeedback'] else None}
+    if person:
+        data['me']={'name':person['student_name'],'team':person['team'],
+                    'score':person['score'],'answered':responded,
+                    'answerCorrect':mine.get(str(idx),{}).get('correct')
+                      if current=='results' and s['showFeedback'] else None}
+    if q and role!='teacher':q.pop('correctAnswer',None)
     if current=='question' and role!='teacher':data['correctAnswer']=None
     return data
-
 
 def code_new():
     for _ in range(12):
@@ -144,24 +152,29 @@ def create(tid,data):
     payload=db.jload(activity['payload'],{})
     rows=payload.get('rows',[])
     if not rows:raise ValueError('activity_empty')
+    mode=activity['mode']
+    if mode not in LIVE_MODES:raise ValueError('live_mode_not_supported')
     try:duration=int(data.get('duration',payload.get('time',25)))
     except (TypeError,ValueError):duration=25
     duration=max(10,min(120,duration))
-    team_mode=data.get('teams') is True
+    group_mode=data.get('teams') is True
     names=[str(x).strip()[:30] for x in data.get('teamNames',[]) if isinstance(x,str)] if isinstance(data.get('teamNames'),list) else []
-    if team_mode and len(names)<2:names=['الصقور','النمور']
-    code=code_new()
-    settings={'status':'lobby','title':activity['title'],'index':0,'rows':rows[:60],
-              'duration':duration,'mode':activity['mode'],'showFeedback':data.get('showFeedback') is not False,
-              'teams':team_mode,'teamNames':names[:6],'seed':secrets.token_hex(12),
-              'deadline':0,'imageUrl':''}
+    if group_mode and len(names)<2:names=['الصقور','النمور']
+    code=code_new();rows=rows[:60]
+    if mode=='wheel':
+        rows=list(rows);SystemRandom().shuffle(rows)
+    settings={'status':'lobby','title':activity['title'],'index':0,'rows':rows,
+              'duration':duration,'mode':mode,'showFeedback':data.get('showFeedback') is not False,
+              'teams':group_mode,'teamNames':names[:6],'seed':secrets.token_hex(12),
+              'deadline':0,'imageUrl':'','targetGrade':str(payload.get('grade') or '')[:25],
+              'enforceGrade':data.get('enforceGrade') is not False,
+              'cardRequired':data.get('cardRequired') is True}
     if payload.get('imageId') and len(str(payload['imageId']))==32:
         settings['imageUrl']='/api/game-lab/pro/image?id='+payload['imageId']+'&code='+(activity['public_code'] or '')
     db.exec_sql('INSERT INTO game_lab_live_rooms(code,teacher_id,activity_id,state,created_at,updated_at) '
                 'VALUES(?,?,?,?,?,?)',(code,tid,aid,db.jdump(settings),stamp(),stamp()))
     return {'code':code,'teacherUrl':'/game-lab-live.html?host='+code,
-            'studentUrl':'/game-lab-live.html?code='+code}
-
+            'studentUrl':'/game-lab-live.html?code='+code,'mode':mode}
 
 def join(h,data):
     code=str(data.get('code') or '').strip().upper()
