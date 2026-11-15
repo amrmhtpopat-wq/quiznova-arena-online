@@ -5,6 +5,7 @@ from pathlib import Path
 from threading import Thread
 from playwright.sync_api import sync_playwright
 ROOT=Path(__file__).resolve().parents[1]
+OUT=ROOT/'browser-qa-artifacts';OUT.mkdir(exist_ok=True)
 class Handler(SimpleHTTPRequestHandler):
  def __init__(self,*a,**k):super().__init__(*a,directory=str(ROOT),**k)
  def log_message(self,*args):pass
@@ -39,6 +40,7 @@ try:
     first=page.locator('#questionList .question-card').first
     assert first.locator('[data-field=q]').input_value().startswith('ما الجزء')
     first.locator('[data-wrong="0"]').fill('المعالج الرسومي')
+    page.screenshot(path=str(OUT/('game-lab-creator-v8-'+str(width)+'.png')),full_page=True,animations='disabled')
     page.locator('#goPreview').click()
     assert page.locator('#stepThree').is_visible()
     page.locator('#launchPreview').click()
