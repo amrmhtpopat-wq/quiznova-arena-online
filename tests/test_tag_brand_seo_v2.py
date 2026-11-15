@@ -16,7 +16,7 @@ class TagSeoChecks(unittest.TestCase):
     html=(ROOT/name).read_text(encoding='utf-8')
     self.assertIn('TEACH AND GAME',html)
     self.assertIn('tag-brand-v2.css',html)
-    self.assertIn('tag-logo-v15.png',html)
+    self.assertIn('tag-logo-dark-v21.png',html)
     dest=BASE+('/' if name=='index.html' else '/'+name)
     self.assertIn('<link rel="canonical" href="'+dest+'">',html)
     self.assertIn('og:image',html)
@@ -59,7 +59,7 @@ class TagLogoOnlyV16(unittest.TestCase):
   end=home.index('</div>',start)
   self.assertNotIn('<strong>',home[start:end])
   self.assertNotIn('<span>',home[start:end])
-  self.assertIn('tag-logo-v15.png',home[start:end])
+  self.assertIn('tag-logo-dark-v21.png',home[start:end])
   js=(ROOT/'stage.js').read_text(encoding='utf-8')
   head=js[js.index('function head(){'):js.index('let stageLobbySignature')]
   self.assertIn('tag-stage-logo',head)

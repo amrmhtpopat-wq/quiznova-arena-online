@@ -16,7 +16,7 @@ class UnifiedBrand(unittest.TestCase):
      self.assertNotIn('BOOYAHJO',text)
      self.assertNotIn('بويا جو',text)
   self.assertIn('tag-stage-logo',(ROOT/'stage.js').read_text(encoding='utf-8'))
-  self.assertIn('stage.js?v=18.0',(ROOT/'stage.html').read_text(encoding='utf-8'))
+  self.assertIn('stage.js?v=21.0',(ROOT/'stage.html').read_text(encoding='utf-8'))
   self.assertIn("a.download='TAG_'+liveRoom+'_report.xlsx';",(ROOT/'app.js').read_text(encoding='utf-8'))
  def test_cards_reissued_without_deletion(self):
   text=(ROOT/'portal.js').read_text(encoding='utf-8')
