@@ -35,8 +35,10 @@ try:
     q.locator('button[data-remove]').click()
     assert page.locator('#v5QuestionList .v5-question').count()==8
     page.locator('#gameGrid .game[data-game-mode="wheel"] .v4-use-template').click()
-    assert 'عجلة' in page.locator('#v4ChosenTemplate').inner_text()
-    page.locator('#v4TrySelected').click()
+    page.wait_for_url('**/game-lab-create.html?mode=wheel')
+    assert page.locator('#modeSelect').input_value()=='wheel'
+    page.go_back()
+    page.locator('#gameGrid .game[data-game-mode="wheel"] .button:not(.v4-use-template)').first.click()
     page.locator('#playOverlay').wait_for(state='visible')
     # Keep dark text on white surfaces for teachers; a former bug hid the answer.
     colors=page.evaluate("""() => ({
