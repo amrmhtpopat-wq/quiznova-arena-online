@@ -153,6 +153,11 @@
  min-height:0!important;min-width:0!important;
  overflow:visible!important;position:relative!important;text-align:center!important
 }
+/* Remove V6 corner ornaments that protrude 44px beyond mobile wheel cards. */
+#playOverlay.v101-overhaul .v101-wheel-stage .playcard::before,
+#playOverlay.v101-overhaul .v101-wheel-stage .playcard::after{
+ content:none!important;display:none!important
+}
 #playOverlay.v101-overhaul .v101-wheel-caption h3{
  color:var(--tg-ink)!important;font-size:clamp(19px,2vw,27px)!important;
  margin:0!important;font-weight:950;line-height:1.35!important
