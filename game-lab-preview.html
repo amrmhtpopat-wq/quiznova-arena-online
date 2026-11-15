@@ -219,7 +219,7 @@ function readRows(raw){
 }
 function getPayload(){const x=readRows($('activityData').value);if(x.error)return {error:x.error};return {title:$('activityTitle').value.trim().slice(0,90)||'نشاط جديد',subject:$('subject').value,grade:$('grade').value,time:Number($('roundTime').value)||25,rows:x.rows}}
 function report(s,warning=false){$('contentFeedback').textContent=s;$('contentFeedback').className=warning?'notice':'good'}
-function apply(){const p=getPayload();if(p.error){report(p.error,true);return false}content=p.rows;report('✓ '+content.length+' بطاقة جاهزة • '+new Set(content.map(x=>x.g)).size+' مجموعات • يمكن التبديل بين 8 ألعاب');renderPreview();return true}
+function apply(){const p=getPayload();if(p.error){report(p.error,true);return false}content=(Array.isArray(window.TG_CREATOR_PREVIEW_ROWS)&&window.TG_CREATOR_PREVIEW_ROWS.length===p.rows.length&&window.TG_CREATOR_PREVIEW_ROWS.every((r,i)=>r.q===p.rows[i].q&&r.a===p.rows[i].a))?window.TG_CREATOR_PREVIEW_ROWS:p.rows;report('✓ '+content.length+' بطاقة جاهزة • '+new Set(content.map(x=>x.g)).size+' مجموعات • يمكن التبديل بين 8 ألعاب');renderPreview();return true}
 function renderPreview(){const el=$('dataPreview');el.replaceChildren();content.slice(0,4).forEach((r,i)=>{const div=document.createElement('div');div.className='saved';div.innerHTML='<div><b>'+secureText(r.q)+'</b><small>'+secureText(r.a)+' · '+secureText(r.g)+'</small></div><span class="pill">'+(i+1)+'</span>';el.appendChild(div)});if(content.length>4){const more=document.createElement('small');more.textContent='و '+(content.length-4)+' سؤال آخر';el.appendChild(more)}}
 function renderCatalog(){const query=$('gameSearch').value.toLowerCase().trim(),grade=$('gradeFilter').value;const list=catalog.filter(x=>(filter==='all'||x.cat===filter)&&(grade==='all'||x.grade==='all'||x.grade===grade)&&(!query||(x.name+' '+x.desc).toLowerCase().includes(query)));$('gameGrid').replaceChildren();list.forEach(g=>{const el=document.createElement('article');el.className='game';el.dataset.gameMode=g.id;el.innerHTML='<div class="figure"><div class="symbol" aria-hidden="true">'+g.icon+'</div><span class="state '+(g.ready?'':'plan')+'">'+(g.ready?'تجربة تفاعلية':'قيد التطوير')+'</span></div><h3>'+g.name+'</h3><p>'+g.desc+'</p><div class="meta"><span>🎓 '+(g.grade==='all'?'كل المراحل':g.grade)+'</span><span>'+(g.ready?'قالب قابل للتبديل':'ميزة مقترحة')+'</span></div>';
  const b=document.createElement('button');b.className='button '+(g.ready?'':'alt');b.textContent=g.ready?'▶ تجربة اللعبة':'تفاصيل التطوير';b.onclick=()=>g.ready?openGame(g.id):scrollToId('roadmap');el.appendChild(b);$('gameGrid').appendChild(el)});$('resultCount').textContent=list.length+' قالبًا';$('noResults').classList.toggle('hide',list.length!==0)}
@@ -267,7 +267,7 @@ function nextRound(){round++;if(round>=Math.min(content.length,8)){gameEnd();ret
 function quizGame(){
  if(round>=Math.min(content.length,8))return gameEnd();
  const row=content[round];let alt=shuffle([...new Set(content.map(x=>x.a).filter(a=>a!==row.a))]).slice(0,3);while(alt.length<3)alt.push('خيار آخر '+(alt.length+1));
- const opts=shuffle([row.a,...alt]),time=Number($('roundTime').value)||25;
+ const custom=Array.isArray(row.choices)?[...new Set(row.choices.map(x=>String(x).trim()).filter(Boolean))]:[];const opts=custom.length>=2&&custom.includes(row.a)?shuffle(custom):shuffle([row.a,...alt]),time=Number($('roundTime').value)||25;
  container('<div class="playinfo"><span>السؤال '+(round+1)+' من '+Math.min(content.length,8)+'</span><b>⭐ '+score+' نقطة</b><span id="clockChip"></span></div><div class="playcard"><h3>'+secureText(row.q)+'</h3></div><div class="playchoices" id="answers"></div><div class="buttons" style="justify-content:center" id="nextWrap"></div>');
  updateCounter((round+1)+' / '+Math.min(content.length,8));const wrap=$('answers');let finished=false;
  const done=chosen=>{if(finished)return;finished=true;stopClock();wrap.querySelectorAll('button').forEach(b=>{b.disabled=true;if(b.dataset.answer===row.a)b.classList.add('correct');else if(b.dataset.answer===chosen)b.classList.add('wrong')});if(chosen===row.a){score+=100;status('✅ إجابة صحيحة • +100 نقطة')}else status('💡 الإجابة الصحيحة: '+row.a);$('nextWrap').append(textButton(round+1>=Math.min(content.length,8)?'إظهار النتيجة 🏆':'السؤال التالي ⟵',nextRound,'button'))};
@@ -324,4 +324,5 @@ renderCatalog();apply();refreshSaved();
 <script defer src="/game-lab-visual-v5.js?v=5.0"></script>
 <script defer src="/game-lab-interaction-v6.js?v=6.0"></script>
 <script defer src="/game-lab-visual-emotion-v7.js?v=7.0"></script>
+<script defer src="/game-lab-creator-bridge-v8.js?v=8.0"></script>
 </body></html>
