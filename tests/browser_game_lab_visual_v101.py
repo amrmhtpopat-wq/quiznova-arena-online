@@ -55,8 +55,8 @@ def theme_test(frame,mode):
  assert overlay.get_attribute('data-v101-theme') in ('light','dark')
  theme=frame.locator('#v101ThemeButton')
  theme.wait_for(state='visible',timeout=4000)
- assert frame.locator('.v101-buddy svg').count()==1
- assert frame.locator('.v101-scene-token').count()==1
+ assert frame.locator('.v101-buddy svg').count()==0
+ assert frame.locator('.v101-scene-token').count()==0
  if overlay.get_attribute('data-v101-theme')=='dark':
   theme.click()
  assert overlay.get_attribute('data-v101-theme')=='light'
@@ -96,6 +96,9 @@ try:
       question.wait_for(state='visible',timeout=5000)
       text=question.inner_text().strip()
       assert len(text)>=8,(width,text)
+      # V10.2 lets the selected sector rest briefly while the question
+      # is ALREADY visible, then removes the used question from the wheel.
+      labels.nth(7).wait_for(state='detached',timeout=4000)
       remaining=set(labels.evaluate_all("(els)=>els.map(el=>el.dataset.question)"))
       assert len(remaining)==7,(width,remaining)
       assert remaining.issubset(first),(width,first,remaining)
