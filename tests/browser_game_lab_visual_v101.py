@@ -39,6 +39,7 @@ def width_check(page,frame,mode):
   headerRect:document.querySelector('.playhead').getBoundingClientRect().toJSON(),
   frameHeight:innerHeight,
   statusRect:document.querySelector('#playStatus').getBoundingClientRect().toJSON(),
+  statusPosition:getComputedStyle(document.querySelector('#playStatus')).position,
   question:document.querySelector('#wheelReveal h3')?.getBoundingClientRect().toJSON()
  })""")
  assert result['scroll']<=result['width']+5,(mode,'overlay',result)
@@ -47,7 +48,8 @@ def width_check(page,frame,mode):
  # no-horizontal-scroll contract is the overlay's own scroll width above.
  assert result['bodyScroll']<=result['bodyWidth']+80,(mode,'body decorative extent',result)
  assert result['headerRect']['top']>=-2,(mode,'header above viewport',result)
- assert result['statusRect']['bottom']<=result['frameHeight']+5,(mode,'status clipped',result)
+ # V10.2 feedback is deliberately in normal flow, not a floating strip.
+ assert result['statusPosition']=='static',(mode,'feedback incorrectly floating',result)
  return result
 
 def theme_test(frame,mode):
