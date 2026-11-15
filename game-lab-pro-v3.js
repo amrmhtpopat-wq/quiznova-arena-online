@@ -2,7 +2,7 @@
 (()=>{'use strict';
 const $=id=>document.getElementById(id);
 const key='qn9_teacher_token';
-let books=[],bookId='',activities=[],students=[],images=[],imageUrl='',selectedImageId='';
+let books=[],bookId='',activities=[],students=[],images=[],imageUrl='',selectedImageId='',bookDraftReady=false;
 const errors={
  login_required:'سجّل دخول المعلم من «مكتبتي على الحساب» أولًا.',
  book_not_found:'الكتاب غير متاح في حساب المعلم.',
@@ -134,6 +134,7 @@ async function generate(){
   params.consent=mode==='ai'&&$('labAiConsent').checked;
   const response=await request('/api/game-lab/pro/books/'+(mode==='ai'?'ai':'draft'),params);
   const src=response.rows||[];
+   bookDraftReady=src.length>=4;$('labBookSaveCloud').disabled=!bookDraftReady;
   if(!src.length){message('labBookStatus',response.warning||'لم يتم استخراج أسئلة. جرّب صفحات أو درسًا آخر.',true);return}
   const parent=$('labBookPreview');parent.replaceChildren();
   for(const [i,r] of src.entries()){
@@ -146,10 +147,18 @@ async function generate(){
   const book=books.find(x=>x.id===params.bookId);
   if(book)$('activityTitle').value=('ألعاب '+book.name.replace(/\.(pdf|docx|txt)$/i,'')).slice(0,90);
   window.BOOYAH_LAB_BOOK_ID=params.bookId;
+  window.BOOYAH_LAB_SOURCE_GROUP='';window.BOOYAH_LAB_IMAGE_ID='';
+  window.TG_CREATOR_PREVIEW_ROWS=src;
   $('applyContent').click();
-  $('labBookSummary').textContent='✓ جرى تحويل '+src.length+' سؤالًا إلى محرر الألعاب. يمكنك تحريرها وتبديل أي قالب من الـ24 قالبًا.';
-  message('labBookStatus',response.warning||'✓ هذه مسودة جاهزة لمراجعة المعلم.');
+  $('labBookSummary').textContent='جرى تحويل '+src.length+' سؤالًا إلى المحرر مع صفحات المصدر. '+(bookDraftReady?'راجعها، ثم احفظ المسودة الخاصة بحسابك.':'يلزم 4 أسئلة موثوقة على الأقل قبل الحفظ.');
+  message('labBookStatus',response.warning||'✓ مسودة قابلة للمراجعة قبل النشر.',!bookDraftReady);
  }catch(e){failed('labBookStatus',e)}finally{b.disabled=false}
+}
+async function archiveBook(){
+ const id=$('labBookSelect').value,book=books.find(x=>x.id===id);
+ if(!book){message('labBookStatus','اختر كتابًا أولًا.',true);return}
+ if(!confirm('أرشفة «'+book.name+'»؟ سيختفي من قائمة الكتب المتاحة للتوليد، لكن الأنشطة المحفوظة لن تُحذف.'))return;
+ try{await request('/api/game-lab/pro/books/archive',{bookId:id,confirm:true});bookId='';bookDraftReady=false;$('labBookSaveCloud').disabled=true;window.BOOYAH_LAB_BOOK_ID='';await refreshBooks();message('labBookStatus','✓ أُرشف الكتاب دون حذف أنشطتك المحفوظة.')}catch(e){failed('labBookStatus',e)}
 }
 async function showPages(){
  try{
@@ -312,9 +321,16 @@ async function createRoom(){
 $('labBookUpload').onclick=uploadBook;
 $('labBookRefresh').onclick=refreshBooks;
 $('labBookGenerate').onclick=generate;
+$('labBookSaveCloud').onclick=()=>{
+ if(!bookDraftReady){message('labBookStatus','يلزم أربع أسئلة موثوقة على الأقل.',true);return}
+ if(!token()){message('labBookStatus','سجّل دخول المعلم أولًا ثم احفظ المسودة.',true);scroll('cloud');return}
+ document.dispatchEvent(new CustomEvent('gamelab:save-book-draft',{detail:{bookId:$('labBookSelect').value}}));
+};
+$('labBookArchive').onclick=archiveBook;
 $('labBookPages').onclick=showPages;
 $('labBookOpenEditor').onclick=()=>scroll('builder');
-$('labBookSelect').onchange=e=>{bookId=e.target.value;renderBooks()};
+$('activityData').addEventListener('input',()=>{window.TG_CREATOR_PREVIEW_ROWS=null});
+$('labBookSelect').onchange=e=>{bookId=e.target.value;bookDraftReady=false;$('labBookSaveCloud').disabled=true;renderBooks()};
 $('labAssignType').onchange=renderTargetChoices;
 $('labAssignRefresh').onclick=loadStudents;
 $('labAssignActivity').onchange=showAssignments;
