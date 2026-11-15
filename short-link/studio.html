@@ -1,31 +1,30 @@
 <!doctype html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex,nofollow,noarchive">
-<meta name="referrer" content="no-referrer">
-<meta name="theme-color" content="#081e42">
-<title>فتح استوديو المعلم | TAG</title>
+<html lang="ar" dir="rtl"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive"><meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#081e42"><title>TEACH AND GAME | TAG – الانتقال للمنصة</title>
 <link rel="canonical" href="https://quiznova-arena-online.onrender.com/studio.html">
 <link rel="icon" type="image/svg+xml" href="/assets/brand/tag-icon.svg">
 <link rel="preload" as="image" href="/assets/brand/tag-logo-v15.png">
-<link rel="stylesheet" href="/wake-loader.css?v=17">
-<script>
-window.TAG_ENTRY_TARGET="https://quiznova-arena-online.onrender.com/studio.html";
-window.TAG_ENTRY_GO=function(){var target=window.TAG_ENTRY_TARGET;location.replace(target+location.search+location.hash)};
-</script>
-<script src="/wake-loader.js?v=17" defer></script>
+<link rel="stylesheet" href="/wake-loader.css?v=18">
+<script>window.TAG_ENTRY_TARGET="https://quiznova-arena-online.onrender.com/studio.html";
+window.TAG_ENTRY_URL=function(){
+ const url=new URL(window.TAG_ENTRY_TARGET);
+ for(const [key,val] of new URLSearchParams(location.search)){
+  if(/^utm_/i.test(key)||/^(fbclid|gclid|mc_cid|mc_eid)$/i.test(key))continue;
+  if(/^(source|ref|referrer)$/i.test(key)&&/^(chatgpt(\.com)?|openai(\.com)?)$/i.test(val))continue;
+  url.searchParams.set(key,val);
+ }
+ return url.toString()+location.hash;
+};
+window.TAG_ENTRY_GO=function(){location.replace(window.TAG_ENTRY_URL())};</script>
+<script defer src="/wake-loader.js?v=18"></script>
 <noscript><meta http-equiv="refresh" content="0;url=https://quiznova-arena-online.onrender.com/studio.html"></noscript>
-</head>
-<body>
-<main class="splash" aria-labelledby="splashTitle">
-<img class="splash-logo" src="/assets/brand/tag-logo-v15.png" alt="الشعار الرسمي TEACH AND GAME – TAG" width="275" height="102">
+</head><body><main class="splash" aria-labelledby="splashTitle">
+<img class="splash-logo" src="/assets/brand/tag-logo-v15.png" alt="TEACH AND GAME TAG" width="275" height="102">
 <div class="spinner" role="status" aria-label="جارٍ التحميل"></div>
 <h1 id="splashTitle">جارٍ تجهيز TEACH AND GAME</h1>
 <p class="status" id="wakeStatus" aria-live="polite">نجهّز المنصة ونتحقق من اتصال الخادم…</p>
-<div class="actions"><button type="button" id="wakeRetry" hidden>إعادة المحاولة</button><a id="wakeDirect" href="https://quiznova-arena-online.onrender.com/studio.html">فتح المنصة مباشرة</a></div>
-<p class="hint">تظهر هذه الشاشة فقط عند الدخول من رابط TAG المختصر.</p>
-</main>
-</body>
-</html>
+<div class="actions"><button type="button" id="wakeRetry" hidden>إعادة المحاولة</button><a id="wakeDirect" href="https://quiznova-arena-online.onrender.com/studio.html">فتح الصفحة مباشرة</a></div>
+<p class="hint">TAG — منصة تعليمية واحدة، رابط واحد لكل خدمة</p>
+</main></body></html>

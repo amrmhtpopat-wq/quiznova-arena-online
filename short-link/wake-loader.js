@@ -10,7 +10,7 @@
  const retry=document.getElementById("wakeRetry");
  const direct=document.getElementById("wakeDirect");
  if(!status||!retry||!direct)return;
- direct.href=target+location.search+location.hash;
+ direct.href=typeof window.TAG_ENTRY_URL==='function'?window.TAG_ENTRY_URL():target+location.search+location.hash;
  let began=Date.now(),attempt=0,finished=false;
  const maxWindow=95000;
  function ping(){
