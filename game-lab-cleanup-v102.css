@@ -1,0 +1,155 @@
+/* TeachGame Game Lab V10.2 — QA-only UI cleanup across every game template.
+   Loaded AFTER V4–V10.1. Removes the translucent status overlay without
+   breaking existing scoring, animations, navigation or answer feedback.
+*/
+#playOverlay.v101-overhaul #playStatus,
+#playOverlay.v101-overhaul.v6-game #playStatus,
+#playOverlay.v101-overhaul.v7-game #playStatus,
+#playOverlay.v101-overhaul.v9-stage #playStatus{
+ position:static!important;inset:auto!important;top:auto!important;bottom:auto!important;
+ transform:none!important;filter:none!important;backdrop-filter:none!important;
+ display:block!important;flex:0 0 auto!important;
+ width:min(100%,1150px)!important;max-width:1150px!important;
+ margin:2px auto 20px!important;
+ padding:12px 17px!important;min-height:0!important;
+ border:1px solid #bfcfeb!important;border-radius:15px!important;
+ background:#eff6ff!important;color:#203f69!important;
+ box-shadow:0 4px 14px #1e356b19!important;
+ font-size:clamp(13px,1.4vw,17px)!important;font-weight:850!important;
+ line-height:1.7!important;white-space:normal!important;
+ text-align:center!important;text-shadow:none!important;
+ z-index:auto!important;pointer-events:none!important;
+ opacity:1!important;overflow-wrap:anywhere!important;
+}
+#playOverlay.v101-overhaul #playStatus:empty,
+#playOverlay.v101-overhaul.v6-game #playStatus:empty,
+#playOverlay.v101-overhaul.v7-game #playStatus:empty,
+#playOverlay.v101-overhaul.v9-stage #playStatus:empty{
+ display:none!important;padding:0!important;margin:0!important;
+ border:0!important;min-height:0!important;box-shadow:none!important
+}
+#playOverlay.v101-overhaul #playStatus.v9-success,
+#playOverlay.v101-overhaul #playStatus[data-v6-result="correct"]{
+ background:#e0ffed!important;color:#0d6042!important;border-color:#91d9b7!important
+}
+#playOverlay.v101-overhaul #playStatus.v9-error,
+#playOverlay.v101-overhaul #playStatus[data-v6-result="wrong"]{
+ background:#fff1e9!important;color:#893e48!important;border-color:#e9b5b2!important
+}
+#playOverlay.v101-overhaul #playStatus[data-v6-result="reveal"]{
+ background:#eeebff!important;color:#4d4087!important;border-color:#c7bff2!important
+}
+#playOverlay.v101-overhaul[data-v101-theme="dark"] #playStatus{
+ background:#243c62!important;color:#f2f7ff!important;
+ border-color:#6684b4!important;box-shadow:0 4px 15px #00000042!important
+}
+#playOverlay.v101-overhaul[data-v101-theme="dark"] #playStatus.v9-success,
+#playOverlay.v101-overhaul[data-v101-theme="dark"] #playStatus[data-v6-result="correct"]{
+ background:#164f42!important;color:#e1fff0!important;border-color:#4caf8f!important
+}
+#playOverlay.v101-overhaul[data-v101-theme="dark"] #playStatus.v9-error,
+#playOverlay.v101-overhaul[data-v101-theme="dark"] #playStatus[data-v6-result="wrong"]{
+ background:#623743!important;color:#ffeaeb!important;border-color:#c17d8d!important
+}
+#playOverlay.v101-overhaul[data-v101-theme="dark"] #playStatus[data-v6-result="reveal"]{
+ background:#352f65!important;color:#f1edff!important;border-color:#8279c4!important
+}
+/* No decorative robots or emoji stamps floating over the header/questions. */
+#playOverlay.v101-overhaul .playhead>.v101-buddy,
+#playOverlay.v101-overhaul .v101-scene-token{display:none!important}
+#playOverlay.v101-overhaul .playbody{padding-bottom:22px!important;gap:12px!important}
+#playOverlay.v101-overhaul .playbody>.playcard{
+ overflow-wrap:anywhere!important;isolation:isolate
+}
+/* The anagram answer box inherited dark navy with dark navy text.
+   Make every editable word-game tile clear in both themes. */
+#playOverlay.v101-overhaul .extra-slots{
+ background:#eaf2ff!important;color:#1d3b66!important;
+ border:2px dashed #779bdb!important;box-shadow:inset 0 2px 8px #5578a11a!important;
+ font-size:clamp(18px,2.2vw,27px)!important;font-weight:950!important;
+ line-height:1.7!important;overflow-wrap:anywhere!important
+}
+#playOverlay.v101-overhaul .extra-letter:not(:disabled){
+ background:linear-gradient(135deg,#fff,#e5efff)!important;
+ color:#244571!important;border:2px solid #c5d6ee!important;
+ box-shadow:0 4px 0 #9eafd0!important
+}
+#playOverlay.v101-overhaul .extra-letter:disabled{
+ background:#e5ebf3!important;color:#7789a2!important;opacity:.54!important
+}
+#playOverlay.v101-overhaul[data-v101-theme="dark"] .extra-slots{
+ background:#233a5f!important;color:#f3faff!important;
+ border-color:#94afd9!important;box-shadow:inset 0 3px 14px #00000035!important
+}
+#playOverlay.v101-overhaul[data-v101-theme="dark"] .extra-letter:not(:disabled){
+ background:#2c4970!important;color:#f8fbff!important;
+ border-color:#789ad0!important;box-shadow:0 4px 0 #182947!important
+}
+#playOverlay.v101-overhaul[data-v101-theme="dark"] .extra-letter:disabled{
+ background:#24364f!important;color:#aebed1!important;opacity:.48!important
+}
+/* Wheel question mystery emblem: original dimensional golden question mark,
+   not a die, an unrelated mascot, or a decorative overlay. */
+#playOverlay.v101-overhaul .v102-mystery-emblem{
+ display:grid!important;place-items:center;position:relative;
+ width:clamp(78px,9vw,124px);height:clamp(78px,9vw,124px);
+ margin:0 auto 12px!important;border:6px solid #fff3b9;
+ border-radius:28px;
+ transform:rotate(-7deg);
+ background:radial-gradient(circle at 30% 22%,#fffbe0 0%,#ffe4a3 30%,#ffbd61 71%,#ca8743 100%)!important;
+ color:#663d86!important;
+ box-shadow:inset 0 5px 2px #ffffffcb,inset -7px -9px 16px #ac713d4b,
+ 0 10px 0 #bb8d53,0 20px 23px #38235340!important;
+}
+#playOverlay.v101-overhaul .v102-mystery-emblem>span{
+ font-size:clamp(47px,5vw,72px);font-weight:950;
+ line-height:1;color:#6a44a5!important;
+ text-shadow:0 3px 0 #f9e9ff80
+}
+#playOverlay.v101-overhaul .v102-mystery-emblem i{
+ position:absolute;top:-17px;right:-16px;font-style:normal;
+ font-size:32px;color:#f5aa55;text-shadow:0 4px 10px #e4b05250
+}
+#playOverlay.v101-overhaul .v101-wheel-hub span{
+ color:#8d61ca!important;font-size:clamp(15px,2vw,26px)!important
+}
+/* Stop on the winning question: a short, readable highlight BEFORE it is
+   removed from the wheel. Full question is already shown beside it. */
+#playOverlay.v101-overhaul .v102-winning-wedge path{
+ stroke:#7445be!important;stroke-width:7!important;
+ filter:drop-shadow(0 0 10px #fff5be)!important
+}
+#playOverlay.v101-overhaul .v102-winning-wedge text{
+ fill:#142651!important;font-weight:950!important;
+ paint-order:stroke!important;stroke:#ffffffa1!important;stroke-width:1.5px!important
+}
+#playOverlay.v101-overhaul .v101-wheel[data-v102-holding="true"]{
+ box-shadow:inset 0 0 0 4px #e8c49d,0 10px 0 #b88447,
+ 0 16px 32px #e6b56a9c!important
+}
+#playOverlay.v101-overhaul .v101-wheel-placeholder{
+ display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px
+}
+#playOverlay.v101-overhaul #wheelReveal>h3{
+ padding:5px 0!important;line-height:1.65!important;
+ max-width:100%!important;word-break:normal!important;
+}
+#playOverlay.v101-overhaul .v101-wheel-question{
+ overflow:visible!important;min-width:0!important
+}
+@media(max-width:860px){
+ #playOverlay.v101-overhaul .v101-wheel-placeholder{flex-direction:row!important}
+ #playOverlay.v101-overhaul .v102-mystery-emblem{
+  width:70px;height:70px;border-width:4px;border-radius:18px;
+  margin:0 14px!important;box-shadow:0 5px 0 #bb8d53,0 10px 13px #38235340!important
+ }
+ #playOverlay.v101-overhaul .v102-mystery-emblem>span{font-size:42px}
+ #playOverlay.v101-overhaul .v102-mystery-emblem i{font-size:20px;top:-10px;right:-8px}
+}
+@media(max-width:620px){
+ #playOverlay.v101-overhaul .playbody{padding-bottom:15px!important}
+ #playOverlay.v101-overhaul #playStatus{margin-bottom:12px!important;padding:10px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ #playOverlay.v101-overhaul .v102-mystery-emblem{animation:none!important}
+}
