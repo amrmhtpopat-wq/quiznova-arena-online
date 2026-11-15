@@ -28,6 +28,7 @@
 <link rel="stylesheet" href="/game-lab-visual-v5.css?v=5.0">
 <link rel="stylesheet" href="/game-lab-interaction-v6.css?v=6.0">
 <link rel="stylesheet" href="/game-lab-visual-emotion-v7.css?v=7.0">
+<link rel="stylesheet" href="/game-lab-premium-v9.css?v=9.0">
 </head>
 <body>
 <div class="mobilebar"><b>🎮 BOOYAHJO GAME LAB</b><button class="button alt small" id="mobileMenu" aria-label="القائمة">☰</button></div><div id="shade" class="shade"></div>
@@ -230,8 +231,8 @@ function container(html){$('playBody').innerHTML=html}
 function shuffle(ar){const out=[...ar];for(let i=out.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[out[i],out[j]]=[out[j],out[i]]}return out}
 function stopClock(){if(timer){clearInterval(timer);timer=null}}
 function updateCounter(v){$('playCounter').textContent=v}
-function openGame(id){const g=catalog.find(x=>x.id===id);if(!g||!g.ready)return;if(!apply())return;type=id;round=0;score=0;selection=null;openBox=new Set();stopClock();$('playOverlay').hidden=false;document.body.style.overflow='hidden';$('playTitle').textContent=g.icon+' '+g.name;status('');renderGame()}
-function closeGame(){stopClock();window.BOOYAH_EXTRA?.stop();mixerState=null;$('playOverlay').hidden=true;document.body.style.overflow='';type=null}
+function openGame(id){const g=catalog.find(x=>x.id===id);if(!g||!g.ready)return;if(!apply())return;type=id;round=0;score=0;selection=null;openBox=new Set();stopClock();$('playOverlay').dataset.v9Mode=id;$('playOverlay').hidden=false;document.body.style.overflow='hidden';$('playTitle').textContent=g.icon+' '+g.name;status('');renderGame()}
+function closeGame(){stopClock();window.BOOYAH_EXTRA?.stop();mixerState=null;$('playOverlay').hidden=true;delete $('playOverlay').dataset.v9Mode;document.body.style.overflow='';type=null}
 function renderGame(){
  stopClock();status('');
  if(!content.length)return;
@@ -242,7 +243,7 @@ function renderGame(){
  if(type==='boxes')return boxesGame();
  if(type==='sort')return sortGame();
  if(type==='truth')return truthGame();
- if(window.BOOYAH_EXTRA)return window.BOOYAH_EXTRA.render(type,{rows:content,container,status,updateCounter,finish:points=>{score=points;gameEnd()}});
+ if(window.BOOYAH_EXTRA)return window.BOOYAH_EXTRA.render(type,{rows:content,container,status,updateCounter,teamNames:window.TG_CREATOR_PREVIEW_TEAM_NAMES||[],finish:points=>{score=points;gameEnd()}});
 }
 function gameEnd(){stopClock();container('<div class="playcard"><div style="font-size:4.5rem">🏆</div><h3>أحسنت! انتهى النشاط</h3><p>نتيجة المحاولة على جهاز المعلم فقط</p><h2 style="color:var(--aqua);font-size:3rem">'+score+' نقطة</h2><p>هذا عرض تجريبي ولا تُحفظ فيه نتائج الطلاب.</p></div><div class="buttons" style="justify-content:center" id="endButtons"></div>');const area=$('endButtons');area.append(textButton('↺ إعادة اللعب',()=>{round=0;score=0;renderGame()},'button'),textButton('📚 اختر قالبًا آخر',closeGame));updateCounter('انتهى');
  if(mixerState){
@@ -270,20 +271,92 @@ function quizGame(){
  const custom=Array.isArray(row.choices)?[...new Set(row.choices.map(x=>String(x).trim()).filter(Boolean))]:[];const opts=custom.length>=2&&custom.includes(row.a)?shuffle(custom):shuffle([row.a,...alt]),time=Number($('roundTime').value)||25;
  container('<div class="playinfo"><span>السؤال '+(round+1)+' من '+Math.min(content.length,8)+'</span><b>⭐ '+score+' نقطة</b><span id="clockChip"></span></div><div class="playcard"><h3>'+secureText(row.q)+'</h3></div><div class="playchoices" id="answers"></div><div class="buttons" style="justify-content:center" id="nextWrap"></div>');
  updateCounter((round+1)+' / '+Math.min(content.length,8));const wrap=$('answers');let finished=false;
- const done=chosen=>{if(finished)return;finished=true;stopClock();wrap.querySelectorAll('button').forEach(b=>{b.disabled=true;if(b.dataset.answer===row.a)b.classList.add('correct');else if(b.dataset.answer===chosen)b.classList.add('wrong')});if(chosen===row.a){score+=100;status('✅ إجابة صحيحة • +100 نقطة')}else status('💡 الإجابة الصحيحة: '+row.a);$('nextWrap').append(textButton(round+1>=Math.min(content.length,8)?'إظهار النتيجة 🏆':'السؤال التالي ⟵',nextRound,'button'))};
+ const done=chosen=>{if(finished)return;finished=true;stopClock();wrap.querySelectorAll('button').forEach(b=>{b.disabled=true;if(b.dataset.answer===row.a)b.classList.add('correct');else if(b.dataset.answer===chosen)b.classList.add('wrong')});if(chosen===row.a){score+=100;status('✅ إجابة صحيحة • +100 نقطة'+(row.explanation?' — '+row.explanation:''))}else status('💡 الإجابة الصحيحة: '+row.a+(row.explanation?' — '+row.explanation:''));$('nextWrap').append(textButton(round+1>=Math.min(content.length,8)?'إظهار النتيجة 🏆':'السؤال التالي ⟵',nextRound,'button'))};
  opts.forEach(answer=>{const b=document.createElement('button');b.className='choice';b.textContent=answer;b.dataset.answer=answer;b.onclick=()=>done(answer);wrap.append(b)});
  if(type==='fast'){let remain=time;$('clockChip').textContent='⏱ '+remain+' ث';timer=setInterval(()=>{remain--;if($('clockChip'))$('clockChip').textContent='⏱ '+remain+' ث';if(remain<=0)done(null)},1000)}else $('clockChip').textContent='بدون مؤقت';
 }
-function flashGame(){if(round>=content.length)return gameEnd();let revealed=false;updateCounter((round+1)+' / '+content.length);container('<div class="playinfo"><span>بطاقة '+(round+1)+' من '+content.length+'</span><b>اقلبها لتكشف الإجابة</b></div><button class="flipcard" id="flipCard"></button><p class="countnote">اضغط على البطاقة لقلبها</p><div class="buttons" style="justify-content:center" id="flashNav"></div>');const card=$('flipCard');card.textContent=content[round].q;card.onclick=()=>{revealed=!revealed;card.textContent=revealed?content[round].a:content[round].q;card.style.background=revealed?'linear-gradient(130deg,#165a4b,#116a70)':''};$('flashNav').append(textButton(round+1===content.length?'نهاية البطاقات':'البطاقة التالية ⟵',()=>{round++;if(round>=content.length){score=content.length*10;gameEnd()}else flashGame()},'button'))}
+function flashGame(){
+ if(round>=content.length)return gameEnd();
+ let revealed=false;
+ updateCounter((round+1)+' / '+content.length);
+ container('<div class="playinfo"><span>بطاقة '+(round+1)+' من '+content.length+'</span><b>👀 اختبر ذاكرتك</b></div><button class="flipcard" id="flipCard" aria-label="اقلب البطاقة لتكشف الإجابة"></button><p class="countnote">اقلب البطاقة، ثم حدّد إن كنت أتقنت الإجابة أو تحتاج للمراجعة.</p><div class="buttons" style="justify-content:center;flex-wrap:wrap" id="flashNav"></div>');
+ const card=$('flipCard'),actions=$('flashNav');
+ const display=()=>{
+  card.textContent=revealed?content[round].a:content[round].q;
+  card.setAttribute('aria-pressed',String(revealed));
+  card.classList.toggle('revealed',revealed);
+  actions.replaceChildren();
+  if(revealed){
+   actions.append(textButton('🌟 أتقنت',()=>{score+=25;round++;flashGame()},'button gold'));
+   actions.append(textButton('🔁 أحتاج مراجعة',()=>{round++;flashGame()},'button alt'));
+  }else{
+   actions.append(textButton('👀 كشف الإجابة',()=>{revealed=true;display()},'button'));
+  }
+ };
+ card.onclick=()=>{revealed=!revealed;display()};
+ display();
+}
 function pairsGame(){
  const rows=content.slice(0,Math.min(6,content.length)),left=rows.map((r,i)=>({label:r.q,id:i})),right=shuffle(rows.map((r,i)=>({label:r.a,id:i})));selection=null;const solved=new Set();updateCounter('0 / '+rows.length);container('<div class="playinfo"><span>اختر سؤالاً ثم إجابته</span><b id="pairsScore">0 من '+rows.length+'</b></div><div class="matchgrid"><div class="matchcol" id="matchLeft"></div><div class="matchcol" id="matchRight"></div></div>');
  function paint(){for(const [side,ar] of [['left',left],['right',right]]){const host=$(side==='left'?'matchLeft':'matchRight');host.replaceChildren();ar.forEach(item=>{const b=document.createElement('button');b.className='matchitem'+(solved.has(item.id)?' done':'')+(selection?.side===side&&selection?.id===item.id?' active':'');b.textContent=item.label;b.disabled=solved.has(item.id);b.onclick=()=>{if(!selection||selection.side===side){selection={side,id:item.id};status('اختر العنصر المطابق من العمود الآخر')}else{if(selection.id===item.id){solved.add(item.id);score+=50;status('✅ زوج صحيح • +50')}else status('جرّب مرة أخرى');selection=null}updateCounter(solved.size+' / '+rows.length);paint();if(solved.size===rows.length)setTimeout(gameEnd,650)};host.append(b)})}}
  paint();
 }
-function wheelGame(){updateCounter('اختر سؤالًا');container('<div class="playcard"><h3>🎡 عجلة الأسئلة العشوائية</h3><p>كل دورة تختار سؤالًا جديدًا من النشاط.</p><div class="wheel" id="spinWheel"><strong>BOOYAHJO</strong></div><div class="buttons" style="justify-content:center" id="wheelArea"></div><div id="wheelReveal" style="margin-top:12px"></div></div>');const area=$('wheelArea');const btn=textButton('🎡 أدر العجلة',()=>{btn.disabled=true;wheelTurn+=1440+Math.floor(Math.random()*360);$('spinWheel').style.transform='rotate('+wheelTurn+'deg)';status('العجلة تدور...');setTimeout(()=>{if(type!=='wheel')return;const row=content[Math.floor(Math.random()*content.length)];$('wheelReveal').replaceChildren();const h=document.createElement('h3');h.textContent=row.q;$('wheelReveal').append(h);$('wheelReveal').append(textButton('👀 كشف الإجابة',()=>{status('الإجابة: '+row.a)}));btn.disabled=false;status('')},3050)},'button gold');area.append(btn)}
-function boxesGame(){updateCounter('0 / '+Math.min(content.length,12));const rows=content.slice(0,12);container('<div class="playcard"><h3>🎁 ما الذي يختبئ خلف الصندوق؟</h3><p>كل صندوق يكشف سؤالًا؛ اضغط مرة ثانية لرؤية الإجابة.</p></div><div class="boxes" id="boxesGrid"></div>');const grid=$('boxesGrid');rows.forEach((row,i)=>{const b=document.createElement('button');b.className='mystery';b.innerHTML='<b style="font-size:2rem">🎁</b><b>صندوق '+(i+1)+'</b>';let step=0;b.onclick=()=>{step++;b.classList.add('open');if(step===1){b.textContent=row.q;openBox.add(i)}else b.textContent='✅ '+row.a;updateCounter(openBox.size+' / '+rows.length);if(openBox.size===rows.length){score=rows.length*10;status('فتحت جميع الصناديق!')}};grid.append(b)})}
+function wheelGame(){
+ const asked=new Set();
+ wheelTurn=0;
+ updateCounter('0 / '+content.length);
+ container('<div class="playcard"><h3>🎡 عجلة الأسئلة العشوائية</h3><p>كل دورة تختار سؤالًا جديدًا بدون تكرار. اكشف الإجابة ثم انتقل للسؤال التالي.</p><div class="wheel" id="spinWheel"><strong>TeachGame</strong></div><div class="buttons" style="justify-content:center" id="wheelArea"></div><div id="wheelReveal" style="margin-top:12px"></div></div>');
+ const area=$('wheelArea');
+ const btn=textButton('🎡 أدر العجلة',()=>{
+  if(asked.size>=content.length)return;
+  btn.disabled=true;wheelTurn+=1440+Math.floor(Math.random()*360);
+  $('spinWheel').style.transform='rotate('+wheelTurn+'deg';status('🎡 العجلة تدور...');
+  const t=setTimeout(()=>{
+   if(type!=='wheel'||!$('wheelReveal'))return;
+   const available=content.map((r,i)=>i).filter(i=>!asked.has(i));
+   const ix=available[Math.floor(Math.random()*available.length)];
+   const row=content[ix];asked.add(ix);
+   $('wheelReveal').replaceChildren();
+   const question=document.createElement('h3');question.textContent=row.q;
+   $('wheelReveal').append(question);
+   $('wheelReveal').append(textButton('👀 كشف الإجابة',()=>{
+    status('💡 '+row.a+(row.explanation?' — '+row.explanation:''));
+    score+=10;updateCounter(asked.size+' / '+content.length);
+    btn.disabled=false;btn.textContent=asked.size===content.length?'🏆 عرض النتيجة':'🎡 السؤال التالي';
+    if(asked.size===content.length){btn.onclick=gameEnd}
+   },'button alt'));
+   status('✨ سؤال جديد من العجلة');
+  },3150);
+ },'button gold');
+ area.append(btn);
+}
+function boxesGame(){
+ const rows=content.slice(0,12),revealed=new Set(),solved=new Set();
+ updateCounter('0 / '+rows.length);
+ container('<div class="playcard"><h3>🎁 الصناديق الغامضة</h3><p>اضغط مرة للسؤال ومرة أخرى لكشف الإجابة. أكمل جميع الصناديق لتظهر النتيجة.</p></div><div class="boxes" id="boxesGrid"></div><div class="buttons" id="boxesFinish" style="justify-content:center"></div>');
+ const grid=$('boxesGrid');
+ rows.forEach((row,i)=>{
+  const b=document.createElement('button');b.className='mystery';b.type='button';
+  b.innerHTML='<b style="font-size:2rem">🎁</b><b>صندوق '+(i+1)+'</b>';
+  b.setAttribute('aria-label','افتح الصندوق '+(i+1));
+  b.onclick=()=>{
+   if(solved.has(i))return;
+   if(!revealed.has(i)){revealed.add(i);b.textContent=row.q;b.classList.add('open');status('👀 اكتشف السؤال، واضغط مرة أخرى لكشف الإجابة');}
+   else{
+    solved.add(i);b.textContent='✅ '+row.a;b.classList.add('v6-solved');
+    score+=10;status('✅ كشف إجابة الصندوق '+(i+1)+(row.explanation?' — '+row.explanation:''));
+   }
+   updateCounter(revealed.size+' / '+rows.length);
+   if(solved.size===rows.length){
+    status('🎉 أحسنت! فتحت جميع الصناديق.');
+    $('boxesFinish').replaceChildren(textButton('🏆 عرض النتيجة',gameEnd,'button gold'));
+   }
+  };
+  grid.append(b);
+ });
+}
 function sortGame(){const groups=[...new Set(content.map(x=>x.g))];if(groups.length<2){container('<div class="playcard"><h3>هذه اللعبة تحتاج مجموعتين مختلفتين على الأقل.</h3><p>أضف أسماء مجموعات إلى العمود الثالث من محرر النشاط.</p></div>');return}if(round>=content.length)return gameEnd();const row=content[round];updateCounter((round+1)+' / '+content.length);container('<div class="playinfo"><span>صنف العنصر '+(round+1)+' من '+content.length+'</span><b>⭐ '+score+'</b></div><div class="playcard"><p>إلى أي مجموعة تنتمي الإجابة التالية؟</p><h3>'+secureText(row.a)+'</h3></div><div class="sortopts" id="sortChoices"></div><div class="buttons" id="sortNext" style="justify-content:center"></div>');groups.forEach(group=>{const b=textButton('🗂️ '+group,()=>{ $('sortChoices').querySelectorAll('button').forEach(x=>x.disabled=true);if(group===row.g){score+=100;status('✅ تصنيف صحيح • +100')}else status('الإجابة الصحيحة: '+row.g);$('sortNext').append(textButton(round+1===content.length?'إظهار النتيجة 🏆':'العنصر التالي ⟵',nextRound,'button'))},'choice');$('sortChoices').append(b)})}
-function truthGame(){if(round>=Math.min(content.length,8))return gameEnd();const row=content[round],right=Math.random()<.5,wrong=shuffle(content.map(x=>x.a).filter(a=>a!==row.a))[0]||'إجابة أخرى',candidate=right?row.a:wrong;updateCounter((round+1)+' / '+Math.min(content.length,8));container('<div class="playinfo"><span>العلاقة '+(round+1)+' من '+Math.min(content.length,8)+'</span><b>⭐ '+score+'</b></div><div class="playcard"><p>هل هذه الإجابة مرتبطة بالسؤال بشكل صحيح؟</p><h3>'+secureText(row.q)+'</h3><h2 style="color:var(--gold)">'+secureText(candidate)+'</h2></div><div class="playchoices" id="truthActions"></div><div class="buttons" style="justify-content:center" id="truthNext"></div>');let used=false;[['✅ صح',true],['❌ خطأ',false]].forEach(([lab,value])=>{const b=textButton(lab,()=>{if(used)return;used=true;$('truthActions').querySelectorAll('button').forEach(x=>x.disabled=true);if(value===right){score+=100;status('✅ إجابة صحيحة • +100')}else status('💡 الإجابة الأصلية: '+row.a);$('truthNext').append(textButton(round+1===Math.min(content.length,8)?'النتيجة 🏆':'السؤال التالي ⟵',nextRound,'button'))},'choice');$('truthActions').append(b)})}
+function truthGame(){if(round>=Math.min(content.length,8))return gameEnd();const row=content[round],right=Math.random()<.5,wrong=shuffle(content.map(x=>x.a).filter(a=>a!==row.a))[0]||'إجابة أخرى',candidate=right?row.a:wrong;updateCounter((round+1)+' / '+Math.min(content.length,8));container('<div class="playinfo"><span>العلاقة '+(round+1)+' من '+Math.min(content.length,8)+'</span><b>⭐ '+score+'</b></div><div class="playcard"><p>هل هذه الإجابة مرتبطة بالسؤال بشكل صحيح؟</p><h3>'+secureText(row.q)+'</h3><h2 style="color:var(--gold)">'+secureText(candidate)+'</h2></div><div class="playchoices" id="truthActions"></div><div class="buttons" style="justify-content:center" id="truthNext"></div>');let used=false;[['✅ صح',true],['❌ خطأ',false]].forEach(([lab,value])=>{const b=textButton(lab,()=>{if(used)return;used=true;$('truthActions').querySelectorAll('button').forEach(x=>x.disabled=true);if(value===right){score+=100;status('✅ إجابة صحيحة • +100'+(row.explanation?' — '+row.explanation:''))}else status('💡 الإجابة الأصلية: '+row.a+(row.explanation?' — '+row.explanation:''));$('truthNext').append(textButton(round+1===Math.min(content.length,8)?'النتيجة 🏆':'السؤال التالي ⟵',nextRound,'button'))},'choice');$('truthActions').append(b)})}
 function refreshSaved(){const container=$('savedList');container.replaceChildren();$('countSaved').textContent=activities.length;if(!activities.length){const div=document.createElement('div');div.className='empty';div.textContent='لا توجد مسودات محفوظة بعد. أنشئ نشاطًا ثم اضغط «حفظ على هذا الجهاز». ';container.append(div);return}activities.forEach((a,i)=>{const row=document.createElement('div');row.className='saved';const info=document.createElement('div');info.innerHTML='<b>'+secureText(a.title)+'</b><small>'+secureText(a.subject)+' • '+secureText(a.grade)+' • '+a.rows.length+' أسئلة</small>';const actions=document.createElement('div');actions.className='buttons';actions.append(textButton('فتح',()=>{fill(a);scrollToId('builder')},'button small'),textButton('حذف',()=>{if(!confirm('حذف المسودة من هذا المتصفح؟'))return;activities.splice(i,1);persist();refreshSaved()},'button transparent small'));row.append(info,actions);container.append(row)})}
 function persist(){try{localStorage.setItem(K,JSON.stringify(activities.slice(0,25)))}catch(e){report('تعذر الحفظ في المتصفح. استخدم تصدير JSON لنسخة احتياطية.',true)}}
 function fill(p){$('activityTitle').value=p.title;$('subject').value=p.subject;$('grade').value=p.grade;$('roundTime').value=String(p.time);$('activityData').value=p.rows.map(x=>x.q+' | '+x.a+' | '+x.g).join('\n');apply()}
@@ -325,4 +398,5 @@ renderCatalog();apply();refreshSaved();
 <script defer src="/game-lab-interaction-v6.js?v=6.0"></script>
 <script defer src="/game-lab-visual-emotion-v7.js?v=7.0"></script>
 <script defer src="/game-lab-creator-bridge-v8.js?v=8.0"></script>
+<script defer src="/game-lab-premium-v9.js?v=9.0"></script>
 </body></html>
