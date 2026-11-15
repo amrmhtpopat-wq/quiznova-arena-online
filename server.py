@@ -403,7 +403,12 @@ def question_report(room):
 class Handler(SimpleHTTPRequestHandler):
     def end_headers(self):
         self.send_header('X-Content-Type-Options','nosniff')
-        self.send_header('X-Frame-Options','DENY')
+        # The teacher creator embeds its *same-origin* game preview. Keep every
+        # other page blocked from frames, including external/third-party sites.
+        preview_frame=urlparse(self.path).path=='/game-lab-preview.html'
+        self.send_header('X-Frame-Options','SAMEORIGIN' if preview_frame else 'DENY')
+        if preview_frame:
+            self.send_header('Content-Security-Policy',"frame-ancestors 'self'")
         self.send_header('Referrer-Policy','same-origin')
         self.send_header('Permissions-Policy','camera=(), microphone=(), geolocation=()')
         if IS_CLOUD:self.send_header('Strict-Transport-Security','max-age=15552000')
