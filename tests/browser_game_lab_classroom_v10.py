@@ -138,6 +138,25 @@ try:
     no_overflow(student,mode)
     print('PASS V10 mobile scene '+mode,flush=True)
     ctx.close();host_ctx.close()
+   # Simulated lower-power school-lab screen: 1024x768 and 4x CPU slowdown.
+   # This does not claim testing physical Windows 7/10 hardware.
+   school=room('quiz');code=school['code']
+   api('/api/game-lab/live/start',{'code':code})
+   legacy_ctx=browser.new_context(viewport={'width':1024,'height':768},reduced_motion='reduce')
+   legacy=legacy_ctx.new_page()
+   session=legacy_ctx.new_cdp_session(legacy)
+   session.send('Emulation.setCPUThrottlingRate',{'rate':4})
+   legacy.goto(BASE+'/game-lab-live.html?code='+code,wait_until='domcontentloaded')
+   legacy.locator('#joinCard').fill(STUDENTS[0]['cardCode'])
+   legacy.locator('#joinButton').click()
+   legacy.locator('#studentQuestionCard .v10-mode-chip').wait_for(state='visible',timeout=14000)
+   assert legacy.locator('#studentQuestionCard .v10-options .q-option').count()==4
+   no_overflow(legacy,'school-lab-1024')
+   legacy.locator('#studentQuestionCard .q-option[data-value="CPU"]').click()
+   legacy.wait_for_function("()=>document.querySelector('#studentScore')?.textContent.includes('100')",timeout=17000)
+   legacy.screenshot(path=str(ARTIFACT/'game-lab-classroom-v10-school-lab-1024.png'),animations='disabled')
+   legacy_ctx.close()
+   print('PASS V10 simulated low-power 1024x768 classroom computer',flush=True)
   finally:browser.close()
 finally:
  HTTP.shutdown();HTTP.server_close();FOLDER.cleanup()
