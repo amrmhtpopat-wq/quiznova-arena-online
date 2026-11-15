@@ -30,6 +30,7 @@
 <link rel="stylesheet" href="/game-lab-visual-emotion-v7.css?v=7.0">
 <link rel="stylesheet" href="/game-lab-premium-v9.css?v=9.0">
 <link rel="stylesheet" href="/game-lab-overhaul-v101.css?v=10.1.0">
+<link rel="stylesheet" href="/game-lab-cleanup-v102.css?v=10.2.0">
 </head>
 <body>
 <div class="mobilebar"><b>🎮 BOOYAHJO GAME LAB</b><button class="button alt small" id="mobileMenu" aria-label="القائمة">☰</button></div><div id="shade" class="shade"></div>
@@ -172,7 +173,7 @@
  <div class="footer">BOOYAHJO GAME LAB · نموذج تعليمي أصلي مستوحى من مفهوم قوالب الأنشطة · تجربة QA دون تعديل المنصة الرسمية</div>
 </main></div>
 <div id="playOverlay" hidden role="dialog" aria-modal="true" aria-label="معاينة اللعبة">
- <div class="playhead"><div><span class="eyebrow">TeachGame • Game Lab V10.1</span><h2 id="playTitle">لعبة تعليمية</h2></div><div class="buttons"><span class="pill" id="playCounter">معاينة</span><button id="playFull" class="button alt small">⛶ ملء الشاشة</button><button id="closePlay" class="button transparent small">✕ إغلاق</button></div></div>
+ <div class="playhead"><div><span class="eyebrow">TeachGame • Game Lab V10.2</span><h2 id="playTitle">لعبة تعليمية</h2></div><div class="buttons"><span class="pill" id="playCounter">معاينة</span><button id="playFull" class="button alt small">⛶ ملء الشاشة</button><button id="closePlay" class="button transparent small">✕ إغلاق</button></div></div>
  <div class="playbody" id="playBody"></div><div class="status" id="playStatus" aria-live="polite"></div>
 </div><div class="print-page" id="printPage"></div>
 <script>
@@ -305,16 +306,16 @@ function pairsGame(){
 function wheelGame(){
  // Up to eight readable questions on the wheel at once; never reuse a question.
  const remaining=content.map((_,i)=>i),palette=['#ffd176','#78dcc4','#9fbaff','#f4a6c9','#aab1fc','#fbb58a','#a4e4f5','#c9b4f2'];
- let spinning=false,selected=null,rotation=0,answered=0;
+ let spinning=false,selected=null,rotation=0,answered=0,holding=false;
  const reduced=()=>window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
  updateCounter('0 / '+content.length);
  container('<div class="playinfo v101-wheel-info"><span>🎡 الأسئلة المتبقية <strong id="wheelLeft">'+remaining.length+'</strong></span><b id="wheelScore">⭐ 0 نقطة</b></div>'+
  '<div class="v101-wheel-stage"><section class="playcard v101-wheel-board"><div class="v101-wheel-caption"><h3>🎡 عجلة الأسئلة</h3><p>اقرأ الأسئلة من قطاعات العجلة. كل سؤال يتم اختياره يختفي بعد توقفها.</p></div>'+
  '<div class="v101-wheel-frame"><div class="v101-wheel-pointer" aria-hidden="true"></div><div class="wheel v101-wheel" id="spinWheel" role="img" aria-label="عجلة الأسئلة">'+
- '<div id="wheelRotor" class="v101-wheel-rotor"></div><div class="v101-wheel-hub" aria-hidden="true">TG <span>🎲</span></div></div></div>'+
+ '<div id="wheelRotor" class="v101-wheel-rotor"></div><div class="v101-wheel-hub" aria-hidden="true">TG <span>✨</span></div></div></div>'+
  '<div class="buttons v101-wheel-buttons" id="wheelArea"></div><small id="wheelTotal" class="v101-wheel-total"></small></section>'+
  '<section class="playcard v101-wheel-question" id="wheelReveal" aria-live="polite"><span class="v101-question-chip">✨ سؤال الحظ</span>'+
- '<div class="v101-wheel-placeholder"><div class="v101-wheel-dice" aria-hidden="true">🎲</div><p>السؤال الذي تختاره العجلة سيظهر هنا بحجم كبير وواضح.</p></div></section></div>');
+ '<div class="v101-wheel-placeholder"><div class="v102-mystery-emblem" aria-hidden="true"><span>؟</span><i>✦</i></div><p>السؤال الذي تختاره العجلة سيظهر هنا بحجم كبير وواضح.</p></div></section></div>');
  const wheel=$('spinWheel'),rotor=$('wheelRotor'),reveal=$('wheelReveal'),actions=$('wheelArea'),left=$('wheelLeft');
  const polar=(a,r)=>({x:160+Math.cos(a*Math.PI/180)*r,y:160+Math.sin(a*Math.PI/180)*r});
  const textLines=(str,limit)=>{
@@ -350,7 +351,7 @@ function wheelGame(){
   wheel.setAttribute('aria-label',items.map(ix=>content[ix].q).join('، '));left.textContent=String(remaining.length);
  }
  function spin(){
-  if(spinning||selected!==null)return;
+  if(spinning||selected!==null||holding)return;
   const items=remaining.slice(0,8);if(!items.length)return gameEnd();
   spinning=true;spinButton.disabled=true;
   const position=Math.floor(Math.random()*items.length),ix=items[position];
@@ -360,8 +361,12 @@ function wheelGame(){
   rotor.style.transform='rotate('+rotation+'deg)';status('🎡 العجلة تدور وتختار سؤالًا جديدًا...');
   setTimeout(()=>{
    if(type!=='wheel'||$('spinWheel')!==wheel)return;
-   spinning=false;selected=ix;const at=remaining.indexOf(ix);if(at>=0)remaining.splice(at,1);
-   drawWheel();
+   spinning=false;selected=ix;holding=true;
+   // Display the question at the exact moment the wheel stops.
+   // Hold the winning wedge under the pointer before removing it.
+   rotor.querySelector('g[data-question="'+ix+'"]')?.classList.add('v102-winning-wedge');
+   wheel.dataset.v102Holding='true';
+   const at=remaining.indexOf(ix);if(at>=0)remaining.splice(at,1);
    reveal.replaceChildren();
    const chip=document.createElement('span');chip.className='v101-question-chip';chip.textContent='🎯 السؤال '+(answered+1)+' من '+content.length;
    const heading=document.createElement('h3');heading.textContent=content[ix].q;
@@ -373,11 +378,17 @@ function wheelGame(){
     const answer=document.createElement('div');answer.className='v101-wheel-answer';answer.textContent='✅ الإجابة: '+row.a+(row.explanation?' • '+row.explanation:'');reveal.append(answer);
     updateCounter(answered+' / '+content.length);$('wheelScore').textContent='⭐ '+score+' نقطة';
     status('الإجابة: '+row.a+(row.explanation?' — '+row.explanation:''));
-    spinButton.disabled=false;spinButton.textContent=remaining.length?'🎡 أدر للسؤال التالي':'🏆 عرض النتيجة';
+    spinButton.disabled=holding;spinButton.textContent=remaining.length?'🎡 أدر للسؤال التالي':'🏆 عرض النتيجة';
     if(!remaining.length)spinButton.onclick=gameEnd;
    },'button gold v101-wheel-reveal');
    reveal.append(button);button.focus({preventScroll:true});status('✨ سؤال جديد من العجلة');
-  },reduced()?70:2290);
+   // Question is visible during this 850ms winning-sector hold.
+   setTimeout(()=>{
+    if(type!=='wheel'||$('spinWheel')!==wheel)return;
+    holding=false;drawWheel();delete wheel.dataset.v102Holding;
+    if(selected===null)spinButton.disabled=false;
+   },850);
+  },reduced()?70:2200);
  }
  const spinButton=textButton('🎡 أدر العجلة',spin,'button gold v101-spin-button');actions.append(spinButton);drawWheel();
 }
@@ -451,4 +462,5 @@ renderCatalog();apply();refreshSaved();
 <script defer src="/game-lab-creator-bridge-v8.js?v=8.0"></script>
 <script defer src="/game-lab-premium-v9.js?v=9.0"></script>
 <script defer src="/game-lab-overhaul-v101.js?v=10.1.0"></script>
+<script defer src="/game-lab-cleanup-v102.js?v=10.2.0"></script>
 </body></html>
