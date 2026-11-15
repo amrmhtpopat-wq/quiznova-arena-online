@@ -372,7 +372,7 @@ function wheelGame(){
     const row=content[selected];selected=null;answered++;score+=10;button.remove();
     const answer=document.createElement('div');answer.className='v101-wheel-answer';answer.textContent='✅ الإجابة: '+row.a+(row.explanation?' • '+row.explanation:'');reveal.append(answer);
     updateCounter(answered+' / '+content.length);$('wheelScore').textContent='⭐ '+score+' نقطة';
-    status('✅ الإجابة: '+row.a+(row.explanation?' — '+row.explanation:''));
+    status('الإجابة: '+row.a+(row.explanation?' — '+row.explanation:''));
     spinButton.disabled=false;spinButton.textContent=remaining.length?'🎡 أدر للسؤال التالي':'🏆 عرض النتيجة';
     if(!remaining.length)spinButton.onclick=gameEnd;
    },'button gold v101-wheel-reveal');
