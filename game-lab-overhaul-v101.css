@@ -51,6 +51,13 @@
  align-items:stretch!important;gap:clamp(11px,1.6vh,20px)!important;
  position:relative!important;z-index:2!important
 }
+/* V6/V7 background bubbles use negative offsets and create a 40px sideways
+   scroll on small screens, hiding parts of questions. The new gradient art
+   replaces them without extending beyond the container. */
+#playOverlay.v101-overhaul .playbody .playcard::before,
+#playOverlay.v101-overhaul .playbody .playcard::after{
+ content:none!important;display:none!important
+}
 #playOverlay.v101-overhaul .playbody>.playcard,
 #playOverlay.v101-overhaul.v6-game.v7-game .playbody>.playcard{
  min-height:unset!important;max-height:none!important;overflow:visible!important;
