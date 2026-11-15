@@ -153,8 +153,9 @@ def save(tid,data):
     if activity.get('imageId') and not db.query(
         'SELECT id FROM game_lab_media WHERE id=? AND teacher_id=? AND archived=0',
         (activity['imageId'],tid)):raise ValueError('media_not_found')
+    # Archived books remain teacher-owned and may still back an existing saved activity.
     if activity.get('bookId') and not db.query(
-        'SELECT id FROM game_lab_books WHERE id=? AND teacher_id=? AND archived=0',
+        'SELECT id FROM game_lab_books WHERE id=? AND teacher_id=?',
         (activity['bookId'],tid)):raise ValueError('book_not_found')
     aid=str(data.get('id') or '')
     timestamp=now()
@@ -167,9 +168,15 @@ def save(tid,data):
                      db.jdump(activity),timestamp,aid,tid))
     else:
         aid=uuid.uuid4().hex
-        db.exec_sql('INSERT INTO game_lab_activities '
+        # Bound the private library as well as the bulk generator; check and insert atomically.
+        with db.DB_LOCK:
+            with db.db_connection() as con:
+                count=con.execute(db.sql('SELECT COUNT(*) FROM game_lab_activities '
+                                        'WHERE teacher_id=? AND archived=0'),(tid,)).fetchone()[0]
+                if int(count)>=150:raise ValueError('activity_library_limit')
+                con.execute(db.sql('INSERT INTO game_lab_activities '
                     '(id,teacher_id,title,subject,grade,mode,payload,created_at,updated_at) '
-                    'VALUES(?,?,?,?,?,?,?,?,?)',
+                    'VALUES(?,?,?,?,?,?,?,?,?)'),
                     (aid,tid,activity['title'],activity['subject'],activity['grade'],activity['mode'],
                      db.jdump(activity),timestamp,timestamp))
     return {**public_view(owner_row(tid,aid)),'activity':activity}
