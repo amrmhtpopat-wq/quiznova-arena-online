@@ -245,6 +245,16 @@
  background:linear-gradient(120deg,#9b7cff,#604ad1)!important;color:#fff!important;
  border-radius:14px!important;min-height:50px;align-self:center!important
 }
+/* Older V6 wheel reveal used a two-ID selector and otherwise wins over dark mode. */
+#playOverlay.v101-overhaul #wheelReveal:has(h3){
+ background:var(--tg-paper)!important;
+ color:var(--tg-ink)!important;
+ border:2px solid var(--tg-border)!important;
+ padding:clamp(15px,2vw,23px)!important;
+}
+#playOverlay.v101-overhaul[data-v101-theme=dark] #wheelReveal:has(h3){
+ background:#1b2d4c!important;border-color:#6075a0!important;
+}
 /* Keep every other arcade mode readable and a little more dimensional. */
 #playOverlay.v101-overhaul .mystery{
  transform-style:preserve-3d;box-shadow:0 9px 0 #614da2,0 18px 22px #060d2e6c!important;
