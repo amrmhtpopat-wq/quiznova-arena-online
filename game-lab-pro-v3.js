@@ -217,7 +217,7 @@ function renderBookReview(rows){
   const answerLabel=document.createElement('label');answerLabel.textContent='الإجابة الصحيحة المقترحة';
   const answer=reviewInput('answer',r.a,100);answerLabel.append(answer);
   const source=document.createElement('p');source.className='tag-book-evidence';
-  source.textContent=r.sourceQuote?'من الكتاب: «'+r.sourceQuote+'»':'لا يوجد اقتباس حرفي؛ طابق السؤال والإجابة مع صفحة الكتاب قبل اعتماده.';
+  source.textContent=r.sourceQuote?'الدليل من النص: «'+r.sourceQuote+'»':'لا يوجد اقتباس داعم؛ طابق السؤال والإجابة مع صفحة الكتاب قبل اعتماده.';
   card.dataset.sourcePage=String(r.sourcePage||'');
   card.dataset.group=String(r.g||'عام');
   card.append(header,questionLabel,answerLabel,source);parent.append(card);
