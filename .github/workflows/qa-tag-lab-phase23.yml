@@ -4,6 +4,8 @@ on:
     branches: [v10-5-final-candidate]
     paths:
       - game_lab_pro.py
+      - game_lab_uploads.py
+      - tests/test_game_lab_chunk_upload.py
       - game_lab_api.py
       - game-lab-preview.html
       - game-lab-pro-v3.js
@@ -31,7 +33,7 @@ jobs:
         run: pip install -r requirements.txt
       - name: Compile server and client
         run: |
-          python -m py_compile game_lab_pro.py game_lab_api.py server.py
+          python -m py_compile game_lab_pro.py game_lab_uploads.py game_lab_api.py server.py
           node --check game-lab-pro-v3.js
           node --check game-lab-cloud-v2.js
           python - <<'PY'
@@ -64,5 +66,6 @@ jobs:
           PY
       - name: Textbook, privacy, activities and student regressions
         run: |
+          python tests/test_game_lab_chunk_upload.py
           python tests/test_game_lab_pro.py
           python tests/test_game_lab_api.py
