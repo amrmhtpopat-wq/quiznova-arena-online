@@ -209,7 +209,8 @@ function renderBookReview(rows){
   const check=document.createElement('input');check.type='checkbox';check.checked=true;check.className='tag-book-review-check';
   keep.append(check,document.createTextNode(' اعتماد المقترح '+(i+1)));
   const label=document.createElement('small');
-  label.textContent=(r.origin==='explicit_qa'?'سؤال وإجابة صريحان':r.origin==='definition'?'تعريف صريح من الكتاب':'اقتراح ذكاء اصطناعي')+' · صفحة '+(r.sourcePage||'غير محددة');
+  const kinds={explicit_qa:'سؤال وإجابة من الكتاب',definition:'تعريف من الكتاب',goal:'هدف أو غاية',process:'طريقة أو آلية',examples:'أمثلة من الدرس',function:'وظيفة أو دور',reason:'فهم وتفسير',list:'تعداد معلومات',fact:'معلومة صريحة'};
+  label.textContent=(kinds[r.origin]||'معلومة مقترحة')+' · صفحة '+(r.sourcePage||'غير محددة');
   header.append(keep,label);
   const questionLabel=document.createElement('label');questionLabel.textContent='السؤال';
   const question=reviewInput('question',r.q,200);questionLabel.append(question);
@@ -256,7 +257,7 @@ async function generate(){
  const button=$('labBookGenerate');button.disabled=true;
  bookDraftReady=false;$('labBookSaveCloud').disabled=true;$('labBookApprove').disabled=true;
  window.BOOYAH_LAB_BOOK_ID='';
- message('labBookStatus','أفحص الأسئلة والتعاريف الصريحة في الصفحات المحددة...');
+ message('labBookStatus','أحلل مفاهيم الدرس وأهدافه وأمثلته ومعلوماته القابلة لصياغة أسئلة...');
  try{
   const mode=$('labBookMode').value,params=requestDraft();
   if(mode==='ai'&&!$('labAiConsent').checked)throw Error('ai_consent_required');
@@ -266,8 +267,8 @@ async function generate(){
   renderBookReview(rows);
   $('labBookApprove').disabled=!rows.length;
   $('labBookSummary').textContent=rows.length
-   ?'استُخرج '+rows.length+' مقترحًا من أصل '+params.count+' مطلوبًا. افحص جميع الإجابات واختر الصحيح قبل نقله إلى المحرر.'
-   :'لم يتم العثور على سؤال ذي إجابة موثوقة في هذه الصفحات. يمكنك إدخال الأسئلة يدويًا أو استخدام توليد الذكاء الاصطناعي إذا كان متاحًا.';
+   ?'أُنشئت '+rows.length+' أسئلة من أصل '+params.count+' مطلوبة، بصيغ متنوعة. راجع كل سؤال وإجابة ومصدره قبل اعتمادها.'
+   :'لم أجد أسئلة كافية وواضحة في الصفحات المحددة. جرّب صفحات أخرى أو وسّع النطاق بدل إنشاء أسئلة غير موثوقة.';
   message('labBookStatus',response.warning||'راجع المقترحات قبل اعتمادها.',rows.length<4);
  }catch(e){failed('labBookStatus',e)}
  finally{button.disabled=false}
