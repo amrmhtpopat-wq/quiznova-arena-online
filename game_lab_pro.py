@@ -377,7 +377,7 @@ def deterministic_draft(text,maximum):
                 match.group(1),page,match.group(0),'examples')
         match=re.search(r'الاستثمار الأخلاقي؛\s*\d*\s*أي الاستثمار في (?P<answer>[^.;]{15,100}?تتسق مع القيم الأخلاقية)',body)
         if match:
-            add('ما المقصود بالاستثمار الأخلاقي؟',match.group('answer'),
+            add('ما المقصود بالاستثمار الأخلاقي؟','الاستثمار في '+match.group('answer'),
                 page,match.group(0),'definition')
         if 'الاستثمار الأخلاقي هو اختيار الاستثمارات' in body:
             add('ما العوامل التي يراعيها الاستثمار الأخلاقي إلى جانب الأرباح؟',
