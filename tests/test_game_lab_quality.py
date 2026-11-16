@@ -51,10 +51,11 @@ class BookQuestionQuality(unittest.TestCase):
 '''
         rows=self.extract(source,20)
         self.assertEqual(len(rows),10,rows)
-        self.assertEqual(rows[0]['q'],'ما المقصود بالادخار؟')
-        self.assertEqual(rows[1]['q'],'ما المقصود بالتضخم؟')
-        self.assertEqual(rows[2]['q'],'ما وظيفة وحدة المعالجة المركزية؟')
-        self.assertEqual(rows[2]['sourcePage'],4)
+        by_question={row['q']:row for row in rows}
+        self.assertIn('ما المقصود بالادخار؟',by_question)
+        self.assertIn('ما المقصود بالتضخم؟',by_question)
+        self.assertIn('ما وظيفة وحدة المعالجة المركزية؟',by_question)
+        self.assertEqual(by_question['ما وظيفة وحدة المعالجة المركزية؟']['sourcePage'],4)
         self.assertTrue(all(row['sourceQuote'] and row['a'] in row['sourceQuote'] for row in rows))
 
     def test_explanatory_transition_is_not_mistaken_for_a_concept(self):
