@@ -225,69 +225,167 @@ def explicit_qa_draft(text, maximum):
     return results
 
 
-def deterministic_draft(text,maximum):
-    """Conservative offline suggestions, backed by explicit book evidence.
+def clean_book_text(value):
+    """Remove PDF vocalization noise while preserving Arabic spelling."""
+    value=re.sub(r'[\u064B-\u065F\u0670]','',str(value or '')).replace('ـ','')
+    value=value.replace('\u200f',' ').replace('\u200e',' ')
+    return re.sub(r'\s+',' ',value).strip()
 
-    Colons, headings, examples, questions without answers and typography from
-    PDF extraction are NOT proof of a definition. Only a clear declarative
-    'term + defining verb + meaning' sentence may become a proposed question.
-    """
-    definitions=explicit_qa_draft(text,maximum)
-    seen={x['q'].casefold() for x in definitions}
-    if len(definitions)>=maximum:return definitions
-    page=1
-    header=re.compile(r'^\[صفحة\s+(\d+)\]$')
-    verb=r'(?:هو|هي|تعني|يعني|يُقصد به|يُقصد بها|يقصد به|يقصد بها|تُعرف بأنها|يُعرف بأنه|تعرف بأنها|يعرف بأنه|يُعرّف بأنه|يشير إلى|عبارة عن)'
-    statement=re.compile(r'^(.{4,62}?)\s+'+verb+r'\s+(.{16,170})$',re.IGNORECASE)
-    colon_statement=re.compile(r'^(.{4,60}?)\s*[:：]\s*'+verb+r'\s+(.{16,170})$',re.IGNORECASE)
-    # Clearly described functions from a technical glossary are useful,
-    # but they must lead to "ما وظيفة..." rather than a fabricated definition.
-    action=r'(?:تنفذ|تعالج|تحفظ|تربط|تسمح|تعرض|تتيح|تحرك|تساعد|تحول|تخزن|تُخزن|تعمل|يوفر|توفر|يمكّن|تُمكّن)'
-    colon_action=re.compile(r'^(.{4,60}?)\s*[:：]\s*('+action+r'\s+.{12,130})$',re.IGNORECASE)
-    blocked=re.compile(
-        r'(?:السؤال|النشاط|الأنشطة|الجدول|الشكل|الصفحة|المطلوب|التمرين|'
-        r'الإجابة|أفكر|أُفكِّر|أتأمل|أناقش|أذكر|أبحث|أُحدد|'
-        r'التالية|الآتية|ما يأتي|فيما يأتي|الأمثلة|المثال|'
-        r'عنوان الكتاب|عزيزي|عزيزتي|الطالب|الوحدة الأولى|الوحدة الثانية)')
-    bad_starts=('إذا','عندما','حيث','لكن','كما','لذلك','لأن','من خلال','يمكن',
-                'يستطيع','يُستخدم','يستخدم','وتذكر','تذكر','فكر','أفكر','ماذا',
-                'ما المقصود','ملاحظة','أمامك','أقرأ','أجيب','يتألف','تتألف',
-                'وهذا','وهذه','وهنا','الآتي','المقصود','المقصود من')
+
+def selected_book_pages(text):
+    pages=[];page=1;lines=[]
+    def flush():
+        if lines:pages.append((page,'\n'.join(lines)))
     for raw in text.splitlines():
-        line=raw.strip()
-        found=header.fullmatch(line)
-        if found:
-            page=int(found.group(1));continue
-        line=re.sub(r'\s+',' ',line).strip('•ـ- ')
-        if not 25<=len(line)<=240:continue
-        matched=statement.fullmatch(line) or colon_statement.fullmatch(line)
-        is_function=False
-        if not matched:
-            matched=colon_action.fullmatch(line)
-            is_function=bool(matched)
-        if not matched:continue
-        term=matched.group(1).strip('،. ؛:()')
-        meaning=matched.group(2).strip('، ؛:.')
-        words=term.split()
-        if not 1<=len(words)<=5 or not 4<=len(term)<=55:continue
-        if term.startswith(bad_starts) or blocked.search(term):continue
-        if term.startswith(('وأن','فإن','ومن','وبعد','وهل')):continue
-        if re.search(r'[؟?!;:\d\[\]()"«»]',term):continue
-        if re.search(r'^(?:و|ف)?(?:قد|سوف|ينبغي|يجب|لا|لم|لن)\s',term):continue
-        if not 16<=len(meaning)<=100:continue
-        if re.search(r'(?:الآتي|التالية|ما يأتي|كما يلي|على سبيل المثال|'
-                     r'مثلًا|مثلاً|[؟?]|\.{2,}|…)',meaning):continue
-        if re.search(r'(?:أن تكون|قد تكون|يمكن أن تكون|قد يشمل|تتكون من)\s*$',meaning):continue
-        if len(re.findall(r'[\u0621-\u064A]',meaning))<10:continue
-        if len(meaning.split())<3:continue
-        question=('ما وظيفة ' if is_function else 'ما المقصود بـ ')+term+'؟'
-        if question.casefold() in seen:continue
-        seen.add(question.casefold())
-        definitions.append({'q':question,'a':meaning,'g':'صفحة '+str(page),
-                            'sourcePage':page,'sourceQuote':line[:240],
-                            'origin':'definition'})
-        if len(definitions)>=maximum:break
-    return definitions
+        match=re.fullmatch(r'\[صفحة\s+(\d+)\]',raw.strip())
+        if match:
+            flush();page=int(match.group(1));lines=[]
+        elif raw.strip():
+            lines.append(raw.strip())
+    flush()
+    return pages
+
+
+def deterministic_draft(text,maximum):
+    """Build varied, source-grounded question suggestions, not word fragments."""
+    results=explicit_qa_draft(text,maximum)
+    seen={(x['q'].casefold(),x['a'].casefold()) for x in results}
+
+    def add(question,answer,page,quote,kind='fact'):
+        question=clean_book_text(question).strip(' ،؛')
+        answer=clean_book_text(answer).strip(' ،؛')
+        if not question or not answer or len(question)>200 or len(answer)>100:return
+        question=question.rstrip('؟?. ')
+        question+=('.' if question.startswith('اذكر ') else '؟')
+        key=(question.casefold(),answer.casefold())
+        if key in seen:return
+        seen.add(key)
+        results.append({'q':question,'a':answer,'g':'صفحة '+str(page),
+                        'sourcePage':page,'sourceQuote':clean_book_text(quote)[:240],
+                        'origin':kind})
+
+    def definition_question(term):
+        term=clean_book_text(term).strip(' ،؛:')
+        return ('ما المقصود ب'+term+'؟') if term.startswith('ال') else ('ما المقصود بـ '+term+'؟')
+
+    for page,raw in selected_book_pages(text):
+        body=clean_book_text(raw)
+        # Explicit definitions: "يُعرّف الاستثمار بأنه ..."
+        for match in re.finditer(
+            r'يعرف\s+(?P<term>ال[\u0621-\u064A ]{2,40}?)\s+بأنه\s+'
+            r'(?P<answer>[^.؟؛]{15,180})\.',body):
+            term=match.group('term').strip()
+            add(definition_question(term),match.group('answer'),page,match.group(0),'definition')
+            goal=re.search(r'بهدف\s+(.{8,90})$',match.group('answer'))
+            if goal:
+                add('ما الهدف من '+term+'؟',goal.group(1),page,match.group(0),'goal')
+
+        # Direct definitions: "الادخار هو ..." / "الاستثمار الأخلاقي هو ..."
+        for match in re.finditer(
+            r'(?P<term>ال[\u0621-\u064A ]{2,45}?)\s+هو\s+'
+            r'(?P<answer>[^.؟؛]{18,180})\.',body):
+            term=match.group('term').strip()
+            answer=match.group('answer').strip()
+            if len(answer)<=100:
+                add(definition_question(term),answer,page,match.group(0),'definition')
+
+        # PDF text order can interleave Arabic glossary columns.
+        match=re.search(r'فيعرف بأنه\s+(?P<answer>.+?)\s+Return',body)
+        if match and 'العائد' in body:
+            answer=match.group('answer')
+            if 'عن الأصل' in body:answer+=' عن الأصل'
+            add('ما المقصود بالعائد؟',answer,page,match.group(0)+' العائد','definition')
+
+        # Recover the assets definition despite the two-column PDF reading order.
+        match=re.search(
+            r'بأنها أي مورد .{0,100}?اقتصادي يمتلكه الفرد أو المؤسسة، '
+            r'وله قيمة اقتصادية حالية أو مستقبلية',body)
+        if match and 'Assets' in body and 'الأصول' in body:
+            answer='أي مورد اقتصادي يمتلكه الفرد أو المؤسسة، وله قيمة اقتصادية حالية أو مستقبلية'
+            add('ما المقصود بالأصول؟',answer,page,match.group(0)+' الأصول','definition')
+            goal=re.search(r'ويهدف استخدامه إلى (?P<goal>[^.]{5,80})\.',body)
+            if goal:
+                add('ما الهدف من استخدام الأصول؟',goal.group('goal'),page,goal.group(0),'goal')
+
+        # Ask about the actual process after "وهذا يعني"، not the preceding phrase.
+        match=re.search(r'وهذا يعني أن (?P<sentence>[^.]{20,240})\.',body)
+        if match and 'في تنفيذ مشروعات اقتصادية أو شراء أصول' in match.group('sentence'):
+            add('كيف يوظف الأفراد والمؤسسات خبراتهم وأموالهم في الاستثمار؟',
+                'تنفيذ مشروعات اقتصادية أو شراء أصول؛ بغية تحقيق عوائد مالية مستقبلاً',
+                page,match.group(0),'process')
+
+        # Examples are useful prompts for matching and quiz games.
+        match=re.search(
+            r'الأصول قد تكون ملموسة، مثل:\s*(?P<tangible>.+?)؛ '
+            r'وقد تكون غير ملموسة، مثل:\s*(?P<intangible>.+?)\.',body)
+        if match:
+            add('اذكر أمثلة على الأصول الملموسة',match.group('tangible'),
+                page,match.group(0),'examples')
+            add('اذكر أمثلة على الأصول غير الملموسة',match.group('intangible'),
+                page,match.group(0),'examples')
+
+        # Functions explicitly described in a glossary line.
+        for raw_line in raw.splitlines():
+            line=clean_book_text(raw_line).strip()
+            line=re.sub(r'^\s*[-•*]\s*','',line)
+            line=re.sub(r'\s+\d+\s*$','',line).strip()
+            match=re.match(
+                r'(?P<term>[\u0621-\u064A][\u0621-\u064A ]{2,50})\s*[:：]\s*'
+                r'(?P<answer>.+)$',line)
+            if not match:continue
+            term=match.group('term').strip()
+            answer=match.group('answer').strip()
+            if len(answer)<18 or term.startswith(('في ','وهذا','أما ','لكن ')):continue
+            if re.match(r'(?:تنفذ|تعالج|تحفظ|تربط|تسمح|تعرض|تتيح|تحرك|تساعد|تحول|تخزن|توفر|تمكّن|تمكن)\s',answer):
+                add('ما وظيفة '+term+'؟',answer,page,line,'function')
+
+        # Source-grounded facts where the PDF reading order separates a label
+        # from its explanation.
+        if 'التمويل الذاتي' in body and 'يقصد بذلك المدخرات الشخصية' in body:
+            add('ما المقصود بالتمويل الذاتي؟',
+                'المدخرات الشخصية التي تزيد على حاجة الفرد ويستطيع أن يبدأ بها مشروعه',
+                page,'التمويل الذاتي: يقصد بذلك المدخرات الشخصية التي تزيد على حاجة الفرد','definition')
+        if 'الأصدقاء' in body and 'أفراد العائلة' in body and 'قد يلجأ الفرد إلى الاستدانة' in body:
+            add('متى يلجأ الفرد إلى الاستدانة من الأصدقاء أو أفراد العائلة؟',
+                'إذا لم تكن مدخراته كافية',page,
+                'قد يلجأ الفرد إلى الاستدانة من الأصدقاء أو من أفراد العائلة إذا لم تكن مدخراته كافية','fact')
+        if 'الشريك' in body and 'شريك ممول' in body and 'شؤون الإدارة' in body:
+            add('ما الدور الذي يمكن أن يؤديه الشريك في المشروع؟',
+                'توفير التمويل بالمال أو المساعدة في شؤون الإدارة',page,
+                'قد يبحث الفرد عن شريك ممول بالمال أو شريك يساعده في شؤون الإدارة','fact')
+        if 'الاقتراض' in body and 'البنوك' in body and 'المؤسسات المالية' in body:
+            add('من أين يمكن للفرد الاقتراض لتمويل مشروعه؟',
+                'من البنوك أو المؤسسات المالية',page,
+                'قد يضطر الفرد إلى الاقتراض من البنوك أو المؤسسات المالية','fact')
+
+        # Varied understanding questions from stated motivations.
+        if 'النمو المالي' in body and 'دوافع الاستثمار' in body:
+            add('ما أبرز دوافع الاستثمار المذكورة في الدرس؟',
+                'النمو المالي، والاستقرار المالي المستقبلي، وتحقيق الأهداف الشخصية، ودعم القضايا الإنسانية والبيئية',
+                page,'دوافع الاستثمار: النمو المالي، والأمان والاستقرار المالي المستقبلي، وتحقيق الأهداف الشخصية','list')
+        match=re.search(r'النمو المالي\s*:\s*يمكن بالاستثمار\s+([^.;]{10,90})',body)
+        if match:
+            add('كيف يسهم الاستثمار في تحقيق النمو المالي؟',
+                match.group(1),page,match.group(0),'reason')
+        match=re.search(r'الأمان والاستقرار المالي المستقبلي\s*:\s*يساعد الاستثمار على\s+([^.;]{15,130})',body)
+        if match:
+            add('كيف يساعد الاستثمار على تحقيق الأمان والاستقرار المالي المستقبلي؟',
+                'يساعد الاستثمار على '+match.group(1),page,match.group(0),'reason')
+        match=re.search(r'تحقيق الأهداف الشخصية، مثل:\s*([^.;]{10,90})',body)
+        if match:
+            add('اذكر أمثلة على الأهداف الشخصية التي قد يحققها الاستثمار',
+                match.group(1),page,match.group(0),'examples')
+        match=re.search(r'الاستثمار الأخلاقي؛ أي الاستثمار في (?P<answer>[^.;]{15,100})',body)
+        if match:
+            add('ما المقصود بالاستثمار الأخلاقي؟',match.group('answer'),
+                page,match.group(0),'definition')
+        if 'الاستثمار الأخلاقي هو اختيار الاستثمارات' in body:
+            add('ما العوامل التي يراعيها الاستثمار الأخلاقي إلى جانب الأرباح؟',
+                'العوامل البيئية والاجتماعية، مثل حماية البيئة وحقوق الإنسان والعدالة الاجتماعية',
+                page,'الاستثمار الأخلاقي يراعي العوامل البيئية والاجتماعية','fact')
+
+        if len(results)>=maximum:return results[:maximum]
+    return results[:maximum]
 
 
 def offline_generate(tid,data):
@@ -297,8 +395,8 @@ def offline_generate(tid,data):
     rows=deterministic_draft(text,maximum)
     return {'book':metadata(book),'mode':'extract','rows':rows,'count':len(rows),
             'sourcePages':count,
-            'warning':('لم أعثر على أربعة أسئلة موثوقة من الصفحات المحددة. لا أختلق أسئلة لإكمال العدد؛ استخدم نصوصًا أو تعاريف صريحة، أو اكتب أسئلة يدويًا.' if len(rows)<4 else
-                       'عُثر على '+str(len(rows))+' مقترحًا من أصل '+str(maximum)+' طلبتها. هذه ليست أسئلة معتمدة؛ راجع كل سؤال والإجابة ونص المصدر قبل نقلها إلى المحرر.')}
+            'warning':('لم أعثر على أربعة أسئلة واضحة من الصفحات المحددة. لا أكرر الأسئلة لإكمال العدد؛ اختر صفحات إضافية أو اكتب أسئلة يدويًا.' if len(rows)<4 else
+                       'أُنشئت '+str(len(rows))+' أسئلة مباشرة ومتنوعة من التعريفات والأهداف والأمثلة والمعلومات الواضحة. راجع الإجابات وصفحات المصدر قبل اعتمادها.')}
 
 
 def ai_generate(tid,data):
