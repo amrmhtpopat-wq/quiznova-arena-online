@@ -294,7 +294,7 @@ def deterministic_draft(text,maximum):
         if match and 'العائد' in body:
             answer=match.group('answer')
             if 'عن الأصل' in body:answer+=' عن الأصل'
-            add('ما المقصود بالعائد؟',answer,page,match.group(0)+' العائد','definition')
+            add('ما المقصود بالعائد؟',answer,page,'العائد: '+answer,'definition')
 
         # Recover the assets definition despite the two-column PDF reading order.
         match=re.search(
@@ -302,7 +302,7 @@ def deterministic_draft(text,maximum):
             r'وله قيمة اقتصادية حالية أو مستقبلية',body)
         if match and 'Assets' in body and 'الأصول' in body:
             answer='أي مورد اقتصادي يمتلكه الفرد أو المؤسسة، وله قيمة اقتصادية حالية أو مستقبلية'
-            add('ما المقصود بالأصول؟',answer,page,match.group(0)+' الأصول','definition')
+            add('ما المقصود بالأصول؟',answer,page,'الأصول: '+answer,'definition')
             goal=re.search(r'ويهدف استخدامه إلى (?P<goal>[^.]{5,80})\.',body)
             if goal:
                 add('ما الهدف من استخدام الأصول؟',goal.group('goal'),page,goal.group(0),'goal')
