@@ -21,12 +21,16 @@ import platform_store as db
 import platform_api as auth
 import solo_api
 import game_lab_api as games
+import game_lab_uploads as uploads
 
-MAX_BOOK_BYTES=6_000_000
+MAX_BOOK_BYTES=uploads.MAX_BOOK_BYTES
+INLINE_BOOK_BYTES=6_000_000
 MAX_IMAGE_BYTES=1_500_000
 MAX_BOOKS=12
 MAX_MEDIA=80
-BOOK_POSTS={'/api/game-lab/pro/books/upload','/api/game-lab/pro/books/draft',
+BOOK_POSTS={'/api/game-lab/pro/books/upload','/api/game-lab/pro/books/upload/start',
+            '/api/game-lab/pro/books/upload/chunk','/api/game-lab/pro/books/upload/finish',
+            '/api/game-lab/pro/books/upload/cancel','/api/game-lab/pro/books/draft',
             '/api/game-lab/pro/books/ai','/api/game-lab/pro/books/archive',
             '/api/game-lab/pro/media/upload','/api/game-lab/pro/assignments/save'}
 CARD_POSTS={'/api/game-lab/pro/card/catalog'}
@@ -127,13 +131,14 @@ def txt_pages(data):
     return [{'p':n//6500+1,'text':string[n:n+6500]} for n in range(0,len(string),6500)]
 
 
-def upload_book(tid,data):
+def upload_book(tid,data,uploaded_raw=None):
     filename=ident(data.get('filename'))[:130]
     suffix=filename.lower().rsplit('.',1)[-1]
     if suffix not in ('pdf','docx','txt'):raise ValueError('unsupported_book_format')
     total=db.query('SELECT COUNT(*) AS n FROM game_lab_books WHERE teacher_id=? AND archived=0',(tid,))
     if int(total['n'])>=MAX_BOOKS:raise ValueError('book_limit')
-    raw=decode_source(data.get('data'),MAX_BOOK_BYTES)
+    raw=(decode_source(data.get('data'),INLINE_BOOK_BYTES) if uploaded_raw is None else uploaded_raw)
+    if not raw or len(raw)>MAX_BOOK_BYTES:raise ValueError('file_too_large')
     if suffix=='pdf':
         if not raw.startswith(b'%PDF-'):raise ValueError('invalid_pdf')
         pages=pdf_pages(raw)
@@ -143,15 +148,18 @@ def upload_book(tid,data):
     else:pages=txt_pages(raw)
     words=sum(len(x['text'].strip()) for x in pages)
     if words<90:raise ValueError('book_has_no_extractable_text')
-    # Retain the source privately for a later chapter re-extraction, within the strict upload quota.
+    # Keep the extracted pages for all books, without storing huge original binaries in DB.
+    source_retained=len(raw)<=INLINE_BOOK_BYTES
     bookid=uuid.uuid4().hex
     section=ident(data.get('section'))[:60] or 'كتاب كامل'
     db.exec_sql('INSERT INTO game_lab_books(id,teacher_id,name,kind,page_count,section,'
                 'page_data,source_base64,created_at) VALUES(?,?,?,?,?,?,?,?,?)',
                 (bookid,tid,filename,suffix,len(pages),section,db.jdump(pages),
-                 base64.b64encode(raw).decode(),now()))
+                 (base64.b64encode(raw).decode() if source_retained else ''),now()))
     return {**metadata(require_book(tid,bookid)),'characters':words,
-            'notice':'راجع المحتوى المستخرج قبل اعتماد الأسئلة'}
+            'sourceRetained':source_retained,
+            'notice':('تم حفظ النص المستخرج في مكتبتك؛ الكتاب الأصلي الكبير غير محفوظ على الخادم.'
+                      if not source_retained else 'راجع المحتوى المستخرج قبل اعتماد الأسئلة')}
 
 
 def source_selection(book,start,end):
@@ -492,7 +500,13 @@ def handle_post(h,u,data):
     if not t:return True
     try:
         tid=t['id']
-        if u.path.endswith('/books/upload'):out={'book':upload_book(tid,data)}
+        if u.path.endswith('/books/upload/start'):
+            total=db.query('SELECT COUNT(*) AS n FROM game_lab_books WHERE teacher_id=? AND archived=0',(tid,))
+            out=uploads.start(tid,data,int(total['n']))
+        elif u.path.endswith('/books/upload/chunk'):out=uploads.chunk(tid,data)
+        elif u.path.endswith('/books/upload/finish'):out={'book':uploads.finish(tid,data,upload_book)}
+        elif u.path.endswith('/books/upload/cancel'):out=uploads.cancel(tid,data)
+        elif u.path.endswith('/books/upload'):out={'book':upload_book(tid,data)}
         elif u.path.endswith('/books/draft'):out=offline_generate(tid,data)
         elif u.path.endswith('/books/ai'):out=ai_generate(tid,data)
         elif u.path.endswith('/books/archive'):out=archive_book(tid,data)
