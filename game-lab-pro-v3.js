@@ -210,7 +210,7 @@ function renderBookReview(rows){
   keep.append(check,document.createTextNode(' اعتماد المقترح '+(i+1)));
   const label=document.createElement('small');
   const kinds={explicit_qa:'سؤال وإجابة من الكتاب',definition:'تعريف من الكتاب',goal:'هدف أو غاية',process:'طريقة أو آلية',examples:'أمثلة من الدرس',function:'وظيفة أو دور',reason:'فهم وتفسير',list:'تعداد معلومات',fact:'معلومة صريحة'};
-  label.textContent=(kinds[r.origin]||'معلومة مقترحة')+' · صفحة '+(r.sourcePage||'غير محددة');
+  label.textContent=(kinds[r.origin]||(r.origin==='ai'?'توليد ذكاء اصطناعي':'معلومة مقترحة'))+' · صفحة '+(r.sourcePage||'غير محددة');
   header.append(keep,label);
   const questionLabel=document.createElement('label');questionLabel.textContent='السؤال';
   const question=reviewInput('question',r.q,200);questionLabel.append(question);
