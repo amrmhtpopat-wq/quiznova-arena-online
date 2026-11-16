@@ -1,0 +1,56 @@
+/* TAG V22 — desktop teacher portal: independent right-sidebar scrolling.
+   The teacher navigation and account actions remain reachable at 100% zoom,
+   even on 1366x768 laptops or shorter desktop windows.
+   Tablets/phones already use a horizontal responsive navigation strip. */
+@media screen and (min-width: 1025px) {
+  body.v105-portal #workspace:not(.hidden) > aside.sidebar {
+    position: sticky !important;
+    top: 0 !important;
+    align-self: start !important;
+    height: 100vh !important; /* fallback for older browsers */
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    min-height: 0 !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior-y: contain;
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+    scrollbar-color: #67dff6 #0a2a55;
+    padding-bottom: 26px !important;
+    scroll-padding-block: 16px;
+  }
+
+  /* Never compress the list to fit a short viewport: scroll to later links. */
+  body.v105-portal #workspace > aside.sidebar > nav,
+  body.v105-portal #workspace > aside.sidebar > .sidebar-brand,
+  body.v105-portal #workspace > aside.sidebar > .workspace-tag,
+  body.v105-portal #workspace > aside.sidebar > .secondary.wide,
+  body.v105-portal #workspace > aside.sidebar > .sidebar-bottom {
+    flex-shrink: 0 !important;
+  }
+  body.v105-portal #workspace > aside.sidebar > nav {
+    min-height: max-content;
+  }
+  body.v105-portal #workspace > aside.sidebar > .sidebar-bottom {
+    margin-top: auto;
+  }
+  body.v105-portal #workspace > aside.sidebar::-webkit-scrollbar {
+    width: 9px;
+  }
+  body.v105-portal #workspace > aside.sidebar::-webkit-scrollbar-track {
+    background: rgba(14, 60, 107, .55);
+    border-radius: 10px;
+  }
+  body.v105-portal #workspace > aside.sidebar::-webkit-scrollbar-thumb {
+    background: #469fc4;
+    border: 2px solid rgba(14, 60, 107, .55);
+    border-radius: 10px;
+  }
+  body.v105-portal #workspace > aside.sidebar::-webkit-scrollbar-thumb:hover {
+    background: #8adff1;
+  }
+}
+@media print {
+  body.v105-portal #workspace > aside.sidebar { display: none !important; }
+}
