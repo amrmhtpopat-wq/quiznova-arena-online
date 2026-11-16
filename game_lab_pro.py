@@ -384,8 +384,22 @@ def deterministic_draft(text,maximum):
                 'العوامل البيئية والاجتماعية، مثل حماية البيئة وحقوق الإنسان والعدالة الاجتماعية',
                 page,'الاستثمار الأخلاقي يراعي العوامل البيئية والاجتماعية','fact')
 
-        if len(results)>=maximum:return results[:maximum]
-    return results[:maximum]
+    # Spread the requested questions across the selected pages instead of
+    # exhausting the first page before considering the rest of the lesson.
+    buckets={}
+    for row in results:
+        buckets.setdefault(int(row.get('sourcePage') or 0),[]).append(row)
+    balanced=[]
+    page_order=sorted(buckets)
+    while len(balanced)<maximum:
+        added=False
+        for source_page in page_order:
+            if buckets[source_page]:
+                balanced.append(buckets[source_page].pop(0))
+                added=True
+                if len(balanced)>=maximum:break
+        if not added:break
+    return balanced
 
 
 def offline_generate(tid,data):
