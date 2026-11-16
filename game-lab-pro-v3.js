@@ -6,7 +6,14 @@ let books=[],bookId='',activities=[],students=[],images=[],imageUrl='',selectedI
 const errors={
  login_required:'سجّل دخول المعلم من «مكتبتي على الحساب» أولًا.',
  book_not_found:'الكتاب غير متاح في حساب المعلم.',
- file_too_large:'الملف أكبر من الحجم المسموح.',
+ upload_not_found:'انتهت جلسة رفع الكتاب أو لم يتم العثور عليها. أعد اختيار الملف ورفعه.',
+ upload_expired:'انتهت مهلة رفع الكتاب. أعد المحاولة.',
+ upload_chunk_order:'انقطع تسلسل رفع أجزاء الكتاب. أعد المحاولة.',
+ upload_chunk_invalid:'حدث خطأ في جزء من الملف أثناء النقل. أعد المحاولة.',
+ upload_incomplete:'الكتاب لم يُرفع بالكامل. حاول مرة أخرى.',
+ book_limit:'بلغت الحد الأقصى للكتب المحفوظة. أرشف كتابًا قديمًا قبل رفع كتاب جديد.',
+
+ file_too_large:'حجم الملف أكبر من المسموح (40 ميغابايت للكتب، و1.5 ميغابايت للصور).',
  book_has_no_extractable_text:'الكتاب ليس فيه نص قابل للاستخراج؛ قد يكون صورًا ممسوحة ضوئيًا ويحتاج OCR.',
  password_protected_pdf:'ملف PDF محمي بكلمة مرور ولا يمكن معالجته.',
  unsupported_book_format:'اختر PDF أو DOCX أو TXT.',
@@ -106,17 +113,54 @@ async function refreshBooks(){
   $('labBookMode').title=list.aiEnabled?'الذكاء الاصطناعي متاح':'خدمة الذكاء الاصطناعي بحاجة إلى مفتاح API آمن';
  }catch(e){failed('labBookStatus',e)}
 }
+const MAX_BOOK_UPLOAD_BYTES=40000000;
+const BOOK_UPLOAD_CHUNK_BYTES=1000000;
+function bookUploadProgress(done,total){
+ const pct=Math.min(100,Math.round(done*100/total));
+ message('labBookStatus','☁️ جارٍ رفع الكتاب بأمان... '+pct+'% ('+(done/1000000).toFixed(1)+' من '+(total/1000000).toFixed(1)+' ميغابايت).');
+ const bar=$('labBookUploadProgress');
+ if(bar){bar.value=pct;bar.hidden=false}
+}
 async function uploadBook(){
- const file=$('labBookFile').files?.[0],b=$('labBookUpload');
- b.disabled=true;message('labBookStatus','جارٍ قراءة الكتاب ورفع النص إلى المكتبة...');
+ const file=$('labBookFile').files?.[0],button=$('labBookUpload'),bar=$('labBookUploadProgress');
+ if(!file){message('labBookStatus','اختر ملف كتاب PDF أو DOCX أو TXT أولًا.',true);return}
+ if(!/\.(pdf|docx|txt)$/i.test(file.name)){message('labBookStatus','صيغة الملف يجب أن تكون PDF أو Word DOCX أو TXT.',true);return}
+ if(!file.size||file.size>MAX_BOOK_UPLOAD_BYTES){message('labBookStatus','حجم الكتاب يتجاوز 40 ميغابايت. اختر جزءًا أصغر من الكتاب أو قلّل حجم الصور ثم أعد المحاولة.',true);return}
+ button.disabled=true;if(bar){bar.hidden=false;bar.value=0}
+ let uploadId='';
  try{
-  const raw=await readAsBase64(file,6000000);
-  const result=await request('/api/game-lab/pro/books/upload',{
-   filename:file.name,data:raw,section:$('labBookSection').value});
+  const section=$('labBookSection').value;
+  let result;
+  if(file.size<=6000000){
+   message('labBookStatus','جارٍ رفع الكتاب إلى مكتبة المعلم...');
+   const raw=await readAsBase64(file,6000000);
+   result=await request('/api/game-lab/pro/books/upload',{filename:file.name,data:raw,section});
+  }else{
+   const start=await request('/api/game-lab/pro/books/upload/start',{
+     filename:file.name,section,fileSize:file.size
+   });
+   uploadId=start.uploadId;
+   const chunkBytes=Math.min(start.chunkBytes||BOOK_UPLOAD_CHUNK_BYTES,BOOK_UPLOAD_CHUNK_BYTES);
+   for(let index=0,offset=0;offset<file.size;index++,offset+=chunkBytes){
+     const end=Math.min(offset+chunkBytes,file.size);
+     const raw=await readAsBase64(file.slice(offset,end),chunkBytes);
+     const reply=await request('/api/game-lab/pro/books/upload/chunk',{
+       uploadId,index,data:raw
+     });
+     bookUploadProgress(reply.uploaded||end,file.size);
+   }
+   message('labBookStatus','✓ اكتمل رفع الكتاب. جارٍ استخراج النص من صفحاته وحفظه...');
+   result=await request('/api/game-lab/pro/books/upload/finish',{uploadId});
+   uploadId='';
+  }
   bookId=result.book.id;
   await refreshBooks();
-  message('labBookStatus','✓ تم حفظ الكتاب: '+result.book.name+' · '+result.book.pageCount+' صفحة. راجع الصفحات قبل توليد المسودة.');
- }catch(e){failed('labBookStatus',e)}finally{b.disabled=false}
+  if(bar)bar.value=100;
+  message('labBookStatus','✓ تم حفظ الكتاب: '+result.book.name+' · '+result.book.pageCount+' صفحة. '+(result.book.notice||'راجع النص المستخرج قبل التوليد.'));
+ }catch(e){
+  failed('labBookStatus',e);
+  if(uploadId)request('/api/game-lab/pro/books/upload/cancel',{uploadId}).catch(()=>{});
+ }finally{button.disabled=false}
 }
 function requestDraft(){
  const id=$('labBookSelect').value;
