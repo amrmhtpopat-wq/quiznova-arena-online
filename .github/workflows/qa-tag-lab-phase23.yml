@@ -7,6 +7,7 @@ on:
       - game_lab_uploads.py
       - tests/test_game_lab_chunk_upload.py
       - tests/test_game_lab_quality.py
+      - tests/browser_game_lab_pro_v3.py
       - game_lab_api.py
       - game-lab-preview.html
       - game-lab-pro-v3.js
@@ -71,3 +72,9 @@ jobs:
           python tests/test_game_lab_chunk_upload.py
           python tests/test_game_lab_pro.py
           python tests/test_game_lab_api.py
+      - name: Install browser testing tools
+        run: |
+          pip install playwright
+          python -m playwright install --with-deps chromium
+      - name: Browser review-to-save-to-card integration
+        run: python tests/browser_game_lab_pro_v3.py
