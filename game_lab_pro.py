@@ -240,6 +240,10 @@ def deterministic_draft(text,maximum):
     verb=r'(?:هو|هي|تعني|يعني|يُقصد به|يُقصد بها|يقصد به|يقصد بها|تُعرف بأنها|يُعرف بأنه|تعرف بأنها|يعرف بأنه|يُعرّف بأنه|يشير إلى|عبارة عن)'
     statement=re.compile(r'^(.{4,62}?)\s+'+verb+r'\s+(.{16,170})$',re.IGNORECASE)
     colon_statement=re.compile(r'^(.{4,60}?)\s*[:：]\s*'+verb+r'\s+(.{16,170})$',re.IGNORECASE)
+    # Clearly described functions from a technical glossary are useful,
+    # but they must lead to "ما وظيفة..." rather than a fabricated definition.
+    action=r'(?:تنفذ|تعالج|تحفظ|تربط|تسمح|تعرض|تتيح|تحرك|تساعد|تحول|تخزن|تُخزن|تعمل|يوفر|توفر|يمكّن|تُمكّن)'
+    colon_action=re.compile(r'^(.{4,60}?)\s*[:：]\s*('+action+r'\s+.{12,130})$',re.IGNORECASE)
     blocked=re.compile(
         r'(?:السؤال|النشاط|الأنشطة|الجدول|الشكل|الصفحة|المطلوب|التمرين|'
         r'الإجابة|أفكر|أُفكِّر|أتأمل|أناقش|أذكر|أبحث|أُحدد|'
@@ -257,6 +261,10 @@ def deterministic_draft(text,maximum):
         line=re.sub(r'\s+',' ',line).strip('•ـ- ')
         if not 25<=len(line)<=240:continue
         matched=statement.fullmatch(line) or colon_statement.fullmatch(line)
+        is_function=False
+        if not matched:
+            matched=colon_action.fullmatch(line)
+            is_function=bool(matched)
         if not matched:continue
         term=matched.group(1).strip('،. ؛:()')
         meaning=matched.group(2).strip('، ؛:.')
@@ -272,7 +280,7 @@ def deterministic_draft(text,maximum):
         if re.search(r'(?:أن تكون|قد تكون|يمكن أن تكون|قد يشمل|تتكون من)\s*$',meaning):continue
         if len(re.findall(r'[\u0621-\u064A]',meaning))<10:continue
         if len(meaning.split())<3:continue
-        question='ما المقصود بـ '+term+'؟'
+        question=('ما وظيفة ' if is_function else 'ما المقصود بـ ')+term+'؟'
         if question.casefold() in seen:continue
         seen.add(question.casefold())
         definitions.append({'q':question,'a':meaning,'g':'صفحة '+str(page),
