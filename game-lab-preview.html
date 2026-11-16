@@ -33,7 +33,7 @@
 <link rel="stylesheet" href="/game-lab-premium-v9.css?v=9.0">
 <link rel="stylesheet" href="/game-lab-overhaul-v101.css?v=10.1.0">
 <link rel="stylesheet" href="/game-lab-cleanup-v102.css?v=10.2.0">
-<link rel="stylesheet" href="/tag-lab-v11.css?v=12.0">
+<link rel="stylesheet" href="/tag-lab-v11.css?v=25.0">
 </head>
 <body>
 <div class="mobilebar"><b><img class="tag-mobile-mark" src="/assets/brand/tag-logo-dark-v21.png" alt=""> TAG LAB</b><button class="button alt small" id="mobileMenu" aria-label="القائمة">☰</button></div><div id="shade" class="shade"></div>
@@ -92,10 +92,10 @@
 <div class="buttons"><button class="button" id="labBookUpload">☁️ رفع الكتاب وحفظه</button><button class="button alt" id="labBookRefresh">↻ تحديث مكتبتي</button><button class="button transparent" id="labBookArchive" type="button">🗄️ أرشفة الكتاب المحدد</button></div>
 <div class="field" style="margin-top:14px"><label for="labBookSelect">اختر كتابًا محفوظًا</label><select id="labBookSelect"><option value="">لا توجد كتب محملة</option></select></div>
 <div class="row2"><div class="field"><label for="labBookStart">من صفحة</label><input id="labBookStart" type="number" min="1" max="350" value="1"></div><div class="field"><label for="labBookEnd">إلى صفحة</label><input id="labBookEnd" type="number" min="1" max="350" value="15"></div></div>
-<div class="row2"><div class="field"><label for="labBookCount">عدد الأسئلة المقترح</label><select id="labBookCount"><option value="8">8 أسئلة</option><option selected value="12">12 سؤالًا</option><option value="20">20 سؤالًا</option><option value="25">25 سؤالًا</option></select></div><div class="field"><label for="labBookMode">طريقة إنشاء الأسئلة</label><select id="labBookMode"><option value="extract">من تعريفات الكتاب (مجانًا)</option><option value="ai">الذكاء الاصطناعي (يتطلب مفتاح API)</option></select></div></div>
+<div class="row2"><div class="field"><label for="labBookCount">عدد الأسئلة المقترح</label><select id="labBookCount"><option value="8">8 أسئلة</option><option selected value="12">12 سؤالًا</option><option value="20">20 سؤالًا</option><option value="25">25 سؤالًا</option></select></div><div class="field"><label for="labBookMode">طريقة إنشاء الأسئلة</label><select id="labBookMode"><option value="extract">استخراج محافظ من النص (مجانًا)</option><option value="ai">الذكاء الاصطناعي (يتطلب مفتاح API)</option></select></div></div>
 <label style="display:flex;gap:9px;align-items:center;margin:10px 0;font-size:.83rem"><input type="checkbox" id="labAiConsent" style="width:auto"> أوافق على إرسال الصفحات المحددة إلى مزود الذكاء الاصطناعي عند اختياره فقط، بعد التأكد من حقي في استخدامها.</label><div class="buttons"><button class="button gold" id="labBookGenerate">🪄 توليد مسودة أسئلة</button><button class="button transparent" id="labBookPages">📄 عرض الصفحات المستخرجة</button></div>
-<div class="notice">قد لا تُستخرج النصوص من الكتب المصورة أو الصفحات الممسوحة ضوئيًا. لا نعتمد الأسئلة تلقائيًا؛ راجع كل سؤال مع الكتاب قبل نشره للطلبة. الكتاب الأصلي يُحفظ بشكل خاص على نسخة الاختبار، وليس متاحًا للطلاب.</div></div>
-<div class="block"><h3>🧠 مراجعة نتائج الكتاب</h3><div id="labBookStatus" class="good" role="status">سجّل دخول المعلم من «مكتبتي على الحساب» لرفع الكتب وحفظها.</div><div class="list" id="labBookPreview" style="margin-top:12px"><div class="empty">اختر كتابًا ثم اضغط توليد مسودة. تظهر هنا الأسئلة وصفحاتها.</div></div><div id="labBookSummary" class="hint"></div><div class="buttons" style="margin-top:12px"><button id="labBookOpenEditor" class="button alt">✏️ الانتقال لتحرير الأسئلة</button><button id="labBookSaveCloud" class="button gold" disabled>💾 حفظ مسودة الكتاب في حسابي</button></div><p class="hint">راجع السؤال والإجابة ورقم الصفحة في المحرر أولًا؛ الحفظ في الحساب خاص، ولا ينشر النشاط للطلاب تلقائيًا.</p></div></div></section>
+<div class="notice">الاستخراج المجاني لا يكتب أسئلة جديدة من تلقاء نفسه؛ يلتقط فقط الأسئلة ذات الإجابة الصريحة أو التعريفات الواضحة. قد يكون العدد الناتج أقل من المطلوب. لا تُنشر أي أسئلة قبل مراجعتك واعتمادها. الكتب المصوّرة تحتاج OCR؛ الكتب الكبيرة يُحفظ نصها المستخرج فقط وليس ملف PDF الأصلي.</div></div>
+<div class="block"><h3>🧠 مراجعة نتائج الكتاب</h3><div id="labBookStatus" class="good" role="status">سجّل دخول المعلم من «مكتبتي على الحساب» لرفع الكتب وحفظها.</div><div class="list" id="labBookPreview" style="margin-top:12px"><div class="empty">اختر كتابًا ثم اطلب اقتراحات من النص. ستتمكن من تعديل كل سؤال وإجابة، واستبعاد المقترحات غير الصحيحة.</div></div><div id="labBookSummary" class="hint" aria-live="polite"></div><div class="buttons" style="margin-top:12px"><button id="labBookApprove" class="button gold" disabled>✓ اعتماد المختار ونقله إلى المحرر</button><button id="labBookOpenEditor" class="button alt">✏️ الانتقال لتحرير الأسئلة</button><button id="labBookSaveCloud" class="button alt" disabled>💾 حفظ مسودة الكتاب في حسابي</button></div><p class="hint">راجع السؤال والإجابة ورقم الصفحة في المحرر أولًا؛ الحفظ في الحساب خاص، ولا ينشر النشاط للطلاب تلقائيًا.</p></div></div></section>
 <section id="mixer"><div class="section-head"><div><h2>🧪 Game Mixer — الحصة متعددة الألعاب</h2><p>ابدأ بالتمهيد، ثم نشاط التعلّم، واختم بالتقويم. المحتوى نفسه يتحوّل بين ثلاثة قوالب دون إعادة كتابته.</p></div><span class="pill">ميزة تفاعلية جديدة</span></div>
 <div class="block"><h3>🎯 صمّم رحلة تعلم من ثلاث مراحل</h3><div class="row2">
 <div class="field"><label for="mixerOne">1. التهيئة والمراجعة</label><select id="mixerOne"></select></div>
@@ -440,7 +440,7 @@ renderCatalog();refreshSaved();report('ابدأ بإدخال أسئلتك أو �
 })();
 </script>
 <script src="/game-lab-cloud-v2.js?v=2.3" defer></script>
-<script defer src="/game-lab-pro-v3.js?v=3.4"></script><script src="/game-lab-extra-v2.js?v=2.0"></script>
+<script defer src="/game-lab-pro-v3.js?v=3.5"></script><script src="/game-lab-extra-v2.js?v=2.0"></script>
 <script defer src="/game-lab-grade7-pilot.js?v=1.0"></script>
 <button id="v4BackToTop" type="button" aria-label="العودة إلى أعلى الصفحة">↑ للأعلى</button>
 <script defer src="/game-lab-v4.js?v=4.0"></script>
