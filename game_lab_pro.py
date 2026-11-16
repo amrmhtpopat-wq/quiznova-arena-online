@@ -375,7 +375,7 @@ def deterministic_draft(text,maximum):
         if match:
             add('اذكر أمثلة على الأهداف الشخصية التي قد يحققها الاستثمار',
                 match.group(1),page,match.group(0),'examples')
-        match=re.search(r'الاستثمار الأخلاقي؛\s*\d*\s*أي الاستثمار في (?P<answer>[^.;]{15,100})',body)
+        match=re.search(r'الاستثمار الأخلاقي؛\s*\d*\s*أي الاستثمار في (?P<answer>[^.;]{15,100}?تتسق مع القيم الأخلاقية)',body)
         if match:
             add('ما المقصود بالاستثمار الأخلاقي؟',match.group('answer'),
                 page,match.group(0),'definition')
