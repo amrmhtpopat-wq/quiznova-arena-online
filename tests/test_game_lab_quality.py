@@ -95,6 +95,18 @@ class BookQuestionQuality(unittest.TestCase):
         self.assertEqual([r['sourcePage'] for r in rows],[12,14])
         self.assertNotIn('ما أسباب التغير المناخي؟',[r['q'] for r in rows])
 
+    def test_suggestions_are_balanced_across_selected_pages(self):
+        source='''[صفحة 1]
+الادخار هو تخصيص جزء من الدخل للمستقبل.
+التضخم هو ارتفاع الأسعار بصورة مستمرة.
+[صفحة 2]
+الاستثمار هو توظيف الأموال في مشروع لتحقيق عائد.
+[صفحة 3]
+التخطيط هو تحديد الأهداف وترتيب الخطوات.
+'''
+        rows=self.extract(source,3)
+        self.assertEqual([row['sourcePage'] for row in rows],[1,2,3],rows)
+
     def test_selection_covers_last_requested_pages(self):
         pages=[{'p':i,'text':('شرح المادة وتعريفات تعليمية. '*160)} for i in range(1,51)]
         pages[-1]['text']='الادخار هو الاحتفاظ بجزء من الدخل لاستخدامه في المستقبل.'
