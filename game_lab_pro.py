@@ -162,7 +162,7 @@ def upload_book(tid,data,uploaded_raw=None):
                       if not source_retained else 'راجع المحتوى المستخرج قبل اعتماد الأسئلة')}
 
 
-def source_selection(book,start,end):
+def source_selection(book,start,end,max_chars=45000):
     pages=db.jload(book['page_data'],[])
     count=len(pages)
     try:
@@ -172,108 +172,125 @@ def source_selection(book,start,end):
     chosen=[p for p in pages if a<=p['p']<=b]
     fragments=['[صفحة '+str(p['p'])+']\n'+p['text'] for p in chosen if p['text'].strip()]
     if not fragments:raise ValueError('empty_pages')
-    return '\n\n'.join(fragments)[:45000],len(chosen)
+    return '\n\n'.join(fragments)[:max_chars],len(chosen)
 
 
 def explicit_qa_draft(text, maximum):
-    """Extract only questions with explicit answers; never guess an answer."""
+    """Only paired questions/answers that are actually present in the textbook.
+
+    Never manufacture an answer for an un-answered worksheet question.
+    """
     results=[]
     seen=set()
     page=1
     pending=None
-    header=re.compile(r'^\[صفحة\s+(\d+)\]\Z')
-    q_line=re.compile(r'^(?:س|سؤال)\s*[:：]\s*(.{8,190})\Z')
-    a_line=re.compile(r'^(?:ج|جواب|الإجابة|الجواب)\s*[:：]\s*(.{2,150})\Z')
-    inline=re.compile(r'^(?:س|سؤال)\s*[:：]\s*(.{8,190}?[؟?])\s*(?:ج|جواب|الإجابة|الجواب)\s*[:：]\s*(.{2,150})\Z')
-    def add(question,answer,p):
-        question=question.strip().strip('ـ- ')
-        answer=answer.strip().strip('ـ- ')
-        if not (8<=len(question)<=200 and 2<=len(answer)<=100):return
-        if not (question.endswith(('؟','?')) or question.startswith(('ما ','ماذا ','كيف ','لماذا ','متى ','أين ','كم ','من '))):return
+    header=re.compile(r'^\[صفحة\s+(\d+)\]$')
+    q_line=re.compile(r'^(?:س|سؤال)(?:\s*\d+)?\s*[:：]\s*(.{8,190})$')
+    a_line=re.compile(r'^(?:ج|جواب|الإجابة|الجواب)(?:\s*الصحيحة)?\s*[:：]\s*(.{2,150})$')
+    inline=re.compile(
+        r'^(?:س|سؤال)(?:\s*\d+)?\s*[:：]\s*(.{8,190}?[؟?])'
+        r'\s*(?:ج|جواب|الإجابة|الجواب)(?:\s*الصحيحة)?\s*[:：]\s*(.{2,150})$')
+    def add(question, answer, source_page, quote):
+        question=re.sub(r'\s+',' ',question).strip().strip('ـ- ')
+        answer=re.sub(r'\s+',' ',answer).strip().strip('ـ- ')
+        if not 8<=len(question)<=200 or not 2<=len(answer)<=100:return
+        if not (question.endswith(('؟','?')) or re.match(
+            r'^(?:ما|ماذا|كيف|لماذا|متى|أين|كم|من|هل|أي|اذكر|عرّف)\s',question)):return
         signature=(question.casefold(),answer.casefold())
         if signature in seen:return
         seen.add(signature)
-        results.append({'q':question,'a':answer,'g':'صفحة '+str(p),'sourcePage':p})
+        results.append({'q':question,'a':answer,'g':'صفحة '+str(source_page),
+                        'sourcePage':source_page,'sourceQuote':quote[:240],
+                        'origin':'explicit_qa'})
     for raw in text.splitlines():
         line=re.sub(r'\s+',' ',raw).strip()
         if not line:continue
         match=header.fullmatch(line)
         if match:
-            page=int(match.group(1));pending=None
-            continue
-        match=inline.match(line)
+            page=int(match.group(1));pending=None;continue
+        match=inline.fullmatch(line)
         if match:
-            add(match.group(1),match.group(2),page);pending=None
+            add(match.group(1),match.group(2),page,line)
+            pending=None
+            if len(results)>=maximum:break
             continue
-        match=q_line.match(line)
+        match=q_line.fullmatch(line)
         if match:
-            pending=(match.group(1),page)
-            continue
-        match=a_line.match(line)
-        if match and pending:add(pending[0],match.group(1),pending[1])
+            pending=(match.group(1),page,line);continue
+        match=a_line.fullmatch(line)
+        if match and pending and pending[1]==page:
+            add(pending[0],match.group(1),page,pending[2]+' | '+line)
         pending=None
         if len(results)>=maximum:break
     return results
 
 
 def deterministic_draft(text,maximum):
-    """Conservative, source-linked definition extraction.
+    """Conservative offline suggestions, backed by explicit book evidence.
 
-    In PDF extraction, colon-separated chapter captions and line fragments can
-    resemble definitions. Reject them rather than fabricate test questions.
-    If too few genuine definitions survive, the teacher can review and type
-    questions or request opt-in AI generation instead.
+    Colons, headings, examples, questions without answers and typography from
+    PDF extraction are NOT proof of a definition. Only a clear declarative
+    'term + defining verb + meaning' sentence may become a proposed question.
     """
     definitions=explicit_qa_draft(text,maximum)
-    seen={(item['q'].casefold(),item['a'].casefold()) for item in definitions}
+    seen={x['q'].casefold() for x in definitions}
     if len(definitions)>=maximum:return definitions
     page=1
-    blocked=re.compile(r'(الشكل|الجدول|السؤال|النشاط|أفكر|أناقش|أُفكِّر|أذكر|'
-                       r'أوجه|من الأمثلة|تمهيد|الفقرة|الآتية|ما يأتي|أبحث)'
-                       r'',re.IGNORECASE)
+    header=re.compile(r'^\[صفحة\s+(\d+)\]$')
+    verb=r'(?:هو|هي|تعني|يعني|يُقصد به|يُقصد بها|يقصد به|يقصد بها|تُعرف بأنها|يُعرف بأنه|تعرف بأنها|يعرف بأنه|يُعرّف بأنه|يشير إلى|عبارة عن)'
+    statement=re.compile(r'^(.{4,62}?)\s+'+verb+r'\s+(.{16,170})$',re.IGNORECASE)
+    colon_statement=re.compile(r'^(.{4,60}?)\s*[:：]\s*'+verb+r'\s+(.{16,170})$',re.IGNORECASE)
+    blocked=re.compile(
+        r'(?:السؤال|النشاط|الأنشطة|الجدول|الشكل|الصفحة|المطلوب|التمرين|'
+        r'الإجابة|أفكر|أُفكِّر|أتأمل|أناقش|أذكر|أبحث|أُحدد|'
+        r'التالية|الآتية|ما يأتي|فيما يأتي|الأمثلة|المثال|'
+        r'عنوان الكتاب|عزيزي|عزيزتي|الطالب|الوحدة الأولى|الوحدة الثانية)')
+    bad_starts=('إذا','عندما','حيث','لكن','كما','لذلك','لأن','من خلال','يمكن',
+                'يستطيع','يُستخدم','يستخدم','وتذكر','تذكر','فكر','أفكر','ماذا',
+                'ما المقصود','ملاحظة','أمامك','أقرأ','أجيب','يتألف','تتألف',
+                'وهذا','وهذه','وهنا','الآتي','المقصود','المقصود من')
     for raw in text.splitlines():
         line=raw.strip()
-        if re.fullmatch(r'\[صفحة\s+\d+\]',line):
-            page=int(re.search(r'\d+',line).group());continue
-        line=re.sub(r'\s+',' ',line).strip('•-ـ. ')
-        if not 15<=len(line)<=270:continue
-        a=None;b=None
-        m=re.match(r'^(.{2,70}?)\s*[:：]\s*(.{12,170})$',line)
-        if m:a,b=m.group(1),m.group(2)
-        else:
-            m=re.match(r'^(.{4,65}?)\s+(?:هو|هي|يعني|تُعرف بأنها|يُعرف بأنه|يشير إلى)\s+(.{12,170})$',line)
-            if m:a,b=m.group(1),m.group(2)
-        if not a or not b:continue
-        a=a.strip('،. ؛:()');b=b.strip('، ؛:.')
-        latin_acronym=bool(re.fullmatch(r'[A-Za-z]{2,12}',a))
-        if not (2 if latin_acronym else 4)<=len(a)<=62 or not 16<=len(b)<=100:continue
-        if len(a.split())>7 or len(b.split())<4:continue
-        if re.search(r'\d|[؟?!;:()\[\]]',a):continue
-        if re.search(r'[.!؟]',a) or blocked.search(a):continue
-        if a.endswith(('مثلا','مثلاً','عليها','بما يلي','كما يلي','ماذا','التالي')):continue
-        # Require a plausible short concept rather than a full sentence.
-        if a.startswith(('يمكن','يستعمل','تستعمل','يستخدم','أذكر','أُحدد','لاحظ','أتأمل')):continue
-        if (not latin_acronym and len(re.findall(r'[\u0621-\u064A]',a))<4) or len(re.findall(r'[\u0621-\u064A]',b))<11:continue
-        if re.search(r'(الأسئلة|العبارة الصحيحة|العبارة غير الصحيحة|وظِّف|وَظِّف|أُوظّف|'
-                     r'أتواصل|التمرين|المشروع|لِما يأتي|في ما يأتي)',b):continue
-        if re.match(r'^(الشكل|الجدول|نشاط|مقدمة|إرشادات)',b):continue
-        candidate={'q':'ما المقصود بـ '+a+'؟','a':b,'g':'صفحة '+str(page),'sourcePage':page}
-        signature=(candidate['q'].casefold(),candidate['a'].casefold())
-        if signature in seen:continue
-        seen.add(signature)
-        definitions.append(candidate)
+        found=header.fullmatch(line)
+        if found:
+            page=int(found.group(1));continue
+        line=re.sub(r'\s+',' ',line).strip('•ـ- ')
+        if not 25<=len(line)<=240:continue
+        matched=statement.fullmatch(line) or colon_statement.fullmatch(line)
+        if not matched:continue
+        term=matched.group(1).strip('،. ؛:()')
+        meaning=matched.group(2).strip('، ؛:.')
+        words=term.split()
+        if not 1<=len(words)<=5 or not 4<=len(term)<=55:continue
+        if term.startswith(bad_starts) or blocked.search(term):continue
+        if term.startswith(('وأن','فإن','ومن','وبعد','وهل')):continue
+        if re.search(r'[؟?!;:\d\[\]()"«»]',term):continue
+        if re.search(r'^(?:و|ف)?(?:قد|سوف|ينبغي|يجب|لا|لم|لن)\s',term):continue
+        if not 16<=len(meaning)<=100:continue
+        if re.search(r'(?:الآتي|التالية|ما يأتي|كما يلي|على سبيل المثال|'
+                     r'مثلًا|مثلاً|[؟?]|\.{2,}|…)',meaning):continue
+        if re.search(r'(?:أن تكون|قد تكون|يمكن أن تكون|قد يشمل|تتكون من)\s*$',meaning):continue
+        if len(re.findall(r'[\u0621-\u064A]',meaning))<10:continue
+        if len(meaning.split())<3:continue
+        question='ما المقصود بـ '+term+'؟'
+        if question.casefold() in seen:continue
+        seen.add(question.casefold())
+        definitions.append({'q':question,'a':meaning,'g':'صفحة '+str(page),
+                            'sourcePage':page,'sourceQuote':line[:240],
+                            'origin':'definition'})
         if len(definitions)>=maximum:break
     return definitions
 
+
 def offline_generate(tid,data):
     book=require_book(tid,data.get('bookId'))
-    text,count=source_selection(book,data.get('startPage'),data.get('endPage'))
+    text,count=source_selection(book,data.get('startPage'),data.get('endPage'),max_chars=400000)
     maximum=min(25,max(4,int(data.get('count') or 12)))
     rows=deterministic_draft(text,maximum)
     return {'book':metadata(book),'mode':'extract','rows':rows,'count':len(rows),
             'sourcePages':count,
-            'warning':('لم يُعثر على أربعة أسئلة وإجابات صريحة موثوقة؛ راجع الصفحات أو اكتب أسئلة يدويًا.' if len(rows)<4 else
-                       'مسودة من أسئلة وإجابات صريحة وتعريفات الكتاب؛ تحقق من الدقة وصفحات المصدر قبل النشر.')}
+            'warning':('لم أعثر على أربعة أسئلة موثوقة من الصفحات المحددة. لا أختلق أسئلة لإكمال العدد؛ استخدم نصوصًا أو تعاريف صريحة، أو اكتب أسئلة يدويًا.' if len(rows)<4 else
+                       'عُثر على '+str(len(rows))+' مقترحًا من أصل '+str(maximum)+' طلبتها. هذه ليست أسئلة معتمدة؛ راجع كل سؤال والإجابة ونص المصدر قبل نقلها إلى المحرر.')}
 
 
 def ai_generate(tid,data):
