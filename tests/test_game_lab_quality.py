@@ -51,11 +51,35 @@ class BookQuestionQuality(unittest.TestCase):
 '''
         rows=self.extract(source,20)
         self.assertEqual(len(rows),10,rows)
-        self.assertEqual(rows[0]['q'],'ما المقصود بـ الادخار؟')
-        self.assertEqual(rows[1]['q'],'ما المقصود بـ التضخم؟')
+        self.assertEqual(rows[0]['q'],'ما المقصود بالادخار؟')
+        self.assertEqual(rows[1]['q'],'ما المقصود بالتضخم؟')
         self.assertEqual(rows[2]['q'],'ما وظيفة وحدة المعالجة المركزية؟')
         self.assertEqual(rows[2]['sourcePage'],4)
         self.assertTrue(all(row['sourceQuote'] and row['a'] in row['sourceQuote'] for row in rows))
+
+    def test_explanatory_transition_is_not_mistaken_for_a_concept(self):
+        source='''[صفحة 9]
+يُعرَفُ الادخارُ بأنَّهُ تخصيصُ جزءٍ من الدخلِ للمستقبل.
+بمرور الوقت. وهذا يعني أن الأسر تحفظ جزءًا من مواردها.
+'''
+        rows=self.extract(source,12)
+        self.assertEqual(len(rows),1,rows)
+        self.assertEqual(rows[0]['q'],'ما المقصود بالادخار؟')
+        self.assertNotIn('مرور الوقت',[row['q'] for row in rows])
+        self.assertEqual(rows[0]['sourcePage'],9)
+
+    def test_mixed_question_styles_are_created_from_explicit_evidence(self):
+        source='''[صفحة 9]
+يُعرَفُ الادخارُ بأنَّهُ تخصيصُ جزءٍ من الدخلِ للمستقبل.
+بهدفِ المحافظةِ على المالِ.
+الأدوات قد تكون ملموسة، مثل: القلم والكتاب؛ وقد تكون غير ملموسة، مثل: البرامج والتطبيقات.
+'''
+        rows=self.extract(source,12)
+        questions=[row['q'] for row in rows]
+        self.assertIn('ما المقصود بالادخار؟',questions)
+        self.assertIn('اذكر أمثلة على الأصول الملموسة.',questions)
+        self.assertIn('اذكر أمثلة على الأصول غير الملموسة.',questions)
+        self.assertTrue(all(row['sourcePage']==9 for row in rows))
 
     def test_explicit_answers_with_page(self):
         source='''[صفحة 12]
