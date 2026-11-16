@@ -361,7 +361,7 @@ def deterministic_draft(text,maximum):
         # Varied understanding questions from stated motivations.
         if 'النمو المالي' in body and 'دوافع الاستثمار' in body:
             add('ما أبرز دوافع الاستثمار المذكورة في الدرس؟',
-                'النمو المالي، والاستقرار المالي المستقبلي، وتحقيق الأهداف الشخصية، ودعم القضايا الإنسانية والبيئية',
+                'النمو المالي، والاستقرار، والأهداف الشخصية، ودعم القضايا الإنسانية والاجتماعية والاستدامة البيئية',
                 page,'دوافع الاستثمار: النمو المالي، والأمان والاستقرار المالي المستقبلي، وتحقيق الأهداف الشخصية','list')
         match=re.search(r'النمو المالي\s*:\s*يمكن بالاستثمار\s+([^.;]{10,90})',body)
         if match:
@@ -375,7 +375,7 @@ def deterministic_draft(text,maximum):
         if match:
             add('اذكر أمثلة على الأهداف الشخصية التي قد يحققها الاستثمار',
                 match.group(1),page,match.group(0),'examples')
-        match=re.search(r'الاستثمار الأخلاقي؛ أي الاستثمار في (?P<answer>[^.;]{15,100})',body)
+        match=re.search(r'الاستثمار الأخلاقي؛\s*\d*\s*أي الاستثمار في (?P<answer>[^.;]{15,100})',body)
         if match:
             add('ما المقصود بالاستثمار الأخلاقي؟',match.group('answer'),
                 page,match.group(0),'definition')
