@@ -8,6 +8,7 @@ authenticated teacher and capped before any bytes are accepted.
 from __future__ import annotations
 
 import base64
+import binascii
 import os
 import secrets
 import tempfile
@@ -93,7 +94,7 @@ def chunk(tid, data):
             raise ValueError('upload_chunk_invalid')
         try:
             raw=base64.b64decode(encoded,validate=True)
-        except (ValueError,TypeError) as exc:
+        except (ValueError,TypeError,binascii.Error) as exc:
             raise ValueError('upload_chunk_invalid') from exc
         if len(raw)!=expected:
             raise ValueError('upload_chunk_invalid')
