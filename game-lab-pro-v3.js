@@ -170,33 +170,91 @@ function requestDraft(){
    count:Number($('labBookCount').value)||12,
    subject:$('subject').value,grade:$('grade').value}
 }
+function reviewInput(kind,value,maxLength){
+ const control=document.createElement('textarea');
+ control.className='tag-book-'+kind;
+ control.value=String(value||'').slice(0,maxLength);
+ control.maxLength=maxLength;
+ control.rows=kind==='question'?2:3;
+ control.spellcheck=true;
+ control.dir='auto';
+ control.addEventListener('input',()=>{bookDraftReady=false;$('labBookSaveCloud').disabled=true});
+ return control
+}
+function renderBookReview(rows){
+ const parent=$('labBookPreview');parent.replaceChildren();
+ const explanation=document.createElement('p');
+ explanation.className='hint';
+ explanation.textContent='هذه اقتراحات وليست أسئلة معتمدة. افحص السؤال والجواب واقتباس المصدر، وعدّل أو استبعد أي مقترح غير صحيح، ثم انقل المختار إلى محرر الأنشطة.';
+ parent.append(explanation);
+ for(const [i,r] of rows.entries()){
+  const card=document.createElement('article');card.className='lab-bookrow tag-book-review-card';
+  const header=document.createElement('div');header.className='tag-book-review-top';
+  const keep=document.createElement('label');keep.className='tag-book-review-keep';
+  const check=document.createElement('input');check.type='checkbox';check.checked=true;check.className='tag-book-review-check';
+  keep.append(check,document.createTextNode(' اعتماد المقترح '+(i+1)));
+  const label=document.createElement('small');
+  label.textContent=(r.origin==='explicit_qa'?'سؤال وإجابة صريحان':r.origin==='definition'?'تعريف صريح من الكتاب':'اقتراح ذكاء اصطناعي')+' · صفحة '+(r.sourcePage||'غير محددة');
+  header.append(keep,label);
+  const questionLabel=document.createElement('label');questionLabel.textContent='السؤال';
+  const question=reviewInput('question',r.q,200);questionLabel.append(question);
+  const answerLabel=document.createElement('label');answerLabel.textContent='الإجابة الصحيحة المقترحة';
+  const answer=reviewInput('answer',r.a,100);answerLabel.append(answer);
+  const source=document.createElement('p');source.className='tag-book-evidence';
+  source.textContent=r.sourceQuote?'من الكتاب: «'+r.sourceQuote+'»':'لا يوجد اقتباس حرفي؛ طابق السؤال والإجابة مع صفحة الكتاب قبل اعتماده.';
+  card.dataset.sourcePage=String(r.sourcePage||'');
+  card.dataset.group=String(r.g||'عام');
+  card.append(header,questionLabel,answerLabel,source);parent.append(card);
+ }
+}
+function approveBookSuggestions(){
+ const cards=[...$('labBookPreview').querySelectorAll('.tag-book-review-card')];
+ if(!cards.length){message('labBookStatus','ولّد مقترحات أولًا، ثم راجعها.',true);return}
+ const accepted=[],seen=new Set();
+ for(const card of cards){
+  if(!card.querySelector('.tag-book-review-check').checked)continue;
+  const q=card.querySelector('.tag-book-question').value.replace(/\s+/g,' ').trim().replaceAll('|',' ');
+  const a=card.querySelector('.tag-book-answer').value.replace(/\s+/g,' ').trim().replaceAll('|',' ');
+  if(!q||!a){message('labBookStatus','يوجد سؤال أو جواب فارغ ضمن المقترحات المختارة. صححه أو استبعده.',true);return}
+  const key=(q+'|'+a).toLocaleLowerCase('ar');
+  if(seen.has(key))continue;seen.add(key);
+  accepted.push({q,a,g:card.dataset.group||'عام',sourcePage:Number(card.dataset.sourcePage)||null})
+ }
+ if(!accepted.length){message('labBookStatus','حدد سؤالًا موثوقًا واحدًا على الأقل.',true);return}
+ $('activityData').value=accepted.map(r=>r.q+' | '+r.a+' | '+r.g+(r.sourcePage?' | '+r.sourcePage:'')).join('\n');
+ const book=books.find(x=>x.id===$('labBookSelect').value);
+ if(book)$('activityTitle').value=('ألعاب '+book.name.replace(/\.(pdf|docx|txt)$/i,'')).slice(0,90);
+ window.BOOYAH_LAB_BOOK_ID=$('labBookSelect').value;
+ window.BOOYAH_LAB_SOURCE_GROUP='';window.BOOYAH_LAB_IMAGE_ID='';
+ window.TG_CREATOR_PREVIEW_ROWS=null;
+ bookDraftReady=accepted.length>=4;$('labBookSaveCloud').disabled=!bookDraftReady;
+ if(bookDraftReady){
+  $('applyContent').click();
+  message('labBookStatus','✓ نُقلت '+accepted.length+' أسئلة مختارة إلى محرر الألعاب. راجعها مجددًا قبل الحفظ والنشر.');
+ }else{
+  message('labBookStatus','نقلت '+accepted.length+' أسئلة إلى المحرر. أضف أسئلة موثوقة حتى يصبح العدد 4 على الأقل ثم احفظها من مكتبتي.',true);
+ }
+ $('labBookSummary').textContent='تم نقل '+accepted.length+' مقترحًا مختارًا إلى المحرر، مع صفحات المصدر. لم تُنشر أي لعبة للطلاب.';
+ document.getElementById('builder')?.scrollIntoView({behavior:'smooth',block:'start'});
+}
 async function generate(){
- const b=$('labBookGenerate');b.disabled=true;bookDraftReady=false;$('labBookSaveCloud').disabled=true;message('labBookStatus','جارٍ استخراج الأسئلة من الكتاب المحدد...');
+ const button=$('labBookGenerate');button.disabled=true;
+ bookDraftReady=false;$('labBookSaveCloud').disabled=true;$('labBookApprove').disabled=true;
+ message('labBookStatus','أفحص الأسئلة والتعاريف الصريحة في الصفحات المحددة...');
  try{
   const mode=$('labBookMode').value,params=requestDraft();
   if(mode==='ai'&&!$('labAiConsent').checked)throw Error('ai_consent_required');
   params.consent=mode==='ai'&&$('labAiConsent').checked;
   const response=await request('/api/game-lab/pro/books/'+(mode==='ai'?'ai':'draft'),params);
-  const src=response.rows||[];
-   bookDraftReady=src.length>=4;$('labBookSaveCloud').disabled=!bookDraftReady;
-  if(!src.length){message('labBookStatus',response.warning||'لم يتم استخراج أسئلة. جرّب صفحات أو درسًا آخر.',true);return}
-  const parent=$('labBookPreview');parent.replaceChildren();
-  for(const [i,r] of src.entries()){
-   const el=document.createElement('div');el.className='lab-bookrow';
-   const q=document.createElement('b');q.textContent=(i+1)+'. '+r.q;el.append(q);
-   const answer=document.createElement('small');answer.textContent='الإجابة المقترحة: '+r.a+' · صفحة '+r.sourcePage;
-   el.append(answer);parent.append(el);
-  }
-  $('activityData').value=src.map(x=>x.q.replaceAll('|',' ')+' | '+x.a.replaceAll('|',' ')+' | '+x.g.replaceAll('|',' ')+(x.sourcePage?' | '+x.sourcePage:'')).join('\n');
-  const book=books.find(x=>x.id===params.bookId);
-  if(book)$('activityTitle').value=('ألعاب '+book.name.replace(/\.(pdf|docx|txt)$/i,'')).slice(0,90);
-  window.BOOYAH_LAB_BOOK_ID=params.bookId;
-  window.BOOYAH_LAB_SOURCE_GROUP='';window.BOOYAH_LAB_IMAGE_ID='';
-  window.TG_CREATOR_PREVIEW_ROWS=src;
-  $('applyContent').click();
-  $('labBookSummary').textContent='جرى تحويل '+src.length+' سؤالًا إلى المحرر مع صفحات المصدر. '+(bookDraftReady?'راجعها، ثم احفظ المسودة الخاصة بحسابك.':'يلزم 4 أسئلة موثوقة على الأقل قبل الحفظ.');
-  message('labBookStatus',response.warning||'✓ مسودة قابلة للمراجعة قبل النشر.',!bookDraftReady);
- }catch(e){failed('labBookStatus',e)}finally{b.disabled=false}
+  const rows=Array.isArray(response.rows)?response.rows:[];
+  renderBookReview(rows);
+  $('labBookApprove').disabled=!rows.length;
+  $('labBookSummary').textContent=rows.length
+   ?'استُخرج '+rows.length+' مقترحًا من أصل '+params.count+' مطلوبًا. افحص جميع الإجابات واختر الصحيح قبل نقله إلى المحرر.'
+   :'لم يتم العثور على سؤال ذي إجابة موثوقة في هذه الصفحات. يمكنك إدخال الأسئلة يدويًا أو استخدام توليد الذكاء الاصطناعي إذا كان متاحًا.';
+  message('labBookStatus',response.warning||'راجع المقترحات قبل اعتمادها.',rows.length<4);
+ }catch(e){failed('labBookStatus',e)}
+ finally{button.disabled=false}
 }
 async function archiveBook(){
  const id=$('labBookSelect').value,book=books.find(x=>x.id===id);
@@ -365,6 +423,7 @@ async function createRoom(){
 $('labBookUpload').onclick=uploadBook;
 $('labBookRefresh').onclick=refreshBooks;
 $('labBookGenerate').onclick=generate;
+$('labBookApprove').onclick=approveBookSuggestions;
 $('labBookSaveCloud').onclick=()=>{
  if(!bookDraftReady){message('labBookStatus','يلزم أربع أسئلة موثوقة على الأقل.',true);return}
  if(!token()){message('labBookStatus','سجّل دخول المعلم أولًا ثم احفظ المسودة.',true);scroll('cloud');return}
@@ -374,7 +433,7 @@ $('labBookArchive').onclick=archiveBook;
 $('labBookPages').onclick=showPages;
 $('labBookOpenEditor').onclick=()=>scroll('builder');
 $('activityData').addEventListener('input',()=>{window.TG_CREATOR_PREVIEW_ROWS=null});
-$('labBookSelect').onchange=e=>{bookId=e.target.value;bookDraftReady=false;$('labBookSaveCloud').disabled=true;renderBooks()};
+$('labBookSelect').onchange=e=>{bookId=e.target.value;bookDraftReady=false;$('labBookSaveCloud').disabled=true;$('labBookApprove').disabled=true;renderBooks()};
 $('labAssignType').onchange=renderTargetChoices;
 $('labAssignRefresh').onclick=loadStudents;
 $('labAssignActivity').onchange=showAssignments;
