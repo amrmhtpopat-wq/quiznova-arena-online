@@ -21,14 +21,16 @@ student=store.add_students(created['teacher']['id'],[
 http=ThreadingHTTPServer(('127.0.0.1',0),server.Handler)
 threading.Thread(target=http.serve_forever,daemon=True).start()
 base='http://127.0.0.1:'+str(http.server_port)
-text='''CPU: وحدة معالجة تنفذ العمليات الحسابية والمنطقية للحاسوب.
-RAM: ذاكرة تحفظ البيانات المؤقتة خلال تشغيل البرامج.
-اللوحة الأم: لوحة تربط كل مكونات الحاسوب الداخلية معًا.
-لوحة المفاتيح: جهاز لإدخال النصوص والأوامر إلى الحاسوب.
-الشاشة: جهاز إخراج يعرض النصوص والصور والرسومات.
-الفأرة: جهاز إدخال يستخدم لتوجيه المؤشر واختيار الملفات.
-السماعات: أجهزة إخراج تستخدم لسماع الصوت في الحاسوب.
-وحدة التخزين: جهاز يحتفظ بالبيانات والملفات بصورة دائمة.
+text='''[صفحة 1]
+الادخار هو الاحتفاظ بجزء من الدخل لاستخدامه في المستقبل.
+التضخم هو ارتفاع عام ومستمر في أسعار السلع والخدمات بمرور الزمن.
+الموازنة هي خطة مالية تبين الإيرادات والنفقات خلال فترة زمنية محددة.
+[صفحة 2]
+وحدة المعالجة المركزية: تنفذ التعليمات وتعالج البيانات داخل الحاسوب.
+ذاكرة الوصول العشوائي: تحفظ البيانات المؤقتة المستخدمة أثناء التشغيل.
+اللوحة الأم: تربط المكونات الداخلية وتسمح بالتواصل بينها.
+الشاشة: تعرض النصوص والرسومات للمستخدم.
+لوحة المفاتيح: تتيح للمستخدم إدخال النصوص والأوامر.
 '''
 try:
  with sync_playwright() as pw:
@@ -48,8 +50,13 @@ try:
    page.wait_for_function("()=>document.querySelector('#labBookSelect').options.length>1",timeout=13000)
    page.locator('#labBookMode').select_option('extract')
    page.locator('#labBookGenerate').click()
-   page.wait_for_function("()=>document.querySelector('#labBookPreview').querySelectorAll('.lab-bookrow').length>=4",timeout=13000)
-   assert 'RAM' in page.locator('#activityData').input_value()
+   page.wait_for_function("()=>document.querySelector('#labBookPreview').querySelectorAll('.tag-book-review-card').length>=4",timeout=13000)
+   assert not page.locator('#activityData').input_value(), 'Book suggestions must not silently publish to editor'
+   assert page.locator('#labBookPreview .tag-book-evidence').count()>=4
+   page.locator('#labBookPreview .tag-book-review-card').first.locator('textarea.tag-book-question').fill('ما تعريف الادخار؟')
+   page.locator('#labBookApprove').click()
+   page.wait_for_function("()=>document.querySelector('#activityData').value.includes('ما تعريف الادخار؟')",timeout=13000)
+   assert 'صفحة' in page.locator('#activityData').input_value()
    # Confirm persistent textbook-linked activity and card assignment to ninth B.
    page.locator('#cloudMode').select_option('quiz')
    page.locator('#cloudSave').click()
@@ -94,7 +101,7 @@ try:
    host_page.wait_for_function("()=>document.querySelector('#teacherAnswered').textContent.includes('1 / 1')",timeout=14000)
    host_page.wait_for_function("()=>document.querySelector('#teacherStatus').textContent.includes('انتهى')",timeout=14000)
    assert not errors,errors
-   print('PASS Game Lab V3: upload book, draft, teacher save, card assignment, student game and synchronized live teams.',flush=True)
+   print('PASS Game Lab V25: review source evidence, approve draft, teacher save, card assignment, student game and synchronized live teams.',flush=True)
   finally:
    browser.close()
 finally:
