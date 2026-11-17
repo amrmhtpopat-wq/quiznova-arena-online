@@ -99,7 +99,7 @@ function renderBracket(){
  $('wcProgress').textContent=finished+' / '+allMatches.length;
  $('wcChampion').textContent=active.champion||'بانتظار البطل';
  $('currentTournamentTitle').textContent=active.title;
- const entrants=active.rounds[0]?.matches.flatMap(m=>[m.a,m.b]).filter(Boolean).length||0;
+
  const kind=active.kind==='students'?'الطلاب':active.kind==='classes'?'الشعب':'الفرق';
  $('currentTournamentMeta').textContent=kind+' • '+entrants+' مشارك • '+active.quizTitle+(active.champion?' • البطل: '+active.champion:'');
  $('bracketCanvas').innerHTML=BR.render(active,true);
