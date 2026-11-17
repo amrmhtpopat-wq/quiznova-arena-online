@@ -75,7 +75,7 @@ class StudentVerifyContract(unittest.TestCase):
         self.assertEqual(status,200,issued)
         self.assertEqual(len(issued['pins']),2)
         secrets={x['id']:x['pin'] for x in issued['pins']}
-        status,settings=self.teacher_post('toggle',{'enabled':True})
+        status,settings=self.teacher_post('toggle',{'enabled':True,'deliveredConfirmed':True})
         self.assertEqual(status,200,settings)
         self.assertTrue(settings['enabled'])
         return secrets[self.student['id']]
@@ -92,7 +92,7 @@ class StudentVerifyContract(unittest.TestCase):
     def test_no_pin_leak_and_teacher_only_enrollment(self):
         self.assertEqual(request('GET','/api/teacher/student-verify')[0],401)
         self.assertEqual(request('POST','/api/teacher/student-verify/issue',{})[0],401)
-        self.assertEqual(self.teacher_post('toggle',{'enabled':True})[1]['error'],'pin_not_ready')
+        self.assertEqual(self.teacher_post('toggle',{'enabled':True,'deliveredConfirmed':True})[1]['error'],'pin_not_ready')
         status,issued=self.teacher_post('issue',{})
         self.assertEqual(status,200)
         self.assertEqual(len(issued['pins']),2)
@@ -104,7 +104,8 @@ class StudentVerifyContract(unittest.TestCase):
         self.assertNotIn('pin',store.list_students(self.teacher_id)[0])
         again=self.teacher_post('issue',{})[1]
         self.assertEqual(again['pins'],[])
-        self.assertEqual(self.teacher_post('toggle',{'enabled':True})[0],200)
+        self.assertEqual(self.teacher_post('toggle',{'enabled':True})[1]['error'],'distribution_confirmation_required')
+        self.assertEqual(self.teacher_post('toggle',{'enabled':True,'deliveredConfirmed':True})[0],200)
         public=self.solo_post('catalog',{'card':self.card})[1]
         self.assertTrue(public['student']['pinRequired'])
         self.assertNotIn('pin',public['student'])
