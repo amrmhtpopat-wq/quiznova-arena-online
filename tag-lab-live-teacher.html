@@ -1,0 +1,210 @@
+<!doctype html><html lang="ar" dir="rtl"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="theme-color" content="#F8F9FF">
+<title>TAG LAB | التحدي المباشر — المعلم</title>
+<link rel="icon" href="/assets/brand/tag-lab-visual-v1.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/tag-lab-visual-v1.css?v=1.0.0">
+<style>
+.field{display:grid;gap:6px;margin:12px 0}label{font-weight:800;color:var(--tagv-text)}
+select,input{width:100%;padding:12px 14px;font:inherit;box-sizing:border-box}
+button,.tagv-actions a{border:0;border-radius:12px;padding:13px 17px;cursor:pointer;font-weight:800;font:800 .9rem Tahoma,Arial;background:var(--tagv-purple-gradient);color:#fff;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:9px}
+button.secondary,.tagv-actions a.secondary{background:var(--tagv-soft);color:var(--tagv-primary);border:1px solid var(--tagv-border)}
+button:disabled{opacity:.5;cursor:not-allowed}
+.check{display:flex;gap:11px;align-items:center;margin:12px 0;padding:12px;background:var(--tagv-soft);border-radius:12px;color:var(--tagv-text)}
+.check input{width:19px;height:19px;accent-color:var(--tagv-primary)}
+.tagv-live-panel h2{font-size:1.17rem;margin:3px 0 15px}.tagv-live-panel p{color:var(--tagv-muted)}
+.tagv-live-panel+.tagv-live-panel{margin-top:16px}
+.tagv-live-panel .tagv-question{font-size:clamp(1.3rem,2.25vw,2rem)}
+.teacher-room[hidden],.teacher-config[hidden]{display:none!important}
+.sharebox{border:1px solid var(--tagv-border);background:var(--tagv-soft);border-radius:15px;padding:13px;overflow-wrap:anywhere}
+.sharebox a{font-size:.8rem;color:var(--tagv-primary)}
+#roomStatus{font-weight:800;color:var(--tagv-primary)}
+#roomQuestion{white-space:pre-wrap}
+#roomAnswerStats{font-size:.86rem;color:var(--tagv-muted)}
+#teacherError{color:#B54760}
+</style></head><body>
+<main class="tagv-room-display" style="max-width:1410px;padding:26px clamp(15px,3vw,37px) 65px">
+<div class="tagv-live-hero">
+ <div><h1>◉ التحدي المباشر</h1><p>أنشئ جلسة تفاعلية، وشارك الرمز مع طلابك، وتابع تقدمهم لحظة بلحظة.</p></div>
+ <img src="/assets/brand/tag-lab-hero-v1.svg" alt="" aria-hidden="true">
+</div>
+<div class="tagv-live-layout">
+ <div>
+  <section class="tagv-live-panel teacher-config" id="setup">
+   <h2>جلسة مباشرة جديدة</h2>
+   <div class="field"><label for="activity">النشاط المحدد</label><select id="activity" required><option value="">جاري تحميل أنشطتك...</option></select></div>
+   <div class="tagv-form-grid">
+    <div class="field"><label for="duration">الوقت لكل سؤال</label><select id="duration"><option value="15">15 ثانية</option><option value="25" selected>25 ثانية</option><option value="40">40 ثانية</option><option value="60">60 ثانية</option><option value="90">90 ثانية</option></select></div>
+    <div class="field"><label for="mode">نوع الجلسة</label><select id="mode"><option value="individual">فردي</option><option value="teams">فرق</option></select></div>
+   </div>
+   <label class="check"><input type="checkbox" id="feedback" checked> عرض صحة الإجابة بعد انتهاء السؤال</label>
+   <label class="check"><input type="checkbox" id="cardRequired"> دخول الطلاب ببطاقة TAG LAB وPIN فقط</label>
+   <p style="font-size:.83rem">إذا لم تُفعّل البطاقات بعد، اترك اشتراط البطاقة مغلقًا واستخدم رمز الجلسة والاسم.</p>
+   <div class="tagv-actions"><button id="create" type="button">▶ إنشاء غرفة التحدي</button><a href="/tag-lab-account.html" class="secondary">حساب المعلم</a></div>
+   <p class="tagv-status" id="createStatus" role="status"></p>
+  </section>
+  <section class="tagv-live-panel teacher-room" id="room" hidden>
+   <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+    <h2>◉ غرفة التحدي</h2><span id="roomStatus" role="status">جاهز للبدء</span>
+   </div>
+   <strong id="roomTitle" style="font-size:1.35rem"></strong>
+   <div class="tagv-live-kpis">
+    <div class="tagv-stat"><span>رمز الغرفة</span><strong class="tagv-code" id="codeText">------</strong></div>
+    <div class="tagv-stat"><span>الطلاب المتصلون</span><strong id="participants">0</strong></div>
+   </div>
+   <div class="sharebox"><span>رابط انضمام الطالب: </span><a id="joinLink" href="#">—</a><div class="tagv-actions">
+    <button type="button" class="secondary" id="copyLink">نسخ رابط الانضمام</button>
+    <button type="button" class="secondary" id="copyCode">نسخ رمز الغرفة</button>
+   </div></div>
+   <div id="questionArea" hidden style="margin:25px 0">
+    <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px">
+     <strong id="progress">السؤال 1</strong><strong id="timer">00:00</strong>
+    </div><div class="tagv-progress"><span id="progressBar" style="width:0"></span></div>
+    <p class="tagv-question" id="roomQuestion"></p>
+    <p id="roomAnswerStats"></p>
+   </div>
+   <div class="tagv-actions">
+    <button type="button" id="start">▶ بدء الحصة</button>
+    <button type="button" id="next" class="secondary" disabled>السؤال التالي</button>
+    <button type="button" id="openDisplay" class="secondary">▣ فتح شاشة العرض</button>
+    <button type="button" id="finish" class="secondary">إنهاء الحصة</button>
+   </div>
+   <p class="tagv-status" id="roomMessage" role="status"></p>
+  </section>
+  <section class="tagv-live-panel" id="report" hidden>
+   <h2>نتائج الجلسة</h2><div id="reportSummary"></div>
+   <div style="overflow:auto"><table class="tagv-leader"><thead><tr><th>الطالب</th><th>الدرجة</th><th>إجابات صحيحة</th><th>النسبة</th></tr></thead><tbody id="resultRows"></tbody></table></div>
+   <div class="tagv-actions"><button type="button" class="secondary" id="exportResults">تنزيل نتائج Excel (CSV)</button></div>
+  </section>
+ </div>
+ <aside style="display:grid;gap:16px">
+  <section class="tagv-live-panel">
+   <h2>🏆 لوحة المتصدرين</h2>
+   <div id="leaderboard">تظهر النتائج بعد انضمام الطلاب.</div>
+  </section>
+  <section class="tagv-live-panel">
+   <h2>غرفي الأخيرة</h2>
+   <div id="recentRooms">لا توجد جلسات بعد.</div>
+  </section>
+  <section class="tagv-live-panel">
+   <h2>أدوات سريعة</h2>
+   <div class="tagv-actions">
+    <a href="/tag-lab-create.html" class="secondary">إنشاء نشاط</a>
+    <a href="/tag-lab-library.html" class="secondary">مكتبتي</a>
+   </div>
+  </section>
+ </aside>
+</div>
+</main>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id);
+const token=()=>localStorage.getItem('qn9_teacher_token')||'';
+let roomCode='',lastState=null,report=null,loading=false;
+const labels={lobby:'بانتظار الطلاب',question:'السؤال الحالي',results:'انتهى وقت السؤال',finished:'انتهت الجلسة'};
+function message(id,text,problem=false){const x=$(id);x.textContent=text;x.setAttribute('role',problem?'alert':'status')}
+async function api(path,data){
+ const opt={cache:'no-store',headers:{Authorization:'Bearer '+token()}};
+ if(data!==undefined){opt.method='POST';opt.headers['Content-Type']='application/json';opt.body=JSON.stringify(data)}
+ const resp=await fetch(path,opt);const j=await resp.json().catch(()=>({}));
+ if(!resp.ok||j.ok===false)throw Error(j.error||'request_failed');return j;
+}
+function tag(tag,text){const e=document.createElement(tag);e.textContent=text;return e}
+const friendly={login_required:'سجل دخولك من حساب المعلم أولًا.',activity_empty:'هذا النشاط لا يحتوي على أسئلة.',live_mode_not_supported:'اختر نشاطًا من القوالب المدعومة.',room_not_found:'انتهت الغرفة أو لم تعد متاحة.'};
+function err(e){return friendly[e.message]||e.message}
+async function loadActivities(){
+ try{
+  if(!token()){message('createStatus','يرجى تسجيل الدخول إلى حساب TAG LAB.',true);$('activity').replaceChildren(tag('option','يرجى تسجيل الدخول'));return}
+  const data=await api('/api/game-lab/teacher/list');
+  const sel=$('activity');sel.replaceChildren();
+  const items=(data.activities||[]).filter(a=>a.published);
+  if(!items.length){sel.append(tag('option','ليس لديك أنشطة منشورة. أنشئ نشاطًا وانشره أولًا.'));$('create').disabled=true;return}
+  items.forEach(a=>{const opt=tag('option',a.title+' — '+a.mode);opt.value=a.id;sel.append(opt)});
+  $('create').disabled=false;
+ }catch(e){message('createStatus',err(e),true)}
+}
+async function loadRecent(){
+ if(!token())return;
+ try{
+  const rs=await api('/api/game-lab/live/rooms');const el=$('recentRooms');el.replaceChildren();
+  if(!rs.rooms?.length){el.append(tag('p','لا توجد جلسات بعد.'));return}
+  rs.rooms.slice(0,7).forEach(x=>{
+   const b=tag('button',(x.title||'جلسة')+' — '+x.code);b.type='button';b.className='secondary';b.style.cssText='display:block;width:100%;margin:6px 0';
+   b.onclick=()=>switchRoom(x.code);el.append(b)
+  })
+ }catch(_){}
+}
+async function switchRoom(code){
+ roomCode=code;history.replaceState(null,'','?host='+encodeURIComponent(code));
+ $('room').hidden=false;$('setup').hidden=true;$('joinLink').href=location.origin+'/tag-lab-live-student.html?code='+code;
+ $('joinLink').textContent=$('joinLink').href;$('codeText').textContent=code;
+ await updateRoom();loadRecent()
+}
+$('create').onclick=async()=>{
+ const b=$('create');b.disabled=true;
+ try{
+  const d=await api('/api/game-lab/live/create',{activityId:$('activity').value,teams:$('mode').value==='teams',
+   duration:Number($('duration').value),showFeedback:$('feedback').checked,
+   cardRequired:$('cardRequired').checked,enforceGrade:false});
+  await switchRoom(d.code);message('createStatus','تم إنشاء الغرفة.')
+ }catch(e){message('createStatus',err(e),true)}finally{b.disabled=false}
+};
+async function control(action){
+ if(!roomCode||loading)return;loading=true;
+ try{await api('/api/game-lab/live/'+action,{code:roomCode});await updateRoom()}
+ catch(e){message('roomMessage',err(e),true)}finally{loading=false}
+}
+$('start').onclick=()=>control('start');$('next').onclick=()=>control('next');
+$('finish').onclick=()=>{if(confirm('إنهاء التحدي المباشر وحفظ النتائج؟'))control('finish')};
+$('openDisplay').onclick=()=>{if(roomCode)window.open('/tag-lab-live-display.html?code='+encodeURIComponent(roomCode),'_blank','noopener')};
+$('copyLink').onclick=()=>navigator.clipboard?.writeText($('joinLink').href);
+$('copyCode').onclick=()=>navigator.clipboard?.writeText(roomCode);
+async function updateRoom(){
+ if(!roomCode||loading)return;
+ try{
+  const data=await api('/api/game-lab/live/state?code='+encodeURIComponent(roomCode));
+  const s=data.state;lastState=s;
+  $('roomTitle').textContent=s.title||'تحدي مباشر';
+  $('participants').textContent=s.participants||0;
+  $('roomStatus').textContent=labels[s.status]||s.status;
+  $('start').hidden=s.status!=='lobby';$('next').disabled=!(s.status==='results'||s.status==='question');
+  $('finish').disabled=s.status==='finished';
+  $('questionArea').hidden=!s.question;
+  $('roomQuestion').textContent=s.question?.text||'';
+  $('progress').textContent='السؤال '+(s.index+1)+' من '+s.total;
+  $('progressBar').style.width=String(100*(s.index+1)/Math.max(1,s.total))+'%';
+  $('roomAnswerStats').textContent=s.answerStats?'أجاب '+s.answerStats.answered+' من '+s.answerStats.total:'';
+  const remain=Math.max(0,Number(s.deadline||0)-Math.floor(Date.now()/1000));
+  $('timer').textContent=String(Math.floor(remain/60)).padStart(2,'0')+':'+String(remain%60).padStart(2,'0');
+  const list=$('leaderboard');list.replaceChildren();
+  if(!s.leaderboard?.length)list.append(tag('p','بانتظار انضمام الطلاب...'));
+  s.leaderboard?.slice(0,10).forEach((p,i)=>list.append(tag('p',String(i+1)+'. '+p.name+' — '+p.score+' نقطة')));
+  if(s.status==='finished')await loadReport();
+ }catch(e){message('roomMessage',err(e),true)}
+}
+async function loadReport(){
+ if(report?.code===roomCode)return;
+ try{
+  report=await api('/api/game-lab/live/report?code='+encodeURIComponent(roomCode));$('report').hidden=false;
+  $('reportSummary').textContent='المشاركون: '+report.totalPlayers+' · عدد الأسئلة: '+report.totalQuestions;
+  const tbody=$('resultRows');tbody.replaceChildren();
+  report.results.forEach(p=>{const row=document.createElement('tr');[p.name,p.score,p.correct+'/'+p.total,p.percent+'%'].forEach(value=>row.append(tag('td',String(value))));tbody.append(row)})
+ }catch(e){message('roomMessage',err(e),true)}
+}
+$('exportResults').onclick=()=>{
+ if(!report)return;
+ const lines=[['الطالب','الشعبة','الفريق','الدرجة','الإجابات الصحيحة','الأسئلة','النسبة']];
+ report.results.forEach(x=>lines.push([x.name,x.className,x.team,x.score,x.correct,x.total,x.percent+'%']));
+ const csv='\ufeff'+lines.map(row=>row.map(c=>'"'+String(c??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+ a.download='TAG-LAB-live-'+roomCode+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),3000);
+};
+const resume=new URLSearchParams(location.search).get('host');
+loadActivities();loadRecent();
+if(resume&&/^[A-Z2-9]{6}$/.test(resume))switchRoom(resume);
+setInterval(()=>{if(roomCode&&!loading)updateRoom()},2000);
+})();
+</script>
+<script src="/tag-lab-visual-v1.js?v=1.0.0"></script>
+</body></html>
