@@ -1,5 +1,6 @@
 """BOOYAHJO V12.7 SEO teachers page: real Chromium and isolated SQLite acceptance tests."""
 import os
+import re
 import sys
 import tempfile
 import threading
@@ -54,7 +55,7 @@ try:
                 'Absolute canonical broken')
     assert_true(len(parser.robots)==1 and 'index,follow' in parser.robots[0],
                 'Teacher page wrongly blocked by robots')
-    assert_true('application/ld+json' in landing and '"@type":"WebPage"' in landing,
+    assert_true('application/ld+json' in landing and re.search(r'"@type"\s*:\s*"WebPage"',landing),
                 'Structured SEO metadata missing')
     assert_true('for-teachers-v127.css' in landing,'Standalone teacher landing style missing')
     sitemap=get('/sitemap.xml')
