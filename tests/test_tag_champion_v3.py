@@ -44,7 +44,7 @@ class ChampionV3Persistence(unittest.TestCase):
     def test_default_skin_and_theme_background_independence(self):
         t=self.new()
         self.assertEqual(t['theme'],'gold')
-        self.assertEqual(t['background'],'stadium')
+        self.assertEqual(t['background'],'daylight')
         for theme in champion.THEMES:
             for background in champion.BACKGROUNDS:
                 updated=champion.update_appearance(self.teacher_id,{
@@ -92,13 +92,18 @@ class ChampionV3UI(unittest.TestCase):
         html=(ROOT/'champion.html').read_text(encoding='utf-8')
         for theme in champion.THEMES:
             self.assertIn('data-ct-theme="'+theme+'"',html)
-        for background in champion.BACKGROUNDS:
-            self.assertIn('data-ct-bg="'+background+'"',html)
-            asset=('bg-'+background+'-v4.svg') if background in ('daylight','finals') else ('bg-'+background+'.svg')
+        visible=('daylight','finals','royal','celebration','hall','neon','trophy','elegant')
+        legacy=('stadium','night','lights','arena','grid','minimal')
+        for background in visible:
+            self.assertEqual(html.count('data-ct-bg="'+background+'"'),2)
+            asset=('bg-'+background+'-v4.svg') if background in ('daylight','finals') else ('bg-'+background+'-v5.svg')
             self.assertTrue((ROOT/'assets/champion'/asset).is_file())
+        for background in legacy:
+            self.assertNotIn('data-ct-bg="'+background+'"',html)
+            self.assertTrue((ROOT/'assets/champion'/('bg-'+background+'.svg')).is_file())
         self.assertIn('champion-themes-v3.css?v=3.0',html)
         self.assertIn('saveChampionAppearance',html)
-        self.assertIn('champion-theme-engine-v3.js?v=4.0',html)
+        self.assertIn('champion-theme-engine-v3.js?v=5.0',html)
 
     def test_teacher_persists_and_projector_replays(self):
         script=(ROOT/'champion-tag.js').read_text(encoding='utf-8')
