@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="330" height="92" viewBox="0 0 330 92" role="img" aria-labelledby="title">
+<title id="title">TAG LAB — TEACH AND GAME</title>
+<defs><linearGradient id="v" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#A36BFF"/><stop offset="1" stop-color="#5835ED"/></linearGradient><linearGradient id="t" x1="0" x2="1"><stop stop-color="#29D9CF"/><stop offset="1" stop-color="#00A99D"/></linearGradient></defs>
+<g transform="translate(7 1)">
+<path d="M29 7h22 M36 7v30L17 70c-4 8 1 15 10 15h29c9 0 15-7 10-15L46 37V7" stroke="url(#v)" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M24 63h38l6 12c2 4-1 8-7 8H25c-5 0-8-4-6-8z" fill="url(#v)"/>
+<path d="M32 13h20M38 3h9" stroke="#6435EA" stroke-width="3.5" stroke-linecap="round"/>
+<path d="m12 28 1-7 1 7 7 1-7 1-1 7-1-7-7-1zM62 11l1-5 1 5 5 1-5 1-1 5-1-5-5-1z" fill="#774BEF"/>
+<circle cx="31" cy="56" r="4" fill="#31CFCB"/><circle cx="55" cy="52" r="3" fill="#EEB755"/>
+<path d="M30 72h14m-7-7v14" stroke="#fff" stroke-width="4" stroke-linecap="round"/><circle cx="55" cy="70" r="3.5" fill="white"/><circle cx="60" cy="77" r="2.8" fill="#2AE4D2"/>
+</g>
+<text x="87" y="43" font-family="Arial,sans-serif" font-size="40" font-weight="900" letter-spacing="-.5" fill="#F8F7FF">TAG </text>
+<text x="180" y="43" font-family="Arial,sans-serif" font-size="40" font-weight="900" letter-spacing="-.5" fill="#7746EF">LAB</text>
+<text x="88" y="66" font-family="Arial,sans-serif" font-size="14" font-weight="800" letter-spacing="1.1" fill="#08AFA6">TEACH AND GAME</text>
+</svg>
