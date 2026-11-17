@@ -48,7 +48,7 @@ try:
     landing=get('/for-teachers.html')
     parser=CrawlableParser();parser.feed(landing)
     assert_true(parser.h1==1,'One semantic H1 required')
-    assert_true(len(parser.description)==1 and 'اختبارات تفاعلية' in parser.description[0],
+    assert_true(len(parser.description)==1 and all(k in parser.description[0] for k in ('TEACH AND GAME','اختبارات','مسابقات تعليمية')),
                 'Unique Arabic teacher SEO description missing')
     assert_true(parser.canonical==['https://quiznova-arena-online.onrender.com/for-teachers.html'],
                 'Absolute canonical broken')
