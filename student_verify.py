@@ -136,6 +136,18 @@ def set_enabled(teacher_id, enabled):
     with store.DB_LOCK:
         with store.db_connection() as con:
             cur = con.cursor()
+            if enabled:
+                # A pre-PIN session must not retain its ability to answer or
+                # block the student's first protected session after activation.
+                sessions = cur.execute(store.sql(
+                    "SELECT token_hash,payload FROM solo_sessions WHERE teacher_id=?"),
+                    (teacher_id,)).fetchall()
+                for key, payload in sessions:
+                    old = store.jload(payload, {})
+                    if old and not old.get("finished") and not old.get("pinVerified"):
+                        cur.execute(store.sql(
+                            "DELETE FROM solo_sessions WHERE teacher_id=? AND token_hash=?"),
+                            (teacher_id, key))
             cur.execute(store.sql(
                 "DELETE FROM student_verify_settings WHERE teacher_id=?"),
                 (teacher_id,))
