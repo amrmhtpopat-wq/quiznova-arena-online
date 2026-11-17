@@ -93,6 +93,7 @@ el('verifyToggle').onclick=()=>busy(async()=>{
  if(!confirm(enable?'تفعيل PIN الآن لجميع الطلاب في حسابك؟ لن يبدأ أي طالب الاختبار دون رمزه، ولا تحتاج موافقة يدوية.':'تعطيل طلب PIN للطلاب؟ سيُسمح بالدخول دون التحقق الشخصي.'))return;
  const r=await api('/api/teacher/student-verify/toggle',{method:'POST',body:JSON.stringify({enabled:enable})});
  state.enabled=Boolean(r.enabled);state.students=r.students;state.issued=r.issued;
+ notify(enable?'تم تفعيل PIN: لن يبدأ الطالب اختبارًا دون رمزه الشخصي.':'تم تعطيل التحقق للمعلم الحالي فقط.');
 });
 el('verifyRotate').onclick=()=>busy(async()=>{
  const student=await identify();
@@ -127,5 +128,8 @@ el('verifyExport').onclick=()=>{
  notify('تم تنزيل كشف PIN الشخصي. احتفظ به بعيدًا عن الطلاب الآخرين.');
 };
 document.querySelectorAll('[data-panel="students"]').forEach(button=>button.addEventListener('click',()=>{directory=null;void refresh()}));
+document.querySelectorAll('button.nav[data-panel]').forEach(button=>button.addEventListener('click',()=>{
+ if(button.dataset.panel!=='students')hideSecrets();
+}));
 window.addEventListener('pagehide',hideSecrets);
 })();
