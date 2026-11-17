@@ -51,7 +51,14 @@ try:
    assert page.locator('#cloudMode').input_value()=='wheel','Choice must persist between separate pages'
    assert 'عجلة الحظ' in page.locator('.tag-v32-current').inner_text()
    page.locator('#activityTitle').fill('مراجعة الصف التاسع')
-   page.locator('#activityData').fill(raw)
+   # Teachers use the easy structured question editor, not the hidden bulk textarea.
+   for i,line in enumerate(raw.split('\n')):
+    fields=line.split(' | ')
+    page.locator('#v5Add').click()
+    card=page.locator('#v5QuestionList .v5-question').nth(i)
+    card.locator('input[name="q"]').fill(fields[0])
+    card.locator('input[name="a"]').fill(fields[1])
+    card.locator('input[name="g"]').fill(fields[2])
    page.locator('#builder .tag-v32-mini[data-mode="quiz"]').click()
    assert page.locator('#cloudMode').input_value()=='quiz'
    assert page.locator('#activityData').input_value()==raw,'Switching must never rewrite questions'
