@@ -438,7 +438,9 @@ def ai_generate(tid,data):
     grade=ident(data.get('grade'))[:50]
     subject=ident(data.get('subject'))[:60]
     # Pin an officially free-tier-eligible model; do not allow paid model override.
-    model='gemini-2.5-flash'
+    # Gemini 2.5 may return 404 to newly-created free-tier projects.
+    # Both models below have documented Free Tier access; never fall back to billing.
+    models=('gemini-3-flash-preview','gemini-3.8-flash')
     # The model returns JSON; every generated question is still grounded in the
     # exact original page quote before it reaches the teacher's review screen.
     schema={'type':'object','properties':{
@@ -471,21 +473,50 @@ def ai_generate(tid,data):
             if int(global_count)>=80:raise ValueError('ai_global_daily_limit')
             con.execute(db.sql('INSERT INTO game_lab_ai_usage(id,teacher_id,created_at) VALUES(?,?,?)'),
                         (uuid.uuid4().hex,tid,now()))
-    request=urllib.request.Request(
-        'https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent',
-        data=json.dumps(payload,ensure_ascii=False).encode('utf8'),
-        headers={'x-goog-api-key':key,'Content-Type':'application/json'},method='POST')
-    try:
-        with urllib.request.urlopen(request,timeout=38) as response:
-            obj=json.load(response)
-    except urllib.error.HTTPError as exc:
-        status=exc.code
-        if status in (401,403):raise ValueError('ai_invalid_key') from exc
-        if status==429:raise ValueError('ai_rate_limited') from exc
-        if status==400:raise ValueError('ai_provider_configuration') from exc
-        raise ValueError('ai_provider_unavailable') from exc
-    except Exception as exc:
-        raise ValueError('ai_provider_unavailable') from exc
+    # Distinguish invalid keys, unavailable free tiers, retired models,
+    # quotas and network issues. No original provider message or API key is logged.
+    obj=None
+    request_body=json.dumps(payload,ensure_ascii=False).encode('utf8')
+    for index,model in enumerate(models):
+        request=urllib.request.Request(
+            'https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent',
+            data=request_body,
+            headers={'x-goog-api-key':key,'Content-Type':'application/json'},method='POST')
+        try:
+            with urllib.request.urlopen(request,timeout=38) as response:
+                obj=json.load(response)
+            break
+        except urllib.error.HTTPError as exc:
+            status=int(exc.code)
+            try:
+                provider=json.loads(exc.read(5000)).get('error',{})
+                if not isinstance(provider,dict):provider={}
+            except (ValueError,TypeError):
+                provider={}
+            kind=str(provider.get('status') or '').upper()
+            msg=str(provider.get('message') or '').lower()
+            print('TAG LAB Gemini error: HTTP '+str(status)+', status '+re.sub('[^A-Z_]','',kind)[:40]+', model '+model,flush=True)
+            if status==404:
+                if index+1<len(models):continue
+                raise ValueError('ai_model_unavailable') from exc
+            if status==429:raise ValueError('ai_rate_limited') from exc
+            if status==400 and (kind=='FAILED_PRECONDITION' or 'free tier is not available' in msg):
+                raise ValueError('ai_free_tier_unavailable') from exc
+            if status in (401,403):
+                if 'api key not valid' in msg or 'invalid api key' in msg or 'api_key_invalid' in msg:
+                    raise ValueError('ai_invalid_key') from exc
+                raise ValueError('ai_access_denied') from exc
+            if status==400:raise ValueError('ai_provider_configuration') from exc
+            raise ValueError('ai_provider_unavailable') from exc
+        except (TimeoutError,):
+            raise ValueError('ai_timeout')
+        except urllib.error.URLError as exc:
+            print('TAG LAB Gemini network error: '+type(exc.reason).__name__,flush=True)
+            raise ValueError('ai_network_error') from exc
+        except Exception as exc:
+            print('TAG LAB Gemini unexpected failure: '+type(exc).__name__,flush=True)
+            raise ValueError('ai_provider_unavailable') from exc
+    if obj is None:raise ValueError('ai_model_unavailable')
     parts=[]
     for candidate in obj.get('candidates',[])[:1]:
         if not isinstance(candidate,dict):continue
