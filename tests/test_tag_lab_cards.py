@@ -8,9 +8,7 @@ import unittest
 from unittest.mock import patch
 
 import platform_store as db
-import game_lab_api as games
-import tag_lab_cards as cards
-import tag_card_client as bridge
+games=cards=bridge=None
 
 class Handler:
     def __init__(self):
@@ -31,7 +29,12 @@ class CardLifecycleTests(unittest.TestCase):
         db.DATABASE_URL=""
         cls.mode=patch.dict(os.environ,{"TAG_LAB_ONLY_MODE":"1"})
         cls.mode.start()
-        db.init();games.ensure_schema();cards.init()
+        db.init()
+        global games,cards,bridge
+        import game_lab_api as games
+        import tag_lab_cards as cards
+        import tag_card_client as bridge
+        games.ensure_schema();cards.init()
         created=db.create_teacher("qa@example.test","securePassphrase1234",
                                   "Synthetic Teacher","Demo School","Digital Skills")
         cls.tid=created["teacher"]["id"]
