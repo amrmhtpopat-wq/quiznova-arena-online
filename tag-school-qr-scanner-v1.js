@@ -13,11 +13,12 @@ let stream=null,animation=0,lastFrame=0,scanning=false,busy=false,runId=0;
 const schoolId=/^G[789][ABC]-\d{3}$/;
 function say(message,kind='info'){status.textContent=message;status.dataset.kind=kind}
 function extractSchoolId(raw){
- let text=String(raw||'').trim().toUpperCase().replace(/[\u200E\u200F\u202A-\u202E]/g,'');
+ const clean=String(raw||'').trim().replace(/[\u200E\u200F\u202A-\u202E]/g,'');
+ let text=clean.toUpperCase();
  if(schoolId.test(text))return text;
  // Optional: recognize a TAG-generated URL if someone scans it inside our camera tool.
  try{
-  const url=new URL(text);
+  const url=new URL(clean);
   if(!['quiznova-arena-online.onrender.com','teachgame.onrender.com',location.hostname].includes(url.hostname.toLowerCase()))return '';
   text=String(url.searchParams.get('card')||'').toUpperCase();
   return schoolId.test(text)?text:'';
