@@ -24,6 +24,8 @@ on:
       - tag-lab-simple.js
       - tag-lab-templates-v32.js
       - tag-lab-templates-v32.css
+      - tag-lab-template-editor-v33.js
+      - tag-lab-template-editor-v33.css
       - tests/browser_tag_lab_templates_v32.py
       - tests/browser_tag_lab_simple_v31.py
       - game-lab-pro-v3.js
@@ -56,6 +58,7 @@ jobs:
           node --check game-lab-cloud-v2.js
           node --check tag-lab-simple.js
           node --check tag-lab-templates-v32.js
+          node --check tag-lab-template-editor-v33.js
           python - <<'PY'
           import re
           from pathlib import Path
