@@ -152,8 +152,8 @@ $('create').onclick=async()=>{
 };
 async function control(action){
  if(!roomCode||loading)return;loading=true;
- try{await api('/api/game-lab/live/'+action,{code:roomCode});await updateRoom()}
- catch(e){message('roomMessage',err(e),true)}finally{loading=false}
+ try{await api('/api/game-lab/live/'+action,{code:roomCode})}
+ catch(e){message('roomMessage',err(e),true)}finally{loading=false;updateRoom()}
 }
 $('start').onclick=()=>control('start');$('next').onclick=()=>control('next');
 $('finish').onclick=()=>{if(confirm('إنهاء التحدي المباشر وحفظ النتائج؟'))control('finish')};
@@ -202,6 +202,12 @@ $('exportResults').onclick=()=>{
 };
 const resume=new URLSearchParams(location.search).get('host');
 loadActivities();loadRecent();
+ fetch('/api/health',{cache:'no-store'}).then(r=>r.json()).then(h=>{
+  if(h.cardBridge!=='configured'){
+   $('cardRequired').checked=false;$('cardRequired').disabled=true;
+   $('cardRequired').parentElement.title='سيفتح خيار البطاقة عند تفعيل خدمة التحقق الآمنة';
+  }
+ }).catch(()=>{$('cardRequired').disabled=true});
 if(resume&&/^[A-Z2-9]{6}$/.test(resume))switchRoom(resume);
 setInterval(()=>{if(roomCode&&!loading)updateRoom()},2000);
 })();
