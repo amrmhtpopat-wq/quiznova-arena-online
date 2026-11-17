@@ -157,6 +157,9 @@ def get_session(token):
     state = store.jload(row['payload'], {})
     if not state or now() - int(state.get('createdAt', 0)) > SESSION_LIFETIME:
         return None
+    if student_verify.is_enabled(state.get('teacherId')) and not state.get('pinVerified'):
+        # A session started before PIN activation must not bypass the new policy.
+        return None
     return state
 
 
@@ -328,6 +331,7 @@ def handle_post(h, u, data):
                         h.send_json({'ok': False, 'error': pin_error},
                                     429 if pin_error == 'student_pin_locked' else 403)
                         return True
+                    state['pinVerified'] = student_verify.is_enabled(student['teacher_id'])
                     if student_verify.is_enabled(student['teacher_id']):
                         # Student row lock above serializes starts across DB workers.
                         rows = cur.execute(store.sql(
