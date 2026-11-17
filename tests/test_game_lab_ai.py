@@ -1,4 +1,4 @@
-"""TAG LAB AI: mocked OpenAI transport, strict source citations and safe limits."""
+"""TAG LAB AI: mocked free-only Gemini transport, strict source citations and safe limits."""
 import io
 import json
 import os
@@ -86,10 +86,10 @@ class MockedAiGenerationTests(unittest.TestCase):
 
     def test_no_key_or_consent_prevents_call(self):
         data={'bookId':self.book_id,'count':12,'startPage':1,'endPage':2}
-        with patch.dict(os.environ,{'OPENAI_API_KEY':''}):
+        with patch.dict(os.environ,{'GEMINI_API_KEY':''}):
             with self.assertRaisesRegex(ValueError,'ai_not_configured'):
                 self.pro.ai_generate(self.teacher_id,data)
-        with patch.dict(os.environ,{'OPENAI_API_KEY':'mock-secret'}):
+        with patch.dict(os.environ,{'GEMINI_API_KEY':'mock-secret'}):
             with self.assertRaisesRegex(ValueError,'ai_consent_required'):
                 self.pro.ai_generate(self.teacher_id,data)
 
@@ -101,8 +101,7 @@ class MockedAiGenerationTests(unittest.TestCase):
             {'q':'كم يبلغ سعر الفائدة؟','a':'10 بالمئة','g':'تطبيق',
              'sourcePage':2,'sourceQuote':'سعر الفائدة 10 بالمئة.'}
         ]
-        response={'output':[{'type':'message','content':[{'type':'output_text',
-                  'text':json.dumps({'rows':rows},ensure_ascii=False)}]}]}
+        response={'candidates':[{'content':{'parts':[{'text':json.dumps({'rows':rows},ensure_ascii=False)}]}}]}
         captured={}
         class FakeResponse(io.BytesIO):
             def __enter__(self):return self
@@ -114,17 +113,19 @@ class MockedAiGenerationTests(unittest.TestCase):
         data={'bookId':self.book_id,'count':12,'startPage':1,'endPage':2,
               'consent':True,'difficulty':'advanced','focus':'application',
               'grade':'التاسع','subject':'الثقافة المالية'}
-        with patch.dict(os.environ,{'OPENAI_API_KEY':'mock-secret'}):
+        with patch.dict(os.environ,{'GEMINI_API_KEY':'mock-secret'}):
             with patch('game_lab_pro.urllib.request.urlopen',side_effect=fake_open):
                 result=self.pro.ai_generate(self.teacher_id,data)
         self.assertEqual(result['count'],1,result)
         self.assertEqual(result['rows'][0]['sourcePage'],1)
         self.assertEqual(result['rows'][0]['origin'],'ai')
-        self.assertIn('متقدمة',captured['request']['input'][1]['content'])
-        self.assertIn('تطبيق',captured['request']['input'][1]['content'])
-        self.assertIn('[صفحة 2]',captured['request']['input'][1]['content'])
-        self.assertTrue(captured['request']['store'] is False)
-        self.assertEqual(captured['timeout'],32)
+        body=captured['request']
+        prompt=body['contents'][0]['parts'][0]['text']
+        self.assertIn('متقدمة',prompt)
+        self.assertIn('تطبيق',prompt)
+        self.assertIn('[صفحة 2]',prompt)
+        self.assertEqual(body['generationConfig']['responseMimeType'],'application/json')
+        self.assertEqual(captured['timeout'],38)
 
 
 if __name__=='__main__':
