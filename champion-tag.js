@@ -90,6 +90,14 @@ async function openTournament(id){
 }
 function renderBracket(){
  if(!active)return;
+ const allMatches=active.rounds.flatMap(round=>round.matches);
+ const firstRound=active.rounds[0]?.matches||[];
+ const entrants=firstRound.flatMap(match=>[match.a,match.b]).filter(Boolean).length;
+ const finished=allMatches.filter(match=>match.status==='finished'||match.status==='bye').length;
+ $('wcParticipants').textContent=String(entrants);
+ $('wcFixtures').textContent=String(allMatches.length);
+ $('wcProgress').textContent=finished+' / '+allMatches.length;
+ $('wcChampion').textContent=active.champion||'بانتظار البطل';
  $('currentTournamentTitle').textContent=active.title;
  const entrants=active.rounds[0]?.matches.flatMap(m=>[m.a,m.b]).filter(Boolean).length||0;
  const kind=active.kind==='students'?'الطلاب':active.kind==='classes'?'الشعب':'الفرق';
@@ -236,6 +244,13 @@ async function forfeit(which){
 }
 function bind(){
  for(const tab of ['Create','Archive','Bracket'])$('tab'+tab).addEventListener('click',()=>selectTab(tab.toLowerCase()));
+ for(const btn of document.querySelectorAll('[data-champion-jump]')){
+  btn.addEventListener('click',()=>{
+   const target=btn.dataset.championJump;
+   selectTab(target);
+   document.querySelector('.wc-tabbar')?.scrollIntoView({block:'start',behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
+  });
+ }
  $('championParticipants').addEventListener('input',drawPairs);
  $('championSeeding').addEventListener('change',drawPairs);
  $('championCreateForm').addEventListener('submit',async ev=>{
