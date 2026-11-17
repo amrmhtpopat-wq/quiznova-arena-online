@@ -91,4 +91,59 @@ class LabAPITest(unittest.TestCase):
   code,res=self.request('/api/game-lab/teacher/list',token=self.token)
   self.assertEqual(code,200);self.assertFalse(any(x['id']==aid for x in res['activities']))
 
+
+ def test_structured_question_bank_persists_and_reuses_for_24_templates(self):
+  """MCQ + true/false + free response survive save, reopen, conversion and replay."""
+  import game_lab_api as games
+  bank=[
+   {'q':'ما معنى الادخار؟','a':'الاحتفاظ بجزء من الدخل','g':'الادخار',
+    'questionType':'mcq','difficulty':'easy',
+    'choices':['استثمار الديون','الاحتفاظ بجزء من الدخل','زيادة الإنفاق','شراء الأسهم'],
+    'explanation':'الادخار يساعد في الاستعداد للمستقبل.',
+    'sourcePage':1,'sourceQuote':'الادخار هو الاحتفاظ بجزء من الدخل لاستخدامه في المستقبل.',
+    'origin':'ai'},
+   {'q':'التضخم هو ارتفاع عام ومستمر في الأسعار.','a':'صح','g':'التضخم',
+    'questionType':'true_false','difficulty':'medium','choices':['صح','خطأ'],
+    'sourcePage':2,'sourceQuote':'التضخم هو ارتفاع عام ومستمر في أسعار السلع والخدمات.'},
+   {'q':'ما أثر الادخار على المستقبل؟','a':'يساعد على الاستعداد للنفقات','g':'الادخار',
+    'questionType':'short','difficulty':'hard','explanation':'فكر في التخطيط المالي.',
+    'sourcePage':1,'sourceQuote':'يساعد الادخار على الاستعداد للنفقات المستقبلية.'},
+   {'q':'ما هدف الميزانية؟','a':'تنظيم الإيرادات والنفقات','g':'الموازنة',
+    'questionType':'mcq','difficulty':'medium',
+    'choices':['زيادة الأسعار','تنظيم الإيرادات والنفقات','تقليل التعلم','إيقاف البيع'],
+    'sourcePage':3,'sourceQuote':'الموازنة هي خطة مالية تنظم الإيرادات والنفقات.'}
+  ]
+  data={'title':'بنك الأسئلة الذكي','subject':'الثقافة المالية','grade':'التاسع',
+        'mode':'quiz','rows':bank}
+  status,saved=self.request('/api/game-lab/teacher/save',{'activity':data},self.token)
+  self.assertEqual(status,200,saved)
+  self.assertEqual(saved['activity']['rows'][0]['choices'],bank[0]['choices'])
+  self.assertEqual(saved['activity']['rows'][0]['difficulty'],'easy')
+  self.assertEqual(saved['activity']['rows'][0]['sourceQuote'],bank[0]['sourceQuote'])
+  aid=saved['id']
+  status,listing=self.request('/api/game-lab/teacher/list',token=self.token)
+  self.assertEqual(status,200)
+  reopened=next(item for item in listing['activities'] if item['id']==aid)
+  self.assertEqual(reopened['activity']['rows'][1]['questionType'],'true_false')
+  self.assertEqual(reopened['activity']['rows'][2]['explanation'],'فكر في التخطيط المالي.')
+  status,all_games=self.request('/api/game-lab/teacher/generate-all',
+                                {'sourceId':aid,'confirm':True},self.token)
+  self.assertEqual(status,200,all_games)
+  self.assertEqual(all_games['templates'],24)
+  status,listing=self.request('/api/game-lab/teacher/list',token=self.token)
+  self.assertEqual(status,200)
+  variants=[item for item in listing['activities'] if item.get('sourceGroup')==aid]
+  self.assertEqual(len(variants),24)
+  self.assertTrue(all(item['activity']['rows'][0]['choices']==bank[0]['choices']
+                      for item in variants))
+  tf_state={'rows':bank,'index':1,'mode':'truth','duration':25,'score':0}
+  self.assertEqual(games.expected_answer(tf_state,'test-digest'),'صح')
+  question=games.question_state(tf_state,'test-digest')
+  self.assertEqual(question['candidate'],bank[1]['q'])
+  self.assertEqual(question['choices'],['صح','خطأ'])
+  bad={**data,'title':'معيبة','rows':[{**bank[0],'choices':['جواب واحد','جواب ثان']}]+bank[1:]}
+  status,out=self.request('/api/game-lab/teacher/save',{'activity':bad},self.token)
+  self.assertEqual(status,400,out)
+  self.assertEqual(out['error'],'correct_answer_missing_from_choices')
+
 if __name__=='__main__':unittest.main(verbosity=2)
