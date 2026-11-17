@@ -592,7 +592,15 @@ const liveSceneChoices=[
   ['cartoon','☁️ كرتونية'],['anime','🌸 أنمي'],['cinematic','🌌 سينمائية'],
   ['cine-stars','✨ فضاء ومجرات'],['cine-aurora','🌈 شفق قطبي'],
   ['cine-neon','⚡ مدينة النيون'],['cine-desert','🏜️ صحراء أردنية'],
-  ['cine-arena','🏟️ ساحة الأبطال']
+  ['cine-arena','🏟️ ساحة الأبطال'],
+  ['tag-daylight','☀️ TAG • ملعب كأس العالم'],
+  ['tag-finals','✨ TAG • استاد النهائي الذهبي'],
+  ['tag-royal','👑 TAG • منصة التتويج الملكية'],
+  ['tag-celebration','🎉 TAG • أضواء الاحتفال'],
+  ['tag-hall','🏛️ TAG • قاعة الأبطال'],
+  ['tag-neon','💠 TAG • موجات النيون'],
+  ['tag-trophy','🏆 TAG • الكأس الرسمية'],
+  ['tag-elegant','✧ TAG • الخلفية الفاخرة البسيطة']
 ];
 function sceneOptions(selected='cartoon'){
  return liveSceneChoices.map(([id,label])=>'<option value="'+id+'"'+(id===selected?' selected':'')+'>'+label+'</option>').join('');
