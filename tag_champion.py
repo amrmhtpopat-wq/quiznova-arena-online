@@ -35,12 +35,15 @@ def seed_positions(size):
     return positions
 
 
-def generate_bracket(participants):
+def generate_bracket(participants, manual_seats=None):
     n = len(participants)
     size = 2
     while size < n:
         size *= 2
-    seats = [participants[i - 1] if i <= n else None for i in seed_positions(size)]
+    seats = (manual_seats if manual_seats is not None
+             else [participants[i - 1] if i <= n else None for i in seed_positions(size)])
+    if len(seats) != size:
+        raise ValueError('invalid_pairings')
     rounds = []
     match_count = size // 2
     for round_index in range(size.bit_length()-1):
@@ -127,7 +130,26 @@ def create(teacher_id, data):
         raise ValueError('quiz_too_large')
     if mode == 'random':
         random.SystemRandom().shuffle(names)
-    bracket = generate_bracket(names)
+        bracket = generate_bracket(names)
+    else:
+        size=2
+        while size<len(names):
+            size*=2
+        pairs=data.get('manualPairs')
+        if not isinstance(pairs,list) or len(pairs)!=size//2:
+            raise ValueError('manual_pairings_required')
+        seats=[]
+        for pair in pairs:
+            if not isinstance(pair,list) or len(pair)!=2:
+                raise ValueError('invalid_pairings')
+            a,b=(str(pair[0] or '').strip(),str(pair[1] or '').strip())
+            if not a and not b:
+                raise ValueError('empty_fixture')
+            seats.extend((a or None,b or None))
+        assigned=[name for name in seats if name]
+        if len(assigned)!=len(names) or {name.casefold() for name in assigned}!={name.casefold() for name in names}:
+            raise ValueError('invalid_pairings')
+        bracket=generate_bracket(names, seats)
     now=store.epoch()
     with store.DB_LOCK:
         existing=store.query('SELECT COUNT(*) AS count FROM tag_championships WHERE teacher_id=?',(teacher_id,))
@@ -230,3 +252,20 @@ def forfeit_match(teacher_id,data):
         store.exec_sql('UPDATE tag_championships SET bracket_json=?,champion=?,updated_at=? WHERE id=? AND teacher_id=?',
                        (store.jdump(item['rounds']),champion,store.epoch(),tournament_id,teacher_id))
     return detail(teacher_id,tournament_id)
+
+def public_board(tournament_id):
+    """Unlisted view for projection; never expose room tokens or other teacher data."""
+    if not isinstance(tournament_id,str) or len(tournament_id)!=32 or any(x not in '0123456789abcdef' for x in tournament_id):
+        raise ValueError('tournament_not_found')
+    row=store.query('SELECT id,title,kind,bracket_json,champion,created_at,updated_at FROM tag_championships WHERE id=?',
+                    (tournament_id,))
+    if row is None:
+        raise ValueError('tournament_not_found')
+    rounds=[]
+    for r in store.jload(row['bracket_json'],[]):
+        rounds.append({'index':r['index'],
+                       'matches':[{'id':m['id'],'a':m['a'],'b':m['b'],'status':m['status'],
+                                   'winner':m['winner'],'scores':m.get('scores')}
+                                  for m in r['matches']]})
+    return {'id':row['id'],'title':row['title'],'kind':row['kind'],
+            'champion':row['champion'],'rounds':rounds,'updatedAt':row['updated_at']}
