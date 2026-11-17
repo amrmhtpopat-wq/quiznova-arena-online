@@ -13,8 +13,8 @@ const pages=[
 ];
 const labels={
  books:{step:'1 • أنشئ الأسئلة',title:'حوّل كتابك إلى أسئلة',description:'ارفع الكتاب مرة واحدة، اختر الصفحات، ولّد الأسئلة مجانًا، ثم راجعها قبل استخدامها.',tip:'بعد مراجعة الأسئلة اضغط «التالي: صانع الألعاب». لا تحتاج إلى نسخ الإجابات يدويًا.'},
- create:{step:'2 • جهّز اللعبة',title:'صانع الألعاب المبسّط',description:'أسئلة درس واحد تكفي لصناعة ألعاب مختلفة. عدّل العنوان والأسئلة واحفظ عملك.',tip:'ابدأ من كتابك أو اكتب أربعة أسئلة. اضغط «تطبيق الأسئلة» قبل تجربة الألعاب.'},
- games:{step:'اختر أسلوب اللعب',title:'اختر لعبة تناسب الدرس',description:'ابدأ بست ألعاب سهلة، ويمكنك عرض جميع الألعاب التعليمية وقتما تريد.',tip:'جرّب اللعبة أولًا، ثم انتقل إلى صانع الألعاب لإدخال أسئلة طلابك.'},
+ create:{step:'2 • أسئلتك وقالبك',title:'صانع الألعاب المبسّط',description:'اختر قالبًا أو اكتب الأسئلة أولًا، ثم جرّبها وغيّر اللعبة بضغطة واحدة.',tip:'اكتب أربعة أسئلة على الأقل أو حمّل كتابك، ثم جرّب عدة قوالب بأسئلتك نفسها.'},
+ games:{step:'1 • شاهد اللعبة أولًا',title:'اختر لعبة وانطلق',description:'عاين اللعبة بأسئلة تجريبية أولًا، ثم اختر قالبك وأضف أسئلتك.',tip:'الضغط على «معاينة» لا يغيّر القالب المختار أو يمسح أسئلتك.'},
  library:{step:'3 • احفظ وشارك',title:'مكتبتي الخاصة',description:'كل أنشطتك المحفوظة في مكان واحد. افتحها، عدّلها، انشرها أو راجع نتائج الطلاب.',tip:'المسودات خاصة بك، ولا تظهر للطلاب إلا بعد الضغط على «نشر».'},
  live:{step:'4 • العب مع طلابك',title:'المنافسة المباشرة',description:'اختر نشاطًا محفوظًا، ثم افتح غرفة للصف وشارك الرمز مع الطلاب.',tip:'احفظ نشاطًا في مكتبتك أولًا، ثم اختره هنا لإنشاء المنافسة.'},
  students:{step:'للطلاب',title:'ألعاب بطاقة الطالب',description:'خصّص الألعاب لشعبة أو طالب حتى تظهر فقط في بطاقته الذكية.',tip:'انشر اللعبة في مكتبتك أولًا، ثم اختر الصف أو الطلاب المعنيين.'}
@@ -127,13 +127,7 @@ if(view==='books'){
   sessionStorage.removeItem('tag_lab_selected_game')
  }
 }else if(view==='games'){
- const tools=make('div','tag-simple-actions');
- const more=make('button','tag-simple-btn alt','عرض جميع الألعاب الـ24');more.type='button';
- document.body.classList.add('tag-simple-compact');
- more.onclick=()=>{const small=document.body.classList.toggle('tag-simple-compact');more.textContent=small?'عرض جميع الألعاب الـ24':'عرض الألعاب الأساسية فقط'};
- const create=make('a','tag-simple-btn','✍️ أنشئ لعبة من أسئلتي');create.href='/tag-lab-create.html';
- tools.append(create,more);intro.after(tools);
- const search=$('gameSearch');if(search)search.addEventListener('input',()=>{if(search.value.trim()){document.body.classList.remove('tag-simple-compact');more.textContent='عرض الألعاب الأساسية فقط'}});
+ // The V32 template-first gallery owns this route; legacy 24-card controls stay in the engine but are not shown.
 }else if(view==='library'){
  const cloud=$('cloud');
  if(cloud){
