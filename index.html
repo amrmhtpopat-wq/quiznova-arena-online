@@ -180,8 +180,10 @@
         <p id="verifyStatus" class="tag-verify-status" role="status" aria-live="polite">افتح لوحة الطلاب لتحميل حالة الحماية.</p>
         <div class="tag-verify-actions">
           <button class="minibtn" id="verifyIssueMissing" type="button">🔑 إصدار PIN للطلاب الذين لا يملكون رمزًا</button>
+          <button class="minibtn" id="verifyReissueAll" type="button" title="ينشئ رموزًا جديدة ويلغي رموز PIN القديمة دون تغيير بطاقات الطالب أو QR">🔄 استبدال جميع رموز PIN المفقودة وتنزيل كشف جديد</button>
           <button class="minibtn" id="verifyToggle" type="button" disabled>🛡️ تفعيل الحماية</button>
         </div>
+        <p class="tag-verify-recovery-note">إذا سبق إصدار PIN ولم تحتفظ بالكشف، فلا يمكن عرض الرموز القديمة. استخدم «استبدال جميع رموز PIN» لإصدار رموز بديلة بعد تأكيدك، ثم نزّل الكشف الخاص حسب الشعبة. لا تتغير بطاقات المدرسة أو QR، ولن تُفعّل الحماية تلقائيًا.</p>
         <label class="tag-verify-delivered"><input type="checkbox" id="verifyDelivered"> أؤكد أنني سلّمت رمز PIN الخاص لكل طالب بصورة شخصية وآمنة قبل التفعيل.</label>
         <div class="tag-verify-single">
           <label for="verifyTargetCode">إدارة طالب محدد (رقم البطاقة مثل G9A-001)</label>
