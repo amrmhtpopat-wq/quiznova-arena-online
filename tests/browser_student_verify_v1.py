@@ -97,8 +97,11 @@ with sync_playwright() as playwright:
     teacher_page.locator('#verifyHide').click()
     check(teacher_page.locator('#verifyPinList').inner_text()=='',
           'Secret was not cleared when teacher hides it')
+    check(not teacher_page.locator('#verifyToggle').is_enabled(),
+          'PIN activated without confirming private delivery')
+    teacher_page.locator('#verifyDelivered').check()
     check(teacher_page.locator('#verifyToggle').is_enabled(),
-          'PIN activation unavailable after all students issued')
+          'PIN activation unavailable after private delivery was confirmed')
     teacher_page.locator('#verifyToggle').click()
     teacher_page.wait_for_function(
         "document.querySelector('#verifyEnabledLabel')?.textContent.includes('مفعّل') && document.querySelector('#verifyEnabledLabel')?.classList.contains('is-on')",
