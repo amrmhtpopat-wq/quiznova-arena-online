@@ -13,6 +13,8 @@ import tag_champion
 tag_champion.ensure_schema()
 import solo_api
 solo_api.ensure_schema()
+import student_verify
+student_verify.ensure_schema()
 # TAG LAB's tables are additive; main TEACH AND GAME student cards and
 # teacher authorization remain the single source of truth.
 import game_lab_api
@@ -521,7 +523,8 @@ class Handler(SimpleHTTPRequestHandler):
                 school_type=room.get('schoolType','mixed')
                 return self.send_json({'ok':True,'schoolType':school_type,'avatars':platform_store.avatar_pool(school_type),
                                       'section':room.get('section',''),'subject':room['quiz'].get('subject','عام'),
-                                      'examMode':bool(room.get('examMode')),'requireCard':bool(room.get('requireCard'))})
+                                      'examMode':bool(room.get('examMode')),'requireCard':bool(room.get('requireCard')),
+                                      'pinRequired':student_verify.is_enabled(room.get('teacherId',''))})
         if u.path=='/api/card/resolve':
             qs=parse_qs(u.query);card=(qs.get('card') or [''])[0];code=(qs.get('code') or [''])[0]
             with LOCK:
@@ -695,6 +698,19 @@ class Handler(SimpleHTTPRequestHandler):
                 if room.get('examMode') and room['status']!='lobby':return self.send_json({'ok':False,'error':'exam_started'},409)
                 student=platform_store.student_by_card(card,room.get('teacherId','')) if card else None
                 if card and not student:return self.send_json({'ok':False,'error':'invalid_card'},403)
+                verify_on=student_verify.is_enabled(room.get('teacherId',''))
+                if verify_on and not student:
+                    return self.send_json({'ok':False,'error':'card_required'},403)
+                if student and verify_on:
+                    pin_error=student_verify.verify_student(student,data.get('pin'))
+                    if pin_error:
+                        return self.send_json({'ok':False,'error':pin_error},
+                                              429 if pin_error=='student_pin_locked' else 403)
+                    # One verified school card can occupy only one live room at a time.
+                    if any(player.get('studentId')==student['id']
+                           for active in ROOMS.values() if active.get('status')!='finished'
+                           for player in active.get('players',{}).values()):
+                        return self.send_json({'ok':False,'error':'card_already_joined'},409)
                 if student:
                     name=student['name'];avatar=student['avatar']
                     if room.get('examMode') and room.get('section') and room['section']!=student['class_name']:
