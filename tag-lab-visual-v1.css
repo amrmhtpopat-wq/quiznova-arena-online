@@ -29,6 +29,7 @@ body.tagv-enabled{
 }
 html[data-tag-view] body.tagv-enabled{background-color:var(--tagv-bg)!important;color:var(--tagv-text)!important}
 body.tagv-enabled>header:not(.tagv-topbar),html[data-tag-view] .tag-simple-nav{display:none!important}
+[hidden]{display:none!important}
 body.tagv-enabled .tagv-sidebar,body.tagv-enabled .tagv-topbar{font-family:Tahoma,"Segoe UI",Arial,sans-serif}
 .tagv-sidebar{
  position:fixed;inset:0 0 0 auto;width:var(--tagv-sidebar-width);
