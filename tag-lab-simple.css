@@ -90,3 +90,12 @@ html[data-tag-view] #cloudMessage{font-weight:700}
 html[data-tag-view] .tag-simple-savebar{position:sticky;bottom:12px;z-index:50;background:#fff;box-shadow:0 8px 40px #23445526;border:1px solid #d2e1eb;border-radius:15px;padding:12px 15px}
 @media(max-width:900px){html[data-tag-view] .tag-simple-nav .inside{flex-wrap:wrap;gap:1px;justify-content:space-between}html[data-tag-view] .tag-simple-logo img{height:45px;width:60px}html[data-tag-view] .tag-simple-links{order:2;flex:0 0 100%;justify-content:flex-start;width:100%;gap:2px}html[data-tag-view] .tag-simple-meta{display:none}html[data-tag-view] .main{padding-top:11px!important}}
 @media(max-width:650px){html[data-tag-view] .tag-simple-links a{font-size:.8rem;padding:8px 9px}html[data-tag-view] .tag-simple-intro{border-radius:14px}html[data-tag-view] .tag-simple-actions .tag-simple-btn{flex:1 1 auto}html[data-tag-view] .row2{grid-template-columns:1fr!important}html[data-tag-view] .games{grid-template-columns:repeat(2,minmax(0,1fr))!important}html[data-tag-view] .tag-simple-intro p{font-size:.83rem}html[data-tag-view] .tag-simple-auth #cloudLogin{max-width:100%}}
+
+/* Editing a saved question bank opens only its review panel in the library route. */
+html[data-tag-view="library"] body.tag-simple-editing #bookLab.tag-visible-section{display:block!important;margin:18px 0!important}
+html[data-tag-view="library"] body.tag-simple-editing #bookLab>.section-head{display:none!important}
+html[data-tag-view="library"] body.tag-simple-editing #bookLab>.layout2{display:block!important}
+html[data-tag-view="library"] body.tag-simple-editing #bookLab>.layout2>.block:first-child{display:none!important}
+html[data-tag-view="library"] body.tag-simple-editing #bookLab>.layout2>.block:nth-child(2){width:100%!important;max-width:100%!important}
+html[data-tag-view="library"] body.tag-simple-editing #bookLab #labBookSaveCloud,
+html[data-tag-view="library"] body.tag-simple-editing #bookLab #labBookOpenEditor{display:none!important}
