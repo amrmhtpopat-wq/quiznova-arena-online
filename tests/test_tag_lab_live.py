@@ -73,6 +73,51 @@ class LiveIsolationTests(unittest.TestCase):
         report=live.room_report(live.load(code),live.roster(code))
         self.assertEqual(report['totalPlayers'],1)
         self.assertEqual(report['results'][0]['answered'],1)
+    def test_three_simulated_clients_submit_independent_answers(self):
+        """Three concurrent virtual browser sessions share one room, no real students."""
+        import concurrent.futures
+        room=live.create(self.tid,{'activityId':self.activity,'duration':25})
+        code=room['code']
+        tokens=[]
+        with patch.object(live.solo_api,'limited',return_value=False):
+            for student in ('Simulated Device A','Simulated Device B','Simulated Device C'):
+                h=Handler();live.join(h,{'code':code,'guestName':student})
+                self.assertEqual(h.status,200)
+                tokens.append(h.data['token'])
+        self.assertEqual(len(set(tokens)),3)
+        with patch.object(live.auth,'authorized',return_value={'id':self.tid}):
+            h=Handler();live.control(h,{'code':code},'start')
+            self.assertEqual(h.status,200)
+        states=[live.read_public_state(code,t) for t in tokens]
+        self.assertTrue(all(x['participants']==3 for x in states))
+        self.assertTrue(all(x['question']['options']==states[0]['question']['options']
+                            for x in states))
+        self.assertTrue(all(x['correctAnswer'] is None for x in states))
+        options=states[0]['question']['options']
+        with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+            future=[executor.submit(self._submit,code,t,0,options[i%len(options)])
+                    for i,t in enumerate(tokens)]
+            answered=[f.result(timeout=5) for f in future]
+        self.assertEqual(answered,[200,200,200])
+        self.assertEqual(live.phase(live.load(code),live.roster(code)),'results')
+        results=live.room_report(live.load(code),live.roster(code))
+        self.assertEqual(results['totalPlayers'],3)
+        self.assertEqual(len(results['results']),3)
+        self.assertTrue(all(x['answered']==1 for x in results['results']))
+        for token in tokens:
+            row=live.read_public_state(code,token)
+            self.assertEqual(row['status'],'results')
+        with patch.object(live.auth,'authorized',return_value={'id':self.tid}):
+            h=Handler();live.control(h,{'code':code},'next')
+            self.assertEqual(h.status,200)
+        self.assertEqual(live.read_public_state(code,tokens[0])['index'],1)
+
+    @staticmethod
+    def _submit(code,token,index,answer):
+        h=Handler()
+        live.answer(h,{'code':code,'token':token,'index':index,'answer':answer})
+        return h.status
+
     def test_card_room_rejects_unverified_guests_and_duplicate_joins(self):
         room=live.create(self.tid,{'activityId':self.activity,'cardRequired':True})
         code=room['code']
