@@ -142,6 +142,28 @@ if(view==='books'){
   const books=make('a','tag-simple-btn alt','📚 من كتابي');books.href='/tag-lab-books.html';
   quick.append(create,books);cloud.prepend(quick)
  }
+ document.addEventListener('gamelab:edit-structured-bank',()=>{
+  const area=$('bookLab');if(!area)return;
+  area.classList.add('tag-visible-section');
+  document.body.classList.add('tag-simple-editing');
+  if(!$('tagEditExistingBar')){
+   const bar=make('div','tag-simple-savebar');bar.id='tagEditExistingBar';
+   bar.append(make('strong','', '✏️ تعديل أسئلة النشاط المحفوظ'));
+   const buttons=make('div','tag-simple-actions');
+   const save=make('button','tag-simple-btn','💾 حفظ التعديلات على النشاط نفسه');save.type='button';
+   save.onclick=()=>{if($('labBookApprove').disabled){show('لم تُحمّل الأسئلة بعد.',true);return}
+     if(window.TG_BOOK_EDITOR_REUSE){show('اضغط «اعتماد المختار» أولًا، ثم احفظ التعديلات.',true);return}
+     $('cloudSave')?.click()
+   };
+   const cancel=make('button','tag-simple-btn alt','↩ العودة إلى مكتبتي');cancel.type='button';
+   cancel.onclick=()=>{area.classList.remove('tag-visible-section');document.body.classList.remove('tag-simple-editing');cloud?.scrollIntoView({behavior:'smooth'})};
+   buttons.append(save,cancel);bar.append(buttons);area.append(bar)
+  }
+  requestAnimationFrame(()=>area.scrollIntoView({block:'start',behavior:'smooth'}));
+ });
+ document.addEventListener('gamelab:book-bank-accepted',event=>{
+  if(event.detail?.editingExisting)show('✓ راجعت الأسئلة الجديدة. اضغط «حفظ التعديلات على النشاط نفسه».')
+ });
 }else if(view==='live'||view==='students'){
  const section=$(view==='live'?'liveLab':'studentAssignments');
  if(section){
