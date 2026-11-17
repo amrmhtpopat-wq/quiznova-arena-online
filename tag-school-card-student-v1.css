@@ -1,0 +1,59 @@
+/* TAG School Card Portal V1
+   New QR scanner CTA + a dedicated, distraction-free view of the teacher-published tests.
+   The student's LIVE and SOLO modes are unchanged. */
+body.v105-student .tag-school-card-entry{
+ display:grid;gap:7px;margin:10px 0 18px;
+ padding:13px;border-radius:16px;
+ border:1px solid #6bbdd8a8;background:linear-gradient(120deg,#0b345f,#0d5766);
+ box-shadow:0 9px 26px #0003;
+}
+body.v105-student .tag-school-card-entry a{
+ display:flex;align-items:center;justify-content:center;gap:9px;
+ min-height:48px;border-radius:12px;border:1px solid #d0fffb;
+ background:linear-gradient(108deg,#82ffe0,#25bce6);
+ color:#082941!important;-webkit-text-fill-color:#082941!important;
+ font:900 clamp(14px,2.2vw,17px)/1.5 Tahoma,Arial,sans-serif;
+ text-decoration:none!important;box-shadow:0 5px 20px #002c5280;
+}
+body.v105-student .tag-school-card-entry a:hover{filter:brightness(1.07)}
+body.v105-student .tag-school-card-entry a:focus-visible{outline:3px solid #fff1b0;outline-offset:3px}
+body.v105-student .tag-school-card-entry small{
+ color:#dcf8ff!important;-webkit-text-fill-color:#dcf8ff!important;
+ font-size:12px!important;text-align:center;line-height:1.75!important
+}
+body.v105-student:has(#studentModes [data-student-mode="card"].is-active) #joinView{
+ display:block!important;max-width:1000px!important;margin:0 auto!important
+}
+body.v105-student:has(#studentModes [data-student-mode="card"].is-active) #joinView>.join-visual{
+ display:none!important
+}
+body.v105-student:has(#studentModes [data-student-mode="card"].is-active) #joinView>.join-card{
+ width:100%!important;max-width:none!important;margin:0 auto!important;min-height:0!important
+}
+body.v105-student:has(#studentModes [data-student-mode="card"].is-active) #joinView .join-card > label:has(#roomCode),
+body.v105-student:has(#studentModes [data-student-mode="card"].is-active) #joinView .join-card > label:has(#playerName),
+body.v105-student:has(#studentModes [data-student-mode="card"].is-active) #joinView :is(#joinBtn,#avatarPickerToggle,#avatarPickerSection,.join-features){
+ display:none!important
+}
+body.v105-student:has(#studentModes [data-student-mode="card"].is-active) #joinView .join-card>.eyebrow{
+ color:#a9ffdc!important;-webkit-text-fill-color:#a9ffdc!important
+}
+body.v105-student:has(#studentModes [data-student-mode="card"].is-active) #joinView .join-card h1{
+ font-size:clamp(23px,4vw,35px)!important
+}
+body.v105-student #boCardQuizzes{scroll-margin-top:16px}
+body.v105-student #boCardQuizzes:not([hidden]){
+ display:block!important;margin-top:18px!important;padding:15px!important;
+ border:1px solid #72c6e0a6!important;border-radius:18px!important;
+ background:linear-gradient(145deg,#0a3157e9,#102f52f0)!important;
+ box-shadow:0 10px 30px #0004!important
+}
+body.v105-student #boCardQuizzes .bo-card-test-header h3{
+ color:#f5fbff!important;-webkit-text-fill-color:#f5fbff!important;
+ font-size:clamp(17px,2.4vw,24px)!important
+}
+@media(max-width:600px){
+ body.v105-student .tag-school-card-entry{padding:10px}
+ body.v105-student:has(#studentModes [data-student-mode="card"].is-active) #joinView>.join-card{padding:13px!important}
+ body.v105-student #boCardQuizzes:not([hidden]){padding:11px!important}
+}
