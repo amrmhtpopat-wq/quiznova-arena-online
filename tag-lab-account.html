@@ -1,0 +1,74 @@
+<!doctype html><html lang="ar" dir="rtl"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>TAG LAB | حساب المعلم</title><link rel="icon" href="/assets/brand/tag-icon.svg" type="image/svg+xml">
+<style>
+*{box-sizing:border-box}body{font-family:Tahoma,"Segoe UI",Arial,sans-serif;margin:0;min-height:100vh;background:linear-gradient(145deg,#eaf3f8,#f6fafc);color:#193d52;line-height:1.7}
+header{background:#fff;border-bottom:1px solid #dae7ec;padding:13px 24px;display:flex;align-items:center;gap:15px;flex-wrap:wrap}
+header img{width:72px;max-height:53px;object-fit:contain}a{color:#087f8b;text-decoration:none;font-weight:700}main{max-width:900px;margin:32px auto;padding:0 17px}
+h1{font-size:1.7rem;margin:0}p.sub{color:#5e7988;margin:4px 0 22px}
+.wrapper{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+section{background:#fff;padding:24px;border-radius:18px;border:1px solid #d6e5eb;box-shadow:0 12px 28px #2339490a}
+h2{font-size:1.2rem;margin:0 0 16px}
+label{font-size:.86rem;font-weight:700;display:block;margin:12px 0 6px}
+input{display:block;width:100%;min-height:45px;border-radius:10px;border:1px solid #b7cdda;background:#fff;padding:10px 12px;font:inherit}
+button{border:0;border-radius:10px;background:#08888a;color:#fff;font:700 .93rem Tahoma,Arial;cursor:pointer;min-height:44px;padding:10px 17px;margin-top:16px}
+button.alt{background:#e6f4f5;color:#0f6873}.status{min-height:28px;font-size:.85rem;color:#156d69}.status.error{color:#b02f3b}#signedIn{background:#fff;border-radius:15px;border:1px solid #c9e1e7;padding:22px;margin:20px 0}#signedIn[hidden]{display:none}
+@media(max-width:670px){.wrapper{grid-template-columns:1fr}}
+</style></head><body>
+<header><a href="/tag-lab-home.html"><img src="/assets/brand/tag-logo-dark-v21.png" alt="TAG LAB"></a><a href="/tag-lab-home.html">الرئيسية</a><a href="/tag-lab-library.html">مكتبتي</a><a href="/tag-lab-assign.html">إسناد الألعاب</a></header>
+<main><h1>حساب المعلم في TAG LAB</h1><p class="sub">حساب مستقل لمكتبة ألعابك وكتبك ونتائجك داخل المختبر.</p>
+<div id="signedIn" hidden><b id="who"></b><p>أنت مسجل الدخول إلى حساب TAG LAB.</p>
+<a href="/tag-lab-library.html">فتح مكتبتي</a> · <a href="/tag-lab-assign.html">إسناد الألعاب</a>
+<div><button id="logout" class="alt">تسجيل الخروج</button></div></div>
+<div class="wrapper" id="forms">
+<section><h2>تسجيل الدخول</h2><form id="login">
+<label for="email">البريد الإلكتروني</label><input id="email" type="email" autocomplete="username" required>
+<label for="password">كلمة المرور</label><input id="password" type="password" autocomplete="current-password" required>
+<button type="submit" id="signIn">دخول</button><p id="loginStatus" class="status" role="status"></p>
+</form></section>
+<section><h2>إنشاء حساب جديد</h2><form id="register">
+<label for="name">اسم المعلم</label><input id="name" required maxlength="120" minlength="2">
+<label for="school">المدرسة</label><input id="school" required maxlength="180">
+<label for="newEmail">البريد الإلكتروني</label><input id="newEmail" required type="email" autocomplete="email" maxlength="160">
+<label for="newPassword">كلمة المرور (10 أحرف على الأقل)</label><input id="newPassword" required type="password" autocomplete="new-password" minlength="10" maxlength="160">
+<label for="subject">المبحث</label><input id="subject" maxlength="100" value="المهارات الرقمية">
+<button type="submit" id="signUp">إنشاء حساب TAG LAB</button><p id="registerStatus" class="status" role="status"></p>
+</form></section></div>
+</main><script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id),key='qn9_teacher_token';
+const token=()=>localStorage.getItem(key)||'';
+function msg(id,message,bad=false){$(id).textContent=message;$(id).className='status'+(bad?' error':'')}
+const errors={email_taken:'هذا البريد مسجل مسبقًا.',weak_password:'كلمة المرور قصيرة.',invalid_email:'البريد الإلكتروني غير صالح.',wrong_credentials:'بيانات الدخول غير صحيحة.',name_required:'أدخل اسم المعلم.',rate_limited:'محاولات كثيرة؛ حاول لاحقًا.',login_required:'يرجى تسجيل الدخول.'};
+async function api(url,data,useToken=false){
+ const headers={'Content-Type':'application/json'};
+ if(useToken)headers.Authorization='Bearer '+token();
+ const r=await fetch(url,{method:'POST',headers,body:JSON.stringify(data||{}),cache:'no-store'});
+ const result=await r.json().catch(()=>({}));if(!r.ok||result.ok===false)throw Error(result.error||'server_error');return result;
+}
+function signed(name){$('who').textContent=name||'حساب المعلم';$('signedIn').hidden=false;$('forms').hidden=true}
+function save(result){localStorage.setItem(key,result.token);signed(result.teacher?.name)}
+$('login').onsubmit=async e=>{
+ e.preventDefault();const b=$('signIn');b.disabled=true;
+ try{const d=await api('/api/auth/login',{email:$('email').value.trim(),password:$('password').value});save(d);msg('loginStatus','تم الدخول بنجاح.')}
+ catch(e){msg('loginStatus',errors[e.message]||e.message,true)}finally{b.disabled=false}
+};
+$('register').onsubmit=async e=>{
+ e.preventDefault();const b=$('signUp');b.disabled=true;
+ try{const d=await api('/api/auth/register',{name:$('name').value.trim(),school:$('school').value.trim(),email:$('newEmail').value.trim(),password:$('newPassword').value,subject:$('subject').value.trim()||'عام'});save(d);msg('registerStatus','تم إنشاء الحساب.')}
+ catch(e){msg('registerStatus',errors[e.message]||e.message,true)}finally{b.disabled=false}
+};
+$('logout').onclick=async()=>{
+ try{await api('/api/auth/logout',{},true)}catch(_){}
+ localStorage.removeItem(key);$('signedIn').hidden=true;$('forms').hidden=false;$('password').value='';$('newPassword').value='';
+};
+async function restore(){
+ if(!token())return;
+ try{const r=await fetch('/api/auth/me',{headers:{Authorization:'Bearer '+token()},cache:'no-store'});
+ const data=await r.json();if(r.ok&&data.ok)signed(data.teacher?.name);else localStorage.removeItem(key)}
+ catch(_){}
+}
+restore();
+})();
+</script></body></html>
