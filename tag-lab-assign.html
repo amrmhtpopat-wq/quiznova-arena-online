@@ -118,7 +118,9 @@ async function refresh(){
   renderRoster();const sel=$('activity');const current=sel.value;sel.replaceChildren();
   const empty=document.createElement('option');empty.value='';empty.textContent='اختر النشاط المنشور';sel.append(empty);
   activities.forEach(x=>{const opt=document.createElement('option');opt.value=x.id;opt.textContent=x.title;sel.append(opt)});
-  if(activities.some(a=>a.id===current))sel.value=current;
+  const fromLink=new URLSearchParams(location.search).get('activity');
+  if(activities.some(a=>a.id===fromLink))sel.value=fromLink;
+  else if(activities.some(a=>a.id===current))sel.value=current;
   renderTargets();if(sel.value)await loadAssignment();
  }catch(e){status('assignmentStatus',readable(e),true)}
 }
