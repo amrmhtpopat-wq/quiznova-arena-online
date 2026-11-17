@@ -1,5 +1,6 @@
 """TAG LAB AI: mocked free-only Gemini transport, strict source citations and safe limits."""
 import io
+import urllib.error
 import json
 import os
 import tempfile
@@ -126,6 +127,40 @@ class MockedAiGenerationTests(unittest.TestCase):
         self.assertIn('[صفحة 2]',prompt)
         self.assertEqual(body['generationConfig']['responseMimeType'],'application/json')
         self.assertEqual(captured['timeout'],38)
+
+
+    def test_retired_free_model_falls_back_to_other_free_model(self):
+        good='الادخار هو الاحتفاظ بجزء من الدخل لاستخدامه في المستقبل.'
+        result={'candidates':[{'content':{'parts':[{'text':json.dumps({
+            'rows':[{'q':'ما هو الادخار؟','a':'الاحتفاظ بجزء من الدخل',
+             'g':'معرفة','sourcePage':1,'sourceQuote':good}]},ensure_ascii=False)}]}}]}
+        urls=[]
+        def simulated_provider(request,timeout):
+            urls.append(request.full_url)
+            if len(urls)==1:
+                raise urllib.error.HTTPError(request.full_url,404,'Not Found',{},
+                    io.BytesIO(b'{"error":{"status":"NOT_FOUND","message":"Model retired"}}'))
+            return io.BytesIO(json.dumps(result,ensure_ascii=False).encode('utf8'))
+        with patch.dict(os.environ,{'GEMINI_API_KEY':'mock-secret'}):
+            with patch('game_lab_pro.urllib.request.urlopen',side_effect=simulated_provider):
+                response=self.pro.ai_generate(self.teacher_id,
+                    {'bookId':self.book_id,'count':8,'consent':True,
+                     'startPage':1,'endPage':2})
+        self.assertEqual(response['count'],1,response)
+        self.assertEqual(len(urls),2,urls)
+        self.assertIn('gemini-3-flash-preview',urls[0])
+        self.assertIn('gemini-3.8-flash',urls[1])
+
+    def test_free_tier_denial_shows_distinct_error(self):
+        def refused(request,timeout):
+            raise urllib.error.HTTPError(request.full_url,400,'Bad Request',{},
+                io.BytesIO(b'{"error":{"status":"FAILED_PRECONDITION","message":"Free tier is not available for your country"}}'))
+        with patch.dict(os.environ,{'GEMINI_API_KEY':'mock-secret'}):
+            with patch('game_lab_pro.urllib.request.urlopen',side_effect=refused):
+                with self.assertRaisesRegex(ValueError,'ai_free_tier_unavailable'):
+                    self.pro.ai_generate(self.teacher_id,
+                       {'bookId':self.book_id,'count':8,'consent':True,
+                        'startPage':1,'endPage':2})
 
 
 if __name__=='__main__':
