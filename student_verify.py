@@ -84,6 +84,7 @@ def issue_pins(teacher_id, student_id=None, rotate=False):
     if student_id and not re.fullmatch(r"[0-9a-f]{32}", str(student_id)):
         raise ValueError("invalid_student")
     issued = []
+    used_in_batch = set()
     with store.DB_LOCK:
         with store.db_connection() as con:
             cur = con.cursor()
@@ -103,6 +104,9 @@ def issue_pins(teacher_id, student_id=None, rotate=False):
                 if existing and not rotate:
                     continue
                 pin = f"{secrets.randbelow(1_000_000):06d}"
+                while pin in used_in_batch:
+                    pin = f"{secrets.randbelow(1_000_000):06d}"
+                used_in_batch.add(pin)
                 salt = secrets.token_hex(16)
                 hashed = hash_pin(pin, salt)
                 stamp = int(time.time())
