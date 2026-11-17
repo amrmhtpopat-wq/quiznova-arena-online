@@ -1,0 +1,139 @@
+/* TAG LAB V11: shared visual language with TAG official platform */
+:root{--tag-ink:#eaf8ff;--tag-blue:#277ce6;--tag-turquoise:#31d1ce;--tag-gold:#ffc66a}
+body{background:radial-gradient(circle at 85% 4%,#164782 0,transparent 35%),radial-gradient(circle at 4% 32%,#083d58 0,transparent 30%),#07152e}
+.brand .tag-lab-lockup{display:flex;align-items:center;gap:12px;min-width:0}
+.brand .tag-lab-lockup img{display:block;width:94px;max-height:65px;object-fit:contain;filter:drop-shadow(0 3px 10px #0004)}
+.brand .tag-lab-lockup strong{font-size:1.25rem;color:#fff;letter-spacing:.02em}
+.brand .tag-lab-lockup small{display:block;color:#b7d3e9;font-weight:650}
+.mobilebar .tag-mobile-mark{width:63px;max-height:34px;vertical-align:middle;object-fit:contain;margin-inline-end:6px}
+.rail{background:#081b35}
+.nav.sel{background:linear-gradient(110deg,#096e98,#2069b8);border-right-color:#81f6ed}
+.button:not(.alt):not(.transparent):not(.gold){background:linear-gradient(120deg,#48e4d0,#75d2ff)}
+.mast{background:linear-gradient(125deg,#104071,#17688c 55%,#0c3159);border-color:#377eac}
+.mast .mascot{font-size:5.7rem}
+.v101-wheel-frame{width:min(100%,650px)!important;max-width:650px!important;margin-inline:auto}
+.v101-wheel{width:100%!important;aspect-ratio:1;max-width:650px!important;max-height:650px!important}
+.v101-wheel-stage{grid-template-columns:minmax(0,1.4fr) minmax(280px,.75fr)!important}
+.extra-balloons{gap:clamp(12px,2vw,24px);padding:22px 10px 32px}
+.extra-balloon{border:1px solid #ffffff66;border-radius:49% 49% 48% 48%;min-height:205px;overflow:visible;isolation:isolate;background:radial-gradient(ellipse at 27% 18%,#fff8 0 3%,#fff3 5%,transparent 27%),linear-gradient(140deg,#f15fa2 0%,#c22874 66%,#70295d 100%);box-shadow:inset 12px 9px 26px #fff3,inset -13px -15px 30px #32052465,0 15px 24px #0005;transition:opacity .26s,transform .3s,filter .25s}
+.extra-balloon:nth-child(2){background:radial-gradient(ellipse at 27% 18%,#fff8 0 3%,transparent 27%),linear-gradient(140deg,#64d4fc,#2075d1 68%,#143c8b)}
+.extra-balloon:nth-child(3){background:radial-gradient(ellipse at 27% 18%,#fff8 0 3%,transparent 27%),linear-gradient(140deg,#8ff4a3,#16a778 70%,#106b73)}
+.extra-balloon:nth-child(4){background:radial-gradient(ellipse at 27% 18%,#fff8 0 3%,transparent 27%),linear-gradient(140deg,#ffd879,#f18b36 70%,#bc4369)}
+.extra-balloon::before{content:"";position:absolute;inset:8% auto auto 16%;height:36%;width:19%;border-radius:50%;background:#fff5;filter:blur(6px);transform:rotate(28deg);pointer-events:none}
+.extra-balloon::after{bottom:-10px}
+.extra-balloon.popped{transform:scale(1.24);opacity:0;filter:blur(8px);pointer-events:none}
+#tagLabStartNote{padding:12px 16px;border-radius:14px;background:#123756;border:1px solid #437895;color:#daefff;margin-top:10px;font-size:.91rem}
+@media(max-width:950px){.v101-wheel-stage{grid-template-columns:1fr!important}.v101-wheel-frame{width:min(100%,490px)!important}}
+@media(max-width:650px){.brand .tag-lab-lockup img{width:74px}.v101-wheel{max-width:100%!important}.extra-balloon{min-height:140px}.mast .mascot{display:none}}
+@media(prefers-reduced-motion:reduce){.extra-balloon{animation:none!important}}
+
+/* TAG LAB V12 visual corrections — intentionally match the existing V4/V5 light catalog. */
+:root{--ink:#213653;--muted:#566b84;--tg-accent:#166fc0;color-scheme:light}
+html,body{background:#f3f7fc!important;color:#213653!important}
+body{background-image:radial-gradient(circle at 88% 1%,#dcf3ff 0,transparent 34%),linear-gradient(180deg,#f8fbff,#eef4fc)!important}
+.rail{background:linear-gradient(180deg,#0c2340,#0a1b33)!important;border-left:1px solid #315273!important;box-shadow:-3px 0 17px #0a294024!important}
+.rail .brand{background:transparent!important;border:0!important;border-bottom:1px solid #3d5b78!important;box-shadow:none!important;border-radius:0!important;padding:9px 4px 18px!important;overflow:visible!important}
+.rail .brand .tag-lab-lockup{display:flex!important;gap:8px;align-items:center}
+.rail .brand img.tag-lab-logo{width:112px!important;min-width:112px!important;height:76px!important;max-height:76px!important;object-fit:contain!important;opacity:1!important;visibility:visible!important;filter:drop-shadow(0 2px 5px #0004)!important;background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important}
+.rail .tag-lab-lockup strong{font-size:1.38rem!important;color:#fff!important}
+.rail .tag-lab-lockup small{font-size:.73rem!important;color:#c2dfec!important;line-height:1.45}
+.rail .navlabel{color:#9ec5db!important}
+.rail .nav{color:#e4f1fb!important;background:transparent!important;border-right:3px solid transparent!important}
+.rail .nav:hover,.rail a.nav:hover{background:#183f62!important;color:#fff!important}
+.rail .nav.sel{background:linear-gradient(110deg,#147f97,#145990)!important;color:#fff!important;border-right-color:#6ef6e0!important}
+.rail .nav span{opacity:1!important}
+.rail .note{color:#bed4e6!important;border-top-color:#36536e!important}
+.rail .qachip{background:#284c56!important;color:#f6f6c7!important;border-color:#638c8b!important}
+.mobilebar{background:#0b2444!important;color:#fff!important;border-bottom:1px solid #32658a!important}
+.mobilebar .tag-mobile-mark{width:94px!important;max-height:46px!important;height:43px!important;object-fit:contain!important}
+.main .mast{background:linear-gradient(120deg,#103a66 0%,#166888 55%,#124572 100%)!important;border-color:#377ea0!important;box-shadow:0 15px 32px #1d47772c!important}
+.main .mast h2{color:#fff!important;text-shadow:0 2px 8px #071a3566!important}
+.main .mast p{color:#e8f7ff!important;font-size:clamp(15px,1.35vw,18px)!important;line-height:1.8!important}
+.main .mast .eyebrow{color:#affff1!important}
+.main .mast .mascot{background:#ffffff1a!important;color:#fff!important}
+.main .button:not(.alt):not(.transparent):not(.gold){background:linear-gradient(120deg,#4be7d0,#7ed7ff)!important;color:#07324b!important;border:1px solid #2dcbb9!important;font-weight:900!important}
+.main .button.alt,.main .button.transparent{color:#274b9b!important}
+.main .section-head h2,.main .game h3,.main .block h3{color:#203755!important;opacity:1!important}
+.main .section-head p{color:#526980!important;font-size:clamp(13px,1vw,15px)!important}
+.main #gameGrid .game{background:#fff!important;border:1px solid #d4e1f0!important;color:#223851!important}
+.main #gameGrid .game h3{color:#203755!important;font-size:clamp(15px,1.1vw,18px)!important}
+.main #gameGrid .game p{color:#405b75!important;font-size:clamp(13px,.95vw,15px)!important;line-height:1.7!important}
+.main #gameGrid .game .meta{color:#4f6b87!important}
+.main .block,.main .kpi{background:#fff!important;border-color:#d9e5f1!important;color:#1c3652!important}
+.main .block p,.main .hint,.main .kpi span{color:#526b83!important}
+.main .field label{color:#29425b!important}
+.main input:not([type=checkbox]),.main select,.main textarea{background:#fff!important;color:#233952!important;border:1.5px solid #c1d3e5!important}
+.main :is(input,textarea)::placeholder{color:#677d92!important;opacity:1!important}
+.main .notice{background:#fff8e8!important;color:#654613!important;border-color:#e4c58d!important}
+.main .good{background:#e9f8f5!important;color:#1a5d54!important;border-color:#a5d9ce!important}
+.main .pill{color:#315a7c!important;background:#edf5ff!important;border-color:#cbdcec!important}
+.main .filter{background:#fff!important;color:#365470!important}
+.main .filter.on{background:#165f9d!important;color:#fff!important;border-color:#165f9d!important}
+#tagLabStartNote{background:#ecf8fa!important;color:#244e60!important;border-color:#96ccda!important;font-size:clamp(13px,1vw,16px)!important;line-height:1.7!important}
+#playOverlay.v101-overhaul{background:radial-gradient(circle at 88% 4%,#206b86aa,transparent 37%),linear-gradient(145deg,#0b2545,#102b56 65%,#10375b)!important;z-index:9999!important;box-sizing:border-box!important;inset:0!important;width:100vw!important;height:100dvh!important;max-height:100dvh!important;padding:clamp(6px,1.1vw,15px)!important;overflow-x:hidden!important;overflow-y:auto!important}
+#playOverlay.v101-overhaul:fullscreen{width:100vw!important;height:100dvh!important;max-height:none!important}
+#playOverlay.v101-overhaul .playhead{width:min(100%,1480px)!important;background:#f8fcff!important;border:1px solid #bfd7eb!important;box-shadow:0 5px 15px #071a3540!important;flex:0 0 auto!important}
+#playOverlay.v101-overhaul .playhead :is(.eyebrow,h2){color:#1f4160!important}
+#playOverlay.v101-overhaul .playhead .eyebrow{font-size:11px!important;letter-spacing:normal!important}
+#playOverlay.v101-overhaul .playbody,#playOverlay.v101-overhaul.v6-game.v7-game .playbody,#playOverlay.v101-overhaul.v9-stage .playbody{flex:1 0 auto!important;width:min(100%,1450px)!important;max-width:1450px!important;min-width:0!important;max-height:none!important;justify-content:center!important;overflow:visible!important;padding:5px 3px 14px!important}
+#playOverlay.v101-overhaul .playbody>.playcard,#playOverlay.v101-overhaul .v101-wheel-stage .playcard{background:var(--tg-paper)!important;color:var(--tg-ink)!important;border-color:var(--tg-border)!important}
+#playOverlay.v101-overhaul .playbody .playcard :is(h2,h3,p,li,label,strong){opacity:1!important;visibility:visible!important;text-shadow:none!important}
+#playOverlay.v101-overhaul .playbody .playcard :is(h2,h3,strong,label){color:var(--tg-ink)!important}
+#playOverlay.v101-overhaul .playbody .playcard p{color:var(--tg-muted)!important}
+#playOverlay.v101-overhaul .playchoices .choice,#playOverlay.v101-overhaul .sortopts .choice{background:#174a77!important;color:#fff!important;border:2px solid #5590c3!important;min-height:clamp(68px,12dvh,115px)!important}
+#playOverlay.v101-overhaul .playchoices .choice.correct,#playOverlay.v101-overhaul .sortopts .choice.correct{background:#0b6a55!important;color:#fff!important;border-color:#44d4b7!important}
+#playOverlay.v101-overhaul .playchoices .choice.wrong,#playOverlay.v101-overhaul .sortopts .choice.wrong{background:#883e53!important;color:#fff!important;border-color:#f995a8!important}
+#playOverlay.v101-overhaul .playhead #closePlay{background:#ffebf0!important;color:#90254e!important}
+#playOverlay.v101-overhaul .playhead #playFull{background:#e9f2ff!important;color:#244c7d!important}
+#playOverlay.v101-overhaul .playinfo{color:#fff!important;background:#134469!important}
+#playOverlay.v101-overhaul .playinfo :is(span,b,strong){color:#fff!important}
+#playOverlay.v101-overhaul .v101-wheel-stage{width:100%!important;gap:clamp(12px,1.5vw,24px)!important}
+#playOverlay.v101-overhaul .v101-wheel-frame{width:min(100%,min(66dvh,650px))!important}
+#playOverlay.v101-overhaul .v101-wheel{width:100%!important;height:auto!important}
+#playOverlay.v101-overhaul .v101-wheel-question :is(h2,h3,p){color:var(--tg-ink)!important}
+#playOverlay.v101-overhaul[data-v101-theme=dark] .playbody .playcard :is(h2,h3,strong,label){color:#f3f8ff!important}
+#playOverlay.v101-overhaul[data-v101-theme=dark] .playbody .playcard p{color:#cbd9ef!important}
+#playOverlay.v101-overhaul[data-v101-theme=dark] .playhead{background:#183252!important;border-color:#54799f!important}
+#playOverlay.v101-overhaul[data-v101-theme=dark] .playhead :is(.eyebrow,h2){color:#fff!important}
+#playOverlay.v101-overhaul[data-v101-theme=dark] .playhead .pill{background:#30517c!important;color:#fff!important}
+#playOverlay.v101-overhaul[data-v101-theme=dark] .playhead #playFull{background:#2c5179!important;color:#fff!important}
+#playOverlay.v101-overhaul .extra-balloon{color:#fff!important;text-shadow:0 2px 4px #0008!important}
+@media(max-width:850px){.rail .brand img.tag-lab-logo{width:88px!important;min-width:88px!important;height:65px!important}.main .mast{min-height:0!important}.main .mast h2{font-size:clamp(25px,5vw,36px)!important}#playOverlay.v101-overhaul .playhead{position:relative!important;top:auto!important}#playOverlay.v101-overhaul .playbody{width:100%!important}#playOverlay.v101-overhaul .playchoices{gap:8px!important}}
+@media(max-width:550px){.rail .brand img.tag-lab-logo{width:72px!important;min-width:72px!important}.main .games{grid-template-columns:repeat(2,minmax(0,1fr))!important}#playOverlay.v101-overhaul .playbody .playcard h3{font-size:clamp(19px,5vw,26px)!important}#playOverlay.v101-overhaul .playchoices .choice{font-size:clamp(15px,3.8vw,18px)!important;min-height:65px!important;padding:9px!important}#playOverlay.v101-overhaul .playhead{padding:7px 9px!important}}
+@media(max-height:650px) and (min-width:700px){#playOverlay.v101-overhaul .playhead{min-height:45px!important}#playOverlay.v101-overhaul .playbody{gap:8px!important;padding-bottom:6px!important}#playOverlay.v101-overhaul .playbody .playcard{padding:12px!important}#playOverlay.v101-overhaul .playchoices .choice{min-height:60px!important;padding:9px 12px!important}#playOverlay.v101-overhaul .v101-wheel-frame{width:min(100%,min(63dvh,510px))!important}}
+
+/* TAG LAB V25 — readable editable book-question review, RTL desktop/mobile. */
+#labBookPreview{display:flex;flex-direction:column;gap:12px!important;max-height:none!important;overflow:visible!important}
+#labBookPreview .tag-book-review-card{display:grid!important;gap:9px!important;padding:14px 16px!important;background:#f9fcff!important;border:1.5px solid #c3d7e9!important;border-radius:15px!important;box-shadow:0 3px 12px #103d5b12!important;color:#1f3852!important;line-height:1.55!important}
+#labBookPreview .tag-book-review-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+#labBookPreview .tag-book-review-top small{font-size:12px!important;font-weight:750!important;color:#436586!important}
+#labBookPreview .tag-book-review-keep{display:inline-flex;align-items:center;gap:8px;font-size:15px!important;color:#173a58!important;font-weight:850!important}
+#labBookPreview .tag-book-review-check{width:19px!important;height:19px!important;min-width:19px!important;accent-color:#128f83!important}
+#labBookPreview .tag-book-review-card>label{display:block!important;color:#244861!important;font-size:13px!important;font-weight:750!important}
+#labBookPreview .tag-book-review-card textarea{display:block!important;box-sizing:border-box!important;width:100%!important;margin-top:5px!important;padding:10px 12px!important;font-family:inherit!important;font-size:15px!important;font-weight:600!important;line-height:1.75!important;background:white!important;border:1.5px solid #b4d1e6!important;border-radius:10px!important;color:#1f3349!important;resize:vertical!important;direction:rtl!important;text-align:right!important}
+#labBookPreview .tag-book-review-card textarea:focus{outline:2px solid #189ab5!important;outline-offset:1px!important;border-color:#168caa!important}
+#labBookPreview .tag-book-evidence{margin:2px 0 0!important;padding:9px 11px!important;border-right:3px solid #209f9c!important;border-radius:6px!important;background:#eaf5f9!important;color:#315672!important;font-size:13px!important;line-height:1.8!important;overflow-wrap:anywhere!important;white-space:pre-wrap!important}
+#labBookApprove{font-size:15px!important;font-weight:900!important}
+#labBookSummary{font-size:14px!important;line-height:1.8!important;color:#3a5872!important}
+@media(max-width:720px){#labBookPreview .tag-book-review-card{padding:11px!important}#labBookPreview .tag-book-review-card textarea{font-size:14px!important}#labBookPreview .tag-book-review-top{align-items:flex-start}}
+
+/* TAG LAB V27 — AI-assisted textbook question authoring. */
+#bookLab .tag-ai-settings{padding:14px 16px;margin:12px 0;border:1.5px solid #9ccdd5;border-radius:14px;background:#edf8fb;color:#193b4e}
+#bookLab .tag-ai-settings[hidden]{display:none!important}
+#bookLab .tag-ai-title{font-weight:900;font-size:16px;color:#14587b;margin-bottom:12px}
+#bookLab .tag-ai-settings label{font-size:13px;font-weight:800;color:#244861}
+#bookLab .tag-ai-settings select{background:#fff!important;color:#173a52!important;border:1.5px solid #adc8d9!important;min-height:44px!important;font-size:14px!important}
+#bookLab #labAiStatus{padding:8px 12px;border-radius:10px;background:#eaf2f8;color:#254965;font-size:13px;line-height:1.8;margin:10px 0}
+@media(max-width:720px){#bookLab .tag-ai-settings{padding:11px}#bookLab .tag-ai-title{font-size:15px}}
+
+/* TAG LAB V30 — structured AI question bank review */
+#labBookPreview .tag-book-review-controls{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px!important}
+#labBookPreview .tag-book-review-controls label{font-size:13px!important;color:#244861!important;font-weight:800!important}
+#labBookPreview .tag-book-review-controls select{display:block!important;box-sizing:border-box!important;width:100%!important;min-height:43px!important;margin-top:6px!important;padding:7px 10px!important;color:#1f3349!important;background:#fff!important;border:1.5px solid #b4d1e6!important;border-radius:10px!important;font:600 14px/1.5 inherit!important}
+#labBookPreview .tag-book-options{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;padding:12px!important;background:#edf6fa!important;border:1px solid #c6dce8!important;border-radius:12px!important}
+#labBookPreview .tag-book-options[hidden]{display:none!important}
+#labBookPreview .tag-book-options strong{grid-column:1/-1;color:#1a5670!important;font-size:13px!important}
+#labBookPreview .tag-book-options label{font-size:12px!important;color:#244861!important;font-weight:750!important}
+#labBookPreview .tag-book-choice{width:100%!important;box-sizing:border-box!important;min-height:45px!important;margin-top:5px!important;padding:9px 10px!important;background:#fff!important;border:1.5px solid #aacbdd!important;border-radius:9px!important;color:#193b50!important;font-family:inherit!important;font-size:14px!important;direction:rtl!important}
+#labBookPreview .tag-book-choice:focus{outline:2px solid #168fa8!important;outline-offset:1px}
+@media(max-width:650px){#labBookPreview .tag-book-review-controls,#labBookPreview .tag-book-options{grid-template-columns:1fr!important}#labBookPreview .tag-book-options{padding:8px!important}}

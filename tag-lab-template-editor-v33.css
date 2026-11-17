@@ -1,0 +1,46 @@
+/* TAG LAB V33: each selected game owns a dedicated question editor. */
+html[data-tag-view="create"] #builder .v5-simple-editor,
+html[data-tag-view="create"] #builder #v5BulkBox,
+html[data-tag-view="create"] #builder .v5-guide,
+html[data-tag-view="create"] #builder #tagLabStartNote,
+html[data-tag-view="create"] #builder #v4ChosenTemplate,
+html[data-tag-view="create"] #builder #grade7PilotStatus,
+html[data-tag-view="create"] #builder #loadGrade7Pilot,
+html[data-tag-view="create"] #builder #applyContent,
+html[data-tag-view="create"] #builder .layout2>.block:nth-child(2),
+html[data-tag-view="create"] #builder .field:has(#labImageFile){display:none!important}
+html[data-tag-view="create"] #builder .layout2{display:block!important}
+html[data-tag-view="create"] #builder .layout2>.block:first-child{max-width:100%!important}
+html[data-tag-view="create"] #builder .tag-v33-editor{display:block!important}
+.tag-v33-editor{background:#fff;border:1px solid #d5e6ed;box-shadow:0 8px 24px #1d54600e;border-radius:18px;padding:clamp(14px,2.4vw,24px);margin:15px 0 18px}
+.tag-v33-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:13px}
+.tag-v33-head h2{font-size:clamp(1.1rem,2.3vw,1.42rem);line-height:1.5;color:#174b63;margin:5px 0}
+.tag-v33-head p{font-size:.83rem;color:#5f7485;margin:3px 0;line-height:1.85}
+.tag-v33-chip{display:inline-block;background:#e9f7f1;border:1px solid #c1ead7;border-radius:50px;padding:2px 10px;color:#127865;font-size:.73rem;font-weight:850}
+.tag-v33-count{font-size:.79rem;background:#e8f3fb;border-radius:50px;color:#205f7e;font-weight:850;padding:7px 12px}
+.tag-v33-info{background:#f0f9fc;border:1px solid #cee4ec;color:#285f72;font-size:.81rem;line-height:1.8;padding:12px 14px;border-radius:11px;margin:8px 0 17px}
+.tag-v33-list{display:grid;gap:13px;margin-top:11px}
+.tag-v33-card{border:1.5px solid #d6e6ee;border-radius:14px;background:#fbfdff;padding:15px;color:#1b3f57;box-shadow:0 2px 12px #17466b08}
+.tag-v33-card-head{display:flex;align-items:center;justify-content:space-between;gap:9px;margin-bottom:13px}
+.tag-v33-card-head strong{color:#1e6075;font-size:.95rem}
+.tag-v33-remove{border:1px solid #f0c8c6!important;background:#fff1ef!important;color:#9d4447!important;border-radius:8px!important;padding:6px 10px!important;font-size:.76rem!important;font-weight:800!important;cursor:pointer}
+.tag-v33-fields{display:grid;grid-template-columns:1.3fr 1fr;gap:12px;align-items:start}
+.tag-v33-field{display:flex;flex-direction:column;gap:6px;color:#345d6b;font-size:.8rem;font-weight:850;min-width:0}
+.tag-v33-input{width:100%;box-sizing:border-box;border-radius:11px!important;border:1.5px solid #bfd3e2!important;background:#fff!important;color:#193e55!important;font:500 .9rem/1.65 Tahoma,Arial,sans-serif!important;min-height:46px!important;padding:9px 11px!important;text-align:right}
+.tag-v33-input:focus{outline:2px solid #219caa;outline-offset:1px}
+.tag-v33-field textarea{min-height:70px!important;resize:vertical}
+.tag-v33-alternatives{border:1px solid #daecf0;border-radius:12px;padding:12px;margin-top:13px;background:#f2fafa}
+.tag-v33-alternatives>strong{color:#235d6d;font-size:.8rem;display:block;margin-bottom:10px}
+.tag-v33-three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.tag-v33-extra{border-top:1px dashed #d0dee6;margin-top:14px;padding-top:11px}
+.tag-v33-extra summary{cursor:pointer;color:#447388;font-size:.75rem;font-weight:800}
+.tag-v33-extra-fields{display:grid;grid-template-columns:1fr 1.4fr;gap:12px;margin-top:12px}
+.tag-v33-actions{display:flex;gap:10px;align-items:center;justify-content:flex-start;flex-wrap:wrap;margin-top:17px}
+.tag-v33-actions button{border-radius:10px;min-height:45px;padding:9px 17px;font:900 .87rem Tahoma,Arial,sans-serif;cursor:pointer}
+.tag-v33-primary{background:#0c9190;color:#fff;border:1px solid #08827d}
+.tag-v33-secondary{background:#eaf5fb;color:#185f7a;border:1px solid #b0d0df}
+.tag-v33-actions button:hover{filter:brightness(.97)}
+.tag-v33-status{margin:12px 0 2px!important;color:#126c60!important;background:#e8f9f1!important;border:1px solid #b4dfd0;border-radius:9px;padding:9px 11px;font-size:.8rem!important;line-height:1.7}
+.tag-v33-status.error{background:#fff2ed!important;color:#ac4444!important;border-color:#eabeb5!important}
+html[data-tag-view="games"] .tag-v32-buttons .pick{font-size:.8rem!important}
+@media(max-width:700px){.tag-v33-fields,.tag-v33-extra-fields{grid-template-columns:1fr}.tag-v33-three{grid-template-columns:1fr}.tag-v33-card{padding:12px}.tag-v33-actions button{flex:1 1 auto}.tag-v33-head{align-items:flex-start}}

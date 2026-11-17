@@ -1,0 +1,246 @@
+/* TeachGame Game Lab V9 — Complete Game Experience: premium stages for all 24 modes.
+ * All changes remain scoped to the QA Game Lab overlay; V7 Quiz/Fast/Truth
+ * keeps its established premium arcade theme.
+ */
+#playOverlay.v9-stage:not(.v7-game){
+ --v9-accent:#8464ed;--v9-accent2:#5cc6d8;--v9-glass:#ffffffec;
+ background:radial-gradient(circle at 85% 15%,#9384d780,transparent 35%),
+            radial-gradient(circle at 10% 80%,#52c8cc55,transparent 35%),
+            linear-gradient(135deg,#162651,#1f3067 50%,#29347c)!important;
+ color:#fff!important;overflow-y:auto!important;overflow-x:hidden!important;
+ gap:12px;padding:clamp(8px,1.8vw,20px)!important
+}
+#playOverlay.v9-stage:not(.v7-game)[data-v9-mode="wheel"],
+#playOverlay.v9-stage:not(.v7-game)[data-v9-mode="boxes"],
+#playOverlay.v9-stage:not(.v7-game)[data-v9-mode="balloons"],
+#playOverlay.v9-stage:not(.v7-game)[data-v9-mode="bingo"]{
+ --v9-accent:#f38b78;--v9-accent2:#f6c766;
+ background:radial-gradient(circle at 17% 15%,#f5a4d94a,transparent 40%),
+ linear-gradient(115deg,#35214f,#562a73 56%,#6d3264)!important
+}
+#playOverlay.v9-stage:not(.v7-game)[data-v9-mode="pairs"],
+#playOverlay.v9-stage:not(.v7-game)[data-v9-mode="memory"],
+#playOverlay.v9-stage:not(.v7-game)[data-v9-mode="flash"],
+#playOverlay.v9-stage:not(.v7-game)[data-v9-mode="wordsearch"],
+#playOverlay.v9-stage:not(.v7-game)[data-v9-mode="crossword"]{
+ --v9-accent:#37baa6;--v9-accent2:#68bee5;
+ background:radial-gradient(circle at 8% 15%,#70eccb4d,transparent 33%),
+ linear-gradient(125deg,#092b3c,#155b68 60%,#1a5274)!important
+}
+#playOverlay.v9-stage:not(.v7-game)[data-v9-mode="maze"],
+#playOverlay.v9-stage:not(.v7-game)[data-v9-mode="sort"],
+#playOverlay.v9-stage:not(.v7-game)[data-v9-mode="order"],
+#playOverlay.v9-stage:not(.v7-game)[data-v9-mode="story"],
+#playOverlay.v9-stage:not(.v7-game)[data-v9-mode="anagram"]{
+ --v9-accent:#9d89ee;--v9-accent2:#ffbe66;
+ background:radial-gradient(circle at 85% 12%,#edb8f853,transparent 33%),
+ linear-gradient(115deg,#1d2149,#3d3472 56%,#372456)!important
+}
+#playOverlay.v9-stage:not(.v7-game)[data-v9-mode="teams"],
+#playOverlay.v9-stage:not(.v7-game)[data-v9-mode="board"],
+#playOverlay.v9-stage:not(.v7-game)[data-v9-mode="survey"],
+#playOverlay.v9-stage:not(.v7-game)[data-v9-mode="exit"]{
+ --v9-accent:#ffca77;--v9-accent2:#73dbed;
+ background:radial-gradient(circle at 50% 0%,#ffdc7a55,transparent 35%),
+ linear-gradient(135deg,#1d365c,#254d77 50%,#174c69)!important
+}
+#playOverlay.v9-stage:not(.v7-game) .playhead{
+ background:linear-gradient(115deg,#fffffff2,#f2f6ffed)!important;
+ color:#253f67!important;border:1px solid #fff!important;
+ border-radius:22px!important;box-shadow:0 9px 22px #030c2f65!important;
+ width:min(100%,1310px)!important;max-width:1310px!important;margin:auto!important;
+ padding:12px 19px!important
+}
+#playOverlay.v9-stage:not(.v7-game) .playhead h2{color:#253a66!important;font-weight:950!important}
+#playOverlay.v9-stage:not(.v7-game) .playhead .pill{color:#355e91!important;background:#e7f1ff!important;border-color:#c8d9f0!important}
+#playOverlay.v9-stage:not(.v7-game) .playhead .button{color:#25497e!important;background:#ecf3ff!important;border-color:#c9d6ef!important}
+#playOverlay.v9-stage:not(.v7-game) .playhead #closePlay{color:#a83253!important;background:#fff0f3!important}
+#playOverlay.v9-stage:not(.v7-game) .playbody{
+ max-width:1150px!important;width:100%!important;min-width:0;overflow:visible!important;
+ display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:16px!important;
+ margin:auto!important;padding:10px 7px 23px!important
+}
+#playOverlay.v9-stage:not(.v7-game) .playcard{
+ background:linear-gradient(130deg,#fffffff7,#eff3ff)!important;
+ border:3px solid white!important;border-radius:24px!important;
+ box-shadow:0 11px 0 #9ebbed35,0 25px 48px #010b2c6d!important;
+ color:#1e3d63!important;overflow-wrap:anywhere;min-width:0;
+ padding:clamp(18px,3.3vw,37px)!important
+}
+#playOverlay.v9-stage:not(.v7-game) .playcard h3{
+ color:#263d64!important;font-weight:950!important;font-size:clamp(22px,2.9vw,34px)!important;
+ line-height:1.6!important;overflow-wrap:anywhere
+}
+#playOverlay.v9-stage:not(.v7-game) .playcard p{color:#526b84!important;font-size:clamp(14px,1.5vw,18px);line-height:1.8!important}
+#playOverlay.v9-stage:not(.v7-game) #playStatus{
+ min-height:46px;border-radius:17px;background:#ffffff21!important;
+ border:1px solid #ffffff52;color:#f6fbff!important;
+ box-shadow:0 5px 17px #0000003b!important;font-weight:900!important;
+ width:min(100%,1150px);max-width:1150px;margin:0 auto;padding:12px 17px;text-align:center;
+ backdrop-filter:blur(6px)
+}
+#playOverlay.v9-stage:not(.v7-game) #playStatus.v9-success{
+ background:#d1ffe8!important;color:#07573f!important;border-color:#5ad49f!important;
+ box-shadow:0 0 25px #49e9ac69!important;animation:v9-bounce .42s ease
+}
+#playOverlay.v9-stage:not(.v7-game) #playStatus.v9-error{
+ background:#fff0e7!important;color:#8c4543!important;border-color:#ffb2ab!important
+}
+#playOverlay.v9-stage:not(.v7-game) .playinfo{
+ display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:#ffffff24!important;
+ border:1px solid #ffffff50!important;color:#fff!important;padding:10px 15px!important;
+ border-radius:18px!important;backdrop-filter:blur(9px);font-weight:900!important
+}
+#playOverlay.v9-stage:not(.v7-game) .playinfo>span:first-child,
+#playOverlay.v9-stage:not(.v7-game) .playinfo>b{
+ color:#fff!important;background:linear-gradient(130deg,var(--v9-accent),#5779d8)!important;
+ border-radius:10px;padding:8px 15px;font-weight:900
+}
+#playOverlay.v9-stage:not(.v7-game) .playinfo>b{margin-inline-start:auto}
+#playOverlay.v9-stage:not(.v7-game) .v9-progress{
+ display:block;height:9px;width:100%;flex:1 0 100%;border-radius:99px;overflow:hidden;
+ background:#172c5a;border:1px solid #ffffff27
+}
+#playOverlay.v9-stage:not(.v7-game) .v9-progress span{
+ display:block;height:100%;background:linear-gradient(90deg,#67e6b1,#78d3f3,#c2a8f9);
+ border-radius:99px;transition:width .3s ease;width:var(--v9-pct,0%)
+}
+#playOverlay.v9-stage:not(.v7-game) .playchoices,
+#playOverlay.v9-stage:not(.v7-game) .sortopts{
+ display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ width:100%;gap:clamp(10px,1.6vw,20px)!important
+}
+#playOverlay.v9-stage:not(.v7-game) .playchoices .choice,
+#playOverlay.v9-stage:not(.v7-game) .sortopts .choice{
+ border:2px solid #ffffff80!important;border-radius:19px!important;
+ background:linear-gradient(125deg,#5367e2,#2e4ba6)!important;color:#fff!important;
+ box-shadow:inset 0 2px 0 #ffffff6e,0 8px 0 #243d87,0 17px 25px #080d358a!important;
+ font-size:clamp(15px,1.8vw,21px)!important;font-weight:900;line-height:1.6!important;
+ min-height:clamp(75px,13vh,114px)!important;padding:14px 20px;
+ transition:transform .16s,filter .16s!important;overflow-wrap:anywhere
+}
+#playOverlay.v9-stage:not(.v7-game) .playchoices .choice:nth-child(4n+2){background:linear-gradient(120deg,#ed749f,#ab417a)!important;box-shadow:inset 0 2px 0 #fff7,0 8px 0 #8c3263,0 17px 25px #080d358a!important}
+#playOverlay.v9-stage:not(.v7-game) .playchoices .choice:nth-child(4n+3){background:linear-gradient(120deg,#e6af58,#af7332)!important;box-shadow:inset 0 2px 0 #fff7,0 8px 0 #8a5d2a,0 17px 25px #080d358a!important}
+#playOverlay.v9-stage:not(.v7-game) .playchoices .choice:nth-child(4n+4){background:linear-gradient(120deg,#39bfaa,#1d837f)!important;box-shadow:inset 0 2px 0 #fff7,0 8px 0 #1e686b,0 17px 25px #080d358a!important}
+#playOverlay.v9-stage:not(.v7-game) :is(.playchoices,.sortopts) .choice:hover:not(:disabled){
+ transform:translateY(-4px)!important;filter:saturate(1.18) brightness(1.08)
+}
+#playOverlay.v9-stage:not(.v7-game) :is(.playchoices,.sortopts) .choice:disabled{opacity:.65}
+#playOverlay.v9-stage:not(.v7-game) :is(.playchoices,.sortopts) .choice.correct{
+ background:#19895f!important;border-color:#b9ffe2!important;color:#fff!important;opacity:1!important
+}
+#playOverlay.v9-stage:not(.v7-game) :is(.playchoices,.sortopts) .choice.wrong{
+ background:#bb415d!important;border-color:#ffd2e0!important;opacity:1!important
+}
+#playOverlay.v9-stage:not(.v7-game) .button.gold,
+#playOverlay.v9-stage:not(.v7-game) .playbody>.buttons .button,
+#playOverlay.v9-stage:not(.v7-game) .playbody .button:not(.alt):not(.transparent):not(.small){
+ background:linear-gradient(115deg,#ffd67c,#f1a757)!important;color:#4b3268!important;
+ border:1px solid #fff1b0!important;font-weight:950!important;
+ border-radius:13px;box-shadow:0 5px 0 #b07c43,0 11px 19px #050b313b!important
+}
+/* Match, flip and memory: dimensional physical tiles, responsive grid */
+#playOverlay.v9-stage[data-v9-mode="pairs"] .matchitem,
+#playOverlay.v9-stage[data-v9-mode="memory"] .extra-memory-card,
+#playOverlay.v9-stage[data-v9-mode="flash"] .flipcard{
+ background:linear-gradient(125deg,#fff,#e8f6fc)!important;color:#254b6d!important;
+ border:3px solid #ffffff!important;border-radius:19px!important;
+ box-shadow:0 8px 0 #98bbd1,0 18px 26px #030e2d54!important;
+ transition:transform .17s ease!important;font-weight:950
+}
+#playOverlay.v9-stage[data-v9-mode="pairs"] .matchitem:hover:not(:disabled),
+#playOverlay.v9-stage[data-v9-mode="memory"] .extra-memory-card:hover:not(:disabled),
+#playOverlay.v9-stage[data-v9-mode="flash"] .flipcard:hover{transform:translateY(-5px)}
+#playOverlay.v9-stage[data-v9-mode="memory"] .extra-memory-card.showing,
+#playOverlay.v9-stage[data-v9-mode="flash"] .flipcard.revealed{
+ color:#103e58!important;background:linear-gradient(125deg,#bcf0e6,#dbe6ff)!important;
+ box-shadow:0 7px 0 #6faeb1,0 19px 30px #00112258!important;animation:v9-flip .26s ease
+}
+#playOverlay.v9-stage[data-v9-mode="pairs"] .matchitem.done,
+#playOverlay.v9-stage[data-v9-mode="memory"] .extra-memory-card.solved{
+ background:#bcf3d7!important;color:#075b41!important;border-color:#79dcb2!important;opacity:.83!important
+}
+/* Word games: a collectible puzzle rather than a plain HTML form */
+#playOverlay.v9-stage :is(.extra-letter,.extra-word-letter,.extra-cross-letter,.extra-bingo-cell){
+ font-weight:950!important;color:#244b6e!important;border-radius:9px!important;
+ border:1px solid #bed6f3!important;
+ background:linear-gradient(135deg,#fff,#e9f0ff)!important;
+ box-shadow:0 4px 0 #a7b9d8!important
+}
+#playOverlay.v9-stage .extra-letter{min-width:44px;min-height:48px;font-size:24px!important}
+#playOverlay.v9-stage .extra-letter:hover:not(:disabled){background:#d3ecff!important;transform:translateY(-3px)}
+#playOverlay.v9-stage .extra-word-letter.found,#playOverlay.v9-stage .extra-bingo-cell.marked{
+ color:#0f6748!important;background:#b1efcf!important;border-color:#61c99b!important
+}
+#playOverlay.v9-stage .extra-cross-letter:focus-visible{
+ outline:3px solid #6c65d8!important;outline-offset:0!important;background:#fff8df!important
+}
+#playOverlay.v9-stage :is(.extra-gap,.extra-slots){color:#31496d!important;font-size:clamp(18px,2.3vw,25px)!important;font-weight:900;line-height:1.8}
+#playOverlay.v9-stage .extra-order-line{
+ background:#f5f9ff!important;color:#23415e;border:1px solid #d5e4f7!important;
+ border-radius:14px!important;box-shadow:0 5px 12px #42598918
+}
+/* Balloons, mystery boxes and bingo look like distinct games */
+#playOverlay.v9-stage .extra-balloon{
+ border:4px solid #fff8!important;border-radius:49% 49% 45% 45%!important;
+ background:radial-gradient(ellipse at 29% 23%,#ffffff80,transparent 34%),
+ linear-gradient(130deg,#e987ad,#9d4e9c)!important;
+ box-shadow:0 16px 19px #28123966,0 3px 0 #ffffff79 inset!important;
+ color:#fff!important;font-size:clamp(13px,1.7vw,19px)!important;
+ text-shadow:0 2px 4px #25102b75;font-weight:950!important
+}
+#playOverlay.v9-stage .extra-balloon:nth-child(3n+2){background:linear-gradient(125deg,#87bdff,#396fcd)!important}
+#playOverlay.v9-stage .extra-balloon:nth-child(3n+3){background:linear-gradient(125deg,#ffd187,#d67e56)!important}
+#playOverlay.v9-stage .extra-balloon.popped{opacity:.5;animation:v9-pop .3s ease}
+#playOverlay.v9-stage .mystery{
+ border-radius:19px!important;border:4px solid white!important;
+ box-shadow:0 9px 0 #a65a99,0 18px 25px #00113257!important;
+ min-width:0;overflow-wrap:anywhere
+}
+#playOverlay.v9-stage .mystery.open{animation:v9-flip .24s ease}
+#playOverlay.v9-stage .mystery.v6-solved{color:#165940!important;background:#c3f4de!important;box-shadow:0 8px 0 #5daa84!important}
+#playOverlay.v9-stage .extra-score-team{
+ background:#fff!important;color:#1d4267!important;border:1px solid #dce8fb!important;
+ border-radius:16px!important;box-shadow:0 7px 16px #15285427
+}
+#playOverlay.v9-stage .extra-score-team strong{color:#543eaa!important}
+#playOverlay.v9-stage .extra-survey-row{color:#254b6e!important;background:#fff;border-radius:12px;padding:9px 10px}
+#playOverlay.v9-stage .extra-hidden-tile{background:linear-gradient(125deg,#9775e7,#5e68c5)!important;color:#fff!important;border-color:#ffffff7d!important}
+#playOverlay.v9-stage .extra-hidden-tile.revealed{opacity:0!important;pointer-events:none}
+#playOverlay.v9-stage .extra-diagram-mark{background:#ffe8aa!important;color:#744d19!important;box-shadow:0 0 0 5px #ffffff78!important}
+#playOverlay.v9-stage .extra-maze-path span.active{background:#ffd16b!important;color:#654087!important;box-shadow:0 3px 15px #edb95988}
+#playOverlay.v9-stage .extra-bingo-cell.marked{box-shadow:0 4px 0 #52a486!important}
+#playOverlay.v9-stage .v9-burst{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:6}
+#playOverlay.v9-stage .v9-burst i{
+ position:absolute;left:var(--x);top:var(--y);width:10px;height:15px;border-radius:2px;
+ background:var(--color);animation:v9-fall .95s ease-out forwards
+}
+@keyframes v9-pop{0%{transform:scale(1)}50%{transform:scale(.5);opacity:.35}100%{transform:scale(1);opacity:.6}}
+@keyframes v9-flip{0%{transform:perspective(400px) rotateY(-12deg) scale(.98)}100%{transform:rotateY(0deg) scale(1)}}
+@keyframes v9-bounce{0%{transform:scale(.985)}65%{transform:scale(1.02)}100%{transform:scale(1)}}
+@keyframes v9-fall{0%{transform:translateY(0) rotate(0);opacity:1}100%{transform:translate(var(--dx),270px) rotate(540deg);opacity:0}}
+@media(max-width:740px){
+ #playOverlay.v9-stage:not(.v7-game) .playhead{padding:9px!important;border-radius:15px!important}
+ #playOverlay.v9-stage:not(.v7-game) .playbody{justify-content:flex-start!important;gap:11px!important;padding:3px 0 15px!important}
+ #playOverlay.v9-stage:not(.v7-game) .playcard{padding:15px!important;border-radius:18px!important}
+ #playOverlay.v9-stage:not(.v7-game) .playcard h3{font-size:clamp(19px,4.6vw,26px)!important}
+ #playOverlay.v9-stage:not(.v7-game) .playchoices .choice{font-size:clamp(13px,3.4vw,17px)!important;min-height:85px!important;padding:10px!important;border-radius:14px!important}
+ #playOverlay.v9-stage:not(.v7-game) .playinfo{font-size:12px!important;padding:7px 10px!important}
+ #playOverlay.v9-stage .extra-letter{min-width:32px;min-height:41px;font-size:18px!important}
+ #playOverlay.v9-stage .extra-memory-card{min-height:65px!important;overflow-wrap:anywhere}
+ #playOverlay.v9-stage .extra-hidden{max-width:100%;height:auto;min-height:250px}
+}
+@media(max-width:420px){
+ #playOverlay.v9-stage:not(.v7-game){padding:8px!important}
+ #playOverlay.v9-stage:not(.v7-game) .playchoices{gap:9px!important}
+ #playOverlay.v9-stage:not(.v7-game) .playchoices .choice{font-size:13px!important;min-height:87px!important;padding:8px!important}
+ #playOverlay.v9-stage .extra-balloons{gap:8px!important}
+ #playOverlay.v9-stage .extra-balloon{font-size:12px!important;min-width:0!important}
+ #playOverlay.v9-stage .boxes{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ #playOverlay.v9-stage .extra-score-team{min-width:0;padding:11px!important}
+ #playOverlay.v9-stage .extra-order-line .buttons{gap:3px}
+ #playOverlay.v9-stage .extra-order-line .button{font-size:11px;padding:7px}
+}
+@media(prefers-reduced-motion:reduce){
+ #playOverlay.v9-stage *{animation:none!important;transition:none!important}
+}

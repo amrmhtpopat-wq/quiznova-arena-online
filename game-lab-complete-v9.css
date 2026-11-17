@@ -1,0 +1,69 @@
+/* TeachGame Complete Game Experience V9 — tailored creator and results design */
+.v9-mode-options{
+ margin:13px 0 25px;padding:clamp(16px,2.3vw,24px);
+ border:1px solid #cbdbf5;border-radius:21px;
+ background:radial-gradient(ellipse at 95% 4%,#f6e7ff,transparent 48%),linear-gradient(138deg,#f0f6ff,#f9faff);
+ color:#203b60;box-shadow:0 8px 24px #345f9e13
+}
+.v9-mode-intro{display:flex;align-items:center;gap:14px;margin-bottom:11px}
+.v9-mode-intro>strong{flex:none;display:grid;place-items:center;width:60px;height:60px;border:3px solid white;border-radius:20px;background:linear-gradient(135deg,#d9e4ff,#e7cffd);box-shadow:0 6px 10px #5366ad24;font-size:30px}
+.v9-mode-intro h3{font-size:17px;color:#27487b;margin:0;font-weight:950}
+.v9-mode-intro p{margin:2px 0 0;color:#566d92;font-size:13px}
+.v9-mode-instructions{padding:11px 14px;border:1px dashed #b6c9ec;border-radius:13px;background:#ffffffb4;color:#33577a;font-size:13px;line-height:1.8;font-weight:750}
+.v9-mode-fields{display:grid;gap:12px;margin-top:14px;padding-top:15px;border-top:1px solid #d9e4f5}
+.v9-mode-fields:empty{display:none}
+.v9-mode-fields .field{flex:1}
+.v9-mode-fields input[type=file]{width:100%;font-size:13px;background:#fff}
+.v9-mode-fields select{width:100%;max-width:420px;min-height:44px;padding:7px 11px;color:#25466d;background:#fff;border:1px solid #bfd3ef;border-radius:12px;font-size:13px}
+.v9-media-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.v9-media-row span{font-size:12px;color:#476581;line-height:1.7}
+.v9-media-row .v9-error{color:#bd304e;font-weight:850}
+.v9-image-preview{position:relative;width:min(100%,500px);padding:9px;border-radius:16px;overflow:hidden;background:#fff;border:1px solid #cbd9e9}
+.v9-image-preview img{width:100%;height:auto;max-height:300px;object-fit:contain;display:block;border-radius:10px}
+#v9TeamsControls{grid-template-columns:repeat(2,minmax(0,1fr))}
+#v9TeamsControls .field{min-width:0}
+#v9TeamsControls .field input{background:#fff}
+.question-card .question-content .field input[type=number]{appearance:textfield;-moz-appearance:textfield}
+.question-card .question-content .field input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+.v9-results-info{padding:12px 14px;border:1px solid #d4e7fb;border-radius:13px;background:#eef8ff;margin:0 0 17px;color:#396489;font-weight:800;font-size:13px;line-height:1.85}
+.v9-library-actions{display:flex;align-items:center;justify-content:flex-end;gap:7px;flex-wrap:wrap}
+.v9-report-panel{margin-top:25px;border-radius:20px;border:2px solid #bacef1;background:linear-gradient(135deg,#f3f8ff,#fff);padding:clamp(13px,2vw,22px);box-shadow:0 11px 35px #24559a19}
+.v9-report-header{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;flex-wrap:wrap;margin-bottom:17px}
+.v9-report-header h3{margin:0;color:#234479;font-size:20px}
+.v9-report-header span{font-size:12px;color:#6482a1}
+.v9-report-actions{display:flex;gap:8px;flex-wrap:wrap}
+.v9-report-skills{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:11px;margin:10px 0 20px}
+.v9-skill-card{background:#fff;border:1px solid #dde6f3;border-radius:14px;padding:12px;min-width:0}
+.v9-skill-card strong{color:#2d4971;font-size:12px;font-weight:900;display:block;overflow-wrap:anywhere;margin:0 0 8px}
+.v9-skill-card small{color:#67839e;font-size:11px}
+.v9-skill-track{height:10px;background:#e7edf6;border-radius:99px;margin:4px 0 8px;overflow:hidden}
+.v9-skill-track>span{display:block;height:100%;background:linear-gradient(90deg,#47bba2,#5385db,#8769de);border-radius:99px}
+.v9-table-scroller{max-width:100%;overflow-x:auto;scrollbar-color:#b2c6e5 transparent;background:#fff;border-radius:13px;border:1px solid #dde6f1}
+.v9-table{width:100%;border-collapse:collapse;min-width:680px;font-size:12px;text-align:right}
+.v9-table th{background:#283f81;color:#fff;padding:12px 10px;font-weight:900;white-space:nowrap}
+.v9-table td{padding:12px 10px;color:#284663;border-bottom:1px solid #e4ecf5}
+.v9-table tr:nth-child(even){background:#f7faff}
+.v9-question-analysis{margin:13px 0 0}
+.v9-question-analysis p{background:#fff1d7;border-right:4px solid #f3bd65;color:#80541a;padding:10px 13px;font-size:12px;border-radius:8px}
+#v9ModeInstructions[data-mode=fast]{background:#fff7e9;border-color:#f5d6a5;color:#906024}
+#v9ModeInstructions[data-mode=truth]{background:#eafaf5;border-color:#9bd8c0;color:#247256}
+#v9ModeInstructions[data-mode=wheel],#v9ModeInstructions[data-mode=boxes]{background:#fff4f9;border-color:#efc1d7;color:#8d4d74}
+#v9ModeInstructions[data-mode=diagram],#v9ModeInstructions[data-mode=hidden]{background:#f0f1ff;border-color:#c5c3ee;color:#4c4fa3}
+#v9ModeInstructions[data-mode=teams],#v9ModeInstructions[data-mode=board]{background:#eef7ff;border-color:#accdeb;color:#295d8f}
+@media(max-width:760px){
+ .v9-mode-options{padding:14px;margin:9px 0 19px}
+ .v9-mode-intro h3{font-size:15px}
+ .v9-mode-intro p,.v9-mode-instructions{font-size:12px}
+ #v9TeamsControls{grid-template-columns:1fr}
+ .v9-library-actions{justify-content:flex-start}
+ .v9-report-skills{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .v9-report-panel{padding:10px;border-radius:15px}
+ .v9-table{min-width:650px}
+ .v9-report-actions>.btn{font-size:11px}
+}
+@media(max-width:410px){
+ .v9-mode-intro>strong{height:45px;width:45px;border-radius:12px;font-size:23px}
+ .v9-mode-intro h3{font-size:14px}
+ .v9-report-skills{grid-template-columns:minmax(0,1fr)}
+ .v9-media-row>*{max-width:100%}
+}

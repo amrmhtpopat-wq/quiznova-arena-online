@@ -1,0 +1,585 @@
+"""BOOYAHJO Game Lab: authenticated authoring and card-based classroom activities.
+
+Isolated tables; additive, backward-compatible schema. Never stores raw student
+card tokens in games or results. Grade/XP awards are server-authoritative and
+the award for each student+activity is limited to its first completion.
+"""
+import hashlib
+import json
+import random
+import secrets
+import time
+import uuid
+import re
+from urllib.parse import parse_qs
+import platform_store as db
+import platform_api as auth
+import solo_api
+
+MAX_ROWS=80
+TEXT_MODES={'anagram','crossword','wordsearch','cloze','exit'}
+NON_GRADED_MODES={'survey','exit','board'}
+MODES={'quiz','fast','pairs','flash','wheel','boxes','sort','truth','crossword',
+       'wordsearch','anagram','order','maze','balloons','memory','hidden',
+       'cloze','diagram','board','teams','survey','exit','story','bingo'}
+TEACHER_PATHS={'/api/game-lab/teacher/generate-all',
+               '/api/game-lab/teacher/save','/api/game-lab/teacher/delete',
+               '/api/game-lab/teacher/publish','/api/game-lab/teacher/unpublish'}
+STUDENT_PATHS={'/api/game-lab/student/start','/api/game-lab/student/state',
+               '/api/game-lab/student/answer'}
+RUN_TTL=24*3600
+
+
+def now():return int(time.time())
+
+def ensure_schema():
+    for statement in (
+      'CREATE TABLE IF NOT EXISTS game_lab_activities (id TEXT PRIMARY KEY,teacher_id TEXT NOT NULL,'
+      'title TEXT NOT NULL,subject TEXT NOT NULL,grade TEXT NOT NULL,mode TEXT NOT NULL,'
+      'payload TEXT NOT NULL,public_code TEXT UNIQUE,published INTEGER NOT NULL DEFAULT 0,'
+      'max_attempts INTEGER NOT NULL DEFAULT 1,archived INTEGER NOT NULL DEFAULT 0,'
+      'created_at BIGINT NOT NULL,updated_at BIGINT NOT NULL)',
+      'CREATE TABLE IF NOT EXISTS game_lab_runs (token_hash TEXT PRIMARY KEY,activity_id TEXT NOT NULL,'
+      'teacher_id TEXT NOT NULL,student_id TEXT,student_name TEXT NOT NULL,class_name TEXT NOT NULL,'
+      'state TEXT NOT NULL,created_at BIGINT NOT NULL,updated_at BIGINT NOT NULL,finished_at BIGINT NOT NULL DEFAULT 0)',
+      'CREATE INDEX IF NOT EXISTS idx_lab_activities_owner ON game_lab_activities(teacher_id,updated_at)',
+      'CREATE INDEX IF NOT EXISTS idx_lab_runs_owner ON game_lab_runs(teacher_id,activity_id,created_at)',
+      'CREATE INDEX IF NOT EXISTS idx_lab_runs_student ON game_lab_runs(student_id,activity_id)',
+    ):
+        db.exec_sql(statement)
+
+
+def fail(h,error,status=400):
+    h.send_json({'ok':False,'error':error},status)
+    return True
+
+
+def validate_payload(raw):
+    if not isinstance(raw,dict):raise ValueError('invalid_activity')
+    title=str(raw.get('title','')).strip()[:90]
+    if not title:raise ValueError('title_required')
+    rows=raw.get('rows')
+    if not isinstance(rows,list) or not 4<=len(rows)<=MAX_ROWS:raise ValueError('invalid_question_count')
+    result=[];seen=set()
+    for row in rows:
+        if not isinstance(row,dict):raise ValueError('invalid_question')
+        q=str(row.get('q','')).strip()[:200]
+        a=str(row.get('a','')).strip()[:100]
+        g=str(row.get('g','عام')).strip()[:60] or 'عام'
+        if not q or not a:raise ValueError('incomplete_question')
+        key=(q.casefold(),a.casefold())
+        if key in seen:continue
+        seen.add(key)
+        question={'q':q,'a':a,'g':g}
+        question_type=str(row.get('questionType') or '').strip()
+        if question_type:
+            if question_type not in ('mcq','true_false','short'):
+                raise ValueError('invalid_question_type')
+            question['questionType']=question_type
+            if question_type=='true_false' and a not in ('صح','خطأ'):
+                raise ValueError('invalid_true_false_answer')
+        difficulty=str(row.get('difficulty') or '').strip()
+        if difficulty:
+            if difficulty not in ('easy','medium','hard'):
+                raise ValueError('invalid_question_difficulty')
+            question['difficulty']=difficulty
+        quote=str(row.get('sourceQuote') or '').strip()[:240]
+        if quote:question['sourceQuote']=quote
+        origin=str(row.get('origin') or '').strip()[:32]
+        if origin:question['origin']=origin
+        explanation=str(row.get('explanation') or '').strip()[:240]
+        if explanation:question['explanation']=explanation
+        if 'markerX' in row or 'markerY' in row:
+            try:
+                x=float(row.get('markerX',50));y=float(row.get('markerY',50))
+                if not (0<=x<=100 and 0<=y<=100):raise ValueError
+            except (TypeError,ValueError):
+                raise ValueError('invalid_image_marker')
+            question['markerX']=round(x,1);question['markerY']=round(y,1)
+        # Optional teacher-authored distractors. Keep the legacy auto-generated
+        # alternatives whenever 'choices' is absent (backward compatibility).
+        custom=row.get('choices')
+        if custom is not None:
+            if not isinstance(custom,list) or not 2<=len(custom)<=4:
+                raise ValueError('invalid_question_choices')
+            clean=[str(choice).strip()[:100] for choice in custom]
+            if any(not choice for choice in clean):
+                raise ValueError('invalid_question_choices')
+            if len({choice.casefold() for choice in clean})!=len(clean):
+                raise ValueError('duplicate_question_choices')
+            if sum(choice.casefold()==a.casefold() for choice in clean)!=1:
+                raise ValueError('correct_answer_missing_from_choices')
+            if question_type=='mcq' and len(clean)!=4:
+                raise ValueError('mcq_requires_four_choices')
+            if question_type=='true_false' and set(clean)!={'صح','خطأ'}:
+                raise ValueError('invalid_true_false_choices')
+            question['choices']=clean
+        elif question_type=='mcq':
+            raise ValueError('mcq_requires_four_choices')
+        elif question_type=='true_false':
+            question['choices']=['صح','خطأ']
+        page=row.get('sourcePage')
+        if page is not None:
+            try:page=int(page)
+            except (TypeError,ValueError):raise ValueError('invalid_source_page')
+            if not 1<=page<=350:raise ValueError('invalid_source_page')
+            question['sourcePage']=page
+        result.append(question)
+    if len(result)<4:raise ValueError('too_few_unique_questions')
+    mode=str(raw.get('mode') or 'quiz')
+    if mode not in MODES:raise ValueError('invalid_game_mode')
+    subject=str(raw.get('subject') or 'عام').strip()[:80]
+    grade=str(raw.get('grade') or 'عام').strip()[:40]
+    raw_time=raw.get('time',25)
+    try:seconds=int(raw_time)
+    except (ValueError,TypeError):seconds=25
+    source_group=str(raw.get('sourceGroup') or '').strip()
+    if source_group and not re.fullmatch('[a-f0-9]{32}',source_group):raise ValueError('invalid_source_group')
+    image_id=str(raw.get('imageId') or '').strip()
+    book_id=str(raw.get('bookId') or '').strip()
+    if image_id and not re.fullmatch('[a-f0-9]{32}',image_id):raise ValueError('invalid_image_id')
+    if book_id and not re.fullmatch('[a-f0-9]{32}',book_id):raise ValueError('invalid_book_id')
+    names=raw.get('teamNames') or []
+    if not isinstance(names,list) or len(names)>3:raise ValueError('invalid_team_names')
+    names=[str(n).strip()[:32] for n in names if str(n).strip()]
+    if names and len(names)<2:raise ValueError('invalid_team_names')
+    return {'title':title,'subject':subject,'grade':grade,'mode':mode,
+            'time':max(10,min(90,seconds)),'rows':result,
+            'teamNames':names,
+            'imageId':image_id,'bookId':book_id,'sourceGroup':source_group}
+
+
+def public_view(row):
+    return {'id':row['id'],'title':row['title'],'subject':row['subject'],
+            'grade':row['grade'],'mode':row['mode'],
+            'published':bool(row['published']),'publicCode':row['public_code'] if row['published'] else None,
+            'maxAttempts':row['max_attempts'],
+            'imageId':db.jload(row['payload'],{}).get('imageId') or '',
+            'sourceGroup':db.jload(row['payload'],{}).get('sourceGroup') or row['id'],
+            'bookId':db.jload(row['payload'],{}).get('bookId') or '',
+            'createdAt':row['created_at'],
+            'updatedAt':row['updated_at'],'questionCount':len(db.jload(row['payload'],{}).get('rows',[]))}
+
+
+def owner_row(tid,aid):
+    return db.query('SELECT * FROM game_lab_activities WHERE id=? AND teacher_id=? AND archived=0',
+                    (aid,tid))
+
+
+def list_activities(tid):
+    rows=db.query('SELECT * FROM game_lab_activities WHERE teacher_id=? AND archived=0 '
+                  'ORDER BY updated_at DESC LIMIT 150',(tid,),True)
+    return [{**public_view(row),'activity':db.jload(row['payload'],{})} for row in rows]
+
+
+def save(tid,data):
+    activity=validate_payload(data.get('activity'))
+    if activity.get('imageId') and not db.query(
+        'SELECT id FROM game_lab_media WHERE id=? AND teacher_id=? AND archived=0',
+        (activity['imageId'],tid)):raise ValueError('media_not_found')
+    # Archived books remain teacher-owned and may still back an existing saved activity.
+    if activity.get('bookId') and not db.query(
+        'SELECT id FROM game_lab_books WHERE id=? AND teacher_id=?',
+        (activity['bookId'],tid)):raise ValueError('book_not_found')
+    aid=str(data.get('id') or '')
+    timestamp=now()
+    if aid:
+        row=owner_row(tid,aid)
+        if not row:raise ValueError('activity_not_found')
+        db.exec_sql('UPDATE game_lab_activities SET title=?,subject=?,grade=?,mode=?,payload=?,updated_at=? '
+                    'WHERE id=? AND teacher_id=?',
+                    (activity['title'],activity['subject'],activity['grade'],activity['mode'],
+                     db.jdump(activity),timestamp,aid,tid))
+    else:
+        aid=uuid.uuid4().hex
+        # Bound the private library as well as the bulk generator; check and insert atomically.
+        with db.DB_LOCK:
+            with db.db_connection() as con:
+                count=con.execute(db.sql('SELECT COUNT(*) FROM game_lab_activities '
+                                        'WHERE teacher_id=? AND archived=0'),(tid,)).fetchone()[0]
+                if int(count)>=150:raise ValueError('activity_library_limit')
+                con.execute(db.sql('INSERT INTO game_lab_activities '
+                    '(id,teacher_id,title,subject,grade,mode,payload,created_at,updated_at) '
+                    'VALUES(?,?,?,?,?,?,?,?,?)'),
+                    (aid,tid,activity['title'],activity['subject'],activity['grade'],activity['mode'],
+                     db.jdump(activity),timestamp,timestamp))
+    return {**public_view(owner_row(tid,aid)),'activity':activity}
+
+
+
+def generate_all(tid,data):
+    """Bulk-create or refresh 24 template activities sharing one lesson and one XP entitlement."""
+    if data.get('confirm') is not True:raise ValueError('confirmation_required')
+    source_id=str(data.get('sourceId') or '')
+    original=owner_row(tid,source_id)
+    if not original:raise ValueError('activity_not_found')
+    original_data=db.jload(original['payload'],{})
+    validated=validate_payload(original_data)
+    group=validated.get('sourceGroup') or original['id']
+    validated['sourceGroup']=group
+    existing=list_activities(tid)
+    grouped={}
+    for item in existing:
+        payload=item.get('activity') or {}
+        if (payload.get('sourceGroup') or item['id'])==group:
+            grouped.setdefault(payload.get('mode'),item['id'])
+    required=len([mode for mode in MODES if mode not in grouped])
+    if len(existing)+required>150:raise ValueError('activity_library_limit')
+    created=0;updated=0
+    date=now()
+    with db.DB_LOCK:
+        with db.db_connection() as con:
+            for mode in sorted(MODES):
+                item={**validated,'mode':mode,'sourceGroup':group,
+                      'title':(validated['title'].split(' — ')[0]+' — '+mode)[:90]}
+                # Keep source activity title and mode; avoid overwriting its authorship context.
+                if grouped.get(mode)==original['id']:
+                    item['title']=original['title']
+                text=db.jdump(item)
+                if mode in grouped:
+                    aid=grouped[mode]
+                    con.execute(db.sql('UPDATE game_lab_activities SET title=?,subject=?,grade=?,'
+                        'mode=?,payload=?,updated_at=? WHERE id=? AND teacher_id=?'),
+                        (item['title'],item['subject'],item['grade'],mode,text,date,aid,tid))
+                    updated+=1
+                else:
+                    aid=uuid.uuid4().hex
+                    con.execute(db.sql('INSERT INTO game_lab_activities '
+                       '(id,teacher_id,title,subject,grade,mode,payload,created_at,updated_at) '
+                       'VALUES(?,?,?,?,?,?,?,?,?)'),
+                       (aid,tid,item['title'],item['subject'],item['grade'],mode,text,date,date))
+                    created+=1
+    return {'created':created,'updated':updated,'total':created+updated,
+            'sourceGroup':group,'templates':len(MODES),
+            'message':'هذه الألعاب تستعمل نفس أسئلة الدرس، ولا تمنح XP إلا مرة واحدة للمصدر الواحد.'}
+
+
+def publish(tid,data,enabled):
+    aid=str(data.get('id') or '')
+    row=owner_row(tid,aid)
+    if not row:raise ValueError('activity_not_found')
+    try:maximum=int(data.get('maxAttempts',row['max_attempts']))
+    except (TypeError,ValueError):raise ValueError('invalid_attempt_limit')
+    if not 1<=maximum<=10:raise ValueError('invalid_attempt_limit')
+    code=row['public_code'] or secrets.token_urlsafe(18)
+    db.exec_sql('UPDATE game_lab_activities SET published=?,public_code=?,max_attempts=?,updated_at=? '
+                'WHERE id=? AND teacher_id=?',(int(enabled),code,maximum,now(),aid,tid))
+    return public_view(owner_row(tid,aid))
+
+
+def remove(tid,data):
+    row=owner_row(tid,str(data.get('id') or ''))
+    if not row:raise ValueError('activity_not_found')
+    if data.get('confirm') is not True:raise ValueError('confirmation_required')
+    db.exec_sql('UPDATE game_lab_activities SET archived=1,published=0,updated_at=? '
+                'WHERE id=? AND teacher_id=?',(now(),row['id'],tid))
+    return {'id':row['id'],'archived':True}
+
+
+def public_activity(code):
+    code=str(code or '').strip()
+    if not 12<=len(code)<=90:return None
+    return db.query('SELECT * FROM game_lab_activities WHERE public_code=? AND published=1 '
+                    'AND archived=0',(code,))
+
+
+def participant_view(a):
+    return {'title':a['title'],'subject':a['subject'],'grade':a['grade'],
+            'mode':a['mode'],'questions':len(db.jload(a['payload'],{}).get('rows',[])),
+            'maxAttempts':a['max_attempts'],
+            'imageUrl':('/api/game-lab/pro/image?id='+str(db.jload(a['payload'],{}).get('imageId'))+
+              '&code='+str(a['public_code'])) if db.jload(a['payload'],{}).get('imageId') else ''}
+
+
+def hashed(token):return hashlib.sha256(token.encode()).hexdigest()
+
+
+def normalize(value):return str(value or '').strip().casefold()
+
+
+def question_state(state,token_hash):
+    rows=state['rows'];idx=state['index'];answered=idx>=len(rows)
+    if answered:return None
+    item=rows[idx];mode=state['mode']
+    rng=random.Random(int(hashlib.sha256((token_hash+':'+str(idx)).encode()).hexdigest()[:12],16))
+    if mode in TEXT_MODES:
+        can_shuffle=mode in ('anagram','wordsearch') and len(item['a'].replace(' ',''))<=40
+        letters=list(item['a'].replace(' ','')) if can_shuffle else []
+        rng.shuffle(letters)
+        return {'index':idx,'question':item['q'],'choices':[],
+                'entry':'letters' if can_shuffle else 'text',
+                'scrambled':letters,'answerLength':len(item['a'][:40]),
+                'total':len(rows),'mode':mode,'duration':state['duration'],
+                'score':state['score']}
+    if mode=='sort':
+        choices=list(dict.fromkeys(r['g'] for r in rows))
+        correct=item['g']
+    elif mode=='truth':
+        if item.get('questionType')=='true_false':
+            return {'index':idx,'question':'قيّم العبارة التالية','candidate':item['q'],
+                    'choices':['صح','خطأ'],'total':len(rows),'mode':mode,
+                    'duration':state['duration'],'score':state['score']}
+        wrongs=[r['a'] for r in rows if r['a']!=item['a']]
+        actual=bool(rng.randrange(2))
+        candidate=item['a'] if actual or not wrongs else rng.choice(wrongs)
+        correct='صح' if candidate==item['a'] else 'خطأ'
+        return {'index':idx,'question':item['q'],'candidate':candidate,
+                'choices':['صح','خطأ'],'total':len(rows),'mode':mode,
+                'duration':state['duration'],'score':state['score']}
+    else:
+        custom=item.get('choices')
+        if isinstance(custom,list) and len(custom)>=2:
+            choices=list(custom)
+        else:
+            choices=list(dict.fromkeys(r['a'] for r in rows if r['a']!=item['a']))
+            rng.shuffle(choices);choices=choices[:3]+[item['a']]
+        correct=item['a']
+    rng.shuffle(choices)
+    response={'index':idx,'question':item['q'],'group':item['g'] if mode=='sort' else '',
+            'choices':choices,'total':len(rows),'mode':mode,
+            'duration':state['duration'],'score':state['score']}
+    if mode=='diagram':
+        response['markerX']=item.get('markerX',50)
+        response['markerY']=item.get('markerY',50)
+    return response
+
+
+def expected_answer(state,token_hash):
+    row=state['rows'][state['index']]
+    mode=state['mode']
+    if mode=='sort':return row['g']
+    if mode=='truth':
+        if row.get('questionType')=='true_false':return row['a']
+        rng=random.Random(int(hashlib.sha256((token_hash+':'+str(state['index'])).encode()).hexdigest()[:12],16))
+        wrongs=[r['a'] for r in state['rows'] if r['a']!=row['a']]
+        actual=bool(rng.randrange(2))
+        candidate=row['a'] if actual or not wrongs else rng.choice(wrongs)
+        return 'صح' if candidate==row['a'] else 'خطأ'
+    return row['a']
+
+
+def state_view(state,digest):
+    completed=state['finished']
+    data={'finished':completed,'studentName':state['studentName'],
+          'className':state['className'],'score':state['score'],
+          'correct':state['correct'],'index':state['index'],'total':len(state['rows']),
+          'xpGain':state.get('xpGain',0),'guest':state.get('guest',False),
+          'activityTitle':state['title'],'mode':state['mode'],
+          'unscored':state['mode'] in NON_GRADED_MODES}
+    if not completed:
+        data['question']=question_state(state,digest)
+        if state.get('imageUrl'):data['question']['imageUrl']=state['imageUrl']
+    return data
+
+
+def start(data,h):
+    a=public_activity(data.get('code'))
+    if not a:return fail(h,'not_published',404)
+    card=str(data.get('card') or '').strip()
+    if solo_api.limited(h,card or data.get('code')):return fail(h,'rate_limited',429)
+    student=solo_api.find_student(card) if card else None
+    if card and not student:return fail(h,'invalid_card',403)
+    if student and student['teacher_id']!=a['teacher_id']:return fail(h,'card_other_teacher',403)
+    guest=not bool(student)
+    name=str(data.get('guestName') or 'ضيف').strip()[:40]
+    if guest and len(name)<2:return fail(h,'name_required')
+    payload=db.jload(a['payload'],{})
+    rows=payload.get('rows',[])
+    if not rows:return fail(h,'empty_activity',409)
+    assigned=db.query('SELECT target_type,target_value FROM game_lab_assignments '
+       'WHERE activity_id=? AND teacher_id=?',(a['id'],a['teacher_id']),True)
+    if assigned:
+        if not student:return fail(h,'card_required_for_assignment',403)
+        if not any(t['target_type']=='all' or
+             (t['target_type']=='student' and t['target_value']==student['id']) or
+             (t['target_type']=='class' and t['target_value']==student['class_name'])
+             for t in assigned):
+            return fail(h,'not_assigned_to_card',403)
+    token=secrets.token_urlsafe(36)
+    state={'rows':rows,'title':a['title'],'mode':a['mode'],'duration':payload.get('time',25),
+           'index':0,'score':0,'correct':0,'finished':False,'xpGain':0,
+           'guest':guest,'studentName':student['name'] if student else name,
+           'className':student['class_name'] if student else 'زائر',
+           'sourceGroup':payload.get('sourceGroup') or a['id'],
+           'imageUrl':('/api/game-lab/pro/image?id='+str(payload.get('imageId'))+
+              '&code='+str(a['public_code'])) if payload.get('imageId') else ''}
+    key=hashed(token);timestamp=now()
+    # Atomic start quota for a student card: lock that student record first.
+    with db.DB_LOCK:
+        with db.db_connection() as con:
+            cur=con.cursor()
+            if student:
+                lock='SELECT id FROM students WHERE id=? AND teacher_id=?'+(' FOR UPDATE' if db.DATABASE_URL else '')
+                cur.execute(db.sql(lock),(student['id'],a['teacher_id']))
+                if not cur.fetchone():return fail(h,'invalid_card',403)
+                cur.execute(db.sql('SELECT COUNT(*) FROM game_lab_runs WHERE activity_id=? '
+                                   'AND student_id=?'),(a['id'],student['id']))
+                if int(cur.fetchone()[0])>=int(a['max_attempts']):
+                    return fail(h,'attempt_limit',403)
+            cur.execute(db.sql('INSERT INTO game_lab_runs '
+               '(token_hash,activity_id,teacher_id,student_id,student_name,class_name,state,created_at,updated_at) '
+               'VALUES(?,?,?,?,?,?,?,?,?)'),
+               (key,a['id'],a['teacher_id'],student['id'] if student else None,
+                state['studentName'],state['className'],db.jdump(state),timestamp,timestamp))
+    h.send_json({'ok':True,'token':token,'state':state_view(state,key)})
+    return True
+
+
+def read_state(data,h):
+    token=str(data.get('token') or '')
+    if len(token)<25 or len(token)>150:return fail(h,'invalid_session',403)
+    row=db.query('SELECT * FROM game_lab_runs WHERE token_hash=?',(hashed(token),))
+    if not row or now()-int(row['updated_at'])>RUN_TTL:return fail(h,'expired_session',403)
+    state=db.jload(row['state'],{})
+    h.send_json({'ok':True,'state':state_view(state,hashed(token))})
+    return True
+
+
+def answer(data,h):
+    token=str(data.get('token') or '')
+    if len(token)<25 or len(token)>150:return fail(h,'invalid_session',403)
+    idx=data.get('index')
+    if type(idx)!=int:return fail(h,'invalid_index')
+    raw=data.get('answer')
+    if not isinstance(raw,str) or len(raw)>120:return fail(h,'invalid_answer')
+    key=hashed(token)
+    with db.DB_LOCK:
+        with db.db_connection() as con:
+            cur=con.cursor()
+            lock='SELECT * FROM game_lab_runs WHERE token_hash=?'+(' FOR UPDATE' if db.DATABASE_URL else '')
+            cur.execute(db.sql(lock),(key,))
+            row=cur.fetchone()
+            if not row:return fail(h,'invalid_session',403)
+            col=[x[0] for x in cur.description];session=dict(zip(col,row))
+            if now()-int(session['updated_at'])>RUN_TTL:return fail(h,'expired_session',403)
+            state=db.jload(session['state'],{})
+            if state['finished'] or state['index']!=idx:return fail(h,'question_changed',409)
+            right=expected_answer(state,key)
+            graded=state['mode'] not in NON_GRADED_MODES
+            correct=normalize(raw)==normalize(right) if graded else None
+            if correct:
+                state['correct']+=1;state['score']+=100
+            state.setdefault('history',[]).append({
+                'index':idx,'group':str(state['rows'][idx].get('g') or 'عام')[:60],
+                'correct':correct if graded else None,
+                'response':raw[:120] if not graded else None})
+            state['index']+=1
+            finished=state['index']>=len(state['rows'])
+            state['finished']=finished
+            timestamp=now()
+            if finished and session['student_id']:
+                student_id=session['student_id'];tid=session['teacher_id'];aid=session['activity_id']
+                group_id=state.get('sourceGroup') or aid
+                # Serialize XP for all runs by this student in Postgres, too.
+                owner_lock='SELECT xp FROM students WHERE id=? AND teacher_id=?'+(' FOR UPDATE' if db.DATABASE_URL else '')
+                cur.execute(db.sql(owner_lock),(student_id,tid))
+                owner=cur.fetchone()
+                if not owner:return fail(h,'invalid_card',403)
+                cur.execute(db.sql('SELECT id FROM student_attempts WHERE teacher_id=? AND student_id=? '
+                                   'AND quiz_id=? LIMIT 1'),(tid,student_id,'LAB-'+group_id))
+                awarded=cur.fetchone() is not None
+                gain=0 if awarded or not graded else (state['correct']*10+10)
+                state['xpGain']=gain
+                if gain:
+                    cur.execute(db.sql('UPDATE students SET xp=xp+?,correct_count=correct_count+?,'
+                                       'played_count=played_count+1 WHERE id=? AND teacher_id=?'),
+                                (gain,state['correct'],student_id,tid))
+                attempt_id=uuid.uuid4().hex
+                cur.execute(db.sql('INSERT INTO student_attempts (id,teacher_id,student_id,quiz_id,room_code,'
+                                   'student_name,class_name,avatar,correct_count,question_total,percent,'
+                                   'score,answers,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)'),
+                            (attempt_id,tid,student_id,'LAB-'+group_id,'LAB-'+aid,
+                             session['student_name'],session['class_name'],'b01',state['correct'],
+                             len(state['rows']),round(state['correct']*100/max(1,len(state['rows']))),
+                             state['score'],db.jdump({'source':'game_lab','run':key[:12]}),timestamp))
+            cur.execute(db.sql('UPDATE game_lab_runs SET state=?,updated_at=?,finished_at=? WHERE token_hash=?'),
+                        (db.jdump(state),timestamp,timestamp if finished else 0,key))
+    h.send_json({'ok':True,'correct':correct,'correctAnswer':right if graded else None,
+                 'explanation':str(state['rows'][idx].get('explanation') or '')[:240],
+                 'state':state_view(state,key)})
+    return True
+
+
+def teacher_reports(tid,aid):
+    if not owner_row(tid,aid):raise ValueError('activity_not_found')
+    records=db.query('SELECT student_name,class_name,student_id,state,finished_at,created_at '
+             'FROM game_lab_runs WHERE teacher_id=? AND activity_id=? AND finished_at>0 '
+             'ORDER BY finished_at DESC LIMIT 500',(tid,aid),True)
+    output=[]
+    groups={}
+    questions={}
+    for rec in records:
+        state=db.jload(rec['state'],{})
+        for item in state.get('history',[]):
+            if item.get('correct') is None:continue
+            group=str(item.get('group') or 'عام')[:60]
+            slot=groups.setdefault(group,{'correct':0,'answers':0})
+            slot['answers']+=1;slot['correct']+=int(item['correct'] is True)
+            index=int(item.get('index',0))
+            qslot=questions.setdefault(index,{'index':index,'correct':0,'answers':0})
+            qslot['answers']+=1;qslot['correct']+=int(item['correct'] is True)
+        output.append({'name':rec['student_name'],'className':rec['class_name'],
+            'correct':state.get('correct',0),'questions':len(state.get('rows',[])),
+            'score':state.get('score',0),'xpGain':state.get('xpGain',0),
+            'guest':not bool(rec['student_id']),'finishedAt':rec['finished_at'],
+            'responses':[{'group':h.get('group','عام'),'text':h.get('response','')}
+                         for h in state.get('history',[]) if h.get('response') is not None]})
+    return {'results':output,'total':len(output),
+            'averagePercent':round(sum(100*x['correct']/max(x['questions'],1) for x in output)/len(output),1) if output else 0,
+            'skillSummary':[{'group':key,'correct':v['correct'],'answers':v['answers'],
+                             'percent':round(v['correct']*100/max(v['answers'],1),1)}
+                            for key,v in sorted(groups.items())],
+            'questionStats':[{'index':idx,'correct':v['correct'],'answers':v['answers'],
+                              'percent':round(v['correct']*100/max(v['answers'],1),1)}
+                             for idx,v in sorted(questions.items())]}
+
+
+def handle_get(h,u):
+    if u.path=='/api/game-lab/public':
+        params=parse_qs(u.query);a=public_activity((params.get('code') or [''])[0])
+        if not a:return fail(h,'not_published',404)
+        h.send_json({'ok':True,'activity':participant_view(a)});return True
+    if u.path not in ('/api/game-lab/teacher/list','/api/game-lab/teacher/reports'):return False
+    teacher=auth.authorized(h)
+    if not teacher:return True
+    tid=teacher['id']
+    try:
+        if u.path.endswith('/list'):
+            h.send_json({'ok':True,'activities':list_activities(tid)})
+        else:
+            params=parse_qs(u.query);aid=(params.get('id') or [''])[0]
+            h.send_json({'ok':True,**teacher_reports(tid,aid)})
+    except ValueError as err:return fail(h,str(err),404)
+    except Exception as err:
+        h.log_message('Game Lab GET error: %s',str(err))
+        return fail(h,'server_error',500)
+    return True
+
+
+def handle_post(h,u,data):
+    if u.path in STUDENT_PATHS:
+        try:
+            if u.path.endswith('/start'):return start(data,h)
+            if u.path.endswith('/state'):return read_state(data,h)
+            return answer(data,h)
+        except ValueError as err:return fail(h,str(err),400)
+        except Exception as err:
+            h.log_message('Game Lab student route: %s',str(err))
+            return fail(h,'server_error',500)
+    if u.path not in TEACHER_PATHS:return False
+    teacher=auth.authorized(h)
+    if not teacher:return True
+    tid=teacher['id']
+    try:
+        if u.path.endswith('/generate-all'):result=generate_all(tid,data)
+        elif u.path.endswith('/save'):result=save(tid,data)
+        elif u.path.endswith('/delete'):result=remove(tid,data)
+        elif u.path.endswith('/publish'):result=publish(tid,data,True)
+        else:result=publish(tid,data,False)
+        h.send_json({'ok':True,**result})
+    except ValueError as err:
+        return fail(h,str(err),404 if str(err)=='activity_not_found' else 400)
+    except Exception as err:
+        h.log_message('Game Lab teacher route: %s',str(err))
+        return fail(h,'server_error',500)
+    return True
