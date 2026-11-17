@@ -248,6 +248,7 @@ window.TAG_LAB_V33_IMPORT=importRows;
 window.TAG_LAB_V33_MODE=()=>mode;
 window.TAG_LAB_V33_SELECT=id=>{
  if(!id||id===mode)return;
+ if(typeof window.TAG_LAB_V32_CHOOSE==='function'){window.TAG_LAB_V32_CHOOSE(id);return}
  const t=$('cloudMode');if(!t)return;
  document.dispatchEvent(new CustomEvent('taglab:before-template-switch',{detail:{from:mode,to:id}}));
  t.value=id;t.dispatchEvent(new Event('change',{bubbles:true}));
