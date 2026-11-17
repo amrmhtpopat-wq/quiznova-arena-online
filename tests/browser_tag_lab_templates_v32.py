@@ -67,7 +67,7 @@ try:
    dialog.wait_for(state='visible')
    assert dialog.locator('.tag-v32-option').count()==24
    dialog.locator('.tag-v32-option[data-mode="pairs"]').click()
-   dialog.get_by_role('button',name='استخدام القالب المختار').click()
+   dialog.locator('#tagV32ModalPick').click()
    assert page.locator('#cloudMode').input_value()=='pairs'
    assert page.locator('#activityData').input_value()==raw
    page.locator('.tag-v32-modebar button').filter(has_text='تجربة بأسئلتي').click()
