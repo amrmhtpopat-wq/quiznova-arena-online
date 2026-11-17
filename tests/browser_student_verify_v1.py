@@ -86,6 +86,14 @@ with sync_playwright() as playwright:
     # Secret is absent from card QR and public student directory.
     check(pin not in teacher_page.locator('#studentsBoard').inner_text(),
           'Secret leaked onto printed student card')
+    with teacher_page.expect_download() as delivery:
+        teacher_page.locator('#verifySlips').click()
+    secret_slips=delivery.value
+    slip_path=Path(dbdir.name)/'test-private-pin-slips.html'
+    secret_slips.save_as(str(slip_path))
+    rendered=slip_path.read_text(encoding='utf-8')
+    check(pin in rendered and card in rendered and 'سرّي للطالب فقط' in rendered,
+          'Individual private PIN handout did not include the correct school card')
     teacher_page.locator('#verifyHide').click()
     check(teacher_page.locator('#verifyPinList').inner_text()=='',
           'Secret was not cleared when teacher hides it')
