@@ -22,6 +22,9 @@ on:
       - tag-lab-students.html
       - tag-lab-simple.css
       - tag-lab-simple.js
+      - tag-lab-templates-v32.js
+      - tag-lab-templates-v32.css
+      - tests/browser_tag_lab_templates_v32.py
       - tests/browser_tag_lab_simple_v31.py
       - game-lab-pro-v3.js
       - game-lab-cloud-v2.js
@@ -52,6 +55,7 @@ jobs:
           node --check game-lab-pro-v3.js
           node --check game-lab-cloud-v2.js
           node --check tag-lab-simple.js
+          node --check tag-lab-templates-v32.js
           python - <<'PY'
           import re
           from pathlib import Path
@@ -95,3 +99,5 @@ jobs:
         run: python tests/browser_game_lab_pro_v3.py
       - name: Separate pages and teacher workflow browser integration
         run: python tests/browser_tag_lab_simple_v31.py
+      - name: Game-first template previews and switching browser integration
+        run: python tests/browser_tag_lab_templates_v32.py
