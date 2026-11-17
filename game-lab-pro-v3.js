@@ -20,21 +20,21 @@ const errors={
  book_limit:'وصلت للحد التجريبي من الكتب. أرشف كتابًا قديمًا قبل الرفع.',
  invalid_pages:'نطاق الصفحات غير صحيح.',
  empty_pages:'لا توجد نصوص في الصفحات المحددة.',
- ai_not_configured:'التوليد الذكي المجاني يحتاج مفتاح Gemini API مجاني من Google AI Studio محفوظًا في إعدادات Render، دون تفعيل الفوترة.',
+ ai_not_configured:'التوليد الذكي المجاني يحتاج مفتاح TAG AI API مجاني من Google AI Studio (مزود TAG AI) محفوظًا في إعدادات Render، دون تفعيل الفوترة.',
  ai_consent_required:'وافق أولًا على إرسال الصفحات المختارة إلى مزود الذكاء الاصطناعي.',
  ai_daily_limit:'وصلت إلى الحد اليومي (10 عمليات توليد لكل معلم). جرّب غدًا أو استخدم الاستخراج المجاني.',
  ai_global_daily_limit:'وصلت المنصة إلى حد الأمان اليومي لطلبات الذكاء الاصطناعي. حاول غدًا.',
  ai_too_many_pages:'لجودة أفضل وضمن الحدود المجانية، اختر 25 صفحة أو أقل في عملية التوليد الواحدة.',
- ai_invalid_key:'مفتاح Gemini المجاني غير صالح أو غير متاح في المنطقة. تأكد من إنشائه عبر Google AI Studio دون حساب فوترة.',
+ ai_invalid_key:'مفتاح TAG AI المجاني غير صالح أو غير متاح في المنطقة. تأكد من إنشائه عبر Google AI Studio (مزود TAG AI) دون حساب فوترة.',
  ai_no_credit:'لا يوجد رصيد مجاني متاح. لا تفعّل الفوترة؛ استخدم الاستخراج المحلي المجاني.',
- ai_rate_limited:'وصلت إلى حصة Gemini المجانية أو الحد المؤقت. لن تُحاول المنصة استخدام خدمة مدفوعة. جرّب لاحقًا أو استخدم التوليد المحلي.',
- ai_provider_configuration:'تعذر استخدام نموذج Gemini المجاني في هذا المشروع؛ تحقق من صلاحيات المفتاح المجاني أو استخدم الاستخراج المحلي.',
- ai_model_unavailable:'نموذجا Gemini المجانيان غير متاحين لمشروعك حاليًا. تحقق من حالة مشروعك في Google AI Studio، دون تفعيل الفوترة.',
+ ai_rate_limited:'وصلت إلى حصة TAG AI المجانية أو الحد المؤقت. لن تُحاول المنصة استخدام خدمة مدفوعة. جرّب لاحقًا أو استخدم التوليد المحلي.',
+ ai_provider_configuration:'تعذر استخدام نموذج TAG AI المجاني في هذا المشروع؛ تحقق من صلاحيات المفتاح المجاني أو استخدم الاستخراج المحلي.',
+ ai_model_unavailable:'نموذجا TAG AI المجانيان غير متاحين لمشروعك حاليًا. تحقق من حالة مشروعك في Google AI Studio (مزود TAG AI)، دون تفعيل الفوترة.',
  ai_free_tier_unavailable:'Google رفض المستوى المجاني لهذا المشروع أو المنطقة. تحقق من حالة المشروع في AI Studio؛ لا حاجة لدفع أي شيء.',
- ai_access_denied:'Google رفض الوصول للمشروع (403). راجع حالة Free Tier وصلاحية المشروع والمفتاح في Google AI Studio.',
+ ai_access_denied:'Google رفض الوصول للمشروع (403). راجع حالة Free Tier وصلاحية المشروع والمفتاح في Google AI Studio (مزود TAG AI).',
  ai_network_error:'تعذر الاتصال بخوادم Google من Render. تأكد من أن خوادم Google متاحة وحاول مجددًا.',
- ai_timeout:'انتهت مهلة اتصال Gemini المجاني. جرّب تحديد صفحات أقل ثم أعد المحاولة.',
- ai_provider_unavailable:'تعذر الحصول على استجابة من Gemini حاليًا. راجع سجلات Render لمعرفة رمز الخطأ ثم حاول مجددًا.',
+ ai_timeout:'انتهت مهلة اتصال TAG AI المجاني. جرّب تحديد صفحات أقل ثم أعد المحاولة.',
+ ai_provider_unavailable:'تعذر الحصول على استجابة من TAG AI حاليًا. راجع سجلات Render لمعرفة رمز الخطأ ثم حاول مجددًا.',
  ai_invalid_response:'لم يُرجع النموذج أسئلة صالحة. أعد المحاولة.',
  publish_first:'انشر النشاط أولًا ثم أضفه إلى بطاقات الطلاب.',
  invalid_targets:'اختر الطلاب أو الشعب المطلوبة.',
@@ -123,7 +123,7 @@ async function refreshBooks(){
   $('labBookMode').querySelector('option[value="ai"]').disabled=!aiReady;
   if(!aiReady)$('labBookMode').value='extract';
   else if(!aiModeTouched)$('labBookMode').value='ai';
-  $('labBookMode').title=aiReady?'تمت إضافة مفتاح Gemini مجاني؛ الخدمة جاهزة للاختبار':'يتطلب التوليد الذكي المجاني مفتاح GEMINI_API_KEY بدون فوترة';
+  $('labBookMode').title=aiReady?'تمت إضافة مفتاح TAG AI مجاني؛ الخدمة جاهزة للاختبار':'يتطلب التوليد الذكي المجاني مفتاح GEMINI_API_KEY بدون فوترة';
   updateAiSettings();
  }catch(e){failed('labBookStatus',e)}
 }
@@ -182,8 +182,8 @@ function updateAiSettings(){
  $('labAiSettings').hidden=!enabled;
  const status=$('labAiStatus');
  status.textContent=aiReady
-  ?(enabled?'✓ مفتاح Gemini موجود. ستُرسل الصفحات المختارة إلى Gemini المجاني فقط عند موافقتك. لا يوجد انتقال إلى خدمة مدفوعة.':'يمكنك اختيار Gemini المجاني من القائمة.')
-  :'التوليد المجاني بالذكاء الاصطناعي غير مفعّل بعد. أنشئ مفتاح Gemini مجانيًا من Google AI Studio دون ربط بطاقة أو حساب فوترة، ثم أضف GEMINI_API_KEY إلى Render. الاستخراج المحلي يعمل دائمًا دون مفتاح.';
+  ?(enabled?'✓ مفتاح TAG AI موجود. ستُرسل الصفحات المختارة إلى TAG AI المجاني فقط عند موافقتك. لا يوجد انتقال إلى خدمة مدفوعة.':'يمكنك اختيار TAG AI المجاني من القائمة.')
+  :'التوليد المجاني بالذكاء الاصطناعي غير مفعّل بعد. أنشئ مفتاح TAG AI مجانيًا من Google AI Studio (مزود TAG AI) دون ربط بطاقة أو حساب فوترة، ثم أضف GEMINI_API_KEY إلى Render. الاستخراج المحلي يعمل دائمًا دون مفتاح.';
  $('labAiConsent').disabled=!enabled;
  if(!enabled)$('labAiConsent').checked=false;
 }
@@ -241,7 +241,7 @@ function renderBookReview(rows){
   const keep=document.createElement('label');keep.className='tag-book-review-keep';
   const check=document.createElement('input');check.type='checkbox';check.checked=true;check.className='tag-book-review-check';
   keep.append(check,document.createTextNode(' اعتماد السؤال '+(i+1)));
-  const badge=document.createElement('small');badge.textContent='صفحة '+(r.sourcePage||'غير محددة')+' • '+(r.origin==='ai'?'Gemini':'نص الكتاب');
+  const badge=document.createElement('small');badge.textContent='صفحة '+(r.sourcePage||'غير محددة')+' • '+(r.origin==='ai'?'TAG AI':'نص الكتاب');
   header.append(keep,badge);
   const row=document.createElement('div');row.className='tag-book-review-controls';
   const typeLabel=document.createElement('label');typeLabel.textContent='نوع السؤال';
@@ -529,7 +529,7 @@ document.addEventListener('gamelab:edit-structured-bank',event=>{
  renderBookReview(rows);
  bookDraftReady=false;$('labBookSaveCloud').disabled=true;
  $('labBookApprove').disabled=false;
- $('labBookSummary').textContent='تعديل بنك محفوظ: يمكنك تحرير الإجابات البديلة والصعوبة والتفسير، ثم الضغط على «اعتماد المختار»، وبعدها «حفظ النشاط» في مكتبتي لتحديث المسودة نفسها دون استهلاك Gemini.';
+ $('labBookSummary').textContent='تعديل بنك محفوظ: يمكنك تحرير الإجابات البديلة والصعوبة والتفسير، ثم الضغط على «اعتماد المختار»، وبعدها «حفظ النشاط» في مكتبتي لتحديث المسودة نفسها دون استهلاك TAG AI.';
  scroll('bookLab');
 });
 $('activityData').addEventListener('input',()=>{window.TG_CREATOR_PREVIEW_ROWS=null});
