@@ -3,7 +3,7 @@
 'use strict';
 const el=id=>document.getElementById(id);
 const clean=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const current={card:'',token:'',state:null,pending:false,timer:null,order:[]};
+const current={card:'',token:'',state:null,pending:false,timer:null,order:[],pinRequired:false};
 const params=new URLSearchParams(location.search);
 const buttons=[...document.querySelectorAll('[data-student-mode]')];
 function error(msg){el('soloError').textContent=msg||''}
@@ -45,6 +45,10 @@ async function catalog(event){
  try{
   const d=await api('catalog',{card});
   current.card=card;current.token='';current.state=null;
+  current.pinRequired=Boolean(d.student?.pinRequired);
+  const pinWrap=el('soloPinWrap');const pinField=el('soloPinCode');
+  if(pinWrap)pinWrap.hidden=!current.pinRequired;
+  if(pinField)pinField.required=current.pinRequired;
   clearInterval(current.timer);sessionStorage.removeItem('booyah_solo_token');
   el('soloPlayArea').innerHTML='';
   const info=el('soloStudentInfo');info.hidden=false;
@@ -66,12 +70,19 @@ window.BOOYAH_START_CARD_QUIZ=async(card,quizId)=>{
  if(button&&!button.disabled)void start(quizId,button);
 };
 async function start(id,b){
- if(!id||!current.card)return;b.disabled=true;error('');
+ if(!id||!current.card)return;
+ const pin=el('soloPinCode')?.value.trim()||'';
+ if(current.pinRequired&&!/^[0-9]{6}$/.test(pin)){
+  error('أدخل رمز PIN الشخصي المكون من 6 أرقام قبل بدء الاختبار.');
+  el('soloPinCode')?.focus();return;
+ }
+ b.disabled=true;error('');
  try{
-  const d=await api('start',{card:current.card,quizId:id});
+  const d=await api('start',{card:current.card,quizId:id,pin});
   current.token=d.token;current.state=d.state;sessionStorage.setItem('booyah_solo_token',d.token);
+  if(el('soloPinCode'))el('soloPinCode').value='';
   el('soloQuizList').innerHTML='';el('soloCardForm').classList.add('hidden');render(d.state);
- }catch(e){error(e.message==='not_published'?'هذا الاختبار غير متاح لصفك أو شعبتك الآن.':e.message==='attempt_limit'?'استُنفدت المحاولات المحددة لهذا الاختبار.':'تعذر بدء التدريب.')}finally{b.disabled=false}
+ }catch(e){const explain={not_published:'هذا الاختبار غير متاح لصفك أو شعبتك الآن.',attempt_limit:'استُنفدت المحاولات المحددة لهذا الاختبار.',student_pin_required:'أدخل PIN الشخصي قبل البدء.',student_pin_invalid:'رمز PIN غير صحيح؛ تحقق من الأرقام الستة.',student_pin_locked:'تم قفل محاولات الرمز لمدة 15 دقيقة.',student_pin_not_issued:'PIN غير متوفر لهذه البطاقة؛ راجع المعلم.',active_attempt:'لديك محاولة نشطة على جهاز آخر. استكمل منها أو اطلب من معلمك تحرير المحاولة.'};error(explain[e.message]||'تعذر بدء التدريب.')}finally{b.disabled=false}
 }
 function orderHtml(){return current.order.map((x,i)=>'<div class="bo-solo-order-row"><span>'+clean(x)+'</span><span><button type="button" data-move="'+i+',-1">↑</button> <button type="button" data-move="'+i+',1">↓</button></span></div>').join('')}
 function bindOrder(){el('soloOrderList')?.querySelectorAll('[data-move]').forEach(b=>b.addEventListener('click',()=>{
