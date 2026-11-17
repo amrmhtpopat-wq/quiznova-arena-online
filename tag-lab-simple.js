@@ -8,20 +8,16 @@ const pages=[
  {id:'create',url:'/tag-lab-create.html',icon:'✍️',label:'صانع الألعاب'},
  {id:'games',url:'/tag-lab-games.html',icon:'🎮',label:'الألعاب'},
  {id:'library',url:'/tag-lab-library.html',icon:'🗂️',label:'مكتبتي'},
- {id:'live',url:'/tag-lab-live.html',icon:'📡',label:'صف مباشر'},
- {id:'mixer',url:'/tag-lab-mixer.html',icon:'🧪',label:'الحصة التفاعلية'},
- {id:'students',url:'/tag-lab-students.html',icon:'🪪',label:'بطاقات الطلاب'}
+ {id:'mixer',url:'/tag-lab-mixer.html',icon:'🧪',label:'الحصة التفاعلية'}
 ];
 const labels={
  books:{step:'1 • أنشئ الأسئلة',title:'حوّل كتابك إلى أسئلة',description:'ارفع الكتاب مرة واحدة، اختر الصفحات، ولّد الأسئلة مجانًا، ثم راجعها قبل استخدامها.',tip:'بعد مراجعة الأسئلة اضغط «التالي: صانع الألعاب». لا تحتاج إلى نسخ الإجابات يدويًا.'},
  create:{step:'2 • أسئلتك وقالبك',title:'صانع الألعاب المبسّط',description:'اختر قالبًا أو اكتب الأسئلة أولًا، ثم جرّبها وغيّر اللعبة بضغطة واحدة.',tip:'اكتب أربعة أسئلة على الأقل أو حمّل كتابك، ثم جرّب عدة قوالب بأسئلتك نفسها.'},
  games:{step:'1 • شاهد اللعبة أولًا',title:'اختر لعبة وانطلق',description:'عاين اللعبة بأسئلة تجريبية أولًا، ثم اختر قالبك وأضف أسئلتك.',tip:'الضغط على «معاينة» لا يغيّر القالب المختار أو يمسح أسئلتك.'},
  library:{step:'3 • احفظ وشارك',title:'مكتبتي الخاصة',description:'كل أنشطتك المحفوظة في مكان واحد. افتحها، عدّلها، انشرها أو راجع نتائج الطلاب.',tip:'المسودات خاصة بك، ولا تظهر للطلاب إلا بعد الضغط على «نشر».'},
- live:{step:'4 • العب مع طلابك',title:'المنافسة المباشرة',description:'اختر نشاطًا محفوظًا، ثم افتح غرفة للصف وشارك الرمز مع الطلاب.',tip:'احفظ نشاطًا في مكتبتك أولًا، ثم اختره هنا لإنشاء المنافسة.'},
- mixer:{step:'🧪 حصة تفاعلية',title:'الحصة متعددة الألعاب',description:'اختر نشاطًا محفوظًا وامزج ثلاث ألعاب متتابعة داخل الحصة، دون إعادة كتابة الأسئلة.',tip:'هذه حصة يقودها المعلم على شاشة العرض؛ للتنافس المتزامن بهواتف الطلاب استخدم «الصف المباشر».'},
- students:{step:'للطلاب',title:'ألعاب بطاقة الطالب',description:'خصّص الألعاب لشعبة أو طالب حتى تظهر فقط في بطاقته الذكية.',tip:'انشر اللعبة في مكتبتك أولًا، ثم اختر الصف أو الطلاب المعنيين.'}
+ mixer:{step:'🧪 حصة تفاعلية',title:'الحصة متعددة الألعاب',description:'اختر نشاطًا محفوظًا وامزج ثلاث ألعاب متتابعة داخل الحصة، دون إعادة كتابة الأسئلة.',tip:'هذه حصة يقودها المعلم على شاشة العرض؛ للتنافس المتزامن وبطاقات الطلاب استخدم المنصة الرسمية.'},
 };
-const linkBySection={catalog:'games',builder:'create',bookLab:'books',mixer:'mixer',library:'library',cloud:'library',studentAssignments:'students',liveLab:'live',roadmap:'home'};
+const linkBySection={catalog:'games',builder:'create',bookLab:'books',mixer:'mixer',library:'library',cloud:'library',roadmap:'home'};
 const $=id=>document.getElementById(id);
 const make=(tag,cls,text)=>{const node=document.createElement(tag);if(cls)node.className=cls;if(text!==undefined)node.textContent=text;return node};
 const nav=make('header','tag-simple-nav');
@@ -160,8 +156,8 @@ if(view==='books'){
  document.addEventListener('gamelab:book-bank-accepted',event=>{
   if(event.detail?.editingExisting)show('✓ راجعت الأسئلة الجديدة. اضغط «حفظ التعديلات على النشاط نفسه».')
  });
-}else if(view==='live'||view==='students'||view==='mixer'){
- const section=$(view==='live'?'liveLab':view==='students'?'studentAssignments':'mixer');
+}else if(view==='mixer'){
+ const section=$('mixer');
  if(section){
   const quick=make('div','tag-simple-actions');
   const create=make('a','tag-simple-btn alt','🗂️ افتح مكتبتي أولًا');create.href='/tag-lab-library.html';quick.append(create);
