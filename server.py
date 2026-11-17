@@ -17,6 +17,8 @@ import game_lab_api
 game_lab_api.ensure_schema()
 import game_lab_pro
 game_lab_pro.init()
+import tag_lab_cards
+tag_lab_cards.init()
 import game_lab_live
 game_lab_live.init()
 import admin_api
@@ -445,6 +447,7 @@ class Handler(SimpleHTTPRequestHandler):
         u=urlparse(self.path)
         if admin_api.handle_get(self,u):return
         if platform_api.handle_get(self,u):return
+        if tag_lab_cards.handle_get(self,u):return
         if game_lab_api.handle_get(self,u):return
         if game_lab_pro.handle_get(self,u):return
         if game_lab_live.handle_get(self,u):return
@@ -573,16 +576,7 @@ class Handler(SimpleHTTPRequestHandler):
         u=urlparse(self.path)
         try: data=self.read_json()
         except Exception: return self.send_json({'ok':False,'error':'bad_json'},400)
-        if u.path=='/api/tag-independent/card/verify':
-            card=str(data.get('card') or '') if isinstance(data,dict) else ''
-            if solo_api.limited(self,card or 'empty'):
-                return self.send_json({'ok':False,'error':'rate_limited'},429)
-            try:ref=tag_card_client.verify(card)
-            except tag_card_client.CardNotFound:
-                return self.send_json({'ok':False,'error':'invalid_card'},403)
-            except tag_card_client.CardBridgeUnavailable:
-                return self.send_json({'ok':False,'error':'card_bridge_unavailable'},503)
-            return self.send_json({'ok':True,'version':1,'cardRef':ref})
+        if tag_lab_cards.handle_post(self,u,data):return
         if admin_api.handle_post(self,u,data):return
         if platform_api.handle_post(self,u,data):return
         if solo_api.handle_post(self,u,data):return
