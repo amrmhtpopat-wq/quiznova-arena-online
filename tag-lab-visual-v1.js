@@ -23,7 +23,7 @@
  let saved='';
  try{saved=localStorage.getItem(storageKey)||''}catch(_){}
  const darkPref=(typeof matchMedia!=='undefined')&&matchMedia('(prefers-color-scheme:dark)').matches;
- let theme=saved==='dark'||saved==='light'?saved:(darkPref?'dark':'light');
+ let theme=saved==='dark'||saved==='light'?saved:(currentPath==='/tag-lab-live-student.html'?'dark':(darkPref?'dark':'light'));
  function themeApply(mode){
   theme=mode;h.setAttribute('data-tag-theme',mode);
   d.querySelector('meta[name="theme-color"]')?.setAttribute('content',mode==='dark'?'#10112D':'#F8F9FF');
