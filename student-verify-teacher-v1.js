@@ -23,14 +23,14 @@ async function api(path,options={}){
 function notify(msg,isError=false){
  const out=el('verifyStatus');out.textContent=msg;out.classList.toggle('error',isError);
 }
-function render(){
+function render(showSummary=false){
  const label=el('verifyEnabledLabel');label.classList.toggle('is-on',state.enabled);
  label.textContent=state.enabled?'مفعّل — PIN مطلوب':'غير مفعّل';
  const toggle=el('verifyToggle');
  toggle.textContent=state.enabled?'تعطيل الحماية':'🛡️ تفعيل الحماية';
  toggle.disabled=state.busy||(!state.enabled&&(state.students===0||state.issued!==state.students));
  for(const id of ['verifyIssueMissing','verifyRotate','verifyUnlock'])el(id).disabled=state.busy;
- if(!state.busy)notify('البطاقات: '+state.students+' • PIN صادر: '+state.issued+' • '+(state.enabled?'الحماية تعمل عند بدء كل اختبار.':'يجب إصدار وتسليم الرموز قبل التفعيل.'));
+ if(showSummary&&!state.busy)notify('البطاقات: '+state.students+' • PIN صادر: '+state.issued+' • '+(state.enabled?'الحماية تعمل عند بدء كل اختبار.':'يجب إصدار وتسليم الرموز قبل التفعيل.'));
 }
 function hideSecrets(){
  state.rows=[];
@@ -62,7 +62,7 @@ async function refresh(){
  try{
   const r=await api('/api/teacher/student-verify');
   state.enabled=Boolean(r.enabled);state.students=Number(r.students)||0;state.issued=Number(r.issued)||0;
-  render();
+  render(true);
  }catch(e){notify(message(e),true)}
 }
 async function busy(action){
