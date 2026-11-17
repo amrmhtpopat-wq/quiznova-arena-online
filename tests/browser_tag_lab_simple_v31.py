@@ -98,11 +98,14 @@ try:
    assert len(check[0]['activity']['rows'][0]['choices'])==4,check
    assert check[0]['activity']['rows'][0]['difficulty']=='hard',check
    page.goto(base+'/tag-lab-games.html',wait_until='domcontentloaded')
-   page.locator('#gameGrid .game').first.wait_for(state='visible',timeout=13000)
+   page.locator('#catalog .tag-v32-game').first.wait_for(state='visible',timeout=13000)
+   assert page.locator('#catalog .tag-v32-game').count()==6
    assert page.locator('#gameGrid .game').count()==24
-   assert not page.locator('#gameGrid .game').nth(7).is_visible()
-   page.get_by_role('button',name='عرض جميع الألعاب الـ24').click()
-   assert page.locator('#gameGrid .game').nth(7).is_visible()
+   assert not page.locator('#gameGrid .game').first.is_visible()
+   page.get_by_role('button',name='عرض جميع القوالب الـ24').click()
+   assert page.locator('#tagV32AllModes').is_visible()
+   assert page.locator('#tagV32AllModes .tag-v32-option').count()==24
+   page.locator('#tagV32AllModes .tag-v32-close').click()
    # Mobile check: focused header can scroll horizontally without page overflow.
    phone=browser.new_context(viewport={'width':390,'height':844},is_mobile=True,has_touch=True).new_page()
    phone.on('pageerror',lambda e:errors.append('mobile:'+str(e)))
@@ -112,6 +115,6 @@ try:
    assert phone.locator('#bookLab').is_visible()
    assert not phone.locator('#catalog').is_visible()
    assert not errors,errors
-   print('PASS TAG LAB V31: seven standalone pages, books-to-builder-to-library, saved-bank edit, games and mobile.')
+   print('PASS TAG LAB V31 + V32: seven standalone pages, books-to-builder-to-library, saved-bank edit, games and mobile.')
   finally:browser.close()
 finally:http.shutdown();http.server_close();tmp.cleanup()
