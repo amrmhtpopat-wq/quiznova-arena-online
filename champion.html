@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive"><meta name="theme-color" content="#071c42">
+<title>CHAMPION TAG | بطولة التصفيات — TEACH AND GAME</title>
+<link rel="icon" type="image/svg+xml" href="/assets/brand/tag-icon.svg">
+<link rel="stylesheet" href="/champion-tag.css?v=1">
+<script defer src="/champion-bracket.js?v=1"></script>
+<script defer src="/champion-tag.js?v=1"></script>
+</head><body>
+<header class="top wrap"><a class="brand" href="/?teacher=1" aria-label="العودة لمنصة TAG"><img class="brand-img" src="/assets/brand/tag-logo-dark-v21.png" alt="شعار TEACH AND GAME TAG"></a>
+<nav class="head-actions"><a href="/?teacher=1">لوحة المعلم</a><a href="/studio.html#live">التحدي المباشر</a><a href="/studio.html#library">اختباراتي</a></nav></header>
+<main class="wrap">
+<section class="hero"><div><span class="eyebrow">CHAMPION TAG • KNOCKOUT TOURNAMENT</span><h1>CHAMPION <em>TAG</em></h1><p><strong>بطولات TAG — نظام التصفيات</strong></p><p>أنشئ بطولة للشعب أو الفرق أو الطلاب، واختر القرعة العشوائية أو حدّد المواجهات بنفسك. يفوز أحد الطرفين في كل تحدٍ مباشر ليتأهل إلى الدور التالي حتى النهائي.</p></div><div class="hero-trophy" aria-hidden="true">🏆</div></section>
+<div id="championLoading" class="panel" role="status">جارٍ التحقق من حساب المعلم وتحميل البطولات...</div>
+<div id="championApp" hidden>
+<div class="tabs" role="tablist" aria-label="أقسام البطولات">
+<button class="tab active" id="tabCreate" type="button">＋ بطولة جديدة</button>
+<button class="tab" id="tabArchive" type="button">🏆 بطولاتي المحفوظة</button>
+<button class="tab" id="tabBracket" type="button">📊 جدول التصفيات</button>
+</div>
+<section class="create-screen panel" id="createScreen" aria-label="إنشاء بطولة جديدة">
+<h2>إنشاء بطولة CHAMPION TAG</h2><p class="muted">احفظ اختبارك أولًا في استوديو TAG، ثم اختره هنا لتُستخدم أسئلته في مواجهات البطولة.</p>
+<form id="championCreateForm">
+<div class="form-grid">
+<label class="field"><span>اسم البطولة</span><input id="championTitle" maxlength="100" value="بطولة أبطال TAG" required></label>
+<label class="field"><span>نوع المشاركين</span><select id="championKind"><option value="classes">الشعب الصفية</option><option value="teams">الفرق</option><option value="students">الطلاب (منافسة فردية)</option></select></label>
+<label class="field"><span>الاختبار المستخدم في المباريات</span><select id="championQuiz" required><option value="">جارٍ تحميل الاختبارات...</option></select></label>
+<label class="field"><span>طريقة تحديد المواجهات</span><select id="championSeeding"><option value="random">قرعة عشوائية</option><option value="manual">تحديد المواجهات يدويًا</option></select></label>
+<label class="field wide-field"><span>أسماء المشاركين — اسم واحد في كل سطر (من 2 إلى 32)</span><textarea id="championParticipants" rows="7" maxlength="2000" placeholder="التاسع أ&#10;التاسع ب&#10;الثامن أ&#10;الثامن ب" required></textarea></label>
+</div>
+<p id="entrantsCount" class="hint">يقبل النظام من مشاركَيْن إلى 32 مشاركًا. يتأهل بعض المشاركين تلقائيًا عندما لا يكون العدد قوة للعدد 2.</p>
+<div id="manualFixtures" class="manual-pairs" hidden></div>
+<div id="championCreateError" class="error" role="alert" hidden></div>
+<div class="form-actions"><button class="btn primary" type="submit" id="createTournamentButton">🏁 إنشاء جدول التصفيات</button><a class="btn" href="/studio.html#builder">＋ إنشاء اختبار في الاستوديو</a></div>
+</form></section>
+<section class="library-screen panel" id="archiveScreen" hidden><div class="bracket-head"><h2>بطولاتي المحفوظة</h2><button class="btn" type="button" id="refreshTournaments">تحديث القائمة ↻</button></div><div id="championArchive" class="library"></div></section>
+<section class="bracket-screen" id="bracketScreen" hidden>
+<div class="panel">
+<div class="bracket-head"><div><span class="eyebrow">CHAMPIONSHIP BRACKET</span><h2 id="currentTournamentTitle">جدول التصفيات</h2><p id="currentTournamentMeta" class="muted">اختر بطولة لعرض مواجهاتها.</p></div>
+<div class="row-actions" style="margin:0"><button class="btn" type="button" id="openPublicBoard">📺 شاشة عرض التصفيات</button><button class="btn" type="button" id="copyPublicBoard">🔗 نسخ رابط العرض</button><button class="btn" type="button" onclick="window.print()">🖨 طباعة</button></div></div>
+<div id="bracketCanvas" class="bracket-viewport" aria-label="مخطط تصفيات البطولة"></div>
+<p class="hint">اضغط على أي مواجهة لفتح تفاصيلها. ينقل النظام الفائز تلقائيًا إلى المواجهة التالية بعد اعتماد نتيجتها.</p>
+</div>
+<section class="match-section"><div class="panel" id="championMatchDetails"><h3>اختر مواجهة</h3><p class="muted">اضغط على إحدى مواجهات جدول التصفيات لتشغيل التحدي المباشر أو مشاهدة نتيجتها.</p></div>
+<div class="panel live-pane" id="championLiveHost"><h3>ساحة التحدي المباشر</h3><p class="muted">تظهر غرفة المباراة ورمز QR والتحكم بالأسئلة هنا بعد إنشاء مواجهة.</p></div></section>
+</section>
+</div>
+<div class="toast" id="championToast" hidden role="status"></div>
+</main></body></html>
