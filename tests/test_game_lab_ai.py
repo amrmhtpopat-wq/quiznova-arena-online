@@ -22,15 +22,15 @@ class SourceGroundingTests(unittest.TestCase):
 
     def test_page_balancing_and_bounds(self):
         book={'page_data':json.dumps(self.pages,ensure_ascii=False)}
-        source,pages=selected_ai_source(book,1,2,json.loads)
+        source,pages=selected_ai_source(book,1,2,lambda value,default:json.loads(value) if value else default)
         self.assertIn('[صفحة 1]',source)
         self.assertIn('[صفحة 2]',source)
         self.assertEqual(len(pages),2)
         with self.assertRaisesRegex(ValueError,'invalid_pages'):
-            selected_ai_source(book,2,3,json.loads)
+            selected_ai_source(book,2,3,lambda value,default:json.loads(value) if value else default)
         many={'page_data':json.dumps([{'p':i,'text':'نص تعليمي واضح.'} for i in range(1,28)],ensure_ascii=False)}
         with self.assertRaisesRegex(ValueError,'ai_too_many_pages'):
-            selected_ai_source(many,1,27,json.loads)
+            selected_ai_source(many,1,27,lambda value,default:json.loads(value) if value else default)
 
     def test_discard_fabricated_and_wrong_page_quotes(self):
         good='الادخار هو الاحتفاظ بجزء من الدخل لاستخدامه في المستقبل.'
