@@ -76,10 +76,14 @@ try:
    assert page.locator('#playOverlay').get_attribute('data-v9-mode')=='pairs',page.locator('#playTitle').inner_text()
    page.locator('#closePlay').click()
    assert page.locator('#activityData').input_value()==raw
+   page.wait_for_function("()=>!document.fullscreenElement&&document.querySelector('#playOverlay').hidden",timeout=7000)
    page.locator('#cloudEmail').fill(email)
+   after_email=page.locator('#cloudEmail').input_value()
    page.locator('#cloudPassword').fill(password)
-   assert page.locator('#cloudEmail').input_value()==email,('email changed before login',page.locator('#cloudEmail').input_value())
-   assert page.locator('#cloudPassword').input_value()==password,'password changed before login'
+   after_both=(page.locator('#cloudEmail').input_value(),page.locator('#cloudPassword').input_value()==password)
+   assert after_email==email and after_both==(email,True),{
+       'email_after_first':after_email,'after_password':after_both,
+       'overlay_closed':page.locator('#playOverlay').get_attribute('hidden') is not None}
    page.locator('#cloudSignIn').click()
    page.wait_for_timeout(650)
    login_state=page.evaluate("""()=>({
