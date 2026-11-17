@@ -82,6 +82,22 @@ try:
    assert rows[0]['sourceQuote'],rows
    assert rows[1]['questionType']=='true_false' and rows[1]['a']=='صح',rows
    assert rows[1]['choices']==['صح','خطأ'],rows
+   # Edit this saved question bank without another AI request or losing its activity ID.
+   page.locator('#cloudList .cloud-activity button').filter(has_text='تعديل أنواع الأسئلة').click()
+   editable=page.locator('#labBookPreview .tag-book-review-card').first
+   assert editable.locator('.tag-book-choice').nth(1).input_value()==correct
+   editable.locator('.tag-book-choice').nth(3).fill('إيقاف الإنفاق')
+   page.locator('#labBookApprove').click()
+   page.locator('#cloudSave').click()
+   page.wait_for_function("()=>document.querySelector('#cloudMessage').textContent.includes('حُفظ')",timeout=13000)
+   updated=page.evaluate("""async () => {
+    const response=await fetch('/api/game-lab/teacher/list',{
+      headers:{Authorization:'Bearer '+localStorage.getItem('qn9_teacher_token')}});
+    return (await response.json()).activities[0].activity.rows;
+   }""")
+   assert updated[0]['choices'][3]=='إيقاف الإنفاق',updated
+   assert updated[0]['questionType']=='mcq' and updated[1]['questionType']=='true_false',updated
+   assert page.locator('#cloudList .cloud-activity').count()==1
    page.locator('#cloudList .cloud-activity button').filter(has_text='نشر').click()
    page.locator('#cloudShare').wait_for(state='visible',timeout=13000)
    page.wait_for_function("()=>document.querySelector('#labAssignActivity').options.length>1")
