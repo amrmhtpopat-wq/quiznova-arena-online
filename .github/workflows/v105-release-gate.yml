@@ -44,6 +44,11 @@ jobs:
           node --check curriculum_bank.js
           node --check curriculum_plus.js
           node --check media_library.js
+      - name: TAG Student Verify isolated HTTP/PIN/concurrency tests
+        run: |
+          python -m unittest discover -s tests -p 'test_student_verify_v1.py' -v
+          python -m unittest discover -s tests -p 'test_student_solo_v120.py' -v
+          python -m unittest discover -s tests -p 'test_student_grade_scope_v128.py' -v
       - name: Security, legacy games, typography, card XP and release regression tests
         run: |
           python -m unittest discover -s tests -p 'test_security.py' -v
@@ -56,7 +61,6 @@ jobs:
           python -m unittest discover -s tests -p 'test_booyah_xp.py' -v
           python -m unittest discover -s tests -p 'test_mascot_badge_v112.py' -v
           python -m unittest discover -s tests -p 'test_student_solo_v120.py' -v
-          python -m unittest discover -s tests -p 'test_student_verify_v1.py' -v
           python -m unittest discover -s tests -p 'test_student_grade_scope_v128.py' -v
           python -m unittest discover -s tests -p 'test_admin_v1.py' -v
           python -m unittest discover -s tests -p 'test_admin_v2.py' -v
