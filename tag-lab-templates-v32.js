@@ -50,7 +50,7 @@ function choose(id,go=false){
  if(go)location.href='/tag-lab-create.html';
 }
 function demo(id,forceDemo){
- choose(id,false);
+ // A preview is not a commitment: only the Choose button changes the selected game.
  if(typeof window.TAG_LAB_V32_PREVIEW!=='function')return;
  const ok=window.TAG_LAB_V32_PREVIEW(id,forceDemo);
  if(!ok)return;
@@ -161,7 +161,6 @@ if(view==='games'){
   const after=builder.nextElementSibling;builder.after(modebar);
   const select=$('cloudMode');if(select)select.addEventListener('change',()=>{if(byId.has(select.value)){choice=select.value;
     document.querySelectorAll('[data-v32-bar]').forEach(e=>e.textContent='لديك أسئلة؟ جرّبها بلعبة '+byId.get(choice).name)}});
-  const originalChoose=choose;
  }
 }
 choose(choice,false);
