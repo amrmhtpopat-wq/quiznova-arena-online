@@ -1,0 +1,300 @@
+/* CHAMPION TAG V2 — World Cup Arena
+   High-contrast editorial UI, glowing playoffs, original stadium graphics in CSS.
+   Styles are scoped to championship pages; standard TAG pages are untouched. */
+body.champion-portal,body.champion-board{
+ --wc-navy:#030f25;--wc-blue:#081d41;--wc-gold:#f9d27a;--wc-cyan:#8be8ff;--wc-mint:#80e2bb;
+ background:
+  radial-gradient(ellipse 70% 25% at 50% -6%,#347da048,transparent 80%),
+  radial-gradient(ellipse 50% 44% at 100% 50%,#083d666a,transparent 95%),
+  radial-gradient(ellipse 60% 30% at 0% 98%,#0d4f5d50,transparent 100%),
+  linear-gradient(160deg,#020b1e 0%,#081c3a 48%,#03142c 100%)!important;
+ color:#f6fbff;
+}
+body.champion-portal::before,body.champion-board::before{
+ content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+ background-image:radial-gradient(#a4d4f3 0.6px,transparent 0.6px);background-size:26px 26px;
+ opacity:.12;mask-image:linear-gradient(180deg,#000,transparent 62%);
+}
+:is(.champion-portal,.champion-board) .wrap{width:min(1540px,calc(100% - clamp(20px,4.1vw,84px)))}
+:is(.champion-portal,.champion-board) header.top{
+ min-height:79px;padding:7px 0 10px;border-bottom:1px solid #bedcdd2c;
+ position:relative;z-index:4;
+}
+:is(.champion-portal,.champion-board) header.top::after{
+ content:"";width:128px;height:2px;position:absolute;bottom:-1px;right:0;
+ background:linear-gradient(90deg,transparent,#f5d58c,transparent);
+}
+:is(.champion-portal,.champion-board) .brand-img{
+ width:clamp(160px,17vw,237px);height:67px;object-fit:contain;filter:drop-shadow(0 4px 15px #1b6cc375);
+}
+:is(.champion-portal,.champion-board) .head-actions a:not(.brand),
+:is(.champion-portal,.champion-board) .head-actions .btn{
+ background:linear-gradient(145deg,#142b4e,#07152c)!important;
+ border:1px solid #b1dbea45!important;color:#e1f5ff!important;
+ border-radius:999px!important;padding:6px 17px!important;min-height:41px;
+ transition:transform .2s,background .2s,border-color .2s,box-shadow .2s;
+}
+:is(.champion-portal,.champion-board) .head-actions :is(a,button):hover{
+ transform:translateY(-2px);border-color:#f5d27f!important;box-shadow:0 5px 22px #dfb95a28;
+}
+:is(.champion-portal,.champion-board) .hero.wc-worldcup-hero{
+ position:relative;isolation:isolate;overflow:hidden;
+ display:grid;grid-template-columns:minmax(0,1.35fr) minmax(250px,.65fr);
+ align-items:center;gap:0;min-height:346px;margin:18px 0 15px;
+ padding:clamp(25px,4vw,56px) clamp(25px,4vw,60px);
+ border-radius:24px;border:1px solid #b9d4cd55;
+ background:
+   radial-gradient(ellipse 60% 85% at 84% 48%,#136388b4,transparent 85%),
+   linear-gradient(113deg,#091b39 10%,#103862 48%,#061329 100%)!important;
+ box-shadow:0 32px 85px #0008,inset 0 0 100px #3e8db616;
+}
+:is(.champion-portal,.champion-board) .hero.wc-worldcup-hero::before{
+ content:"";position:absolute;inset:-25%;z-index:-1;pointer-events:none;
+ transform:rotate(-9deg);opacity:.6;
+ background:repeating-linear-gradient(100deg,transparent 0 115px,#a2c3d80a 118px 122px,transparent 125px 215px);
+}
+.wc-worldcup-hero::after{
+ content:"";height:4px;position:absolute;inset:auto 10% 0 10%;
+ background:linear-gradient(90deg,transparent,#e6c0759e,#60e5daaa,transparent);
+ filter:blur(1px);
+}
+.wc-hero-copy{position:relative;z-index:2;max-width:800px}
+.wc-live-line{
+ display:flex;flex-wrap:wrap;align-items:center;gap:10px;color:#8eeef4;
+ font-size:clamp(10px,.85vw,12px);font-weight:900;letter-spacing:1.6px;
+ direction:ltr;justify-content:flex-end;margin-bottom:13px;
+}
+.wc-signal{
+ display:inline-block;width:8px;height:8px;border-radius:50%;
+ background:#a0f5d0;box-shadow:0 0 0 5px #7ff5c121,0 0 18px #7df4b7;
+ animation:wc-pulse 2.4s ease-in-out infinite;
+}
+.wc-season{direction:rtl;letter-spacing:0;font-size:11px;color:#d6e5d4;border:1px solid #dbd0a44b;background:#e8d18c16;border-radius:99px;padding:1px 9px}
+.wc-worldcup-hero .eyebrow{color:#ffde94!important;font-size:clamp(11px,1vw,13px);letter-spacing:2px}
+.wc-worldcup-hero h1{
+ font-family:"Segoe UI",Tahoma,Arial,sans-serif;
+ font-size:clamp(44px,5.9vw,88px)!important;font-weight:1000;
+ color:#fff!important;letter-spacing:-.04em!important;line-height:1.15!important;
+ margin:9px 0 13px!important;white-space:normal;
+ text-shadow:0 5px 30px #0e193570;
+}
+.wc-worldcup-hero h1 em{
+ background:linear-gradient(135deg,#fff2bc 0%,#fad474 30%,#c89c3e 73%,#fff1ab 100%)!important;
+ background-clip:text!important;-webkit-background-clip:text!important;
+ color:transparent!important;-webkit-text-fill-color:transparent!important;
+ filter:drop-shadow(0 4px 20px #ffe2933a);
+}
+.wc-worldcup-hero .wc-hero-title{font-size:clamp(16px,1.55vw,23px)!important;font-weight:1000;color:#fff3bd!important;line-height:1.4;margin:0 0 6px!important}
+.wc-worldcup-hero .wc-hero-description{color:#d8eafa!important;line-height:1.8;font-size:clamp(13px,1vw,16px);max-width:700px;margin:0 0 18px}
+.wc-hero-buttons{display:flex;gap:9px;flex-wrap:wrap}
+.wc-hero-buttons .btn{
+ min-height:46px;border-radius:11px!important;
+ font-size:clamp(12px,1.2vw,15px);padding:8px 18px;
+ transition:transform .19s,box-shadow .19s,background .19s;
+}
+.wc-hero-buttons .btn:hover{transform:translateY(-2px);box-shadow:0 10px 26px #0007}
+.wc-hero-buttons .btn.gold{
+ background:linear-gradient(110deg,#fff0ba,#facb67 60%,#d19b3f)!important;
+ color:#112c40!important;box-shadow:0 6px 22px #e2a84236;
+}
+.wc-glass-btn{background:#08182bbf!important;border-color:#b2e9ea75!important}
+.wc-hero-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px}
+.wc-hero-tags span{border:1px solid #c6e8e044;border-radius:99px;background:#081c3588;color:#d7eff5;font-size:11px;font-weight:900;padding:3px 11px}
+.wc-art{position:relative;min-height:270px;height:100%;display:flex;align-items:center;justify-content:center;z-index:1;pointer-events:none}
+.wc-art-halo{
+ position:absolute;width:min(315px,95%);aspect-ratio:1;border-radius:50%;
+ background:radial-gradient(circle at 50% 52%,#f2d58b3f 0%,#d7ca9c18 31%,#3bd1dd17 47%,transparent 65%);
+ box-shadow:0 0 90px 55px #d6d08510;
+}
+.wc-art-orbit{position:absolute;border:1px solid #e5d29d65;border-radius:50%;width:min(310px,95%);aspect-ratio:1;transform:rotate(-18deg) scaleY(.78)}
+.wc-art-orbit.orbit-2{border-color:#b9ebed44;transform:rotate(35deg) scaleX(.85);width:min(350px,99%)}
+.wc-art-cup{position:relative;font-size:clamp(102px,13vw,204px);line-height:1;z-index:2;filter:drop-shadow(0 21px 19px #0008) drop-shadow(0 2px 19px #ffdb6b94);animation:wc-cup-float 4s ease-in-out infinite}
+.wc-art-base{position:absolute;bottom:12%;left:50%;transform:translateX(-50%);width:50%;height:20px;border-radius:100%;background:#ffda7f5a;filter:blur(18px);z-index:0}
+.wc-art-caption{
+ position:absolute;bottom:3%;left:0;right:0;text-align:center;
+ color:#e9d9a8;font-size:10px;font-weight:1000;letter-spacing:2px;direction:ltr;
+}
+.wc-art-spark{position:absolute;color:#fbe69f;z-index:3;font-size:25px;text-shadow:0 0 23px #eac76a;animation:wc-twinkle 2.7s ease-in-out infinite}
+.wc-art-spark.spark-1{top:7%;right:18%}.wc-art-spark.spark-2{top:30%;left:11%;animation-delay:.9s}.wc-art-spark.spark-3{bottom:24%;right:12%;animation-delay:1.4s}
+.wc-pitch-lines{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.15;
+ background:linear-gradient(90deg,transparent 49.9%,#b0fff5 50%,transparent 50.1%),
+ radial-gradient(circle at 65% 90%,transparent 0 95px,#b9fff0 97px 99px,transparent 101px);}
+.wc-worldcup-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0 0 23px}
+.wc-stat{
+ position:relative;overflow:hidden;min-width:0;padding:16px 21px 14px;
+ border:1px solid #6fbed852;border-radius:16px;
+ background:linear-gradient(155deg,#123c66ba,#071c39c9);
+ box-shadow:0 8px 27px #0003;
+}
+.wc-stat::before{content:"";position:absolute;right:0;top:0;width:60px;height:2px;background:#7ddcd8}
+.wc-stat>span{display:block;font-size:11px;color:#a6d4eb;font-weight:800}
+.wc-stat strong{font-size:clamp(21px,2.65vw,38px);line-height:1.3;display:block;margin:5px 0;color:#f4fbff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wc-stat small{font-size:11px;color:#bbd2e3;font-weight:700}
+.wc-stat-gold{background:linear-gradient(145deg,#5541288c,#121c35d0);border-color:#e6c2787a}
+.wc-stat-gold::before{background:#ffe6a1}.wc-stat-gold strong{color:#f8d78a;font-size:clamp(16px,2vw,27px)}
+.wc-tabbar{padding:6px;border:1px solid #8fbccb39;border-radius:15px;background:#061a32aa;margin:16px 0!important}
+.wc-tabbar .tab{flex:1;background:transparent;border:1px solid transparent;border-radius:10px!important;font-size:clamp(12px,1.1vw,15px)!important}
+.wc-tabbar .tab.active{background:linear-gradient(115deg,#284774,#17558a)!important;border-color:#b3dbdc68!important;box-shadow:inset 0 1px #c9f6ff30,0 5px 13px #0004!important}
+:is(.champion-portal,.champion-board) .panel{
+ background:linear-gradient(145deg,#0c2245ee,#0b254aeb);
+ border:1px solid #9dbfcb3e;border-radius:17px;box-shadow:0 14px 43px #0004
+}
+:is(.champion-portal,.champion-board) .panel h2{color:#fff8dd;font-size:clamp(20px,2.05vw,28px)}
+.wc-section-eyebrow{font:900 11px Tahoma,Arial,sans-serif;color:#eaca79;letter-spacing:1.2px;direction:ltr;display:block;text-align:right;margin-bottom:8px}
+.champion-portal .create-screen.panel{border-color:#d5b8695c}
+.champion-portal .field span{color:#e9f1f8}
+.champion-portal input,.champion-portal select,.champion-portal textarea{
+ background:#061732ed;border:1px solid #8aafbf67;box-shadow:inset 0 2px 11px #0003;
+ border-radius:10px;color:#f8fcff
+}
+.champion-portal input:focus,.champion-portal select:focus,.champion-portal textarea:focus{border-color:#e6c985;box-shadow:0 0 0 3px #efc96928}
+:is(.champion-portal,.champion-board) .btn.primary{background:linear-gradient(112deg,#e0d48a,#91e0bd)!important;color:#11313d}
+:is(.champion-portal,.champion-board) .btn.gold{background:linear-gradient(110deg,#fff1bf,#f3c660 65%,#d19f42)!important;color:#21283e!important}
+.champion-portal .library-item{background:linear-gradient(153deg,#14436a,#081b36);border:1px solid #81b2bd5f;border-radius:14px;box-shadow:0 7px 19px #0003}
+.champion-portal .library-item:hover,.champion-portal .library-item.active{border-color:#edd48f;background:linear-gradient(143deg,#1c5679,#182a43);box-shadow:0 0 0 1px #ffd27958,0 12px 32px #0005;transform:translateY(-1px)}
+.champion-portal .library-item strong{font-size:19px}
+.wc-bracket-panel{
+ position:relative;overflow:hidden;
+ background:linear-gradient(160deg,#071b39,#102b51 48%,#061a36)!important;
+ border-color:#d9b87456!important
+}
+.wc-bracket-panel::before{
+ content:"";pointer-events:none;position:absolute;inset:0;opacity:.2;
+ background:linear-gradient(0deg,transparent,#162f55),repeating-linear-gradient(90deg,transparent 0 114px,#f5e2b708 115px 117px,transparent 119px 180px);
+}
+.wc-bracket-panel>*{position:relative}
+.wc-bracket-panel .bracket-head{border-bottom:1px solid #bad5d731;padding-bottom:15px;margin-bottom:17px}
+.wc-bracket-panel .bracket-head h2{font-size:clamp(22px,2.3vw,33px);letter-spacing:.05px}
+.wc-bracket-panel .bracket-viewport{padding:18px 10px 28px;scrollbar-color:#dbbb70 #142e51}
+.wc-bracket-panel .bracket{
+ gap:clamp(16px,2vw,32px);padding:6px clamp(16px,2vw,30px);
+ align-items:stretch
+}
+.wc-bracket-panel .round-col{min-height:440px;width:210px}
+.wc-bracket-panel .round-title{
+ width:max-content;min-width:120px;align-self:center;
+ font-size:11px;color:#fae4a4;text-transform:uppercase;
+ letter-spacing:.4px;direction:rtl;padding:6px 14px;margin-bottom:11px;
+ border-radius:999px;border:1px solid #d3ba7470;background:#594a2652;white-space:nowrap
+}
+.wc-bracket-panel .fixtures{gap:15px}
+.wc-bracket-panel .match-card{
+ position:relative;
+ background:linear-gradient(140deg,#143d69,#0c2344 67%,#071831)!important;
+ border:1px solid #77a9c581!important;border-radius:13px;min-height:106px;
+ box-shadow:0 8px 24px #0007,inset 0 1px #aed7e51c;
+ padding:11px 12px;transition:transform .2s,border-color .2s,box-shadow .2s;
+}
+.wc-bracket-panel .match-card::before{
+ content:"";width:4px;position:absolute;top:17%;bottom:17%;right:0;border-radius:4px 0 0 4px;
+ background:#6bc8db;opacity:.58
+}
+.wc-bracket-panel .match-card.interactive:hover,.wc-bracket-panel .match-card.active{
+ transform:translateY(-3px);border-color:#f6d17c!important;
+ box-shadow:0 0 0 1px #ead08c7f,0 12px 31px #0009,0 0 28px #efc97623!important
+}
+.wc-bracket-panel .match-card.live{
+ border-color:#67f3d6!important;box-shadow:0 0 0 1px #86f5d66b,0 0 30px #69ffca2a,0 11px 25px #0009!important;
+ animation:wc-live-breathe 2.8s ease-in-out infinite
+}
+.wc-bracket-panel .match-card.live::before{background:#8cf7ca;opacity:1}
+.wc-bracket-panel .match-card.finished::before{background:#f9d485;opacity:1}
+.wc-bracket-panel .match-card.bye{border-style:dashed}
+.wc-bracket-panel .fixture-num{
+ font-size:10px;letter-spacing:.12px;color:#b5d7e8;direction:ltr;
+ padding-bottom:7px;border-bottom:1px solid #d7eaff1e;margin-bottom:4px
+}
+.wc-bracket-panel .fixture-team{font-size:clamp(12px,1.1vw,15px);min-height:24px}
+.wc-bracket-panel .fixture-team.winner{color:#ffe29d}
+.wc-bracket-panel .fixture-vs{
+ font-size:10px;line-height:1.6;color:#f6d384;font-weight:1000;
+ text-shadow:0 0 18px #deb55a77
+}
+.wc-bracket-panel .center-final{
+ width:250px;min-width:250px;gap:11px;
+ background:radial-gradient(ellipse at 50% 41%,#cdaa3c25,transparent 65%);
+ border-radius:130px 130px 20px 20px
+}
+.wc-bracket-panel .center-final .cup{
+ font-size:120px;line-height:1;
+ text-shadow:0 6px 40px #ffda864d;
+ animation:wc-cup-float 4s ease-in-out infinite
+}
+.wc-bracket-panel .champion-name{
+ min-width:220px;max-width:260px;font-size:13px;
+ border:1px solid #e4c57999;background:linear-gradient(115deg,#a37b3244,#3c321cbb);
+ box-shadow:inset 0 1px #fce5a02d;color:#ffedb7;border-radius:11px;white-space:normal;overflow-wrap:anywhere
+}
+.wc-bracket-panel .wing .round-col:not(:last-child) .match-card::after{
+ content:"";position:absolute;top:50%;width:13px;border-top:2px solid #e6c77b78
+}
+.wc-bracket-panel .wing.left .round-col:not(:last-child) .match-card::after{left:-15px}
+.wc-bracket-panel .wing.right .round-col:not(:last-child) .match-card::after{right:-15px}
+.wc-match-arena .panel{border-top:2px solid #bca06570}
+.wc-match-arena .face-off{padding:14px;background:linear-gradient(110deg,#0a3059,#193252);border:1px solid #e3c7745b;border-radius:14px;font-weight:1000}
+.wc-match-arena .face-off .versus{background:linear-gradient(#fbe4b0,#e5af51);box-shadow:0 3px 17px #c89e4788}
+.wc-match-arena .scoreboard{margin:14px 0}
+.wc-match-arena .score-team{border-color:#e6c16e5f;background:#081f3e;padding:clamp(9px,1vw,18px)}
+.wc-match-arena .score-team strong{color:#ffecb6}
+.wc-match-arena .q-line{
+ padding:16px 17px;border-right:4px solid #ffd376;
+ border-radius:10px;background:#06142dbf;line-height:1.6
+}
+.wc-match-arena .q-line b{font-size:clamp(19px,2.1vw,30px)}
+.wc-match-arena .room-code{color:#ffe8a7;letter-spacing:5px;font-size:clamp(25px,3vw,41px)}
+.wc-match-arena .member{background:#081c36;border-color:#8ccbd04e}
+.champion-board .hero.wc-worldcup-board-hero{min-height:225px;padding:20px 42px;margin:11px 0 12px}
+.champion-board .wc-worldcup-board-hero h1{font-size:clamp(31px,4vw,56px)!important}
+.champion-board .wc-worldcup-board-hero .wc-art{min-height:190px}
+.champion-board .wc-worldcup-board-hero .wc-art-cup{font-size:clamp(70px,9vw,117px)}
+.champion-board .wc-bracket-panel .round-col{min-height:min(65vh,640px)}
+.champion-board .wc-bracket-panel .match-card{min-height:90px}
+.champion-board .wc-bracket-panel .round-title{font-size:clamp(10px,1vw,13px)}
+@keyframes wc-pulse{0%,100%{box-shadow:0 0 0 5px #7ff5c121,0 0 14px #7df4b7}50%{box-shadow:0 0 0 9px #7ff5c113,0 0 25px #7df4b7}}
+@keyframes wc-cup-float{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(2deg)}}
+@keyframes wc-live-breathe{0%,100%{box-shadow:0 0 0 1px #86f5d66b,0 0 30px #69ffca2a,0 11px 25px #0009}50%{box-shadow:0 0 0 1px #86f5d6bf,0 0 42px #69ffca54,0 11px 25px #0009}}
+@keyframes wc-twinkle{0%,100%{opacity:.45;transform:scale(.9)}50%{opacity:1;transform:scale(1.3)}}
+@media(max-width:960px){
+ .wc-worldcup-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ :is(.champion-portal,.champion-board) .hero.wc-worldcup-hero{grid-template-columns:minmax(0,1fr) 225px;min-height:315px;padding:26px}
+ .wc-art .wc-art-cup{font-size:123px}
+ .wc-worldcup-hero h1{font-size:clamp(36px,6.4vw,67px)!important}
+ .wc-bracket-panel .round-col{min-height:380px}
+ .champion-board .wc-bracket-panel .round-col{min-height:360px}
+}
+@media(max-width:660px){
+ :is(.champion-portal,.champion-board) .wrap{width:calc(100% - 22px)}
+ :is(.champion-portal,.champion-board) .hero.wc-worldcup-hero{
+  grid-template-columns:minmax(0,1fr);min-height:0;padding:22px 18px 24px
+ }
+ .wc-hero-copy{max-width:100%}
+ .wc-worldcup-hero h1{font-size:clamp(37px,10vw,57px)!important}
+ .wc-worldcup-hero .wc-hero-description{font-size:13px;line-height:1.7}
+ .wc-art{display:none}
+ .wc-hero-buttons .btn{flex:1 1 42%;font-size:12px}
+ .wc-hero-tags{margin-top:13px}
+ .wc-live-line{justify-content:flex-start;font-size:9px;letter-spacing:.6px}
+ .wc-season{display:none}
+ .wc-stat{padding:13px 12px}
+ .wc-stat strong{font-size:22px}
+ .wc-stat-gold strong{font-size:15px}
+ .wc-tabbar .tab{padding:8px 9px;line-height:1.45}
+ .champion-board .hero.wc-worldcup-board-hero{padding:19px}
+ .wc-bracket-panel .bracket-head{align-items:flex-start}
+ .wc-bracket-panel .bracket{padding:2px 5px}
+ .wc-bracket-panel .round-col{width:185px}
+ .wc-bracket-panel .round-col .match-card{width:185px}
+ .wc-bracket-panel .center-final{width:210px;min-width:210px}
+ .wc-bracket-panel .center-final .cup{font-size:94px}
+ .wc-bracket-panel .champion-name{min-width:186px}
+}
+@media(prefers-reduced-motion:reduce){
+ .wc-art-cup,.wc-art-spark,.wc-signal,.wc-bracket-panel .match-card.live{animation:none!important}
+ .wc-bracket-panel .match-card,.wc-hero-buttons .btn{transition:none!important}
+}
+@media print{
+ :is(.champion-portal,.champion-board) .hero.wc-worldcup-hero,.champion-portal .wc-worldcup-stats{display:none!important}
+ .wc-bracket-panel{background:#fff!important;color:#111!important}
+ .wc-bracket-panel .match-card{background:#fff!important;color:#111!important;border-color:#555!important}
+ .wc-bracket-panel .fixture-team,.wc-bracket-panel .fixture-num{color:#111!important}
+}
