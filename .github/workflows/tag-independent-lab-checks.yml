@@ -26,7 +26,7 @@ jobs:
           python - <<'PY'
           import re
           from pathlib import Path
-          for name in ('tag-lab-assign','tag-lab-student'):
+          for name in ('tag-lab-assign','tag-lab-student','tag-lab-account'):
               content=Path(name+'.html').read_text(encoding='utf-8')
               scripts=re.findall(r'<script[^>]*>(.*?)</script>',content,re.S)
               assert len(scripts)==1, (name,len(scripts))
@@ -34,3 +34,16 @@ jobs:
           PY
           node --check /tmp/tag-lab-assign.js
           node --check /tmp/tag-lab-student.js
+          node --check /tmp/tag-lab-account.js
+      - name: Check independent routing excludes obsolete endpoints
+        run: |
+          python - <<'PY'
+          import os, tag_independent_mode as m
+          os.environ['TAG_LAB_ONLY_MODE']='1'
+          assert not m.allowed('GET','/tag-lab-live.html')
+          assert not m.allowed('GET','/tag-lab-students.html')
+          assert not m.allowed('POST','/api/game-lab/live/create')
+          assert not m.allowed('GET','/api/game-lab/pro/assignments')
+          assert m.allowed('POST','/api/tag-independent/student/login')
+          assert m.allowed('GET','/tag-lab-account.html')
+          PY
