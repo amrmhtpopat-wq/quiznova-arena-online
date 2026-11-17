@@ -111,7 +111,7 @@ document.addEventListener('click',event=>{
   label();if(audioOn&&overlay&&!overlay.hidden)void fanfare();
  }
 });
-document.addEventListener('pointerdown',()=>{if(audioOn)void unlock()},{once:true});
+document.addEventListener('pointerdown',event=>{if(event.target.closest('#championSound,#boardSound'))return;if(audioOn)void unlock()},{once:true});
 document.addEventListener('keydown',event=>{
  if(event.key==='Escape'&&overlay&&!overlay.hidden)close();
  if(event.key==='Tab'&&overlay&&!overlay.hidden){
