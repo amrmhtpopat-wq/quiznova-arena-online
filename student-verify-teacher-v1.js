@@ -30,6 +30,7 @@ function render(showSummary=false){
  toggle.textContent=state.enabled?'تعطيل الحماية':'🛡️ تفعيل الحماية';
  toggle.disabled=state.busy||(!state.enabled&&(state.students===0||state.issued!==state.students||!el('verifyDelivered').checked));
  for(const id of ['verifyIssueMissing','verifyRotate','verifyUnlock'])el(id).disabled=state.busy;
+ el('verifyReissueAll').disabled=state.busy||state.enabled||state.students===0;
  if(showSummary&&!state.busy)notify('البطاقات: '+state.students+' • PIN صادر: '+state.issued+' • '+(state.enabled?'الحماية تعمل عند بدء كل اختبار.':'يجب إصدار وتسليم الرموز قبل التفعيل.'));
 }
 function hideSecrets(){
@@ -54,6 +55,11 @@ function message(e){
  student_required_for_rotation:'حدد الطالب لتغيير رمزه.',
  invalid_student:'رقم الطالب غير صالح.',
  active_attempt:'لديه محاولة نشطة بالفعل.',
+ pin_protection_must_be_disabled:'يجب تعطيل الحماية أولًا، قبل استبدال رموز جميع الطلاب.',
+ invalid_expected_students:'عدد الطلاب غير صالح.',
+ pin_rotation_confirmation_required:'تأكيد الاستبدال غير مطابق؛ لم تتغير الرموز.',
+ student_count_changed:'تغير عدد الطلاب أثناء العملية. حدّث لوحة الطلاب ثم حاول مرة ثانية.',
+ pin_rotation_incomplete:'لم يكتمل تأكيد استلام الكشف. لا تغادر الصفحة قبل مراجعة عدد الرموز.',
  network:'تعذر الاتصال بخدمة TAG'};
  return map[e.message]||'تعذّر تنفيذ العملية: '+e.message;
 }
@@ -90,6 +96,31 @@ el('verifyIssueMissing').onclick=()=>busy(async()=>{
  el('verifyDelivered').checked=false;
  reveal(r.pins||[]);
 });
+el('verifyReissueAll').onclick=()=>busy(async()=>{
+ if(state.enabled){notify('عطّل الحماية قبل استبدال جميع رموز PIN.',true);return}
+ if(!state.students){notify('لا توجد بطاقات نشطة لإصدار رموز جديدة.',true);return}
+ const count=state.students;
+ if(!confirm('تحذير: سيُلغى PIN القديم لجميع الطلاب ('+count+') ويُصدر رمز جديد لكل طالب.\nلن تتغير رموز الدخول أو QR أو نتائج الاختبارات، ولن تُفعّل الحماية.\nهل تريد المتابعة؟'))return;
+ const expected='REISSUE '+count;
+ const confirmation=prompt('تأكيد أخير لحماية بطاقات الطلاب: اكتب النص التالي تمامًا ثم اضغط موافق:\n'+expected,'');
+ if(confirmation!==expected){
+  notify('لم يتم تغيير أي PIN لأن تأكيد إعادة الإصدار غير مطابق.',true);
+  return;
+ }
+ notify('جارٍ إصدار رموز PIN بديلة للطلاب '+count+'، لا تغلق الصفحة.');
+ const r=await api('/api/teacher/student-verify/reissue-all',{
+  method:'POST',body:JSON.stringify({expectedStudents:count,confirmation})
+ });
+ if(!Array.isArray(r.pins)||r.pins.length!==count)
+  throw new Error('pin_rotation_incomplete');
+ state.enabled=Boolean(r.status.enabled);
+ state.students=Number(r.status.students)||0;
+ state.issued=Number(r.status.issued)||0;
+ el('verifyDelivered').checked=false;
+ reveal(r.pins);
+ el('verifyExport').click();
+ notify('تم استبدال '+count+' رمز PIN بنجاح. تم طلب تنزيل الكشف الخاص. إذا لم ينزل الملف، اضغط «تنزيل كشف خاص» قبل مغادرة الصفحة. الرموز القديمة لم تعد صالحة.');
+});
 el('verifyToggle').onclick=()=>busy(async()=>{
  const enable=!state.enabled;
  if(!confirm(enable?'تفعيل PIN الآن لجميع الطلاب في حسابك؟ لن يبدأ أي طالب الاختبار دون رمزه، ولا تحتاج موافقة يدوية.':'تعطيل طلب PIN للطلاب؟ سيُسمح بالدخول دون التحقق الشخصي.'))return;
@@ -120,7 +151,10 @@ el('verifyExport').onclick=()=>{
  if(!state.rows.length)return;
  const lines=[['الشعبة','رمز البطاقة','اسم الطالب','PIN'].join(',')];
  for(const s of state.rows){
-  const values=[s.className,s.cardCode,s.name,s.pin].map(v=>'"'+String(v).replace(/"/g,'""')+'"');
+  const values=[s.className,s.cardCode,s.name,s.pin].map(v=>{
+   const safe=String(v).replace(/^[=+@\-\t\r]/,"'$&");
+   return '"'+safe.replace(/"/g,'""')+'"';
+  });
   lines.push(values.join(','));
  }
  const blob=new Blob(['\uFEFF'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'});
