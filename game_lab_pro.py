@@ -686,7 +686,7 @@ def handle_get(h,u):
     try:
         params=parse_qs(u.query)
         if u.path.endswith('/books'):out={'books':books(tid),'aiEnabled':bool(os.environ.get('GEMINI_API_KEY')),
-            'aiProvider':'Gemini Free Tier' if os.environ.get('GEMINI_API_KEY') else None}
+            'aiProvider':'TAG AI (Google Free Tier)' if os.environ.get('GEMINI_API_KEY') else None}
         elif u.path.endswith('/books/pages'):
             book=require_book(tid,(params.get('id') or [''])[0])
             out={'book':metadata(book),'pages':[{'p':x['p'],'preview':x['text'][:650]}
