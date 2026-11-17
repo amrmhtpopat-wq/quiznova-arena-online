@@ -53,8 +53,8 @@ def find_student(card):
         return None
     return store.query(
         'SELECT id,teacher_id,name,class_name,avatar,xp FROM students '
-        'WHERE card_token=? OR card_code=? OR id IN '
-        '(SELECT student_id FROM student_card_aliases WHERE alias=?)',
+        'WHERE archived=0 AND (card_token=? OR card_code=? OR id IN '
+        '(SELECT student_id FROM student_card_aliases WHERE alias=?))',
         (card, card.upper(), card.upper())
     )
 
