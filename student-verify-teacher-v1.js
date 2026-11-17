@@ -127,6 +127,50 @@ el('verifyExport').onclick=()=>{
  document.body.appendChild(link);link.click();link.remove();URL.revokeObjectURL(url);
  notify('تم تنزيل كشف PIN الشخصي. احتفظ به بعيدًا عن الطلاب الآخرين.');
 };
+function escapeSlip(value){
+ return String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+el('verifyOne').onclick=async()=>{
+ const code=el('verifyTargetCode').value.trim().toUpperCase();
+ const row=state.rows.find(x=>String(x.cardCode||'').toUpperCase()===code);
+ if(!row){notify('أدخل رمز بطاقة الطالب في خانة الإدارة لاختيار رسالة هذا الطالب فقط.',true);el('verifyTargetCode').focus();return}
+ const message='مرحبًا '+row.name+'، رمز التحقق الشخصي الخاص بك في منصة TAG هو: '+row.pin+
+  '. رقم بطاقتك: '+row.cardCode+'. احتفظ بهذا الرمز لنفسك ولا ترسله إلى أحد.';
+ try{await navigator.clipboard.writeText(message);notify('تم نسخ رسالة '+row.name+' فقط. أرسلها إلى الطالب بصورة خاصة، لا إلى مجموعة الصف.')}
+ catch{notify('تعذر نسخ الرسالة. استخدم القصاصات السرية أو الكشف الخاص.',true)}
+};
+el('verifySlips').onclick=()=>{
+ if(!state.rows.length){notify('لا توجد رموز ظاهرة لإعداد القصاصات.',true);return}
+ const pages=[];
+ for(let i=0;i<state.rows.length;i+=8){
+  const cards=state.rows.slice(i,i+8).map(row=>
+   '<article class="slip"><div class="brand">🔐 TAG Student Verify</div>'+
+   '<div class="label">رمز دخول شخصي • سرّي للطالب فقط</div>'+
+   '<div class="name">'+escapeSlip(row.name)+'</div>'+
+   '<div class="section">'+escapeSlip(row.className)+'</div>'+
+   '<div class="access">البطاقة: <b dir="ltr">'+escapeSlip(row.cardCode)+'</b></div>'+
+   '<div class="pin" dir="ltr">'+escapeSlip(row.pin)+'</div>'+
+   '<div class="footer">لا تُظهر هذا الرمز لزملائك. احتفظ به بعيدًا عن بطاقة QR.</div></article>'
+  ).join('');
+  pages.push('<section class="page">'+cards+'</section>');
+ }
+ const documentHtml='<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+
+ '<title>TAG • قصاصات PIN السرية</title><style>'+
+ '*{box-sizing:border-box}body{font-family:Tahoma,Arial,sans-serif;color:#102c48;background:#f2f6fa;margin:0}'+
+ '.page{width:210mm;height:297mm;margin:0 auto;display:grid;grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(4,1fr);gap:3mm;padding:10mm;break-after:page;background:white}'+
+ '.slip{border:1px dashed #6486a4;border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;padding:6mm;text-align:center;min-height:0;overflow:hidden}'+
+ '.brand{font-size:15px;font-weight:900;color:#16749a}.label{font-size:11px;color:#8c3d38;font-weight:800}'+
+ '.name{font-size:15px;font-weight:900}.section{font-size:12px}.access{font-size:12px}'+
+ '.pin{letter-spacing:5px;font-family:Arial,sans-serif;font-size:26px;font-weight:900;background:#e4f8f1;border-radius:6px;padding:6px 18px}'+
+ '.footer{font-size:10px;color:#4a647b;line-height:1.5}'+
+ '@page{size:A4;margin:0}@media print{body{background:white}.page{margin:0;break-after:page}}'+
+ '</style></head><body>'+pages.join('')+'</body></html>';
+ const blob=new Blob([documentHtml],{type:'text/html;charset=utf-8'});
+ const url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download='TAG_PIN_Private_Slips_'+new Date().toISOString().slice(0,10)+'.html';
+ document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+ notify('تم إنشاء قصاصات PIN منفصلة لكل طالب. اطبعها على انفراد، وقصّها، وسلّم كل ورقة لصاحبها فقط.');
+};
 document.querySelectorAll('[data-panel="students"]').forEach(button=>button.addEventListener('click',()=>{directory=null;void refresh()}));
 document.querySelectorAll('button.nav[data-panel]').forEach(button=>button.addEventListener('click',()=>{
  if(button.dataset.panel!=='students')hideSecrets();
