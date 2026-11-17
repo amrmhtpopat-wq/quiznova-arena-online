@@ -130,6 +130,17 @@ def issue_pins(teacher_id, student_id=None, rotate=False):
                                 "DELETE FROM solo_sessions WHERE token_hash=? AND "
                                 "teacher_id=? AND student_id=?"),
                                 (key, teacher_id, sid))
+                    lab = cur.execute(store.sql(
+                        "SELECT token_hash,state FROM game_lab_runs "
+                        "WHERE teacher_id=? AND student_id=? AND finished_at=0"),
+                        (teacher_id, sid)).fetchall()
+                    for lab_key, raw_state in lab:
+                        lab_state = store.jload(raw_state, {})
+                        if lab_state and not lab_state.get("finished"):
+                            cur.execute(store.sql(
+                                "DELETE FROM game_lab_runs WHERE teacher_id=? "
+                                "AND student_id=? AND token_hash=?"),
+                                (teacher_id, sid, lab_key))
                 else:
                     cur.execute(store.sql(
                         "INSERT INTO student_verify_pins "
@@ -165,6 +176,18 @@ def set_enabled(teacher_id, enabled):
                     if old and not old.get("finished") and not old.get("pinVerified"):
                         cur.execute(store.sql(
                             "DELETE FROM solo_sessions WHERE teacher_id=? AND token_hash=?"),
+                            (teacher_id, key))
+                # TAG LAB pre-PIN attempts are revoked at the same activation
+                # boundary so a legacy bearer token cannot bypass PIN.
+                lab_rows = cur.execute(store.sql(
+                    "SELECT token_hash,state FROM game_lab_runs "
+                    "WHERE teacher_id=? AND finished_at=0"),
+                    (teacher_id,)).fetchall()
+                for key, raw_state in lab_rows:
+                    old = store.jload(raw_state, {})
+                    if old and not old.get("finished") and not old.get("pinVerified"):
+                        cur.execute(store.sql(
+                            "DELETE FROM game_lab_runs WHERE teacher_id=? AND token_hash=?"),
                             (teacher_id, key))
             cur.execute(store.sql(
                 "DELETE FROM student_verify_settings WHERE teacher_id=?"),
