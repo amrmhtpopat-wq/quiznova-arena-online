@@ -112,6 +112,20 @@ def issue_pins(teacher_id, student_id=None, rotate=False):
                         "SET pin_hash=?,pin_salt=?,failed_count=0,locked_until=0,issued_at=? "
                         "WHERE student_id=? AND teacher_id=?"),
                         (hashed, salt, stamp, sid, teacher_id))
+                    # PIN reset must also revoke existing unfinished attempts.
+                    # Otherwise a stolen, previously verified bearer session token
+                    # would remain valid after the teacher replaces its PIN.
+                    active = cur.execute(store.sql(
+                        "SELECT token_hash,payload FROM solo_sessions "
+                        "WHERE teacher_id=? AND student_id=?"),
+                        (teacher_id, sid)).fetchall()
+                    for key, payload in active:
+                        attempt = store.jload(payload, {})
+                        if attempt and not attempt.get("finished"):
+                            cur.execute(store.sql(
+                                "DELETE FROM solo_sessions WHERE token_hash=? AND "
+                                "teacher_id=? AND student_id=?"),
+                                (key, teacher_id, sid))
                 else:
                     cur.execute(store.sql(
                         "INSERT INTO student_verify_pins "
