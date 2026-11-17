@@ -125,3 +125,7 @@ html[data-tag-view="mixer"] #tagMixerLibrary p{font-size:.83rem;color:#536b83;ma
 html[data-tag-view="mixer"] #tagMixerLibrary select{background:white!important;color:#174365!important;width:min(100%,700px)!important}
 html[data-tag-view="mixer"] #tagMixerStatus{padding:9px;border-radius:11px;background:#e6f8f0;color:#0d6c4c;font-weight:700;min-height:31px}
 html[data-tag-view="mixer"] #mixerStart:disabled{opacity:.55!important;cursor:not-allowed}
+
+/* Independent LAB: do not offer imports from the official teacher quiz bank. */
+html[data-tag-view] #cloudWorkspace h3:has(+ .row2 #cloudImportQuiz),
+html[data-tag-view] #cloudWorkspace .row2:has(#cloudImportQuiz){display:none!important}
