@@ -35,6 +35,7 @@
 <link rel="stylesheet" href="/game-lab-cleanup-v102.css?v=10.2.0">
 <link rel="stylesheet" href="/tag-lab-v11.css?v=30.0">
 <link rel="stylesheet" href="/tag-lab-simple.css?v=31.0">
+<link rel="stylesheet" href="/tag-lab-templates-v32.css?v=32.0">
 </head>
 <body>
 <div class="mobilebar"><b><img class="tag-mobile-mark" src="/assets/brand/tag-logo-dark-v21.png" alt=""> TAG LAB</b><button class="button alt small" id="mobileMenu" aria-label="القائمة">☰</button></div><div id="shade" class="shade"></div>
@@ -239,8 +240,8 @@ function container(html){$('playBody').innerHTML=html}
 function shuffle(ar){const out=[...ar];for(let i=out.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[out[i],out[j]]=[out[j],out[i]]}return out}
 function stopClock(){if(timer){clearInterval(timer);timer=null}}
 function updateCounter(v){$('playCounter').textContent=v}
-function openGame(id){const g=catalog.find(x=>x.id===id);if(!g||!g.ready)return;if(!apply())return;type=id;round=0;score=0;selection=null;openBox=new Set();stopClock();const overlay=$('playOverlay');overlay.dataset.v9Mode=id;overlay.hidden=false;document.body.style.overflow='hidden';$('playTitle').textContent=g.icon+' '+g.name;status('');overlay.classList.add('v101-overhaul');overlay.scrollTop=0;renderGame();try{if(!document.fullscreenElement&&overlay.requestFullscreen&&document.fullscreenEnabled){const promise=overlay.requestFullscreen({navigationUI:'hide'});if(promise&&promise.catch)promise.catch(()=>{});}}catch(_){/* CSS viewport mode remains active */}}
-function closeGame(){stopClock();window.BOOYAH_EXTRA?.stop();mixerState=null;const overlay=$('playOverlay');if(document.fullscreenElement===overlay&&document.exitFullscreen)document.exitFullscreen().catch(()=>{});overlay.hidden=true;delete overlay.dataset.v9Mode;document.body.style.overflow='';overlay.classList.remove('v101-overhaul');type=null}
+function openGame(id){const g=catalog.find(x=>x.id===id);if(!g||!g.ready)return;if(!apply())return;type=id;round=0;score=0;selection=null;openBox=new Set();stopClock();const overlay=$('playOverlay');overlay.dataset.v9Mode=id;overlay.hidden=false;document.body.style.overflow='hidden';$('playTitle').textContent=g.icon+' '+g.name;status('');overlay.classList.add('v101-overhaul');overlay.scrollTop=0;renderGame();try{if(!window.TAG_LAB_V32_DEMO_ACTIVE&&!document.fullscreenElement&&overlay.requestFullscreen&&document.fullscreenEnabled){const promise=overlay.requestFullscreen({navigationUI:'hide'});if(promise&&promise.catch)promise.catch(()=>{});}}catch(_){/* CSS viewport mode remains active */}}
+function closeGame(){if(window.TAG_LAB_V32_DEMO_BACKUP){const b=window.TAG_LAB_V32_DEMO_BACKUP;content=b.rows;window.TG_CREATOR_PREVIEW_ROWS=b.preview;window.TAG_LAB_V32_DEMO_BACKUP=null;window.TAG_LAB_V32_DEMO_ACTIVE=false;renderPreview()}stopClock();window.BOOYAH_EXTRA?.stop();mixerState=null;const overlay=$('playOverlay');if(document.fullscreenElement===overlay&&document.exitFullscreen)document.exitFullscreen().catch(()=>{});overlay.hidden=true;delete overlay.dataset.v9Mode;document.body.style.overflow='';overlay.classList.remove('v101-overhaul');type=null}
 function renderGame(){
  stopClock();status('');
  if(!content.length)return;
@@ -472,6 +473,22 @@ const quick=$('quickTemplates');catalog.filter(x=>x.ready).forEach(g=>quick.appe
 try{const saved=JSON.parse(localStorage.getItem(K)||'[]');activities=validateImport({version:1,activities:saved})}catch(_){activities=[]}
 $('countAll').textContent=catalog.length;$('countLive').textContent=catalog.filter(x=>x.ready).length;
 renderCatalog();refreshSaved();report('ابدأ بإدخال أسئلتك أو اضغط استعادة المثال لتجربة طريقة اللعب.');
+ // Dedicated V32 UI can preview any real engine using sample questions without
+ // replacing the teacher's own draft, answers or structured Gemini question bank.
+ window.TAG_LAB_V32_PREVIEW=(mode,forceDemo=false)=>{
+  const parsed=readRows($('activityData').value),demo=forceDemo||Boolean(parsed.error);
+  if(demo){
+   window.TAG_LAB_V32_DEMO_BACKUP={rows:content,preview:window.TG_CREATOR_PREVIEW_ROWS};
+   window.TAG_LAB_V32_DEMO_ACTIVE=true;
+   const original=$('activityData').value;
+   $('activityData').value=example;
+   window.TG_CREATOR_PREVIEW_ROWS=null;
+   try{openGame(mode)}finally{$('activityData').value=original;
+    window.TG_CREATOR_PREVIEW_ROWS=window.TAG_LAB_V32_DEMO_BACKUP?.preview||null}
+  }else openGame(mode);
+  return !$('playOverlay').hidden
+ };
+ 
 })();
 </script>
 <script src="/game-lab-cloud-v2.js?v=3.0" defer></script>
@@ -488,4 +505,5 @@ renderCatalog();refreshSaved();report('ابدأ بإدخال أسئلتك أو �
 <script defer src="/game-lab-cleanup-v102.js?v=10.2.0"></script>
 <script defer src="/tag-lab-v11.js?v=12.0"></script>
 <script defer src="/tag-lab-simple.js?v=31.0"></script>
+<script defer src="/tag-lab-templates-v32.js?v=32.0"></script>
 </body></html>
