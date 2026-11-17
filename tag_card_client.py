@@ -59,6 +59,6 @@ def verify(card):
     except (urllib.error.URLError,TimeoutError,ValueError,UnicodeError,TypeError) as err:
         raise CardBridgeUnavailable("provider_unavailable") from None
     ref=obj.get("cardRef") if isinstance(obj,dict) and obj.get("ok") is True else None
-    if obj.get("version") != 1 or not isinstance(ref,str) or not REF_PATTERN.fullmatch(ref):
+    if not isinstance(obj,dict) or obj.get("version") != 1 or not isinstance(ref,str) or not REF_PATTERN.fullmatch(ref):
         raise CardBridgeUnavailable("invalid_provider_response")
     return ref
