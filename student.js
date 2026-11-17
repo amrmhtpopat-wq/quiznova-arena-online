@@ -5,16 +5,7 @@ let pickedAvatar='b01';
 let roomAvatarPool=[];let lastAvatarCode='';let avatarRequest=0;
 const defaultBoysAvatars=[...Array.from({length:7},(_,i)=>'m'+String(i+1).padStart(2,'0')),...Array.from({length:8},(_,i)=>'n'+String(i+1).padStart(2,'0')),...Array.from({length:16},(_,i)=>'b'+String(i+1).padStart(2,'0'))];
 const avatarPath=id=>/^m0[1-8]$/.test(id)?'/assets/avatars-game/'+(id==='m08'?'m07':id)+'.svg':/^n0[1-8]$/.test(id)?'/assets/avatars3d/'+id+'.webp':/^[bg](0[1-9]|1[0-6])$/.test(id)?'/assets/avatars3d/'+id+'.webp':'/assets/avatars/'+(/^\d{2}$/.test(id)?id:'01')+'.svg';
-// Same-origin bridge for the already printed school QR (the QR contains an ID, not a URL).
-// Consume and clear after navigation so the card ID is not stored in browser history.
-const scannedSchoolCard=(()=>{
- try{
-  const code=String(sessionStorage.getItem('tag_school_card_pending')||'').trim().toUpperCase();
-  sessionStorage.removeItem('tag_school_card_pending');
-  return /^G[789][ABC]-\d{3}$/.test(code)?code:'';
- }catch{return ''}
-})();
-let selectedCard=scannedSchoolCard||(new URLSearchParams(location.search)).get('card')||'';
+let selectedCard=(new URLSearchParams(location.search)).get('card')||'';
 let cardName='';
 const booyahMascotNames={m01:'شرارة',m02:'روبوك',m03:'فوكسو',m04:'نينزو',m05:'درعو',m06:'بيكسو',m07:'زومي',m08:'زومي'};
 const avatarDisplayName=id=>window.booyahAvatarName?.(id)||booyahMascotNames[id]||'شخصية اللعبة';
@@ -52,10 +43,6 @@ async function showCardProfile(){
   panel.hidden=false;
   panel.innerHTML='<div class="qn-profile-avatar"><img alt="" src="'+avatarPath(d.avatar)+'"></div><div><b>'+esc(d.name)+'</b><small>'+esc(d.className)+'</small><span>⭐ المستوى '+d.level+' • '+esc(d.progress?.title||'مبتدئ')+' • '+d.xp+' XP</span><div class="qn-xp-progress" role="progressbar" aria-valuenow="'+(d.progress?.percent||0)+'" aria-valuemin="0" aria-valuemax="100"><i style="width:'+(d.progress?.percent||0)+'%"></i></div><span>متبقي '+(d.progress?.xpToNext??100)+' XP للمستوى التالي</span><span>🏆 '+d.played+' مشاركة • '+d.correct+' إجابة صحيحة</span></div>';
   window.BOOYAH_SHOW_CARD_TESTS?.(code);
-  if(scannedSchoolCard&&window.location.search.includes('mode=card')){
-   const results=$('#boCardQuizzes');
-   setTimeout(()=>results?.scrollIntoView({behavior:'smooth',block:'start'}),480);
-  }
   $('#joinHint').textContent='بطاقتك جاهزة؛ ستجد اختبارات صفك المفعّلة أسفلها، ويمكنك أيضًا الانضمام إلى غرفة مباشرة.';
   err('');
  }catch(e){panel.hidden=true;window.BOOYAH_HIDE_CARD_TESTS?.();cardName='';$('#playerName').readOnly=false;err('رمز البطاقة غير صالح، تأكد من الحروف والأرقام.')}
