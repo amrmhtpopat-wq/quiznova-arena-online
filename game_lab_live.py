@@ -15,6 +15,7 @@ import platform_store as db
 import platform_api as auth
 import solo_api
 import game_lab_api as games
+import tag_independent_mode as lab_mode
 
 GET={'/api/game-lab/live/state','/api/game-lab/live/rooms','/api/game-lab/live/report'}
 HOST={'/api/game-lab/live/create','/api/game-lab/live/next',
@@ -174,8 +175,10 @@ def create(tid,data):
         settings['imageUrl']='/api/game-lab/pro/image?id='+payload['imageId']+'&code='+(activity['public_code'] or '')
     db.exec_sql('INSERT INTO game_lab_live_rooms(code,teacher_id,activity_id,state,created_at,updated_at) '
                 'VALUES(?,?,?,?,?,?)',(code,tid,aid,db.jdump(settings),stamp(),stamp()))
-    return {'code':code,'teacherUrl':'/game-lab-live.html?host='+code,
-            'studentUrl':'/game-lab-live.html?code='+code,'mode':mode}
+    return {'code':code,
+            'teacherUrl':('/tag-lab-live-teacher.html?host=' if lab_mode.enabled() else '/game-lab-live.html?host=')+code,
+            'studentUrl':('/tag-lab-live-student.html?code=' if lab_mode.enabled() else '/game-lab-live.html?code=')+code,
+            'mode':mode}
 
 def join(h,data):
     code=str(data.get('code') or '').strip().upper()
@@ -184,9 +187,22 @@ def join(h,data):
     s=state(room)
     if s['status']=='finished':return error(h,'room_closed',403)
     card=str(data.get('card') or '').strip()
-    if solo_api.limited(h,card or code):return error(h,'rate_limited',429)
-    student=solo_api.find_student(card) if card else None
-    if card and not student:return error(h,'invalid_card',403)
+    if solo_api.limited(h,code):return error(h,'rate_limited',429)
+    if lab_mode.enabled():
+        # Standalone TAG LAB never reads official or legacy student records.
+        # A verified card identity is obtained only from a LAB-issued PIN session.
+        if card:return error(h,'use_card_session',403)
+        student=None
+        session_token=data.get('cardSession')
+        if session_token:
+            import tag_lab_cards
+            ref=tag_lab_cards.session(session_token)
+            if not ref:return error(h,'invalid_card_session',403)
+            student={'id':ref['roster_id'],'teacher_id':ref['teacher_id'],
+                     'name':ref['label'],'class_name':ref['class_name']}
+    else:
+        student=solo_api.find_student(card) if card else None
+        if card and not student:return error(h,'invalid_card',403)
     if student and student['teacher_id']!=room['teacher_id']:return error(h,'card_other_teacher',403)
     if s.get('cardRequired') and not student:return error(h,'card_required',403)
     if student and s.get('enforceGrade') and s.get('targetGrade'):
