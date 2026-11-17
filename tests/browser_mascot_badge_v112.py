@@ -48,10 +48,9 @@ with sync_playwright() as playwright:
     codes=page.locator('.bo-badge-access-id').all_text_contents()
     assert len(set(codes))==9
     assert all(c.strip()!='BADJ-TH42' for c in codes)
-    assert page.locator('.bo-badge-edition').first.inner_text()=='TG 2026'
+    assert page.locator('.bo-badge-header').first.get_attribute('data-card-version')=='BADJ-TH42'
     assert page.locator('.bo-badge-student-name').first.inner_text()=='طالب اختبار 1'
-    assert page.locator('.bo-badge-brand strong').first.inner_text()=='TeachGame'
-    assert page.locator('.bo-badge-brand small').first.inner_text().startswith('تيتش جيم')
+    assert page.locator('.bo-badge-brand img.tag-card-logo').first.get_attribute('alt').startswith('شعار TEACH AND GAME')
     page.eval_on_selector_all('.bo-student-id img','images=>images.forEach(img=>img.loading="eager")')
     page.wait_for_function(
       'Array.from(document.querySelectorAll(".bo-badge-qr img,.bo-badge-avatar img")).every(img=>img.complete && img.naturalWidth>0)',
@@ -67,7 +66,7 @@ with sync_playwright() as playwright:
     page.locator('#reissueTeachGameCards').click()
     page.wait_for_function("window.__tgPrintCalls===1",timeout=27000)
     assert page.locator('.bo-badge-access-id').all_text_contents()==codes,'Card codes changed during brand-only reissue'
-    assert page.locator('.bo-badge-brand strong').first.inner_text()=='TeachGame'
+    assert page.locator('.bo-badge-brand img.tag-card-logo').first.get_attribute('alt').startswith('شعار TEACH AND GAME')
     assert page.locator('.bo-student-id').count()==9
     page.screenshot(path=str(dest/('badj-cards-mobile.png' if mobile else 'badj-cards-desktop.png')),full_page=True)
 
