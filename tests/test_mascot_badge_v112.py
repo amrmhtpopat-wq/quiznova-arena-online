@@ -59,7 +59,7 @@ class MascotsAndBadgeTests(unittest.TestCase):
         self.assertIn("await Promise.all(images.map(img=>",portal)
         self.assertIn('window.print()',portal)
         # BADJ-TH42 is design version, NOT a shared student login credential.
-        self.assertIn('title="بطاقة TeachGame الجديدة"',portal)
+        self.assertIn('تحديث البطاقات بهوية TEACH AND GAME', (ROOT/'index.html').read_text(encoding='utf-8'))
         self.assertIn("code=new_card_code()",read('platform_store.py'))
 
     def test_print_and_mobile_styles_are_loaded(self):
