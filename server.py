@@ -9,6 +9,7 @@ from xlsx_report import generate_report
 import platform_store
 platform_store.init()
 import platform_api
+import tag_card_provider
 import tag_champion
 tag_champion.ensure_schema()
 import solo_api
@@ -598,6 +599,7 @@ class Handler(SimpleHTTPRequestHandler):
             return visitor_analytics.handle_post(self,tracking)
         try: data=self.read_json()
         except Exception: return self.send_json({'ok':False,'error':'bad_json'},400)
+        if tag_card_provider.handle_post(self,u,data):return
         if admin_api.handle_post(self,u,data):return
         if platform_api.handle_post(self,u,data):return
         if solo_api.handle_post(self,u,data):return
