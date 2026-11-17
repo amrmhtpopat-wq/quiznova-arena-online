@@ -37,7 +37,7 @@ button.secondary{background:#e8f3f7;color:#135e70}button:disabled{opacity:.52}
 <section id="loginPanel" class="panel">
 <h2>الدخول ببطاقة الطالب</h2>
 <form id="loginForm">
-<div class="field"><label for="card">رمز بطاقتك</label><input id="card" required maxlength="150" autocomplete="off" placeholder="امسح QR أو أدخل رمز بطاقتك"></div>
+<div class="field"><label for="card">رمز بطاقتك</label><input id="card" required maxlength="512" autocomplete="off" placeholder="امسح QR أو أدخل رمز بطاقتك"></div>
 <div class="field"><label for="pin">رمز PIN الشخصي</label><input id="pin" type="password" inputmode="numeric" pattern="[0-9]{6}" minlength="6" maxlength="6" required autocomplete="off" placeholder="6 أرقام"></div>
 <button id="loginBtn" type="submit">دخول</button></form><p id="loginStatus" class="status" role="status"></p>
 </section>
@@ -58,6 +58,13 @@ button.secondary{background:#e8f3f7;color:#135e70}button:disabled{opacity:.52}
 (()=>{'use strict';
 const $=id=>document.getElementById(id);
 let cardSession=sessionStorage.getItem('taglab_student_session')||'';
+const query=new URLSearchParams(location.search);
+const suppliedCard=query.get('card')||query.get('qr')||'';
+if(suppliedCard){
+  document.getElementById('card').value=suppliedCard.slice(0,512);
+  history.replaceState(null,'',location.pathname);
+}
+
 let runToken=sessionStorage.getItem('taglab_game_run')||'';
 let current=null,pending=null;
 const errorText={invalid_credentials:'البطاقة أو رمز PIN غير صحيح.',card_bridge_unavailable:'لم تُفعّل خدمة التحقق من البطاقات بعد.',rate_limited:'محاولات كثيرة. حاول لاحقًا.',session_already_active:'هناك جلسة مفتوحة بهذه البطاقة. أنهها أولًا من الجهاز الآخر.',invalid_session:'انتهت الجلسة، سجل الدخول مجددًا.',another_attempt_active:'توجد محاولة نشطة على جهاز آخر.',attempt_limit:'انتهى عدد المحاولات المسموح.',not_assigned_to_card:'هذه اللعبة غير مخصصة لبطاقتك.',card_session_required:'سجل الدخول إلى بطاقة الطالب أولًا.'};
