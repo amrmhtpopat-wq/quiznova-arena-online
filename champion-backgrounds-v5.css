@@ -1,0 +1,29 @@
+/* CHAMPION TAG V5 — 2 stadiums, 6 distinct elegant illustration backgrounds.
+   Old backgrounds remain supported for existing saved championships. */
+body.champion-portal,body.champion-board{--ct-stadium-pos:center center}
+body[data-champion-bg="royal"]{--ct-background:url('/assets/champion/bg-royal-v5.svg');--ct-stadium-pos:center center;--ct-field-veil:linear-gradient(180deg,rgba(1,9,22,.05),rgba(1,9,22,.015))}
+body[data-champion-bg="celebration"]{--ct-background:url('/assets/champion/bg-celebration-v5.svg');--ct-stadium-pos:center center;--ct-field-veil:linear-gradient(180deg,rgba(1,9,22,.05),rgba(1,9,22,.015))}
+body[data-champion-bg="hall"]{--ct-background:url('/assets/champion/bg-hall-v5.svg');--ct-stadium-pos:center center;--ct-field-veil:linear-gradient(180deg,rgba(1,9,22,.05),rgba(1,9,22,.015))}
+body[data-champion-bg="neon"]{--ct-background:url('/assets/champion/bg-neon-v5.svg');--ct-stadium-pos:center center;--ct-field-veil:linear-gradient(180deg,rgba(1,9,22,.05),rgba(1,9,22,.015))}
+body[data-champion-bg="trophy"]{--ct-background:url('/assets/champion/bg-trophy-v5.svg');--ct-stadium-pos:center center;--ct-field-veil:linear-gradient(180deg,rgba(1,9,22,.05),rgba(1,9,22,.015))}
+body[data-champion-bg="elegant"]{--ct-background:url('/assets/champion/bg-elegant-v5.svg');--ct-stadium-pos:center center;--ct-field-veil:linear-gradient(180deg,rgba(1,9,22,.05),rgba(1,9,22,.015))}
+.ct-bg-royal{background-image:url('/assets/champion/bg-royal-v5.svg')!important}
+.ct-bg-celebration{background-image:url('/assets/champion/bg-celebration-v5.svg')!important}
+.ct-bg-hall{background-image:url('/assets/champion/bg-hall-v5.svg')!important}
+.ct-bg-neon{background-image:url('/assets/champion/bg-neon-v5.svg')!important}
+.ct-bg-trophy{background-image:url('/assets/champion/bg-trophy-v5.svg')!important}
+.ct-bg-elegant{background-image:url('/assets/champion/bg-elegant-v5.svg')!important}
+/* Keep backdrops visible across hero, tournament tree and projector; text rests on dark panels. */
+:is(.champion-portal,.champion-board):is([data-champion-bg="royal"],[data-champion-bg="celebration"],[data-champion-bg="hall"],[data-champion-bg="neon"],[data-champion-bg="trophy"],[data-champion-bg="elegant"]) .hero.wc-worldcup-hero{--ct-hero-veil:linear-gradient(100deg,rgba(2,11,27,.82),rgba(2,10,29,.37) 70%,rgba(2,10,29,.22))}
+:is(.champion-portal,.champion-board):is([data-champion-bg="royal"],[data-champion-bg="celebration"],[data-champion-bg="hall"],[data-champion-bg="neon"],[data-champion-bg="trophy"],[data-champion-bg="elegant"]) .wc-bracket-panel{--ct-field-veil:linear-gradient(180deg,rgba(1,8,19,.07),rgba(1,8,19,.015))}
+.ct-background-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:10px!important}
+.ct-background-card{position:relative;min-height:110px!important;overflow:hidden;padding:7px!important;background:linear-gradient(145deg,#0e2549,#08182e)!important;color:#e8f3ff!important;border:1px solid #92b6ce55!important;border-radius:13px!important;font-size:clamp(11px,.95vw,13px)!important;font-weight:750!important;transition:transform .15s,border-color .15s,box-shadow .15s}
+.ct-background-card>span:last-child{display:block;padding:2px 1px;line-height:1.45;min-height:30px}
+.ct-background-card:hover{transform:translateY(-2px);border-color:#e6cd9d!important}
+.ct-background-card:focus-visible{outline:3px solid #fff0af!important;outline-offset:2px}
+.ct-background-card.is-selected{outline:2px solid #ffe49b!important;outline-offset:-3px;border-color:#ffe49b!important;box-shadow:0 0 0 1px #fff5bc88,0 0 20px #f4d27b35!important}
+.ct-background-card.is-selected::after{content:"✓";position:absolute;top:11px;right:12px;display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:#fce7aa;color:#0a2440;font-size:17px;font-weight:900;box-shadow:0 2px 9px #0009}
+.ct-background-preview{height:clamp(66px,7.7vw,102px)!important;background-position:center!important;background-size:cover!important;border-radius:9px!important;border:1px solid #c4dbe343!important;box-shadow:inset 0 0 21px #04102255}
+.ct-legacy-card{border-style:dashed!important;background:#213346!important}
+@media(max-width:740px){.ct-background-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}.ct-background-preview{height:73px!important}}
+@media(prefers-reduced-motion:reduce){.ct-background-card{transition:none!important}.ct-background-card:hover{transform:none!important}}
