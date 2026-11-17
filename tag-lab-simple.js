@@ -9,7 +9,8 @@ const pages=[
  {id:'games',url:'/tag-lab-games.html',icon:'🎮',label:'الألعاب'},
  {id:'library',url:'/tag-lab-library.html',icon:'🗂️',label:'مكتبتي'},
  {id:'mixer',url:'/tag-lab-mixer.html',icon:'🧪',label:'الحصة التفاعلية'},
- {id:'assign',url:'/tag-lab-assign.html',icon:'🪪',label:'إسناد الألعاب'}
+ {id:'assign',url:'/tag-lab-assign.html',icon:'🪪',label:'إسناد الألعاب'},
+ {id:'account',url:'/tag-lab-account.html',icon:'👤',label:'حسابي'}
 ];
 const labels={
  books:{title:'الكتب وTAG AI',description:'ارفع كتابك وحوّل صفحاته إلى أسئلة.'},
