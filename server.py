@@ -9,6 +9,7 @@ from xlsx_report import generate_report
 import platform_store
 platform_store.init()
 import platform_api
+import tag_independent_mode
 import solo_api
 solo_api.ensure_schema()
 import game_lab_api
@@ -435,7 +436,11 @@ class Handler(SimpleHTTPRequestHandler):
         n=min(int(self.headers.get('Content-Length','0') or 0),13_000_000)
         raw=self.rfile.read(n) if n else b'{}'
         return json.loads(raw.decode('utf-8') or '{}')
+    def do_HEAD(self):
+        if tag_independent_mode.reject(self,'HEAD',self.path):return
+        return super().do_HEAD()
     def do_GET(self):
+        if tag_independent_mode.reject(self,'GET',self.path):return
         u=urlparse(self.path)
         if admin_api.handle_get(self,u):return
         if platform_api.handle_get(self,u):return
@@ -550,6 +555,7 @@ class Handler(SimpleHTTPRequestHandler):
                 }})
         return super().do_GET()
     def do_POST(self):
+        if tag_independent_mode.reject(self,'POST',self.path):return
         u=urlparse(self.path)
         try: data=self.read_json()
         except Exception: return self.send_json({'ok':False,'error':'bad_json'},400)
