@@ -15,6 +15,7 @@ from urllib.parse import parse_qs
 import platform_store as db
 import platform_api as auth
 import solo_api
+import tag_independent_mode
 
 MAX_ROWS=80
 TEXT_MODES={'anagram','crossword','wordsearch','cloze','exit'}
@@ -375,6 +376,11 @@ def state_view(state,digest):
 def start(data,h):
     a=public_activity(data.get('code'))
     if not a:return fail(h,'not_published',404)
+    # In the independent LAB, verify only the LAB-issued card session.
+    # Never look up or mutate the official students/XP tables.
+    if tag_independent_mode.enabled():
+        import tag_lab_cards
+        return tag_lab_cards.start_game(a,data,h)
     card=str(data.get('card') or '').strip()
     if solo_api.limited(h,card or data.get('code')):return fail(h,'rate_limited',429)
     student=solo_api.find_student(card) if card else None
@@ -467,7 +473,7 @@ def answer(data,h):
             finished=state['index']>=len(state['rows'])
             state['finished']=finished
             timestamp=now()
-            if finished and session['student_id']:
+            if finished and session['student_id'] and not tag_independent_mode.enabled():
                 student_id=session['student_id'];tid=session['teacher_id'];aid=session['activity_id']
                 group_id=state.get('sourceGroup') or aid
                 # Serialize XP for all runs by this student in Postgres, too.
