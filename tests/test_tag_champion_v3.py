@@ -34,7 +34,7 @@ class ChampionV3Persistence(unittest.TestCase):
         self.url_patch.stop()
         self.folder.cleanup()
 
-    def new(self,theme='gold',background='stadium'):
+    def new(self,theme='gold',background='daylight'):
         return champion.create(self.teacher_id,{
             'title':'دوري TAG','kind':'classes','seedMode':'random',
             'participants':['السابع أ','السابع ب','الثامن أ','الثامن ب'],
