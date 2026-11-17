@@ -7,6 +7,7 @@ import time
 import uuid
 
 import platform_store as store
+import student_verify
 from student_quiz_scope_v128 import allowed as student_can_access_quiz
 
 GUARD = threading.RLock()
@@ -299,7 +300,8 @@ def handle_post(h, u, data):
             if action == 'catalog':
                 h.send_json({'ok': True, 'student': {
                     'name': student['name'], 'className': student['class_name'],
-                    'xp': student['xp'], 'progress': store.xp_progress(student['xp'])},
+                    'xp': student['xp'], 'progress': store.xp_progress(student['xp']),
+                    'pinRequired': student_verify.is_enabled(student['teacher_id'])},
                     'quizzes': catalog(student)})
                 return True
             quiz = published_quiz(student['teacher_id'], data.get('quizId'))
@@ -320,6 +322,24 @@ def handle_post(h, u, data):
                     if not owner:
                         h.send_json({'ok': False, 'error': 'invalid_card'}, 403)
                         return True
+                    pin_error = student_verify.verify_in_transaction(
+                        cur, student['teacher_id'], student['id'], data.get('pin'))
+                    if pin_error:
+                        h.send_json({'ok': False, 'error': pin_error},
+                                    429 if pin_error == 'student_pin_locked' else 403)
+                        return True
+                    if student_verify.is_enabled(student['teacher_id']):
+                        # Student row lock above serializes starts across DB workers.
+                        rows = cur.execute(store.sql(
+                            'SELECT payload FROM solo_sessions '
+                            'WHERE teacher_id=? AND student_id=?'),
+                            (student['teacher_id'], student['id'])).fetchall()
+                        for (raw_state,) in rows:
+                            existing = store.jload(raw_state, {})
+                            age = now()-int(existing.get('createdAt') or 0)
+                            if existing and not existing.get('finished') and 0 <= age < SESSION_LIFETIME:
+                                h.send_json({'ok': False, 'error': 'active_attempt'}, 409)
+                                return True
                     row = cur.execute(store.sql('SELECT COUNT(*) FROM solo_sessions '
                                                  'WHERE teacher_id=? AND student_id=? AND quiz_id=?'),
                                       (student['teacher_id'], student['id'], quiz['id'])).fetchone()
