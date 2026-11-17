@@ -25,13 +25,13 @@ function updatePreview(context){
  const state=context==='create'?draftAppearance:currentAppearance;
  VISUAL.apply(state.theme,state.background);
  VISUAL.syncButtons($(context+'ThemeGrid'),'data-ct-theme',state.theme);
+ syncLegacyOption(context,state.background);
  VISUAL.syncButtons($(context+'BackgroundGrid'),'data-ct-bg',state.background);
 }
 function chooseAppearance(context,kind,value){
  const state=context==='create'?draftAppearance:currentAppearance;
  if(kind==='theme'&&VISUAL.themes[value]){
-  state.theme=value;
-  state.background=VISUAL.themes[value].defaultBackground;
+  state.theme=value; // Background is independent; preserve the current selection.
  }else if(kind==='background'&&VISUAL.backgrounds[value]){
   state.background=value;
  }else{return}
