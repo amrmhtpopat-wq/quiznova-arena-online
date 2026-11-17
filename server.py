@@ -13,6 +13,14 @@ import tag_champion
 tag_champion.ensure_schema()
 import solo_api
 solo_api.ensure_schema()
+# TAG LAB's tables are additive; main TEACH AND GAME student cards and
+# teacher authorization remain the single source of truth.
+import game_lab_api
+game_lab_api.ensure_schema()
+import game_lab_pro
+game_lab_pro.init()
+import game_lab_live
+game_lab_live.init()
 import admin_api
 admin_api.initialize()
 import visitor_analytics
@@ -416,7 +424,11 @@ class Handler(SimpleHTTPRequestHandler):
         if requested=='/' or requested.lower().endswith('.html'):
             self.send_header('Cache-Control','no-cache, max-age=0, must-revalidate')
         self.send_header('X-Content-Type-Options','nosniff')
-        self.send_header('X-Frame-Options','DENY')
+        # Only the same-origin teacher creator may appear inside its preview frame.
+        preview_frame=requested=='/game-lab-preview.html'
+        self.send_header('X-Frame-Options','SAMEORIGIN' if preview_frame else 'DENY')
+        if preview_frame:
+            self.send_header('Content-Security-Policy',"frame-ancestors 'self'")
         self.send_header('Referrer-Policy','same-origin')
         self.send_header('Permissions-Policy','camera=(), microphone=(), geolocation=()')
         if IS_CLOUD:self.send_header('Strict-Transport-Security','max-age=15552000')
@@ -452,6 +464,15 @@ class Handler(SimpleHTTPRequestHandler):
             except ValueError as exc:return self.send_json({'ok':False,'error':str(exc)},404)
         if admin_api.handle_get(self,u):return
         if platform_api.handle_get(self,u):return
+        if game_lab_api.handle_get(self,u):return
+        if game_lab_pro.handle_get(self,u):return
+        if game_lab_live.handle_get(self,u):return
+        if u.path=='/api/game-lab/pilot/grade7':
+            try:
+                example=json.loads((ROOT/'pilot'/'grade7_computing_reviewed.json').read_text(encoding='utf-8'))
+            except (OSError,ValueError):
+                return self.send_json({'ok':False,'error':'pilot_unavailable'},503)
+            return self.send_json({'ok':True,'pilot':example})
         if u.path=='/api/champion':
             teacher=platform_api.authorized(self)
             if not teacher:return
@@ -580,6 +601,9 @@ class Handler(SimpleHTTPRequestHandler):
         if admin_api.handle_post(self,u,data):return
         if platform_api.handle_post(self,u,data):return
         if solo_api.handle_post(self,u,data):return
+        if game_lab_api.handle_post(self,u,data):return
+        if game_lab_pro.handle_post(self,u,data):return
+        if game_lab_live.handle_post(self,u,data):return
         if u.path in ('/api/champion','/api/champion/appearance','/api/champion/match/complete','/api/champion/match/forfeit'):
             teacher=platform_api.authorized(self)
             if not teacher:return
