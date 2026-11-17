@@ -31,7 +31,7 @@ PORT = int(os.environ.get('PORT', '8765'))
 IS_CLOUD = bool(os.environ.get('RENDER') or os.environ.get('RENDER_EXTERNAL_URL') or os.environ.get('QUIZNOVA_CLOUD'))
 TEAM_NAMES = ['البرق ⚡','الصقور 🦅','النجوم ⭐','الفرسان 🛡️','الرواد 🚀','الأبطال 🏆']
 AVATARS = platform_store.AVATAR_3D_IDS + [f'{i:02}' for i in range(1, 21)]
-SCENES = ['cartoon','anime','cinematic','cine-stars','cine-aurora','cine-neon','cine-desert','cine-arena']
+SCENES = ['cartoon','anime','cinematic','cine-stars','cine-aurora','cine-neon','cine-desert','cine-arena','tag-daylight','tag-finals','tag-royal','tag-celebration','tag-hall','tag-neon','tag-trophy','tag-elegant']
 
 
 def qr_png(text, scale=9, border=4):
