@@ -6,3 +6,7 @@ qrcode>=8.0,<9
 
 # Encrypt the administration TOTP seed (never expose it to JavaScript).
 cryptography>=44,<48
+
+# TAG LAB optional free offline textbook extraction (PDF and DOCX).
+pypdf>=6.2,<8
+python-docx>=1.2,<2
