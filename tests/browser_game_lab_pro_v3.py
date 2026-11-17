@@ -51,7 +51,18 @@ try:
    page.wait_for_function("()=>document.querySelector('#labBookPreview').querySelectorAll('.tag-book-review-card').length>=4",timeout=13000)
    assert not page.locator('#activityData').input_value(), 'Book suggestions must not silently publish to editor'
    assert page.locator('#labBookPreview .tag-book-evidence').count()>=4
-   page.locator('#labBookPreview .tag-book-review-card').first.locator('textarea.tag-book-question').fill('ما تعريف الادخار؟')
+   first=page.locator('#labBookPreview .tag-book-review-card').first
+   first.locator('textarea.tag-book-question').fill('ما تعريف الادخار؟')
+   correct=first.locator('.tag-book-answer').input_value()
+   first.locator('.tag-book-type').select_option('mcq')
+   first.locator('.tag-book-difficulty').select_option('hard')
+   for i,value in enumerate([correct,'زيادة الديون','استنزاف الرصيد','إلغاء الميزانية']):
+    first.locator('.tag-book-choice').nth(i).fill(value)
+   first.locator('.tag-book-explanation').fill('الادخار يعني تخصيص جزء من الدخل للمستقبل.')
+   second=page.locator('#labBookPreview .tag-book-review-card').nth(1)
+   second.locator('.tag-book-type').select_option('true_false')
+   second.locator('.tag-book-question').fill('التضخم هو ارتفاع عام ومستمر في الأسعار.')
+   second.locator('.tag-book-answer').fill('صح')
    page.locator('#labBookApprove').click()
    page.wait_for_function("()=>document.querySelector('#activityData').value.includes('ما تعريف الادخار؟')",timeout=13000)
    assert 'صفحة' in page.locator('#activityData').input_value()
@@ -59,6 +70,18 @@ try:
    page.locator('#cloudMode').select_option('quiz')
    page.locator('#cloudSave').click()
    page.wait_for_function("()=>document.querySelectorAll('#cloudList .cloud-activity').length===1",timeout=13000)
+   rows=page.evaluate("""async () => {
+    const response=await fetch('/api/game-lab/teacher/list',{
+      headers:{Authorization:'Bearer '+localStorage.getItem('qn9_teacher_token')}});
+    const data=await response.json();
+    return data.activities[0].activity.rows;
+   }""")
+   assert rows[0]['questionType']=='mcq',rows
+   assert rows[0]['difficulty']=='hard',rows
+   assert rows[0]['choices']==[correct,'زيادة الديون','استنزاف الرصيد','إلغاء الميزانية'],rows
+   assert rows[0]['sourceQuote'],rows
+   assert rows[1]['questionType']=='true_false' and rows[1]['a']=='صح',rows
+   assert rows[1]['choices']==['صح','خطأ'],rows
    page.locator('#cloudList .cloud-activity button').filter(has_text='نشر').click()
    page.locator('#cloudShare').wait_for(state='visible',timeout=13000)
    page.wait_for_function("()=>document.querySelector('#labAssignActivity').options.length>1")
@@ -99,7 +122,7 @@ try:
    host_page.wait_for_function("()=>document.querySelector('#teacherAnswered').textContent.includes('1 / 1')",timeout=14000)
    host_page.wait_for_function("()=>document.querySelector('#teacherStatus').textContent.includes('انتهى')",timeout=14000)
    assert not errors,errors
-   print('PASS Game Lab V25: review source evidence, approve draft, teacher save, card assignment, student game and synchronized live teams.',flush=True)
+   print('PASS Game Lab V30: review MCQ/TF evidence and preserve persistent choices, approve draft, teacher save, card assignment, student game and synchronized live teams.',flush=True)
   finally:
    browser.close()
 finally:
