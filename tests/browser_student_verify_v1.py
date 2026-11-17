@@ -172,7 +172,7 @@ with sync_playwright() as playwright:
     live.goto(BASE+'/student.html?code='+room_code,wait_until='domcontentloaded')
     live.locator('#liveStudentPinWrap').wait_for(state='visible',timeout=15000)
     live.locator('#cardCode').fill(card)
-    live.locator('#playerName').fill('طالب التحقق الأول')
+    live.wait_for_function("document.querySelector('#playerName')?.value==='طالب التحقق الأول'",timeout=12000)
     live.locator('#liveStudentPin').fill(pin)
     live.locator('#joinBtn').click()
     live.locator('.lobby-card').wait_for(state='visible',timeout=16000)
