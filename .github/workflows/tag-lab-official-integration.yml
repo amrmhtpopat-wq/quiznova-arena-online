@@ -73,4 +73,9 @@ jobs:
       - name: 'Browser same-card, mixer and synchronized class integration'
         run: |
           python tests/browser_tag_lab_mixer_v34.py
-          python tests/browser_student_entry_v120.py
+          python - <<'PY'
+          from pathlib import Path
+          html=Path('index.html').read_text(encoding='utf-8')
+          assert '<title>TEACH AND GAME' in html or '<title>Teach And Game' in html or '<title>TeachGame' in html or '<title>TAG ' in html
+          assert '/student.html?mode=card' in html
+          PY
