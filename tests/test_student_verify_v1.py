@@ -199,6 +199,20 @@ class StudentVerifyContract(unittest.TestCase):
         self.assertEqual(status,403,result)
         self.assertEqual(result['error'],'invalid_card')
 
+    def test_live_session_joined_before_activation_cannot_answer_afterwards(self):
+        # A live player joined without PIN while protection was disabled.
+        payload={'quiz':self.quiz,'section':'التاسع أ'}
+        status,room=request('POST','/api/room/start',payload,self.auth)
+        self.assertEqual(status,200,room)
+        code=room['code']
+        status,player=request('POST','/api/room/join',{'code':code,'card':self.card})
+        self.assertEqual(status,200,player)
+        self.activate()
+        status,answer=request('POST','/api/room/answer',{'code':code,'playerId':player['playerId'],
+                                  'index':0,'answer':True})
+        self.assertEqual(status,403,answer)
+        self.assertEqual(answer['error'],'student_pin_required')
+
     def test_wrong_teacher_cannot_reissue_or_unlock_others(self):
         pin=self.activate()
         other=store.create_teacher('pin-other-'+uuid.uuid4().hex+'@school.example',
