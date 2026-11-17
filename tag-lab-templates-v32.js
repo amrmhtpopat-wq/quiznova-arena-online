@@ -4,9 +4,9 @@ const view=document.documentElement.dataset.tagView;
 if(view!=='games'&&view!=='create')return;
 const $=id=>document.getElementById(id);
 const C=[
- ['quiz','اختبار تفاعلي','أربع إجابات ملوّنة لكل سؤال','🔘','quiz','اختيار من متعدد'],
+ ['quiz','تحدي الاختبار','أربع إجابات ملوّنة لكل سؤال','🔘','quiz','اختيار من متعدد'],
  ['wheel','عجلة الحظ','تدور العجلة وتكشف السؤال','🎡','wheel','حماس وتشويق'],
- ['pairs','المطابقة','اربط السؤال بالإجابة الصحيحة','🧩','pairs','تثبيت المفاهيم'],
+ ['pairs','توصيل الأزواج','اربط السؤال بالإجابة الصحيحة','🧩','pairs','تثبيت المفاهيم'],
  ['boxes','الصناديق الغامضة','افتح صندوقًا واكتشف التحدي','🎁','boxes','نشاط جماعي'],
  ['truth','صح أم خطأ','اختر الإجابة الصحيحة بسرعة','✅','truth','مراجعة سريعة'],
  ['fast','سباق الوقت','جاوب قبل انتهاء المؤقت','⏱️','fast','تحدي السرعة'],
@@ -123,7 +123,7 @@ if(view==='games'){
  if(catalog){
   const hub=make('div','tag-v32-gallery');
   hub.append(progress([['1 • اختر القالب',true],['2 • أضف الأسئلة',false],['3 • جرّب واحفظ',false]]));
-  const head=make('div','tag-v32-head');const title=make('div');title.append(make('h2','','اختر اللعبة التي تحبها أولًا'),make('p','','اضغط «معاينة» لتجربة اللعبة الحقيقية؛ بعدها أضف أسئلتك بسهولة.'));
+  const head=make('div','tag-v32-head');const title=make('div');title.append(make('h2','','اختر لعبتك وابدأ الإبداع'),make('p','','اضغط «معاينة» لتجربة اللعبة الحقيقية؛ بعدها أضف أسئلتك بسهولة.'));
   head.append(title,make('span','tag-v32-status','6 ألعاب أساسية • 24 قالبًا متاحًا'));hub.append(head);
   const grid=make('div','tag-v32-grid');for(const id of featured)grid.append(gameCard(byId.get(id)));hub.append(grid);
   const more=make('div','tag-v32-more');const label=make('div');label.append(make('strong','','تريد لعبة أخرى؟'),make('p','','استكشف جميع القوالب بما فيها البطاقات والترتيب والكلمات والمتاهة.'));
