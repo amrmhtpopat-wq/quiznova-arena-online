@@ -1,0 +1,36 @@
+name: CHAMPION TAG V2 verification
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'champion*'
+      - 'server.py'
+      - 'student.js'
+      - 'stage.js'
+      - 'student.html'
+      - 'stage.html'
+      - 'tests/test_tag_champion_v*.py'
+      - '.github/workflows/champion-v2-checks.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Champion tournament and question invariants
+        run: python -m unittest discover -s tests -p 'test_tag_champion_v*.py' -v
+      - name: Browser script syntax
+        run: |
+          node --check champion-tag.js
+          node --check champion-bracket.js
+          node --check champion-board.js
+          node --check student.js
+          node --check stage.js
