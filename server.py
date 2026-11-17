@@ -169,7 +169,17 @@ def public_question_for_player(room, p, round_idx):
             order=list(range(len(q.get('options',[]))))
         else:
             if key not in maps:
-                order=list(range(len(q.get('options',[])))); rng.shuffle(order); maps[key]=order
+                order=list(range(len(q.get('options',[]))))
+                if room.get('championId'):
+                    # One shared question; repeatable player-specific choices.
+                    # Adjacent competitors receive a different rotation when possible.
+                    random.Random(f"{room['code']}:{round_idx}:{q.get('id','q')}:champion").shuffle(order)
+                    if len(order)>1:
+                        shift=int(p.get('championSeat',0))%len(order)
+                        order=order[shift:]+order[:shift]
+                else:
+                    rng.shuffle(order)
+                maps[key]=order
             order=maps[key]
         out['options']=[q.get('options',[])[i] for i in order]
     elif t=='order':
@@ -529,7 +539,7 @@ class Handler(SimpleHTTPRequestHandler):
                     leaders=team_leaders(room) if room['playType']=='teams' else individual_leaders(room)[:10]
                     return self.send_json({'ok':True,'room':{
                         'status':room['status'],'index':idx,'total':total,'playType':room['playType'],'gameMode':room['gameMode'],'variantMode':room.get('variantMode','options'),'model':p.get('model',''),
-                        'question':q,'review':({'explanation':room['quiz']['questions'][player_question_index(room,p,idx)].get('explanation',''),'image':room['quiz']['questions'][player_question_index(room,p,idx)].get('image',''),'correctAnswer':correct_display(room['quiz']['questions'][player_question_index(room,p,idx)])} if room['status']=='results' and room.get('showFeedback',True) and not room.get('examMode') and 0<=idx<total else None),'startedAt':room.get('startedAt',0),'answeredCurrent':str(idx) in p['answers'],'lastResult':((dict(result,correct=None) if result and not room.get('showFeedback',True) else result) if not room.get('examMode') else ({'index':idx,'correct':None,'earned':0} if result else None)),
+                        'question':q,'championMode':bool(room.get('championId')),'championTitle':(room.get('section','') if room.get('championId') else ''),'championSides':(room.get('teamNames',[]) if room.get('championId') else []),'review':({'explanation':room['quiz']['questions'][player_question_index(room,p,idx)].get('explanation',''),'image':room['quiz']['questions'][player_question_index(room,p,idx)].get('image',''),'correctAnswer':correct_display(room['quiz']['questions'][player_question_index(room,p,idx)])} if room['status']=='results' and room.get('showFeedback',True) and not room.get('examMode') and 0<=idx<total else None),'startedAt':room.get('startedAt',0),'answeredCurrent':str(idx) in p['answers'],'lastResult':((dict(result,correct=None) if result and not room.get('showFeedback',True) else result) if not room.get('examMode') else ({'index':idx,'correct':None,'earned':0} if result else None)),
                         'playerScore':(p['score'] if not room.get('examMode') or room['status']=='finished' else 0),'playerCorrect':(p['correct'] if not room.get('examMode') or room['status']=='finished' else 0),'playerStreak':(p['streak'] if not room.get('examMode') else 0),'team':p.get('team',''),
                         'teamMembers':([{'name':other['name'],'avatar':other.get('avatar','b01')} for other in room['players'].values() if other.get('team')==p.get('team')] if room['playType']=='teams' and p.get('team') else []),
                         'teamScore':(sum(int(other.get('score',0)) for other in room['players'].values() if other.get('team')==p.get('team')) if room['playType']=='teams' and p.get('team') and not room.get('examMode') else 0),
@@ -547,7 +557,7 @@ class Handler(SimpleHTTPRequestHandler):
                 if (room.get('examMode') and room['status']!='finished') or (is_stage and room['status']=='question'):
                     stats={'answered':stats['answered'],'pending':stats['pending'],'correct':0,'wrong':0,'accuracy':0,'distribution':[], 'correctStudents':[], 'wrongStudents':[], 'reactions':{},'mixed':False,'models':[]}
                 return self.send_json({'ok':True,'room':{
-                    'code':code,'status':room['status'],'index':idx,'total':total,'players':players,'section':room.get('section',''),'quizTitle':room['quiz'].get('title',''),'createdAt':room.get('createdAt',0),'roundDurationMs':room.get('roundDurationMs',20000),'startedAt':room.get('startedAt',0),'roundEndReason':room.get('roundEndReason',''),'background':room.get('background','cartoon'),'requireCard':bool(room.get('requireCard')),'playType':room['playType'],'gameMode':room['gameMode'],
+                    'code':code,'status':room['status'],'index':idx,'total':total,'championMode':bool(room.get('championId')),'championTitle':(room.get('section','') if room.get('championId') else ''),'championSides':(room.get('teamNames',[]) if room.get('championId') else []),'players':players,'section':room.get('section',''),'quizTitle':room['quiz'].get('title',''),'createdAt':room.get('createdAt',0),'roundDurationMs':room.get('roundDurationMs',20000),'startedAt':room.get('startedAt',0),'roundEndReason':room.get('roundEndReason',''),'background':room.get('background','cartoon'),'requireCard':bool(room.get('requireCard')),'playType':room['playType'],'gameMode':room['gameMode'],
                     'question':(public_question(qobj) if qobj and room.get('variantMode')!='models4' else None),'question_text':(qobj.get('text','') if qobj and room.get('variantMode')!='models4' else ''),
                     'correctAnswer':(correct_display(qobj) if qobj and room.get('variantMode')!='models4' and (not room.get('examMode') or room['status']=='finished') and (not is_stage or room['status']!='question') else ''),'explanation':(qobj.get('explanation','') if qobj and room['status']!='question' and not room.get('examMode') else ''),'examMode':bool(room.get('examMode')),'showFeedback':bool(room.get('showFeedback',True)),'cooperative':bool(room.get('cooperative')),'stats':stats,'variantMode':room.get('variantMode','options'),
                     'leaders':(individual_leaders(room) if not room.get('examMode') or room['status']=='finished' else []),'teams':(team_leaders(room) if not room.get('examMode') or room['status']=='finished' else []),'teamNames':room.get('teamNames',[]),'teamAssignment':room.get('teamAssignment','random'),
@@ -687,7 +697,7 @@ class Handler(SimpleHTTPRequestHandler):
                 total=len(room['quiz']['questions']); order=list(range(total))
                 if room.get('variantMode')=='models4':
                     model=['A','B','C','D'][len(room['players'])%4]; order=model_order(code,model,total)
-                room['players'][pid]={'id':pid,'name':name,'studentId':student['id'] if student else None,'level':platform_store.level_for_xp(student['xp']) if student else 1,'xp':int(student['xp']) if student else 0,'xpGain':0,'avatar':avatar,'team':team,'model':model,'questionOrder':order,'optionMaps':{},'score':0,'correct':0,'wrong':0,'streak':0,'answers':{},'lastResult':{},'powerups':{'double':True}}
+                room['players'][pid]={'id':pid,'name':name,'championSeat':(len(room['players']) if room.get('championId') else 0),'studentId':student['id'] if student else None,'level':platform_store.level_for_xp(student['xp']) if student else 1,'xp':int(student['xp']) if student else 0,'xpGain':0,'avatar':avatar,'team':team,'model':model,'questionOrder':order,'optionMaps':{},'score':0,'correct':0,'wrong':0,'streak':0,'answers':{},'lastResult':{},'powerups':{'double':True}}
             snapshot_room(room)
             return self.send_json({'ok':True,'playerId':pid,'name':name,'quizTitle':room['quiz'].get('title',''),'team':team,'playType':room['playType'],'model':model,'variantMode':room.get('variantMode','options'),'avatar':avatar,'background':room.get('background','cartoon'),'examMode':room.get('examMode',False),'level':room['players'][pid]['level'],'xp':room['players'][pid]['xp'],'progress':platform_store.xp_progress(room['players'][pid]['xp'])})
         if u.path=='/api/room/control':
