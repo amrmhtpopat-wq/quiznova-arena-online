@@ -26,7 +26,7 @@ function wing(rounds,left,interactive){
  return '<div class="wing '+(left?'left':'right')+'">'+columns.map((r,i)=>{
   const half=r.matches.length/2;
   const fixtures=left?r.matches.slice(0,half):r.matches.slice(half);
-  return '<div class="round-col" data-ct-round="${i}"><div class="round-title">'+escape(roundName(i,rounds.length))+'</div><div class="fixtures">'+fixtures.map(m=>card(m,interactive)).join('')+'</div></div>';
+  return '<div class="round-col" data-ct-round="'+i+'"><div class="round-title">'+escape(roundName(i,rounds.length))+'</div><div class="fixtures">'+fixtures.map(m=>card(m,interactive)).join('')+'</div></div>';
  }).join('')+'</div>';
 }
 function render(t,interactive=false){
