@@ -61,7 +61,8 @@ with sync_playwright() as playwright:
     teacher_page=teacher_ctx.new_page()
     errors=[]
     teacher_page.on('pageerror',lambda error:errors.append(str(error)))
-    teacher_page.on('dialog',lambda dialog:dialog.accept())
+    teacher_page.on('dialog',lambda dialog:dialog.accept(
+        'REISSUE 2' if dialog.type=='prompt' else None))
     teacher_page.goto(BASE+'/?teacher=1',wait_until='domcontentloaded')
     teacher_page.locator('#authWall').wait_for(state='visible',timeout=15000)
     teacher_page.locator('#email').fill(username)
@@ -87,6 +88,33 @@ with sync_playwright() as playwright:
     check(bool(re.fullmatch(r'[0-9]{6}',pin)),'Generated PIN not six digits')
     check(bool(re.fullmatch(r'[0-9]{6}',second_pin)) and second_pin!=pin,
           'Second student PIN invalid or reused')
+    # Simulate lost issuance window; old hashes cannot reveal secrets.
+    teacher_page.locator('#verifyHide').click()
+    teacher_page.locator('#verifyIssueMissing').click()
+    teacher_page.wait_for_function(
+        "document.querySelector('#verifyStatus')?.textContent.includes('PIN بالفعل')",
+        timeout=10000)
+    check(not teacher_page.locator('#verifyReveal').is_visible(),
+          'An already-issued secret was incorrectly exposed a second time')
+    # Explicitly double-confirm rotating both students, with a local private download.
+    with teacher_page.expect_download(timeout=25000) as recovered_file:
+        teacher_page.locator('#verifyReissueAll').click()
+    exported=recovered_file.value
+    recovered_path=Path(dbdir.name)/'reissued-pins-private.csv'
+    exported.save_as(str(recovered_path))
+    teacher_page.locator('#verifyReveal').wait_for(state='visible',timeout=15000)
+    newrows=teacher_page.locator('#verifyPinList').inner_text()
+    newfirst=next(x for x in newrows.splitlines() if card in x).split()[-1]
+    newsecond=next(x for x in newrows.splitlines() if second_card in x).split()[-1]
+    check(bool(re.fullmatch(r'[0-9]{6}',newfirst)) and
+          bool(re.fullmatch(r'[0-9]{6}',newsecond)) and newfirst!=newsecond,
+          'Recovery did not create two distinct six-digit PINs')
+    check(newfirst in recovered_path.read_text(encoding='utf-8-sig'),
+          'Recovery CSV did not contain the new private PIN')
+    pin=newfirst
+    second_pin=newsecond
+    check(not teacher_page.locator('#verifyToggle').is_enabled(),
+          'Bulk PIN recovery accidentally enabled PIN verification')
     take(teacher_page,'tag-verify-teacher-issuance-QA.png')
 
     # Secret is absent from card QR and public student directory.
