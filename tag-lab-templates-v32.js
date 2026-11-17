@@ -55,7 +55,7 @@ function choose(id,go=false){
 function demo(id,forceDemo){
  // A preview is not a commitment: only the Choose button changes the selected game.
  if(typeof window.TAG_LAB_V32_PREVIEW!=='function')return;
- const ok=window.TAG_LAB_V32_PREVIEW(id,forceDemo);
+ const ok=window.TAG_LAB_V32_PREVIEW(id,forceDemo||(view==='create'&&id!==choice));
  if(!ok)return;
  const overlay=$('playOverlay');if(!overlay)return;
  let notice=$('tagV32SampleNotice');
@@ -81,7 +81,7 @@ function gameCard(p){
  const tags=make('div','tag-v32-tags');tags.append(make('span','goodfit',p.tag),make('span','','يمكن تغيير القالب لاحقًا'));body.append(tags);
  const buttons=make('div','tag-v32-buttons');
  const preview=make('button','','▶ معاينة');preview.type='button';preview.setAttribute('aria-label','معاينة لعبة '+p.name+' بأسئلة تجريبية');preview.onclick=()=>demo(p.id,true);
- const pick=make('button','pick','استخدم هذا القالب');pick.type='button';pick.onclick=()=>choose(p.id,true);
+ const pick=make('button','pick','✏️ اكتب أسئلة هذا القالب');pick.type='button';pick.onclick=()=>choose(p.id,true);
  buttons.append(preview,pick);body.append(buttons);card.append(body);return card
 }
 function option(p,chooser=()=>choose(p.id,false)){
@@ -95,7 +95,7 @@ function modal(){
  const dlg=document.createElement('dialog');dlg.className='tag-v32-dialog';dlg.id='tagV32AllModes';
  const inner=make('div','tag-v32-dialog-inner');
  const head=make('div','tag-v32-dialog-head');
- const text=make('div');text.append(make('h2','','كل القوالب الـ24'),make('p','','اختر قالبك وسنستخدم الأسئلة نفسها. يمكنك تجربة اللعبة قبل اعتمادها.'));head.append(text);
+ const text=make('div');text.append(make('h2','','كل القوالب الـ24'),make('p','','لكل قالب أسئلته الخاصة؛ اكتبها أو عدّلها دون التأثير على القوالب الأخرى.'));head.append(text);
  const close=make('button','tag-v32-close','×');close.type='button';close.setAttribute('aria-label','إغلاق نافذة القوالب');close.onclick=()=>dlg.close();head.append(close);
  inner.append(head);
  const all=make('div','tag-v32-all');for(const p of byId.values())all.append(option(p,()=>{
@@ -106,7 +106,7 @@ function modal(){
  inner.append(all);
  const actions=make('div','tag-v32-dialog-actions');
  const preview=make('button','alt','▶ معاينة القالب');preview.type='button';preview.onclick=()=>{dlg.close();demo(pending,view==='games')};
- const pick=make('button','','استخدام القالب المختار');pick.id='tagV32ModalPick';pick.type='button';pick.onclick=()=>{dlg.close();choose(pending,view==='games')};
+ const pick=make('button','','✏️ تحرير أسئلة القالب المختار');pick.id='tagV32ModalPick';pick.type='button';pick.onclick=()=>{dlg.close();choose(pending,view==='games')};
  actions.append(preview,pick);inner.append(actions);
  dlg.append(inner);document.body.append(dlg);
  dlg.addEventListener('close',()=>{pending=choice;all.querySelectorAll('.tag-v32-option').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.mode===choice)))});
@@ -131,7 +131,7 @@ if(view==='games'){
   const button=make('button','tag-simple-btn alt','عرض جميع القوالب الـ24');button.type='button';button.onclick=openDialog;
   more.append(label,button);hub.append(more);
   const quick=make('div','tag-v32-head');const text=make('div');text.append(make('h2','','عندك أسئلة جاهزة؟'),make('p','','يمكنك تجاوز خطوة اختيار القالب وإضافتها مباشرة، ثم تغيير اللعبة في أي وقت.'));quick.append(text);
-  const skip=make('a','tag-simple-btn','✍️ ابدأ بأسئلتي مباشرة');skip.href='/tag-lab-create.html';quick.append(skip);hub.append(quick);
+  const skip=make('a','tag-simple-btn','✍️ أدخل أسئلتي لقالب أختاره لاحقًا');skip.href='/tag-lab-create.html';quick.append(skip);hub.append(quick);
   catalog.prepend(hub)
  }
 }else{
