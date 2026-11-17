@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice" role="img" aria-label="خلفية خلفية داكنة بسيطة بلا نص أو عناصر تفاعلية">
+<defs>
+<linearGradient id="sky" x2=".2" y2="1"><stop offset="0" stop-color="#08172c"/><stop offset=".68" stop-color="#0b294a"/><stop offset="1" stop-color="#081a2e"/></linearGradient>
+<radialGradient id="halo"><stop offset="0" stop-color="#d3c184" stop-opacity=".35"/><stop offset=".4" stop-color="#8ac5df" stop-opacity=".11"/><stop offset="1" stop-color="#d3c184" stop-opacity="0"/></radialGradient>
+<linearGradient id="pitch" x2="0" y2="1"><stop stop-color="#0c2340"/><stop offset="1" stop-color="#081a2e"/></linearGradient>
+<filter id="glow"><feGaussianBlur stdDeviation="3"/></filter>
+<pattern id="dots" width="21" height="21" patternUnits="userSpaceOnUse"><circle cx="10" cy="11" r="1" fill="#8ac5df" opacity=".15"/></pattern>
+</defs>
+<rect width="1920" height="1080" fill="url(#sky)"/>
+<ellipse cx="960" cy="220" rx="990" ry="480" fill="url(#halo)"/>
+
+<path d="M-50 690 Q960 565 1970 690 L2200 1130 H-220Z" fill="url(#pitch)" opacity=".8"/>
+<ellipse cx="960" cy="800" rx="630" ry="182" fill="none" stroke="#8ac5df" stroke-opacity=".34" stroke-width="5"/>
+<path d="M0 735Q960 622 1920 735" fill="none" stroke="#d3c184" stroke-opacity=".3" stroke-width="7"/>
+<path d="M960 638 V1080" stroke="#8ac5df" opacity=".2" stroke-width="3"/>
+<ellipse cx="960" cy="865" rx="680" ry="230" fill="url(#halo)" opacity=".72"/>
+<path d="M0 1045 Q960 900 1920 1045" stroke="#d3c184" stroke-opacity=".5" stroke-width="7" fill="none"/>
+<rect width="1920" height="1080" fill="#000a1e" opacity="0.32"/>
+</svg>
