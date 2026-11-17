@@ -39,6 +39,10 @@ const intro=make('div','tag-simple-intro');
 const info=make('div');
 info.append(make('h1','',copy.title),make('p','',copy.description));
 intro.append(info);
+const heroArt=make('img','tagv-intro-art');
+heroArt.src='/assets/brand/tag-lab-hero-v1.svg';
+heroArt.alt='ألعاب تعليمية وكتب وكأس البطولة';
+intro.append(heroArt);
 const introActions=make('div','tag-simple-actions');
 const back=make('a','tag-simple-back','↩ الرئيسية');back.href='/tag-lab-home.html';introActions.append(back);intro.append(introActions);
 main.prepend(intro);
@@ -104,7 +108,7 @@ if(view==='books'){
  const buttons=make('div','tag-simple-actions');
  const save=make('button','tag-simple-btn','💾 حفظ في مكتبتي');save.type='button';
  save.onclick=()=>{
-  if(!logged()){show('سجّل الدخول إلى حساب المعلم أولًا، ثم احفظ نشاطك.',true);window.scrollTo({top:0,behavior:'smooth'});return}
+  if(!logged()){show('سجّل الدخول إلى حساب TAG LAB قبل الحفظ.',true);location.href='/tag-lab-account.html';return}
   const native=$('cloudSave');if(!native){show('تعذر العثور على زر الحفظ.',true);return}
   native.click()
  };
