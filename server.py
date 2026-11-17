@@ -9,6 +9,8 @@ from xlsx_report import generate_report
 import platform_store
 platform_store.init()
 import platform_api
+import tag_champion
+tag_champion.ensure_schema()
 import solo_api
 solo_api.ensure_schema()
 import admin_api
@@ -435,6 +437,14 @@ class Handler(SimpleHTTPRequestHandler):
         u=urlparse(self.path)
         if admin_api.handle_get(self,u):return
         if platform_api.handle_get(self,u):return
+        if u.path=='/api/champion':
+            teacher=platform_api.authorized(self)
+            if not teacher:return
+            identifier=(parse_qs(u.query).get('id') or [''])[0]
+            try:
+                records=tag_champion.detail(teacher['id'],identifier) if identifier else tag_champion.list_owned(teacher['id'])
+            except ValueError as exc:return self.send_json({'ok':False,'error':str(exc)},404)
+            return self.send_json({'ok':True,'tournament':records} if identifier else {'ok':True,'tournaments':records})
         if u.path=='/api/health':
             try:
                 result=platform_store.query('SELECT 1 AS ok')
@@ -555,9 +565,34 @@ class Handler(SimpleHTTPRequestHandler):
         if admin_api.handle_post(self,u,data):return
         if platform_api.handle_post(self,u,data):return
         if solo_api.handle_post(self,u,data):return
-        if u.path=='/api/room/start':
+        if u.path in ('/api/champion','/api/champion/match/complete','/api/champion/match/forfeit'):
             teacher=platform_api.authorized(self)
             if not teacher:return
+            try:
+                if u.path=='/api/champion':
+                    result=tag_champion.create(teacher['id'],data)
+                elif u.path=='/api/champion/match/complete':
+                    with LOCK:result=tag_champion.complete_match(teacher['id'],data,ROOMS)
+                else:
+                    result=tag_champion.forfeit_match(teacher['id'],data)
+            except ValueError as exc:
+                error=str(exc)
+                return self.send_json({'ok':False,'error':error},409 if error in ('match_not_ready','match_not_started','room_not_finished','tie_requires_decision','both_teams_required') else 400)
+            return self.send_json({'ok':True,'tournament':result})
+        if u.path in ('/api/room/start','/api/champion/match/start'):
+            teacher=platform_api.authorized(self)
+            if not teacher:return
+            tournament_context=None
+            if u.path=='/api/champion/match/start':
+                try:
+                    tournament_context=tag_champion.prepare_match(teacher['id'],str(data.get('tournamentId') or ''),str(data.get('matchId') or ''))
+                except ValueError as exc:
+                    return self.send_json({'ok':False,'error':str(exc)},409)
+                t,_,_,fixture=tournament_context
+                data=dict(data,quiz=t['quiz'],playType='teams',teamCount=2,teamAssignment='manual',
+                          gameMode='classic',variantMode='options',showFeedback=True,
+                          powerups=False,requireCard=False,cooperative=False,examMode=False,
+                          section=t['title'])
             quiz=data.get('quiz'); play_type=data.get('playType','individual'); game_mode=data.get('gameMode','classic'); variant_mode=data.get('variantMode','options')
             if not isinstance(quiz,dict) or not isinstance(quiz.get('questions'),list) or not quiz['questions']: return self.send_json({'ok':False,'error':'invalid_quiz'},400)
             if play_type not in ('individual','teams'): play_type='individual'
@@ -575,12 +610,21 @@ class Handler(SimpleHTTPRequestHandler):
                 host_token=rid(36); stage_token=rid(30)
                 ROOMS[c]={'code':c,'quiz':q,'playType':play_type,'gameMode':game_mode,'status':'lobby','index':-1,'players':{},'createdAt':now_ms(),'startedAt':0,
                           'showFeedback':(bool(data.get('showFeedback',True)) and not exam),'powerupsEnabled':(bool(data.get('powerups',True)) and not exam),'examMode':exam,'maxAttempts':max(1,min(5,int(data.get('maxAttempts',1) or 1))),'requireCard':bool(data.get('requireCard',False)),'cooperative':(bool(data.get('cooperative')) and play_type=='teams' and not exam),'teacherId':teacher['id'],'schoolType':teacher.get('school_type','mixed'),'_persisted':False,'variantMode':variant_mode,'bossFinal':bool(variant_mode=='models4' and (game_mode=='boss' or quiz.get('settings',{}).get('bossEnabled'))),
-                          'teamNames':TEAM_NAMES[:team_count] if play_type=='teams' else [],'teamAssignment':team_assignment,'reactions':{},'hostToken':host_token,'stageToken':stage_token,'section':section,'background':background,'roundDurationMs':20000,'roundEndReason':''}
+                          'teamNames':([fixture['a'],fixture['b']] if tournament_context else TEAM_NAMES[:team_count]) if play_type=='teams' else [],'teamAssignment':team_assignment,'reactions':{},'hostToken':host_token,'stageToken':stage_token,'section':section,'background':background,'roundDurationMs':20000,'roundEndReason':'',
+                          'championKind':(t['kind'] if tournament_context else ''),
+                          'championId':(t['id'] if tournament_context else ''),
+                          'championMatchId':(fixture['id'] if tournament_context else '')}
+            if tournament_context:
+                try:
+                    tag_champion.attach_match(teacher['id'],t['id'],fixture['id'],ROOMS[c])
+                except ValueError as exc:
+                    ROOMS.pop(c,None)
+                    return self.send_json({'ok':False,'error':str(exc)},409)
             snapshot_room(ROOMS[c])
             root=public_base(self)
             base=('https://teachgame.onrender.com/play/' if root.rstrip('/')=='https://quiznova-arena-online.onrender.com' else root+'/student.html')
             join=f'{base}?code={c}'
-            return self.send_json({'ok':True,'code':c,'student_url':base,'join_url':join,'playType':play_type,'teamNames':ROOMS[c]['teamNames'],'teamAssignment':team_assignment,'variantMode':variant_mode,'hostToken':host_token,'stageToken':stage_token})
+            return self.send_json({'ok':True,'code':c,'student_url':base,'join_url':join,'playType':play_type,'teamNames':ROOMS[c]['teamNames'],'teamAssignment':team_assignment,'variantMode':variant_mode,'hostToken':host_token,'stageToken':stage_token,'tournamentId':(t['id'] if tournament_context else '')})
         if u.path=='/api/room/team':
             code=str(data.get('code','')).strip()
             host_token=str(data.get('hostToken',''))
@@ -621,10 +665,19 @@ class Handler(SimpleHTTPRequestHandler):
                 allowed=platform_store.avatar_pool(room.get('schoolType','mixed'))
                 if avatar not in allowed: avatar=allowed[0]
                 if not name:return self.send_json({'ok':False,'error':'name_required'},400)
+                champion_team=''
+                if room.get('championKind')=='students':
+                    champion_team=next((team_name for team_name in room['teamNames'] if norm(team_name)==norm(name)), '')
+                    if not champion_team:return self.send_json({'ok':False,'error':'not_in_fixture'},403)
+                    if any(p.get('team')==champion_team for p in room['players'].values()):
+                        return self.send_json({'ok':False,'error':'competitor_already_joined'},409)
+                elif room.get('championKind')=='classes' and student:
+                    champion_team=next((team_name for team_name in room['teamNames'] if norm(team_name)==norm(student['class_name'])), '')
+                    if not champion_team:return self.send_json({'ok':False,'error':'wrong_class'},403)
                 # prevent duplicate exact nickname in same room, but allow explicit suffix by student
                 if student and any(x.get('studentId')==student['id'] for x in room['players'].values()):return self.send_json({'ok':False,'error':'card_already_joined'},409)
                 if any(norm(x['name'])==norm(name) for x in room['players'].values()): return self.send_json({'ok':False,'error':'name_taken'},409)
-                team=choose_team(room) if room['playType']=='teams' and room.get('teamAssignment')!='manual' else ''
+                team=champion_team or (choose_team(room) if room['playType']=='teams' and room.get('teamAssignment')!='manual' else '')
                 pid=rid(); model=''
                 total=len(room['quiz']['questions']); order=list(range(total))
                 if room.get('variantMode')=='models4':
@@ -646,6 +699,8 @@ class Handler(SimpleHTTPRequestHandler):
                 elif action=='start':
                     if room['status']!='lobby': return self.send_json({'ok':False,'error':'already_started'},409)
                     if room['playType']=='teams' and any(not p.get('team') for p in room['players'].values()):return self.send_json({'ok':False,'error':'team_missing'},409)
+                    if room.get('championKind') and any(not any(p.get('team')==name for p in room['players'].values()) for name in room['teamNames']):
+                        return self.send_json({'ok':False,'error':'both_teams_required'},409)
                     room['status']='question'; room['index']=0; room['startedAt']=now_ms();room['roundDurationMs']=round_duration_ms(room)
                 elif action=='shuffle-teams':
                     if room['status']!='lobby' or room['playType']!='teams':return self.send_json({'ok':False,'error':'not_in_lobby'},409)
@@ -657,6 +712,8 @@ class Handler(SimpleHTTPRequestHandler):
                 elif action=='next':
                     if room['status']=='lobby':
                         if room['playType']=='teams' and any(not p.get('team') for p in room['players'].values()):return self.send_json({'ok':False,'error':'team_missing'},409)
+                        if room.get('championKind') and any(not any(p.get('team')==name for p in room['players'].values()) for name in room['teamNames']):
+                            return self.send_json({'ok':False,'error':'both_teams_required'},409)
                         room['status']='question';room['index']=0;room['startedAt']=now_ms();room['roundDurationMs']=round_duration_ms(room)
                     elif room['status']=='question':
                         finish_round(room,'manual')
