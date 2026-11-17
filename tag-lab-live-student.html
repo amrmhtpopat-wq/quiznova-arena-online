@@ -1,0 +1,163 @@
+<!doctype html><html lang="ar" dir="rtl" data-tag-theme="dark"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive"><meta name="theme-color" content="#10112D">
+<title>TAG LAB | تحدي الطالب المباشر</title>
+<link rel="icon" href="/assets/brand/tag-lab-visual-v1.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/tag-lab-visual-v1.css?v=1.0.0">
+<style>
+body{background:#10112D;color:#fff;margin:0}body.tagv-enabled main{max-width:1360px}
+.join-card{max-width:630px;margin:36px auto}.tagv-live-panel h1{margin:0 0 12px}.tagv-live-panel p{color:var(--tagv-muted)}
+label{display:block;margin:15px 0 6px;font-weight:800}
+input{width:100%;min-height:49px;padding:10px 15px;border-radius:12px;border:1.5px solid var(--tagv-border);font:inherit}
+button{cursor:pointer;border:0;background:var(--tagv-purple-gradient);color:#fff;border-radius:13px;padding:12px 19px;min-height:46px;font:800 1rem Tahoma,Arial}
+button:disabled{opacity:.6;cursor:not-allowed}
+#joinStatus,#answerStatus{min-height:27px;color:var(--tagv-teal);font-weight:800}
+.game-panel{max-width:1120px;margin:15px auto}
+.tagv-answers button{font:900 clamp(1.1rem,2.3vw,1.7rem) Tahoma,Arial;line-height:1.5}
+.tagv-score-row{justify-content:center}.player-top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}
+#countdown{font-size:clamp(1.5rem,3vw,2.45rem);font-variant-numeric:tabular-nums;color:var(--tagv-primary)}
+#questionText{min-height:100px;display:grid;place-items:center}
+#playing[hidden],#joining[hidden],#waiting[hidden],#gameOver[hidden]{display:none!important}
+.status-rail{display:flex;align-items:center;justify-content:space-around;gap:10px;flex-wrap:wrap;padding:13px;border-radius:15px;background:var(--tagv-soft)}
+#answerStatus{font-size:1rem;margin:14px 0}
+#gameOver{text-align:center;min-height:215px;display:grid;place-items:center}
+#waiting{text-align:center;padding:32px}
+#waiting h2{font-size:clamp(1.2rem,2.7vw,1.9rem)}
+#studentLabel{font-weight:800;color:var(--tagv-primary)}
+.join-details{display:flex;gap:15px;align-items:center;flex-wrap:wrap;color:var(--tagv-muted)}
+.join-details input{width:21px;min-height:21px;accent-color:var(--tagv-primary)}
+@media(max-width:600px){.tagv-live-panel{padding:16px!important}#questionText{min-height:65px}.tagv-answer{min-height:70px}}
+</style></head><body>
+<main style="padding:22px clamp(14px,3vw,36px) 65px">
+<section class="tagv-live-hero"><div><h1>🎮 التحدي المباشر</h1><p>أجب بسرعة وبدقة، ونافس زملاءك في الوقت الحقيقي.</p></div><img src="/assets/brand/tag-lab-hero-v1.svg" alt=""></section>
+<section id="joining" class="tagv-live-panel join-card">
+<h2>انضم إلى التحدي</h2>
+<form id="joinForm"><label for="roomCode">رمز الغرفة</label>
+<input id="roomCode" required maxlength="8" minlength="6" autocomplete="off" dir="ltr" placeholder="مثال: ABC234">
+<div id="cardOption" hidden class="join-details"><input type="checkbox" id="useCard" checked><label for="useCard">الدخول ببطاقة TAG LAB المسجلة</label></div>
+<div id="guestFields"><label for="guestName">اسم اللاعب</label><input id="guestName" maxlength="40" minlength="2" placeholder="اكتب اسمك" autocomplete="nickname" required></div>
+<div class="tagv-actions"><button type="submit" id="join">انضمام إلى الغرفة</button></div>
+</form><p id="joinStatus" role="status"></p>
+</section>
+<section class="tagv-live-panel game-panel" id="gamePanel" hidden>
+<div class="player-top"><strong id="roomTitle">التحدي المباشر</strong><strong id="countdown">00:00</strong></div>
+<div class="tagv-score-row">
+<span>الاسم: <b id="studentLabel">—</b></span>
+<span>النقاط: <b id="score">0</b></span>
+<span>ترتيبي: <b id="rank">—</b></span>
+<span>المشاركون: <b id="players">0</b></span>
+</div>
+<div class="status-rail"><b id="stage">بانتظار بدء التحدي</b><b id="roundLabel">—</b></div>
+<div class="tagv-progress"><span id="progressFill" style="width:0"></span></div>
+<div id="waiting"><h2>استعد! 🎯</h2><p id="waitingText">بانتظار بدء الحصة من المعلم...</p></div>
+<div id="playing" hidden>
+<p class="tagv-question" id="questionText"></p>
+<img id="questionImage" alt="صورة مرتبطة بالسؤال" hidden style="max-width:100%;max-height:230px;object-fit:contain;display:block;margin:0 auto 14px;border-radius:13px">
+<p id="candidate" style="text-align:center;font-weight:800" hidden></p>
+<div id="answers" class="tagv-answers" role="group" aria-label="خيارات الإجابة"></div>
+<p id="answerStatus" role="status"></p>
+</div>
+<div id="gameOver" hidden><h2>🏆 انتهى التحدي!</h2><p id="finalScore"></p><a href="/tag-lab-student.html">العودة إلى ألعابي</a></div>
+</section>
+</main>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id),KEY='tag_lab_live_player_v1';
+let live=null,code='',state=null,busy=false,lastQuestion='',answered=false,locked=false;
+const cardSession=()=>sessionStorage.getItem('taglab_student_session')||'';
+function msg(txt){$('joinStatus').textContent=txt}
+const errors={room_not_found:'هذه الغرفة غير متاحة.',room_closed:'انتهت الجلسة.',room_full:'الغرفة مكتملة.',invalid_card_session:'جلسة بطاقة الطالب منتهية. ادخل إلى ألعابي مجددًا.',card_required:'يجب الدخول ببطاقة الطالب وPIN أولًا.',already_joined:'البطاقة مشاركة في هذه الغرفة بالفعل.',card_other_teacher:'هذه البطاقة ليست ضمن طلاب المعلم.',room_already_started:'بدأ التحدي بالفعل.',name_required:'اكتب اسمًا من حرفين على الأقل.',rate_limited:'محاولات كثيرة. حاول لاحقًا.',question_closed:'انتهى وقت السؤال.',already_answered:'تم تسجيل إجابتك مسبقًا.'};
+function friendly(e){return errors[e.message]||e.message}
+async function api(path,data){
+ const resp=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},cache:'no-store',body:JSON.stringify(data)});
+ const d=await resp.json().catch(()=>({}));if(!resp.ok||d.ok===false)throw Error(d.error||'network_error');return d
+}
+function show(which){$('joining').hidden=which!=='join';$('gamePanel').hidden=which==='join'}
+function updateCardOption(){
+ const has=!!cardSession();$('cardOption').hidden=!has;
+ $('guestFields').hidden=has&&$('useCard').checked;$('guestName').required=!has||!$('useCard').checked
+}
+$('useCard').onchange=updateCardOption;updateCardOption();
+$('roomCode').value=new URLSearchParams(location.search).get('code')?.toUpperCase()||'';
+$('joinForm').onsubmit=async e=>{
+ e.preventDefault();if(busy)return;
+ const c=$('roomCode').value.trim().toUpperCase();
+ if(!/^[A-Z2-9]{6}$/.test(c)){msg('أدخل رمز غرفة صحيحًا من 6 أحرف أو أرقام.');return}
+ busy=true;$('join').disabled=true;msg('');
+ const use=$('useCard').checked&&!!cardSession();
+ try{
+  const d=await api('/api/game-lab/live/join',
+   {code:c,...(use?{cardSession:cardSession()}:{guestName:$('guestName').value.trim()})});
+  code=c;live=d.token;sessionStorage.setItem(KEY,JSON.stringify({code,token:live}));
+  show('game');render(d.state)
+ }catch(e){msg(friendly(e))}finally{busy=false;$('join').disabled=false}
+};
+function render(s){
+ if(!s)return;
+ state=s;show('game');$('roomTitle').textContent=s.title||'التحدي المباشر';
+ $('score').textContent=s.me?.score??0;$('players').textContent=s.participants??0;
+ $('studentLabel').textContent=s.me?.name||'طالب';
+ const rank=(s.leaderboard||[]).findIndex(p=>p.name===s.me?.name && p.score===s.me?.score);
+ $('rank').textContent=rank>=0?String(rank+1)+' من '+s.participants:'—';
+ $('stage').textContent=({lobby:'بانتظار بدء الحصة',question:'السؤال الحالي',results:'انتهى السؤال',finished:'انتهى التحدي'})[s.status]||s.status;
+ $('roundLabel').textContent=s.status==='lobby'?'جاهز للبدء':'السؤال '+(s.index+1)+' من '+s.total;
+ $('progressFill').style.width=String(100*(s.status==='finished'?1:s.index/Math.max(1,s.total)))+'%';
+ const remain=s.status==='question'?Math.max(0,Number(s.deadline)-Math.floor(Date.now()/1000)):0;
+ $('countdown').textContent=String(Math.floor(remain/60)).padStart(2,'0')+':'+String(remain%60).padStart(2,'0');
+ $('gameOver').hidden=s.status!=='finished';
+ if(s.status==='finished'){
+  $('playing').hidden=true;$('waiting').hidden=true;$('finalScore').textContent='نقاطك: '+(s.me?.score||0);return
+ }
+ if(s.status==='lobby'){
+  $('playing').hidden=true;$('waiting').hidden=false;$('waitingText').textContent='بانتظار بدء الحصة من المعلم...';return
+ }
+ if(s.status==='results'){
+  $('playing').hidden=true;$('waiting').hidden=false;
+  $('waitingText').textContent=s.correctAnswer&&s.showFeedback?'الإجابة الصحيحة: '+s.correctAnswer+' — بانتظار السؤال التالي':'انتهى السؤال. بانتظار الانتقال للسؤال التالي.';
+  return
+ }
+ const q=s.question;
+ $('waiting').hidden=true;$('playing').hidden=false;
+ const key=s.index+'-'+q?.roundSeed;
+ if(key!==lastQuestion){
+  lastQuestion=key;answered=false;locked=false;
+  $('questionText').textContent=q?.text||'';
+  $('candidate').hidden=!q?.candidate;$('candidate').textContent=q?.candidate||'';
+  $('questionImage').hidden=!q?.imageUrl;if(q?.imageUrl)$('questionImage').src=q.imageUrl;
+  const host=$('answers');host.replaceChildren();
+  (q?.options||[]).forEach(value=>{
+   const b=document.createElement('button');b.className='tagv-answer';b.type='button';b.textContent=value;
+   b.onclick=()=>submit(value);host.append(b)
+  });
+  $('answerStatus').textContent='';
+ }
+ answered=Boolean(s.me?.answered)||answered;
+ $('answers').querySelectorAll('button').forEach(b=>b.disabled=answered||locked);
+ if(answered)$('answerStatus').textContent='✓ تم تسجيل إجابتك. انتظر السؤال التالي.';
+}
+async function submit(value){
+ if(!live||answered||locked||state?.status!=='question')return;
+ locked=true;$('answers').querySelectorAll('button').forEach(b=>b.disabled=true);
+ try{
+  await api('/api/game-lab/live/answer',{code,token:live,index:state.index,answer:value});
+  answered=true;$('answerStatus').textContent='✓ تم إرسال الإجابة. انتظر السؤال التالي.';
+ }catch(e){$('answerStatus').textContent=friendly(e);
+  if(!['already_answered','question_closed'].includes(e.message)){locked=false;$('answers').querySelectorAll('button').forEach(b=>b.disabled=false)}
+ }
+}
+async function poll(){
+ if(!live||busy)return;
+ try{
+  const d=await api('/api/game-lab/live/state',{code,token:live});render(d.state)
+ }catch(e){
+  if(['room_not_found','invalid_session','room_closed'].includes(e.message)){live=null;sessionStorage.removeItem(KEY);show('join');msg(friendly(e))}
+ }
+}
+try{const data=JSON.parse(sessionStorage.getItem(KEY)||'null');
+ if(data?.token&&/^[A-Z2-9]{6}$/.test(data.code)){code=data.code;live=data.token;poll()}
+}catch(_){sessionStorage.removeItem(KEY)}
+setInterval(poll,1400);
+})();
+</script>
+<script src="/tag-lab-visual-v1.js?v=1.0.0"></script>
+</body></html>
