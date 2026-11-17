@@ -12,7 +12,7 @@ import platform_store as store
 MAX_ENTRANTS = 32
 MAX_TOURNAMENTS = 80
 THEMES = ('gold', 'neon', 'esports', 'broadcast')
-BACKGROUNDS = ('stadium', 'night', 'lights', 'arena', 'grid', 'minimal')
+BACKGROUNDS = ('stadium', 'night', 'lights', 'arena', 'grid', 'minimal', 'daylight', 'finals')
 DEFAULT_THEME = 'gold'
 DEFAULT_BACKGROUND = 'stadium'
 
