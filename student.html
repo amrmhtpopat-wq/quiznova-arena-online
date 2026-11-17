@@ -65,6 +65,9 @@
       <label>🪪 رمز بطاقة الطالب (اختياري إذا كان الدخول بالاسم مسموحًا)
         <input id="cardCode" maxlength="24" autocomplete="off" autocapitalize="characters" dir="ltr" placeholder="ABCD-EFGH">
       </label>
+      <label id="liveStudentPinWrap" hidden>🔐 رمز التحقق الشخصي (PIN)
+        <input id="liveStudentPin" type="password" inputmode="numeric" autocomplete="off" maxlength="6" pattern="[0-9]{6}" placeholder="6 أرقام" aria-label="رمز التحقق الشخصي للدخول إلى التحدي">
+      </label>
       <button type="button" class="qn-profile-action" id="showCardProfile">🪪 عرض بطاقة الطالب ونقاطه</button>
       <div id="cardProfile" class="qn-card-profile" hidden></div>
       <section id="boCardQuizzes" class="bo-card-quizzes" hidden aria-live="polite" aria-label="الاختبارات المخصصة لصف الطالب"></section>
@@ -88,6 +91,9 @@
         <label for="soloCardCode">رمز بطاقة الطالب <small>مثل ABCD-EFGH</small></label>
         <div class="bo-solo-form-row"><input id="soloCardCode" placeholder="ABCD-EFGH" dir="ltr" autocomplete="off" maxlength="90" required><button type="submit" id="soloLoadBtn">عرض اختبارات التدريب</button></div>
       </form>
+      <label id="soloPinWrap" class="bo-verify-pin" for="soloPinCode" hidden>🔐 رمز التحقق الشخصي (PIN) من المعلم
+        <input id="soloPinCode" type="password" inputmode="numeric" autocomplete="off" maxlength="6" pattern="[0-9]{6}" placeholder="••••••" aria-label="رمز التحقق الشخصي قبل بدء الاختبار">
+      </label>
       <p id="soloError" class="bo-solo-error" role="alert"></p>
       <div id="soloStudentInfo" class="bo-solo-student-info" hidden></div>
       <div id="soloQuizList" class="bo-solo-quizzes" aria-live="polite"></div>
@@ -98,8 +104,8 @@
 </main>
 <script src="/avatar-names-v121.js?v=12.4"></script>
 <script src="/booyah-countdown-v121.js?v=13.1"></script>
-<script src="student.js?v=24.1"></script><script src="/booyah-avatar-picker-v124.js?v=12.4"></script>
-<script src="/solo-student-v120.js?v=12.8"></script>
+<script src="student.js?v=verify-1"></script><script src="/booyah-avatar-picker-v124.js?v=12.4"></script>
+<script src="/solo-student-v120.js?v=verify-1"></script>
 <script src="/booyah-card-quizzes-v128.js?v=12.8"></script>
 <script src="/booyah-student-fit-v128.js?v=12.8"></script>
 <script defer src="/tag-lab-student-card-bridge-v34.js?v=34.0"></script>
