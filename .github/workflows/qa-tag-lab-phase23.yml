@@ -13,6 +13,16 @@ on:
       - tests/browser_game_lab_pro_v3.py
       - game_lab_api.py
       - game-lab-preview.html
+      - tag-lab-home.html
+      - tag-lab-books.html
+      - tag-lab-create.html
+      - tag-lab-games.html
+      - tag-lab-library.html
+      - tag-lab-live.html
+      - tag-lab-students.html
+      - tag-lab-simple.css
+      - tag-lab-simple.js
+      - tests/browser_tag_lab_simple_v31.py
       - game-lab-pro-v3.js
       - game-lab-cloud-v2.js
       - tests/test_game_lab_pro.py
@@ -41,6 +51,7 @@ jobs:
           python -m py_compile game_lab_pro.py game_lab_ai_quality.py game_lab_uploads.py game_lab_api.py server.py
           node --check game-lab-pro-v3.js
           node --check game-lab-cloud-v2.js
+          node --check tag-lab-simple.js
           python - <<'PY'
           import re
           from pathlib import Path
@@ -82,3 +93,5 @@ jobs:
           python -m playwright install --with-deps chromium
       - name: Browser review-to-save-to-card integration
         run: python tests/browser_game_lab_pro_v3.py
+      - name: Separate pages and teacher workflow browser integration
+        run: python tests/browser_tag_lab_simple_v31.py
