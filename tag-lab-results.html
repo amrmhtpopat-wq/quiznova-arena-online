@@ -1,0 +1,128 @@
+<!doctype html><html lang="ar" dir="rtl"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#F8F9FF">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>TAG LAB | النتائج والتقارير</title>
+<link rel="icon" href="/assets/brand/tag-lab-visual-v1.svg" type="image/svg+xml"><link rel="stylesheet" href="/tag-lab-visual-v1.css?v=1.0.0">
+<style>
+main{max-width:1400px;margin:auto;padding:26px clamp(13px,3vw,37px) 60px}
+.hero-summary{display:flex;justify-content:space-between;align-items:center;gap:20px}.hero-summary img{width:180px;max-height:145px}
+.selector{display:flex;gap:13px;align-items:center;flex-wrap:wrap;margin:20px 0}
+select{min-width:220px;padding:12px 15px;border-radius:13px;font:inherit}
+button{padding:13px 21px;background:var(--tagv-purple-gradient);border:none;border-radius:13px;color:#fff;font:800 .9rem Tahoma,Arial;cursor:pointer}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin:19px 0}
+.metrics .tagv-stat strong{font-size:2.05rem}
+.dashboard-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:19px;align-items:start}
+.panel{padding:22px;border:1px solid var(--tagv-border);border-radius:20px;background:var(--tagv-surface);box-shadow:var(--tagv-shadow)}
+.panel h2{font-size:1.2rem;margin:0 0 17px}
+.bars{display:flex;gap:9px;align-items:end;min-height:225px;border-bottom:1px solid var(--tagv-border);padding:10px}
+.bar{flex:1;max-width:100px;min-width:0;display:grid;place-items:center;gap:5px}
+.bar span{min-height:5px;width:85%;background:linear-gradient(180deg,#74E2D4,#8C5BF5);border-radius:9px 9px 0 0}
+.bar small{font-size:.73rem;color:var(--tagv-muted);text-align:center}
+.results-table{width:100%;border-collapse:collapse;min-width:640px}
+.results-table th,.results-table td{padding:13px 11px;border-bottom:1px solid var(--tagv-border);text-align:right;white-space:nowrap}
+.results-table th{background:var(--tagv-soft)}.table-scroll{overflow:auto}
+.status{color:var(--tagv-muted);min-height:30px}
+@media(max-width:920px){.dashboard-grid{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.hero-summary img{width:90px}.metrics{grid-template-columns:1fr 1fr}}
+</style></head><body>
+<main>
+<div class="hero-summary">
+ <div><h1>▥ نتائج النشاط</h1><p>تحليل حقيقي لأداء الطلاب في ألعابك والتحديات المباشرة.</p></div>
+ <img src="/assets/brand/tag-lab-hero-v1.svg" alt="">
+</div>
+<div class="selector">
+ <label for="type">نوع التقرير</label><select id="type"><option value="live">تحدٍّ مباشر</option><option value="activity">نشاط فردي</option></select>
+ <label for="choice">النشاط أو الجلسة</label><select id="choice"><option value="">اختر التقرير</option></select>
+ <button type="button" id="refresh">تحديث النتائج</button>
+</div>
+<p id="message" class="status" role="status"></p>
+<div class="metrics">
+ <div class="tagv-stat"><span>إجمالي المشاركين</span><strong id="students">—</strong></div>
+ <div class="tagv-stat"><span>متوسط الدرجة</span><strong id="average">—</strong></div>
+ <div class="tagv-stat"><span>نسبة الإجابات الصحيحة</span><strong id="accuracy">—</strong></div>
+ <div class="tagv-stat"><span>عدد الأسئلة</span><strong id="questions">—</strong></div>
+</div>
+<div class="dashboard-grid">
+ <section class="panel"><h2>توزيع درجات الطلاب</h2><div id="chart" class="bars"></div></section>
+ <section class="panel"><h2>ملخص النشاط</h2><div id="summary"></div></section>
+</div>
+<section class="panel" style="margin:18px 0">
+ <div style="display:flex;align-items:center;justify-content:space-between;gap:11px;flex-wrap:wrap"><h2>نتائج الطلاب</h2><button type="button" id="export" disabled>تصدير إلى Excel (CSV)</button></div>
+ <div class="table-scroll"><table class="results-table"><thead><tr>
+ <th>الطالب</th><th>الشعبة</th><th>الدرجة</th><th>الإجابات الصحيحة</th><th>النسبة</th>
+ </tr></thead><tbody id="tableBody"></tbody></table></div>
+</section>
+</main>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id);const token=()=>localStorage.getItem('qn9_teacher_token')||'';
+let rooms=[],activities=[],rows=[],reportName='';
+async function get(path){const r=await fetch(path,{headers:{Authorization:'Bearer '+token()},cache:'no-store'});const d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw Error(d.error||'request_failed');return d}
+function tag(name,text){const e=document.createElement(name);e.textContent=text;return e}
+function metric(id,value){$(id).textContent=String(value??'—')}
+function render(){
+ const type=$('type').value,value=$('choice').value;if(!value)return;
+ $('message').textContent='جارٍ جلب النتائج...';
+ const endpoint=type==='live'?'/api/game-lab/live/report?code='+encodeURIComponent(value):
+ '/api/game-lab/teacher/reports?id='+encodeURIComponent(value);
+ get(endpoint).then(d=>{
+  rows=type==='live'?(d.results||[]).map(p=>({name:p.name,className:p.className,score:p.score,correct:p.correct,total:p.total,percent:p.percent})):
+   (d.results||[]).map(p=>({name:p.name,className:p.className,score:p.score,correct:p.correct,total:p.questions,
+    percent:Math.round(p.correct*100/Math.max(1,p.questions))}));
+  reportName=(type==='live'?'جلسة ':'نشاط ')+value;
+  const total=rows.length,avg=total?Math.round(rows.reduce((sum,p)=>sum+Number(p.score||0),0)/total):0;
+  const good=total?Math.round(rows.reduce((sum,p)=>sum+Number(p.percent||0),0)/total):0;
+  metric('students',total);metric('average',avg);metric('accuracy',good+'%');metric('questions',type==='live'?d.totalQuestions:(rows[0]?.total||0));
+  const body=$('tableBody');body.replaceChildren();
+  rows.forEach(p=>{
+   const tr=document.createElement('tr');
+   [p.name,p.className,p.score,p.correct+' / '+p.total,p.percent+'%'].forEach(v=>tr.append(tag('td',String(v??''))));
+   body.append(tr)
+  });
+  if(!rows.length)body.append(tag('tr',''));
+  const chart=$('chart');chart.replaceChildren();
+  const bins=[[0,49],[50,59],[60,69],[70,79],[80,89],[90,100]];
+  const counts=bins.map(([a,b])=>rows.filter(r=>r.percent>=a&&r.percent<=b).length);
+  const max=Math.max(1,...counts);
+  bins.forEach(([a,b],i)=>{
+   const col=tag('div','');col.className='bar';
+   const number=tag('b',String(counts[i]));
+   const bar=tag('span','');bar.style.height=String(7+(counts[i]/max)*165)+'px';
+   const title=tag('small',a+'–'+b+'%');col.append(number,bar,title);chart.append(col)
+  });
+  const summary=$('summary');summary.replaceChildren();
+  summary.append(tag('p','الطلاب الذين أكملوا النشاط: '+total));
+  summary.append(tag('p','متوسط نسبة الإجابة الصحيحة: '+good+'%'));
+  if(type==='live')summary.append(tag('p','حالة الجلسة: '+(d.status==='finished'?'مكتملة':'جارية')));
+  $('message').textContent=total?'تم تحديث التقرير من قاعدة بيانات TAG LAB.':'لا توجد نتائج مسجلة حتى الآن.';
+  $('export').disabled=!total;
+ }).catch(e=>{$('message').textContent='تعذر فتح التقرير: '+e.message});
+}
+function options(){
+ const sel=$('choice');sel.replaceChildren();sel.append(tag('option','اختر التقرير'));sel.firstChild.value='';
+ const items=$('type').value==='live'?rooms:activities;
+ items.forEach(x=>{const option=tag('option',x.title+' — '+(x.code||x.id).slice(0,8));option.value=x.code||x.id;sel.append(option)});
+ $('message').textContent=items.length?'اختر التقرير لعرض النتائج.':'لا توجد تقارير محفوظة.';
+ $('export').disabled=true
+}
+async function init(){
+ if(!token()){ $('message').textContent='سجّل الدخول إلى حساب المعلم في TAG LAB أولًا.';return }
+ try{
+  const [a,b]=await Promise.all([get('/api/game-lab/live/rooms'),get('/api/game-lab/teacher/list')]);
+  rooms=a.rooms||[];activities=b.activities||[];options();
+ }catch(e){$('message').textContent='تعذر تحميل النتائج: '+e.message}
+}
+$('choice').onchange=render;$('type').onchange=options;$('refresh').onclick=()=>{if($('choice').value)render();else init()};
+$('export').onclick=()=>{
+ if(!rows.length)return;
+ const data=[['الطالب','الشعبة','الدرجة','الإجابات الصحيحة','عدد الأسئلة','النسبة']];
+ rows.forEach(x=>data.push([x.name,x.className,x.score,x.correct,x.total,x.percent+'%']));
+ const text='\ufeff'+data.map(a=>a.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');
+ const a=document.createElement('a'),blob=new Blob([text],{type:'text/csv;charset=utf-8'});
+ a.href=URL.createObjectURL(blob);a.download='TAG-LAB-'+reportName.replace(/[\\/:*?"<>|]/g,'_')+'.csv';
+ a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2500)
+};
+init();
+})();
+</script><script src="/tag-lab-visual-v1.js?v=1.0.0"></script>
+</body></html>
