@@ -71,6 +71,22 @@ def validate_payload(raw):
         if key in seen:continue
         seen.add(key)
         question={'q':q,'a':a,'g':g}
+        question_type=str(row.get('questionType') or '').strip()
+        if question_type:
+            if question_type not in ('mcq','true_false','short'):
+                raise ValueError('invalid_question_type')
+            question['questionType']=question_type
+            if question_type=='true_false' and a not in ('صح','خطأ'):
+                raise ValueError('invalid_true_false_answer')
+        difficulty=str(row.get('difficulty') or '').strip()
+        if difficulty:
+            if difficulty not in ('easy','medium','hard'):
+                raise ValueError('invalid_question_difficulty')
+            question['difficulty']=difficulty
+        quote=str(row.get('sourceQuote') or '').strip()[:240]
+        if quote:question['sourceQuote']=quote
+        origin=str(row.get('origin') or '').strip()[:32]
+        if origin:question['origin']=origin
         explanation=str(row.get('explanation') or '').strip()[:240]
         if explanation:question['explanation']=explanation
         if 'markerX' in row or 'markerY' in row:
@@ -93,7 +109,15 @@ def validate_payload(raw):
                 raise ValueError('duplicate_question_choices')
             if sum(choice.casefold()==a.casefold() for choice in clean)!=1:
                 raise ValueError('correct_answer_missing_from_choices')
+            if question_type=='mcq' and len(clean)!=4:
+                raise ValueError('mcq_requires_four_choices')
+            if question_type=='true_false' and set(clean)!={'صح','خطأ'}:
+                raise ValueError('invalid_true_false_choices')
             question['choices']=clean
+        elif question_type=='mcq':
+            raise ValueError('mcq_requires_four_choices')
+        elif question_type=='true_false':
+            question['choices']=['صح','خطأ']
         page=row.get('sourcePage')
         if page is not None:
             try:page=int(page)
@@ -291,6 +315,10 @@ def question_state(state,token_hash):
         choices=list(dict.fromkeys(r['g'] for r in rows))
         correct=item['g']
     elif mode=='truth':
+        if item.get('questionType')=='true_false':
+            return {'index':idx,'question':'قيّم العبارة التالية','candidate':item['q'],
+                    'choices':['صح','خطأ'],'total':len(rows),'mode':mode,
+                    'duration':state['duration'],'score':state['score']}
         wrongs=[r['a'] for r in rows if r['a']!=item['a']]
         actual=bool(rng.randrange(2))
         candidate=item['a'] if actual or not wrongs else rng.choice(wrongs)
@@ -321,6 +349,7 @@ def expected_answer(state,token_hash):
     mode=state['mode']
     if mode=='sort':return row['g']
     if mode=='truth':
+        if row.get('questionType')=='true_false':return row['a']
         rng=random.Random(int(hashlib.sha256((token_hash+':'+str(state['index'])).encode()).hexdigest()[:12],16))
         wrongs=[r['a'] for r in state['rows'] if r['a']!=row['a']]
         actual=bool(rng.randrange(2))
