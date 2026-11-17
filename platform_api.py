@@ -56,7 +56,7 @@ def handle_get(h,u):
     return True
 
 def handle_post(h,u,data):
-    if u.path not in ('/api/auth/register','/api/auth/login','/api/auth/forgot','/api/auth/reset','/api/auth/logout','/api/auth/password','/api/teacher/snapshot','/api/teacher/students','/api/teacher/students/shorten-codes','/api/teacher/students/edit','/api/teacher/students/delete','/api/teacher/media/save','/api/teacher/media/delete','/api/teacher/school-type','/api/teacher/backups/create','/api/teacher/backups/restore','/api/teacher/reset-view','/api/teacher/student-verify/issue','/api/teacher/student-verify/toggle','/api/teacher/student-verify/unlock'):return False
+    if u.path not in ('/api/auth/register','/api/auth/login','/api/auth/forgot','/api/auth/reset','/api/auth/logout','/api/auth/password','/api/teacher/snapshot','/api/teacher/students','/api/teacher/students/shorten-codes','/api/teacher/students/edit','/api/teacher/students/delete','/api/teacher/media/save','/api/teacher/media/delete','/api/teacher/school-type','/api/teacher/backups/create','/api/teacher/backups/restore','/api/teacher/reset-view','/api/teacher/student-verify/issue','/api/teacher/student-verify/reissue-all','/api/teacher/student-verify/toggle','/api/teacher/student-verify/unlock'):return False
     try:
         if u.path in ('/api/auth/register','/api/auth/login','/api/auth/forgot','/api/auth/reset') and not check_rate(h,u.path,data.get("email") or data.get("token") or ""):
             h.send_json({'ok':False,'error':'rate_limited'},429);return True
@@ -94,6 +94,11 @@ def handle_post(h,u,data):
             h.send_json({'ok':True,'image':save_teacher_media(t['id'],data.get('label',''),data.get('file',''))});return True
         if u.path=='/api/teacher/media/delete':
             h.send_json({'ok':True,'deletedId':delete_teacher_media(t['id'],data.get('id',''))});return True
+        if u.path=='/api/teacher/student-verify/reissue-all':
+            items=student_verify.reissue_all_pins(
+                t['id'],data.get('expectedStudents'),data.get('confirmation'))
+            h.send_json({'ok':True,'pins':items,'status':student_verify.status(t['id'])})
+            return True
         if u.path=='/api/teacher/student-verify/issue':
             items=student_verify.issue_pins(
                 t['id'], data.get('studentId') or None,

@@ -302,3 +302,94 @@ def release_active_attempt(teacher_id, student_id):
                         (key, teacher_id, student_id))
                     removed += 1
     return {"revoked": removed, "studentId": student_id}
+
+
+def reissue_all_pins(teacher_id, expected_students, confirmation):
+    """Explicit, authenticated lost-PIN recovery for a teacher's entire roster.
+
+    Only permitted while protection is OFF. Replaces hashes atomically, returns
+    secrets once, and never changes the card ID, QR payload, or student record.
+    """
+    if (type(expected_students) is not int or expected_students < 1
+            or expected_students > 10000):
+        raise ValueError("invalid_expected_students")
+    if confirmation != f"REISSUE {expected_students}":
+        raise ValueError("pin_rotation_confirmation_required")
+    issued = []
+    used = set()
+    with store.DB_LOCK:
+        with store.db_connection() as con:
+            cur = con.cursor()
+            # Lock the teacher record to serialize simultaneous recovery calls.
+            teacher_lock = " FOR UPDATE" if store.DATABASE_URL else ""
+            teacher = cur.execute(store.sql(
+                "SELECT id FROM teachers WHERE id=?" + teacher_lock),
+                (teacher_id,)).fetchone()
+            if not teacher:
+                raise ValueError("teacher_not_found")
+            setting = cur.execute(store.sql(
+                "SELECT enabled FROM student_verify_settings WHERE teacher_id=?"),
+                (teacher_id,)).fetchone()
+            if setting and int(setting[0]):
+                raise ValueError("pin_protection_must_be_disabled")
+            roster = cur.execute(store.sql(
+                "SELECT s.id,s.name,s.class_name,s.card_code,p.student_id "
+                "FROM students AS s LEFT JOIN student_verify_pins AS p "
+                "ON p.student_id=s.id AND p.teacher_id=s.teacher_id "
+                "WHERE s.teacher_id=? AND s.archived=0 "
+                "ORDER BY s.class_name,s.card_code,s.name"),
+                (teacher_id,)).fetchall()
+            if len(roster) != expected_students:
+                raise ValueError("student_count_changed")
+            for sid, name, section, card_code, exists in roster:
+                pin = f"{secrets.randbelow(1_000_000):06d}"
+                while pin in used:
+                    pin = f"{secrets.randbelow(1_000_000):06d}"
+                used.add(pin)
+                salt = secrets.token_hex(16)
+                hashed = hash_pin(pin, salt)
+                stamp = int(time.time())
+                if exists:
+                    cur.execute(store.sql(
+                        "UPDATE student_verify_pins SET "
+                        "pin_hash=?,pin_salt=?,failed_count=0,locked_until=0,issued_at=? "
+                        "WHERE student_id=? AND teacher_id=?"),
+                        (hashed, salt, stamp, sid, teacher_id))
+                else:
+                    cur.execute(store.sql(
+                        "INSERT INTO student_verify_pins "
+                        "(student_id,teacher_id,pin_hash,pin_salt,"
+                        "failed_count,locked_until,issued_at) "
+                        "VALUES(?,?,?,?,0,0,?)"),
+                        (sid, teacher_id, hashed, salt, stamp))
+                issued.append({
+                    "id": sid, "name": name, "className": section,
+                    "cardCode": card_code, "pin": pin,
+                })
+            # Revoke unfinished attempts linked to any now-invalid previous PIN,
+            # preserving completed results and scores.  Never touch card rows.
+            solo = cur.execute(store.sql(
+                "SELECT token_hash,payload FROM solo_sessions WHERE teacher_id=?"),
+                (teacher_id,)).fetchall()
+            for key, payload in solo:
+                state = store.jload(payload, {})
+                if state and not state.get("finished"):
+                    cur.execute(store.sql(
+                        "DELETE FROM solo_sessions WHERE teacher_id=? AND token_hash=?"),
+                        (teacher_id, key))
+            lab = cur.execute(store.sql(
+                "SELECT token_hash,state FROM game_lab_runs "
+                "WHERE teacher_id=? AND finished_at=0"),
+                (teacher_id,)).fetchall()
+            for key, payload in lab:
+                state = store.jload(payload, {})
+                if state and not state.get("finished"):
+                    cur.execute(store.sql(
+                        "DELETE FROM game_lab_runs WHERE teacher_id=? AND token_hash=?"),
+                        (teacher_id, key))
+            # Old live tokens must not remain verified after a PIN rotation.
+            cur.execute(store.sql(
+                "UPDATE game_lab_live_players SET pin_verified=0 "
+                "WHERE teacher_id=? AND pin_verified=1"),
+                (teacher_id,))
+    return issued
