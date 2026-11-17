@@ -15,7 +15,7 @@ class ChampionV4(unittest.TestCase):
             html=(ROOT/page).read_text(encoding='utf-8')
             self.assertIn('champion-experience-v4.css?v=4.0',html)
             self.assertIn('champion-ceremony-v4.js?v=4.0',html)
-            self.assertLess(html.index('champion-theme-engine-v3.js?v=4.0'),
+            self.assertLess(html.index('champion-theme-engine-v3.js?v=5.0'),
                             html.index('champion-ceremony-v4.js?v=4.0'))
     def test_finish_triggers_only_real_winner(self):
         teacher=(ROOT/'champion-tag.js').read_text(encoding='utf-8')
