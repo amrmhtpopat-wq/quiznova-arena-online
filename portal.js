@@ -110,12 +110,14 @@ function renderStudents(){
   $('#studentsBoard').innerHTML=folders.map((cls,i)=>{
   const group=list.filter(s=>(s.className||'شعبة غير محددة')===cls).map(student=>{
     const link=base+encodeURIComponent(student.card);
-    // For imported school IDs, preserve the exact payload of the already printed QR:
-    // G9A-001, G8B-005, G7C-021, etc. Other TAG cards keep their original join URL QR.
+    // Keep the printed student access code unchanged (G9A-001, etc.).
+    // Only the TAG badge QR now opens that student's card and published class quizzes.
+    // The school's original attendance QR and its scanner are not modified.
     const schoolQrCode=String(student.cardCode||'').trim().toUpperCase();
     const isSchoolId=/^G[789][ABC]-\d{3}$/.test(schoolQrCode);
-    const qr='/api/qr?text='+encodeURIComponent(isSchoolId?schoolQrCode:link);
-    const qrCaption=isSchoolId?'رمز الهوية المدرسية الأصلي':'امسح للانضمام';
+    const quizLink=location.origin+'/student.html?mode=card&card='+encodeURIComponent(schoolQrCode);
+    const qr='/api/qr?text='+encodeURIComponent(isSchoolId?quizLink:link);
+    const qrCaption=isSchoolId?'امسح لفتح اختباراتك':'امسح للانضمام';
     const percent=Math.max(0,Math.min(100,Number(student.progress?.percent)||0));
     const level=Math.max(1,Number(student.level)||1);
     const xp=Math.max(0,Number(student.xp)||0);
