@@ -8,7 +8,8 @@ const pages=[
  {id:'create',url:'/tag-lab-create.html',icon:'✍️',label:'صانع الألعاب'},
  {id:'games',url:'/tag-lab-games.html',icon:'🎮',label:'الألعاب'},
  {id:'library',url:'/tag-lab-library.html',icon:'🗂️',label:'مكتبتي'},
- {id:'mixer',url:'/tag-lab-mixer.html',icon:'🧪',label:'الحصة التفاعلية'}
+ {id:'mixer',url:'/tag-lab-mixer.html',icon:'🧪',label:'الحصة التفاعلية'},
+ {id:'assign',url:'/tag-lab-assign.html',icon:'🪪',label:'إسناد الألعاب'}
 ];
 const labels={
  books:{title:'الكتب وTAG AI',description:'ارفع كتابك وحوّل صفحاته إلى أسئلة.'},
