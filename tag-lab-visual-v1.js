@@ -22,7 +22,7 @@
  const storageKey='tag_lab_visual_theme_v1';
  let saved='';
  try{saved=localStorage.getItem(storageKey)||''}catch(_){}
- const darkPref=matchMedia?.('(prefers-color-scheme:dark)').matches;
+ const darkPref=(typeof matchMedia!=='undefined')&&matchMedia('(prefers-color-scheme:dark)').matches;
  let theme=saved==='dark'||saved==='light'?saved:(darkPref?'dark':'light');
  function themeApply(mode){
   theme=mode;h.setAttribute('data-tag-theme',mode);
