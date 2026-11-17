@@ -34,7 +34,7 @@ function mode(which,update=true){
 }
 buttons.forEach(b=>b.addEventListener('click',()=>mode(b.dataset.studentMode)));
 async function resume(token){
- try{const d=await api('state',{token});current.token=token;current.state=d.state;el('soloQuizList').innerHTML='';el('soloCardForm').classList.add('hidden');render(d.state)}
+ try{const d=await api('state',{token});current.token=token;current.state=d.state;if(el('soloPinWrap'))el('soloPinWrap').hidden=true;el('soloQuizList').innerHTML='';el('soloCardForm').classList.add('hidden');render(d.state)}
  catch{sessionStorage.removeItem('booyah_solo_token');current.token='';current.state=null}
 }
 async function catalog(event){
@@ -81,6 +81,7 @@ async function start(id,b){
   const d=await api('start',{card:current.card,quizId:id,pin});
   current.token=d.token;current.state=d.state;sessionStorage.setItem('booyah_solo_token',d.token);
   if(el('soloPinCode'))el('soloPinCode').value='';
+  if(el('soloPinWrap'))el('soloPinWrap').hidden=true;
   el('soloQuizList').innerHTML='';el('soloCardForm').classList.add('hidden');render(d.state);
  }catch(e){const explain={not_published:'هذا الاختبار غير متاح لصفك أو شعبتك الآن.',attempt_limit:'استُنفدت المحاولات المحددة لهذا الاختبار.',student_pin_required:'أدخل PIN الشخصي قبل البدء.',student_pin_invalid:'رمز PIN غير صحيح؛ تحقق من الأرقام الستة.',student_pin_locked:'تم قفل محاولات الرمز لمدة 15 دقيقة.',student_pin_not_issued:'PIN غير متوفر لهذه البطاقة؛ راجع المعلم.',active_attempt:'لديك محاولة نشطة على جهاز آخر. استكمل منها أو اطلب من معلمك تحرير المحاولة.'};error(explain[e.message]||'تعذر بدء التدريب.')}finally{b.disabled=false}
 }
