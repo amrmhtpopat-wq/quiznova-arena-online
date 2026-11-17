@@ -190,6 +190,15 @@ class StudentVerifyContract(unittest.TestCase):
         status,again=self.solo_post('start',{**req,'pin':new})
         self.assertEqual(status,200,again)
 
+    def test_archived_cards_cannot_access_catalog_or_start_quiz(self):
+        store.archive_student_card(self.teacher_id,self.student['id'])
+        status,result=self.solo_post('catalog',{'card':self.card})
+        self.assertEqual(status,403,result)
+        self.assertEqual(result['error'],'invalid_card')
+        status,result=self.solo_post('start',{'card':self.card,'quizId':self.quiz['id']})
+        self.assertEqual(status,403,result)
+        self.assertEqual(result['error'],'invalid_card')
+
     def test_wrong_teacher_cannot_reissue_or_unlock_others(self):
         pin=self.activate()
         other=store.create_teacher('pin-other-'+uuid.uuid4().hex+'@school.example',
