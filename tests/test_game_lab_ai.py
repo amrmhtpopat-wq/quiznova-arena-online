@@ -33,6 +33,31 @@ class SourceGroundingTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'ai_too_many_pages'):
             selected_ai_source(many,1,27,lambda value,default:json.loads(value) if value else default)
 
+    def test_structured_types_validate_correct_choices_and_difficulty(self):
+        quote='الادخار هو الاحتفاظ بجزء من الدخل لاستخدامه في المستقبل.'
+        choices=['الحصول على قرض','الاحتفاظ بجزء من الدخل','زيادة النفقات','تجاهل الميزانية']
+        valid={'q':'أي مما يلي يصف الادخار؟','a':'الاحتفاظ بجزء من الدخل',
+               'g':'الادخار','questionType':'mcq','difficulty':'easy',
+               'choices':choices,'explanation':'الادخار يستقطع مبلغًا للمستقبل.',
+               'sourcePage':1,'sourceQuote':quote}
+        statement={'q':'الادخار يعني الاحتفاظ بجزء من الدخل.','a':'صح',
+                   'g':'الادخار','questionType':'true_false','difficulty':'medium',
+                   'choices':['صح','خطأ'],'sourcePage':1,'sourceQuote':quote}
+        short={'q':'كيف يساعد الادخار على الاستعداد للمستقبل؟',
+               'a':'الاستعداد للنفقات المستقبلية','g':'الادخار',
+               'questionType':'short','difficulty':'hard','choices':[],
+               'sourcePage':1,
+               'sourceQuote':'ويساعد الادخار على الاستعداد للنفقات المستقبلية.'}
+        rejected={**valid,'q':'سؤال ليس له بدائل صحيحة؟',
+                  'choices':['أ','ب','ج','د']}
+        actual=verify_ai_rows([valid,statement,short,rejected],self.pages,10)
+        self.assertEqual(len(actual),3,actual)
+        self.assertEqual(actual[0]['choices'],choices)
+        self.assertEqual(actual[0]['questionType'],'mcq')
+        self.assertEqual(actual[1]['choices'],['صح','خطأ'])
+        self.assertEqual(actual[2]['difficulty'],'hard')
+        self.assertEqual(actual[0]['explanation'],'الادخار يستقطع مبلغًا للمستقبل.')
+
     def test_discard_fabricated_and_wrong_page_quotes(self):
         good='الادخار هو الاحتفاظ بجزء من الدخل لاستخدامه في المستقبل.'
         rows=[
