@@ -85,7 +85,7 @@ try:
    # Edit this saved question bank without another AI request or losing its activity ID.
    page.locator('#cloudList .cloud-activity button').filter(has_text='تعديل أنواع الأسئلة').click()
    editable=page.locator('#labBookPreview .tag-book-review-card').first
-   assert editable.locator('.tag-book-choice').nth(1).input_value()==correct
+   assert editable.locator('.tag-book-choice').nth(0).input_value()==correct
    editable.locator('.tag-book-choice').nth(3).fill('إيقاف الإنفاق')
    page.locator('#labBookApprove').click()
    page.locator('#cloudSave').click()
