@@ -232,6 +232,50 @@ class StudentVerifyContract(unittest.TestCase):
         self.assertEqual(batch['status']['issued'],226)
         self.assertFalse(batch['status']['enabled'])
 
+    def test_tag_lab_solo_and_live_require_student_pin(self):
+        import game_lab_api as games
+        import game_lab_live as lab_live
+        pin=self.activate()
+        rows=[{'q':'سؤال تجريبي '+str(i),'a':'جواب '+str(i),'g':'عام'}
+              for i in range(1,5)]
+        activity=games.save(self.teacher_id,{'activity':{
+            'title':'TAG LAB QA','subject':'المهارات الرقمية',
+            'grade':'التاسع','mode':'quiz','rows':rows}})
+        published=games.publish(self.teacher_id,{'id':activity['id'],'maxAttempts':3},True)
+        code=published['publicCode']
+        path='/api/game-lab/student/start'
+        data={'code':code,'card':self.card}
+        status,guest=request('POST',path,{'code':code,'guestName':'طالب ضيف'})
+        self.assertEqual(status,403,guest)
+        self.assertEqual(guest['error'],'card_required')
+        status,wrong=request('POST',path,{**data,'pin':'999xyz'})
+        self.assertEqual(status,403,wrong)
+        self.assertEqual(wrong['error'],'student_pin_invalid')
+        status,started=request('POST',path,{**data,'pin':pin})
+        self.assertEqual(status,200,started)
+        self.assertTrue(started['state'])
+        status,busy=request('POST',path,{**data,'pin':pin})
+        self.assertEqual(status,409,busy)
+        self.assertEqual(busy['error'],'active_attempt')
+        live=lab_live.create(self.teacher_id,{'activityId':activity['id']})
+        room=live['code']
+        path='/api/game-lab/live/join'
+        status,guest=request('POST',path,{'code':room,'guestName':'زائر'})
+        self.assertEqual(status,403,guest)
+        self.assertEqual(guest['error'],'card_required')
+        status,wrong=request('POST',path,{'code':room,'card':self.card,'pin':'wrong'})
+        self.assertEqual(status,403,wrong)
+        self.assertEqual(wrong['error'],'student_pin_invalid')
+        status,joined=request('POST',path,{'code':room,'card':self.card,'pin':pin})
+        self.assertEqual(status,200,joined)
+        status,again=request('POST',path,{'code':room,'card':self.card,'pin':pin})
+        self.assertEqual(status,409,again)
+        self.assertEqual(again['error'],'already_joined')
+        status,st=request('POST','/api/game-lab/live/state',
+                          {'code':room,'token':joined['token']})
+        self.assertEqual(status,200,st)
+        self.assertTrue(st['state'])
+
     def test_wrong_teacher_cannot_reissue_or_unlock_others(self):
         pin=self.activate()
         other=store.create_teacher('pin-other-'+uuid.uuid4().hex+'@school.example',
