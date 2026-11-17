@@ -4,6 +4,9 @@ on:
     branches: [v10-5-final-candidate]
     paths:
       - game_lab_pro.py
+      - game_lab_ai_quality.py
+      - tests/test_game_lab_ai.py
+      - tag-lab-v11.css
       - game_lab_uploads.py
       - tests/test_game_lab_chunk_upload.py
       - tests/test_game_lab_quality.py
@@ -35,14 +38,14 @@ jobs:
         run: pip install -r requirements.txt
       - name: Compile server and client
         run: |
-          python -m py_compile game_lab_pro.py game_lab_uploads.py game_lab_api.py server.py
+          python -m py_compile game_lab_pro.py game_lab_ai_quality.py game_lab_uploads.py game_lab_api.py server.py
           node --check game-lab-pro-v3.js
           node --check game-lab-cloud-v2.js
           python - <<'PY'
           import re
           from pathlib import Path
           page=Path('game-lab-preview.html').read_text(encoding='utf-8')
-          for marker in ('labBookSaveCloud','cloudImportFile','cloudLibrarySearch'):
+          for marker in ('labBookSaveCloud','cloudImportFile','cloudLibrarySearch','labAiDifficulty','labAiFocus'):
               assert marker in page, marker
           inline=re.findall(r'<script(?:\s[^>]*)?>([\s\S]*?)</script>',page)
           for index,part in enumerate(inline):
@@ -68,6 +71,7 @@ jobs:
           PY
       - name: Textbook, privacy, activities and student regressions
         run: |
+          python tests/test_game_lab_ai.py
           python tests/test_game_lab_quality.py
           python tests/test_game_lab_chunk_upload.py
           python tests/test_game_lab_pro.py
