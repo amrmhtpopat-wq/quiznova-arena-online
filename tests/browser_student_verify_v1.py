@@ -80,7 +80,13 @@ with sync_playwright() as playwright:
     record=next((line for line in rows.splitlines() if card in line),None)
     check(record is not None,'Student secret not issued to authenticated teacher')
     pin=record.strip().split()[-1]
+    second_card=students[1]['cardCode']
+    second_record=next((line for line in rows.splitlines() if second_card in line),None)
+    check(second_record is not None,'Second student private code not issued')
+    second_pin=second_record.strip().split()[-1]
     check(bool(re.fullmatch(r'[0-9]{6}',pin)),'Generated PIN not six digits')
+    check(bool(re.fullmatch(r'[0-9]{6}',second_pin)) and second_pin!=pin,
+          'Second student PIN invalid or reused')
     take(teacher_page,'tag-verify-teacher-issuance-QA.png')
 
     # Secret is absent from card QR and public student directory.
@@ -189,6 +195,61 @@ with sync_playwright() as playwright:
     live.locator('.lobby-card').wait_for(state='visible',timeout=16000)
     take(live,'tag-verify-live-pin-QA.png')
     live_ctx.close()
+    # TAG LAB also accepts the original card with PIN; a guest must not
+    # impersonate another student when the teacher enabled verification.
+    import game_lab_api as lab_games
+    import game_lab_live as lab_live
+    lab_rows=[{'q':'ما وظيفة وحدة المعالجة '+str(i)+'؟',
+               'a':'تنفيذ التعليمات','g':'أساسيات الحاسوب',
+               'choices':['تنفيذ التعليمات','التخزين','الصوت','العرض']}
+              for i in range(1,5)]
+    activity=lab_games.save(owner,{'activity':{
+        'title':'اختبار TAG LAB المحمي','subject':'المهارات الرقمية',
+        'grade':'التاسع','mode':'quiz','rows':lab_rows}})
+    lab_public=lab_games.publish(owner,{'id':activity['id'],'maxAttempts':3},True)
+    lab_code=lab_public['publicCode']
+    lab_ctx=browser.new_context(viewport={'width':390,'height':844},
+                                is_mobile=True,has_touch=True)
+    lab_page=lab_ctx.new_page()
+    lab_errors=[]
+    lab_page.on('pageerror',lambda error:lab_errors.append(str(error)))
+    lab_page.goto(BASE+'/game-lab-play.html?game='+lab_code,
+                  wait_until='domcontentloaded')
+    lab_page.locator('#studentCard').fill(second_card)
+    lab_page.locator('#studentVerifyPin').fill(second_pin)
+    lab_page.locator('#startBtn').click()
+    lab_page.locator('#questionPanel').wait_for(state='visible',timeout=17000)
+    take(lab_page,'tag-verify-lab-solo-mobile-QA.png')
+    check(not lab_errors,'TAG LAB individual errors '+str(lab_errors))
+    lab_ctx.close()
+    # Release only the incomplete lab attempt, retaining completed marks.
+    from urllib.request import Request,urlopen
+    req=Request(BASE+'/api/teacher/student-verify/unlock',
+                data=json.dumps({'studentId':students[1]['id']}).encode(),
+                method='POST',
+                headers={'Authorization':'Bearer '+teacher['token'],
+                         'Content-Type':'application/json'})
+    with urlopen(req,timeout=10) as response:
+        unlocked=json.load(response)
+    check(unlocked['revoked']>=1,'Teacher cannot release TAG LAB unfinished attempt')
+
+    live_room=lab_live.create(owner,{'activityId':activity['id']})
+    room=live_room['code']
+    lab_live_ctx=browser.new_context(viewport={'width':390,'height':844},
+                                     is_mobile=True,has_touch=True)
+    lab_live_page=lab_live_ctx.new_page()
+    lab_live_errors=[]
+    lab_live_page.on('pageerror',lambda error:lab_live_errors.append(str(error)))
+    lab_live_page.goto(BASE+'/game-lab-live.html?code='+room,
+                       wait_until='domcontentloaded')
+    lab_live_page.locator('#roomCode').fill(room)
+    lab_live_page.locator('#joinCard').fill(second_card)
+    lab_live_page.locator('#joinVerifyPin').fill(second_pin)
+    lab_live_page.locator('#joinButton').click()
+    lab_live_page.locator('#student').wait_for(state='visible',timeout=17000)
+    take(lab_live_page,'tag-verify-lab-live-mobile-QA.png')
+    check(not lab_live_errors,'TAG LAB live errors '+str(lab_live_errors))
+    lab_live_ctx.close()
     browser.close()
 
 http.shutdown()
