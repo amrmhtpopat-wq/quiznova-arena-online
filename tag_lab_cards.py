@@ -100,7 +100,7 @@ def cards(tid):
 
 def enroll(tid,data):
     card=data.get("card")
-    if not isinstance(card,str) or not card.strip() or len(card)>150:
+    if not isinstance(card,str) or not card.strip() or len(card)>512:
         raise ValueError("invalid_card")
     label=text(data.get("label"),70)
     group=text(data.get("className"),70)
@@ -235,7 +235,7 @@ def catalog(row):
 def card_login(h,data):
     card=data.get("card")
     pin=data.get("pin")
-    if not isinstance(card,str) or len(card)>150 or not PIN_RE.fullmatch(str(pin or "")):
+    if not isinstance(card,str) or len(card)>512 or not PIN_RE.fullmatch(str(pin or "")):
         return err(h,"invalid_credentials",403)
     if solo_api.limited(h,card.strip() or "card_login"):
         return err(h,"rate_limited",429)
