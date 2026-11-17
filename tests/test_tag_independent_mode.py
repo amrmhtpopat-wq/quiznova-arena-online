@@ -36,7 +36,12 @@ class StandaloneLabTests(unittest.TestCase):
         with patch.dict(os.environ, {"TAG_LAB_ONLY_MODE": "1"}):
             self.assertTrue(mode.allowed("POST", "/api/auth/login"))
             self.assertTrue(mode.allowed("POST", "/api/game-lab/teacher/save"))
-            for path in ("/api/game-lab/pro/card/catalog",
+            self.assertTrue(mode.allowed("GET", "/tag-lab-assign.html"))
+            self.assertTrue(mode.allowed("GET", "/tag-lab-student.html"))
+            self.assertTrue(mode.allowed("GET", "/api/tag-independent/teacher/cards"))
+            self.assertTrue(mode.allowed("POST", "/api/tag-independent/student/login"))
+            for path in ("/api/tag-independent/card/verify",
+                         "/api/game-lab/pro/card/catalog",
                          "/api/game-lab/pro/assignments/save",
                          "/api/room/start", "/api/teacher/students/edit",
                          "/api/auth/me"):
