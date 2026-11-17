@@ -116,6 +116,10 @@ function renderStudents(){
     const isSchoolId=/^G[789][ABC]-\d{3}$/.test(schoolQrCode);
     const qr='/api/qr?text='+encodeURIComponent(isSchoolId?schoolQrCode:link);
     const qrCaption=isSchoolId?'رمز الهوية المدرسية الأصلي':'امسح للانضمام';
+    // Optional SECOND QR on the TAG badge opens exams in the normal phone camera.
+    // School attendance QR above remains byte-for-byte identical (G9A-001, etc.).
+    const quizLink=isSchoolId?'https://quiznova-arena-online.onrender.com/student.html?mode=card&card='+encodeURIComponent(schoolQrCode):'';
+    const quizQr=quizLink?'/api/qr?text='+encodeURIComponent(quizLink):'';
     const percent=Math.max(0,Math.min(100,Number(student.progress?.percent)||0));
     const level=Math.max(1,Number(student.level)||1);
     const xp=Math.max(0,Number(student.xp)||0);
@@ -142,7 +146,7 @@ function renderStudents(){
           <div class="bo-badge-xp"><strong>${xp.toLocaleString('en-US')} XP</strong><small>تبقى ${Number(student.progress?.xpToNext)||0} XP للمستوى التالي</small></div>
           <div class="bo-badge-meter" role="progressbar" aria-valuenow="${percent}" aria-valuemin="0" aria-valuemax="100"><span style="width:${percent}%"></span></div>
         </div>
-        <div class="bo-badge-qr"><img class="qr" src="${qr}" loading="lazy" alt="رمز QR لبطاقة ${name}"><small>${qrCaption}</small></div>
+        <div class="bo-badge-qr"><img class="qr" src="${qr}" loading="lazy" alt="رمز QR لبطاقة ${name}"><small>${qrCaption}</small></div>${isSchoolId?`<div class="bo-badge-qr bo-tag-quiz-qr"><img class="qr" src="${quizQr}" loading="lazy" alt="QR لفتح اختبارات TAG للطالب ${name}"><small>📚 اختبارات TAG</small></div>`:''}
       </div>
     <div class="bo-card-actions bo-no-print"><button type="button" data-edit-student="${esc(student.id)}">✏️ تعديل البطاقة</button><button type="button" class="bo-card-danger" data-remove-student="${esc(student.id)}">🗑 حذف البطاقة</button></div>
     </article>`;
