@@ -12,6 +12,7 @@ html[data-tag-view="books"] #bookLab,
 html[data-tag-view="create"] #builder,
 html[data-tag-view="games"] #catalog,
 html[data-tag-view="library"] #cloud,
+html[data-tag-view="mixer"] #mixer,
 html[data-tag-view="live"] #liveLab,
 html[data-tag-view="students"] #studentAssignments{display:block!important}
 html[data-tag-view] .main{width:min(100%,1140px)!important;max-width:1140px!important;padding:18px clamp(13px,3.3vw,35px) 65px!important;margin:0 auto!important;min-width:0}
@@ -99,3 +100,28 @@ html[data-tag-view="library"] body.tag-simple-editing #bookLab>.layout2>.block:f
 html[data-tag-view="library"] body.tag-simple-editing #bookLab>.layout2>.block:nth-child(2){width:100%!important;max-width:100%!important}
 html[data-tag-view="library"] body.tag-simple-editing #bookLab #labBookSaveCloud,
 html[data-tag-view="library"] body.tag-simple-editing #bookLab #labBookOpenEditor{display:none!important}
+
+/* V34 Game Mixer dedicated page and official TAG blue palette */
+html[data-tag-view]{--tag-official-navy:#073a80;--tag-official-blue:#087dc2;--tag-official-gold:#f7bd46;--tag-official-teal:#108e9d}
+html[data-tag-view] .tag-simple-nav{background:linear-gradient(98deg,#073a80,#0962a7)!important;border-bottom:3px solid #f7bd46!important}
+html[data-tag-view] .tag-simple-nav .tag-simple-logo strong,html[data-tag-view] .tag-simple-nav .tag-simple-logo span{color:white!important}
+html[data-tag-view] .tag-simple-nav .tag-simple-links a{color:#eaf5ff!important}
+html[data-tag-view] .tag-simple-nav .tag-simple-links a[aria-current="page"]{color:#092f62!important;background:#fff1bd!important}
+html[data-tag-view] .tag-simple-nav .tag-simple-links a:hover:not([aria-current="page"]){color:white!important;background:#ffffff2c!important}
+html[data-tag-view] .tag-simple-nav .tag-simple-meta{background:#f8c65c!important;color:#15385c!important;border-color:#ffda84!important}
+html[data-tag-view] .tag-simple-intro{background:linear-gradient(110deg,#f6faff,#e9f4ff)!important;border-color:#b4d6ef!important;border-right:5px solid #f7bd46!important}
+html[data-tag-view] .tag-simple-intro h1{color:#083c7c!important}
+html[data-tag-view] .tag-simple-intro .tag-step{background:#e3f0ff!important;border-color:#bbd4f1!important;color:#07588f!important}
+html[data-tag-view] .tag-simple-btn{background:#0756a0!important;border-color:#0756a0!important;color:white!important}
+html[data-tag-view] .tag-simple-btn.alt{color:#0758a1!important;background:white!important;border-color:#aac9e4!important}
+html[data-tag-view] .button{background:#0a77b6!important;border-color:#086296!important}
+html[data-tag-view] .button.gold{background:#f7bd46!important;border-color:#dfa127!important;color:#31270d!important}
+html[data-tag-view="mixer"] #mixer>.section-head{display:none!important}
+html[data-tag-view="mixer"] #mixer .block{background:#fff!important}
+html[data-tag-view="mixer"] #mixerPlan{color:#075068!important}
+html[data-tag-view="mixer"] #tagMixerLibrary{background:#f5f9ff;border:1px solid #bfd9ef;border-radius:17px;padding:18px;margin-bottom:14px}
+html[data-tag-view="mixer"] #tagMixerLibrary h2{font-size:1.1rem;color:#074f94;margin:0 0 6px}
+html[data-tag-view="mixer"] #tagMixerLibrary p{font-size:.83rem;color:#536b83;margin:5px 0 11px}
+html[data-tag-view="mixer"] #tagMixerLibrary select{background:white!important;color:#174365!important;width:min(100%,700px)!important}
+html[data-tag-view="mixer"] #tagMixerStatus{padding:9px;border-radius:11px;background:#e6f8f0;color:#0d6c4c;font-weight:700;min-height:31px}
+html[data-tag-view="mixer"] #mixerStart:disabled{opacity:.55!important;cursor:not-allowed}
