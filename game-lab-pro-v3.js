@@ -197,6 +197,7 @@ function requestDraft(){
    difficulty:$('labAiDifficulty').value,focus:$('labAiFocus').value}
 }
 function clearBookReview(){
+ window.TG_BOOK_EDITOR_REUSE=false;
  bookDraftReady=false;
  $('labBookSaveCloud').disabled=true;
  $('labBookApprove').disabled=true;
@@ -302,14 +303,18 @@ function approveBookSuggestions(){
  }
  if(!accepted.length){message('labBookStatus','حدد سؤالًا موثوقًا واحدًا على الأقل.',true);return}
  $('activityData').value=accepted.map(r=>r.q+' | '+r.a+' | '+r.g+(r.sourcePage?' | '+r.sourcePage:'')).join('\n');
- const book=books.find(x=>x.id===$('labBookSelect').value);
+ const editingExisting=Boolean(window.TG_BOOK_EDITOR_REUSE);
+ const book=editingExisting?null:books.find(x=>x.id===$('labBookSelect').value);
  if(book)$('activityTitle').value=('ألعاب '+book.name.replace(/\.(pdf|docx|txt)$/i,'')).slice(0,90);
- window.BOOYAH_LAB_BOOK_ID=$('labBookSelect').value;
- window.BOOYAH_LAB_SOURCE_GROUP='';window.BOOYAH_LAB_IMAGE_ID='';
+ if(!editingExisting){
+  window.BOOYAH_LAB_BOOK_ID=$('labBookSelect').value;
+  window.BOOYAH_LAB_SOURCE_GROUP='';window.BOOYAH_LAB_IMAGE_ID='';
+ }
  window.TG_QUESTION_BANK_ROWS=accepted.map(x=>({...x}));
  window.TG_CREATOR_PREVIEW_ROWS=accepted.map(x=>({...x}));
- document.dispatchEvent(new CustomEvent('gamelab:book-bank-accepted'));
- bookDraftReady=accepted.length>=4;$('labBookSaveCloud').disabled=!bookDraftReady;
+ document.dispatchEvent(new CustomEvent('gamelab:book-bank-accepted',{detail:{editingExisting}}));
+ window.TG_BOOK_EDITOR_REUSE=false;
+ bookDraftReady=accepted.length>=4;$('labBookSaveCloud').disabled=editingExisting||!bookDraftReady;
  if(bookDraftReady){$('applyContent').click();
   message('labBookStatus','✓ اعتمدت '+accepted.length+' أسئلة وحُفظت الخيارات والصعوبة والتفسير في المحرر؛ يمكنك حفظها بمكتبتك الخاصة.');
  }else message('labBookStatus','اعتمدت '+accepted.length+' أسئلة. أضف أسئلة موثوقة حتى يصبح العدد 4 على الأقل قبل الحفظ.',true);
@@ -318,6 +323,7 @@ function approveBookSuggestions(){
 }
 async function generate(){
  const button=$('labBookGenerate');button.disabled=true;
+ window.TG_BOOK_EDITOR_REUSE=false;
  bookDraftReady=false;$('labBookSaveCloud').disabled=true;$('labBookApprove').disabled=true;
  window.BOOYAH_LAB_BOOK_ID='';
  message('labBookStatus',$('labBookMode').value==='ai'?'🧠 جارٍ توليد أسئلة ذكية متنوعة والتحقق من اقتباسات الكتاب... قد يستغرق ذلك نصف دقيقة.':'أحلل مفاهيم الدرس وأهدافه وأمثلته ومعلوماته القابلة لصياغة أسئلة...');
@@ -515,6 +521,17 @@ $('labBookSaveCloud').onclick=()=>{
 $('labBookArchive').onclick=archiveBook;
 $('labBookPages').onclick=showPages;
 $('labBookOpenEditor').onclick=()=>scroll('builder');
+document.addEventListener('gamelab:edit-structured-bank',event=>{
+ const rows=event.detail?.rows;
+ if(!Array.isArray(rows)||!rows.length)return;
+ window.TG_BOOK_EDITOR_REUSE=true;
+ window.BOOYAH_LAB_BOOK_ID=event.detail?.bookId||'';
+ renderBookReview(rows);
+ bookDraftReady=false;$('labBookSaveCloud').disabled=true;
+ $('labBookApprove').disabled=false;
+ $('labBookSummary').textContent='تعديل بنك محفوظ: يمكنك تحرير الإجابات البديلة والصعوبة والتفسير، ثم الضغط على «اعتماد المختار»، وبعدها «حفظ النشاط» في مكتبتي لتحديث المسودة نفسها دون استهلاك Gemini.';
+ scroll('bookLab');
+});
 $('activityData').addEventListener('input',()=>{window.TG_CREATOR_PREVIEW_ROWS=null});
 $('labBookSelect').onchange=e=>{bookId=e.target.value;clearBookReview();renderBooks()};
 $('labAssignType').onchange=renderTargetChoices;
