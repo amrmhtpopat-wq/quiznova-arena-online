@@ -308,6 +308,7 @@ function approveBookSuggestions(){
  window.BOOYAH_LAB_SOURCE_GROUP='';window.BOOYAH_LAB_IMAGE_ID='';
  window.TG_QUESTION_BANK_ROWS=accepted.map(x=>({...x}));
  window.TG_CREATOR_PREVIEW_ROWS=accepted.map(x=>({...x}));
+ document.dispatchEvent(new CustomEvent('gamelab:book-bank-accepted'));
  bookDraftReady=accepted.length>=4;$('labBookSaveCloud').disabled=!bookDraftReady;
  if(bookDraftReady){$('applyContent').click();
   message('labBookStatus','✓ اعتمدت '+accepted.length+' أسئلة وحُفظت الخيارات والصعوبة والتفسير في المحرر؛ يمكنك حفظها بمكتبتك الخاصة.');
