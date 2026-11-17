@@ -28,6 +28,12 @@ def allowed(method, path):
         return True
     p = urlparse(path).path
     method = str(method).upper()
+    # Deprecated QA student/live pages must never send independent LAB users to TAG.
+    if p in ("/tag-lab-live.html", "/tag-lab-students.html"):
+        return False
+    # The old live/card endpoints depend on the legacy local students table.
+    if p.startswith("/api/game-lab/live/") or p.startswith("/api/game-lab/pro/assignments"):
+        return False
     if method in ("GET", "HEAD"):
         if p in ("", "/", "/favicon.ico", "/robots.txt"):
             return True
