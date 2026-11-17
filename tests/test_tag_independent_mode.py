@@ -40,6 +40,9 @@ class StandaloneLabTests(unittest.TestCase):
             self.assertTrue(mode.allowed("GET", "/tag-lab-student.html"))
             self.assertTrue(mode.allowed("GET", "/api/tag-independent/teacher/cards"))
             self.assertTrue(mode.allowed("POST", "/api/tag-independent/student/login"))
+            self.assertTrue(mode.allowed("POST", "/api/game-lab/live/create"))
+            self.assertTrue(mode.allowed("POST", "/api/game-lab/live/join"))
+            self.assertTrue(mode.allowed("GET", "/api/game-lab/live/report"))
             for path in ("/api/tag-independent/card/verify",
                          "/api/game-lab/pro/card/catalog",
                          "/api/game-lab/pro/assignments/save",
