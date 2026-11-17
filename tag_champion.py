@@ -11,6 +11,18 @@ import platform_store as store
 
 MAX_ENTRANTS = 32
 MAX_TOURNAMENTS = 80
+THEMES = ('gold', 'neon', 'esports', 'broadcast')
+BACKGROUNDS = ('stadium', 'night', 'lights', 'arena', 'grid', 'minimal')
+DEFAULT_THEME = 'gold'
+DEFAULT_BACKGROUND = 'stadium'
+
+
+def appearance_values(data):
+    theme=str(data.get('theme') or DEFAULT_THEME).strip()
+    background=str(data.get('background') or DEFAULT_BACKGROUND).strip()
+    if theme not in THEMES or background not in BACKGROUNDS:
+        raise ValueError('invalid_appearance')
+    return theme,background
 
 
 def ensure_schema():
@@ -23,6 +35,17 @@ def ensure_schema():
                 champion TEXT NOT NULL DEFAULT '', created_at BIGINT NOT NULL,
                 updated_at BIGINT NOT NULL
             )""")
+            # Additive migration, safe for old tournaments and both SQLite/Neon.
+            # Keep the user's current brackets and scores unchanged.
+            if store.DATABASE_URL:
+                con.execute("ALTER TABLE tag_championships ADD COLUMN IF NOT EXISTS theme TEXT NOT NULL DEFAULT 'gold'")
+                con.execute("ALTER TABLE tag_championships ADD COLUMN IF NOT EXISTS background TEXT NOT NULL DEFAULT 'stadium'")
+            else:
+                cols={row[1] for row in con.execute("PRAGMA table_info(tag_championships)").fetchall()}
+                if 'theme' not in cols:
+                    con.execute("ALTER TABLE tag_championships ADD COLUMN theme TEXT NOT NULL DEFAULT 'gold'")
+                if 'background' not in cols:
+                    con.execute("ALTER TABLE tag_championships ADD COLUMN background TEXT NOT NULL DEFAULT 'stadium'")
             con.execute("CREATE INDEX IF NOT EXISTS idx_tag_champion_teacher ON tag_championships (teacher_id,updated_at)")
 
 
@@ -90,6 +113,8 @@ def _read(row, include_quiz=False):
             'seedMode': row['seed_mode'], 'quizId': row['quiz_id'],
             'quizTitle': store.jload(row['quiz_json'], {}).get('title', ''),
             'rounds': rounds, 'champion': row['champion'],
+            'theme':row.get('theme') or DEFAULT_THEME,
+            'background':row.get('background') or DEFAULT_BACKGROUND,
             'createdAt': row['created_at'], 'updatedAt': row['updated_at']}
     if include_quiz:
         item['quiz'] = store.jload(row['quiz_json'], {})
@@ -125,6 +150,7 @@ def create(teacher_id, data):
     quiz = next((q for q in quizzes if isinstance(q, dict) and str(q.get('id')) == quiz_id), None)
     if not quiz or not isinstance(quiz.get('questions'), list) or not quiz['questions']:
         raise ValueError('quiz_not_found')
+    theme,background=appearance_values(data)
     serialized_quiz = store.jdump(quiz)
     if len(serialized_quiz) > 900000:
         raise ValueError('quiz_too_large')
@@ -156,9 +182,19 @@ def create(teacher_id, data):
         if existing and existing['count'] >= MAX_TOURNAMENTS:
             raise ValueError('tournament_limit')
         row_id=uuid.uuid4().hex
-        store.exec_sql('INSERT INTO tag_championships(id,teacher_id,title,kind,seed_mode,quiz_id,quiz_json,bracket_json,champion,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?)',
-                       (row_id,teacher_id,title,kind,mode,quiz_id,serialized_quiz,store.jdump(bracket),'',now,now))
+        store.exec_sql('INSERT INTO tag_championships(id,teacher_id,title,kind,seed_mode,quiz_id,quiz_json,bracket_json,champion,created_at,updated_at,theme,background) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                       (row_id,teacher_id,title,kind,mode,quiz_id,serialized_quiz,store.jdump(bracket),'',now,now,theme,background))
     return detail(teacher_id,row_id)
+
+
+def update_appearance(teacher_id, data):
+    tid=str(data.get('tournamentId') or '')
+    theme,background=appearance_values(data)
+    with store.DB_LOCK:
+        _owned(teacher_id,tid)
+        store.exec_sql('UPDATE tag_championships SET theme=?,background=?,updated_at=? WHERE id=? AND teacher_id=?',
+                       (theme,background,store.epoch(),tid,teacher_id))
+    return detail(teacher_id,tid)
 
 
 def _match(item, match_id):
@@ -257,7 +293,7 @@ def public_board(tournament_id):
     """Unlisted view for projection; never expose room tokens or other teacher data."""
     if not isinstance(tournament_id,str) or len(tournament_id)!=32 or any(x not in '0123456789abcdef' for x in tournament_id):
         raise ValueError('tournament_not_found')
-    row=store.query('SELECT id,title,kind,bracket_json,champion,created_at,updated_at FROM tag_championships WHERE id=?',
+    row=store.query('SELECT id,title,kind,bracket_json,champion,created_at,updated_at,theme,background FROM tag_championships WHERE id=?',
                     (tournament_id,))
     if row is None:
         raise ValueError('tournament_not_found')
@@ -268,4 +304,7 @@ def public_board(tournament_id):
                                    'winner':m['winner'],'scores':m.get('scores')}
                                   for m in r['matches']]})
     return {'id':row['id'],'title':row['title'],'kind':row['kind'],
-            'champion':row['champion'],'rounds':rounds,'updatedAt':row['updated_at']}
+            'champion':row['champion'],'rounds':rounds,
+            'theme':row.get('theme') or DEFAULT_THEME,
+            'background':row.get('background') or DEFAULT_BACKGROUND,
+            'updatedAt':row['updated_at']}

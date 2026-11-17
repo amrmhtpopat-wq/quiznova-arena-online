@@ -580,12 +580,14 @@ class Handler(SimpleHTTPRequestHandler):
         if admin_api.handle_post(self,u,data):return
         if platform_api.handle_post(self,u,data):return
         if solo_api.handle_post(self,u,data):return
-        if u.path in ('/api/champion','/api/champion/match/complete','/api/champion/match/forfeit'):
+        if u.path in ('/api/champion','/api/champion/appearance','/api/champion/match/complete','/api/champion/match/forfeit'):
             teacher=platform_api.authorized(self)
             if not teacher:return
             try:
                 if u.path=='/api/champion':
                     result=tag_champion.create(teacher['id'],data)
+                elif u.path=='/api/champion/appearance':
+                    result=tag_champion.update_appearance(teacher['id'],data)
                 elif u.path=='/api/champion/match/complete':
                     with LOCK:result=tag_champion.complete_match(teacher['id'],data,ROOMS)
                 else:
