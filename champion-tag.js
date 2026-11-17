@@ -4,13 +4,36 @@
 const $=id=>document.getElementById(id);
 const safe=window.TAGChampionBracket.escape;
 const BR=window.TAGChampionBracket;
+const VISUAL=window.TAGChampionTheme;
+const draftAppearance={theme:'gold',background:'stadium'};
+const currentAppearance={theme:'gold',background:'stadium'};
+function updatePreview(context){
+ const state=context==='create'?draftAppearance:currentAppearance;
+ VISUAL.apply(state.theme,state.background);
+ VISUAL.syncButtons($(context+'ThemeGrid'),'data-ct-theme',state.theme);
+ VISUAL.syncButtons($(context+'BackgroundGrid'),'data-ct-bg',state.background);
+}
+function chooseAppearance(context,kind,value){
+ const state=context==='create'?draftAppearance:currentAppearance;
+ if(kind==='theme'&&VISUAL.themes[value]){
+  state.theme=value;
+  state.background=VISUAL.themes[value].defaultBackground;
+ }else if(kind==='background'&&VISUAL.backgrounds[value]){
+  state.background=value;
+ }else{return}
+ updatePreview(context);
+ if(context==='active'){
+  const msg=$('championThemeMessage');
+  if(msg)msg.textContent='هذه معاينة لم تُحفظ بعد. اضغط «حفظ التصميم» لتحديث بطولة التصفيات وشاشة العرض.';
+ }
+}
 const token=()=>localStorage.getItem('qn9_teacher_token')||'';
 const errors={
 login_required:'يلزم تسجيل الدخول بحساب المعلم.',tournament_not_found:'لم يُعثر على هذه البطولة في حسابك.',
 participants_2_to_32:'أدخل بين مشاركَين و32 مشاركًا.',invalid_participants:'تحقق من الأسماء (55 حرفًا لكل اسم كحد أقصى).',
 duplicate_participants:'توجد أسماء مكررة؛ يجب أن يكون لكل مشارك اسم مختلف.',
 invalid_tournament_type:'اختر نوع المشاركين وطريقة التصفيات.',quiz_not_found:'الاختبار المحدد غير موجود أو لا يحتوي على أسئلة. احفظ اختبارًا في الاستوديو أولًا.',
-quiz_too_large:'الاختبار المختار أكبر من الحجم المسموح.',manual_pairings_required:'حدّد جميع مواجهات الدور الأول.',
+invalid_appearance:'التصميم أو الخلفية غير متاحين. اختر أحد الأنماط الرسمية.',quiz_too_large:'الاختبار المختار أكبر من الحجم المسموح.',manual_pairings_required:'حدّد جميع مواجهات الدور الأول.',
 invalid_pairings:'يجب توزيع كل مشارك مرة واحدة بالضبط، دون تكرار أو نسيان.',
 empty_fixture:'لا يمكن ترك مواجهة فارغة من الطرفين.',tournament_limit:'وصلت إلى الحد الأقصى للبطولات المحفوظة.',
 match_not_found:'تعذر العثور على هذه المواجهة.',match_not_ready:'هذه المواجهة ليست جاهزة بعد أو بدأ تشغيلها بالفعل.',
@@ -67,7 +90,8 @@ function selectTab(tab){
   $(value).hidden=key!==tab;
   $('tab'+key.charAt(0).toUpperCase()+key.slice(1)).classList.toggle('active',key===tab);
  }
- if(tab==='bracket'&&!active){toast('أنشئ بطولة أو اختر بطولة محفوظة أولًا.',true);selectTab('archive')}
+ if(tab==='bracket'&&!active){toast('أنشئ بطولة أو اختر بطولة محفوظة أولًا.',true);selectTab('archive');return}
+ updatePreview(tab==='create'||!active?'create':'active');
 }
 function renderArchive(){
  $('championArchive').innerHTML=tournaments.length?tournaments.map(t=>
@@ -83,7 +107,11 @@ async function refreshList(){
 async function openTournament(id){
  clearInterval(polling);polling=null;live=null;selectedId='';roomViewSig='';tiePending=false;
  const d=await request('/api/champion?id='+encodeURIComponent(id));
- active=d.tournament;renderBracket();renderArchive();selectTab('bracket');
+ active=d.tournament;
+ currentAppearance.theme=VISUAL.themes[active.theme]?active.theme:'gold';
+ currentAppearance.background=VISUAL.backgrounds[active.background]?active.background:VISUAL.themes[currentAppearance.theme].defaultBackground;
+ updatePreview('active');
+ renderBracket();renderArchive();selectTab('bracket');
  try{localStorage.setItem('tag_champion_last_'+teacher.id,id)}catch{}
  const liveMatch=active.rounds.flatMap(r=>r.matches).find(m=>m.status==='live');
  if(liveMatch)chooseMatch(liveMatch.id);
@@ -103,6 +131,7 @@ function renderBracket(){
  const kind=active.kind==='students'?'الطلاب':active.kind==='classes'?'الشعب':'الفرق';
  $('currentTournamentMeta').textContent=kind+' • '+entrants+' مشارك • '+active.quizTitle+(active.champion?' • البطل: '+active.champion:'');
  $('bracketCanvas').innerHTML=BR.render(active,true);
+ BR.afterRender($('bracketCanvas'));
  if(selectedId){
   for(const card of $('bracketCanvas').querySelectorAll('[data-match]'))card.classList.toggle('active',card.dataset.match===selectedId);
  }
@@ -242,6 +271,23 @@ async function forfeit(which){
   active=d.tournament;await refreshList();renderBracket();renderMatchDetails(BR.find(active,selectedId));toast('تم التأهل دون لعب');
  }catch(e){toast(label(e.message),true)}
 }
+async function saveAppearance(){
+ if(!active){toast('اختر بطولة أولًا.',true);return}
+ const button=$('saveChampionAppearance');
+ button.disabled=true;
+ try{
+  const d=await request('/api/champion/appearance','POST',{
+   tournamentId:active.id,theme:currentAppearance.theme,background:currentAppearance.background
+  });
+  active=d.tournament;
+  await refreshList();
+  renderBracket();
+  const msg=$('championThemeMessage');
+  if(msg)msg.textContent='✓ تم حفظ النمط والخلفية لهذه البطولة. شاشة العرض تستخدم الاختيار المحفوظ.';
+  toast('✓ تم حفظ تصميم البطولة وخلفيتها بنجاح');
+ }catch(e){toast(label(e.message),true)}
+ finally{button.disabled=false}
+}
 function bind(){
  for(const tab of ['Create','Archive','Bracket'])$('tab'+tab).addEventListener('click',()=>selectTab(tab.toLowerCase()));
  for(const btn of document.querySelectorAll('[data-champion-jump]')){
@@ -251,13 +297,26 @@ function bind(){
    document.querySelector('.wc-tabbar')?.scrollIntoView({block:'start',behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
   });
  }
+ for(const context of ['create','active']){
+  const prefix=context;
+  $(prefix+'ThemeGrid').addEventListener('click',ev=>{
+   const button=ev.target.closest('[data-ct-theme]');
+   if(button)chooseAppearance(context,'theme',button.dataset.ctTheme);
+  });
+  $(prefix+'BackgroundGrid').addEventListener('click',ev=>{
+   const button=ev.target.closest('[data-ct-bg]');
+   if(button)chooseAppearance(context,'background',button.dataset.ctBg);
+  });
+ }
+ $('saveChampionAppearance').addEventListener('click',()=>void saveAppearance());
  $('championParticipants').addEventListener('input',drawPairs);
  $('championSeeding').addEventListener('change',drawPairs);
  $('championCreateForm').addEventListener('submit',async ev=>{
   ev.preventDefault();$('championCreateError').hidden=true;
   const names=getEntrants();if(names.length<2||names.length>32){toast(errors.participants_2_to_32,true);return}
   const payload={title:$('championTitle').value.trim(),kind:$('championKind').value,
-    seedMode:$('championSeeding').value,participants:names,quizId:$('championQuiz').value};
+    seedMode:$('championSeeding').value,participants:names,quizId:$('championQuiz').value,
+    theme:draftAppearance.theme,background:draftAppearance.background};
   if(payload.seedMode==='manual')payload.manualPairs=manualPairs();
   $('createTournamentButton').disabled=true;
   try{
@@ -289,7 +348,7 @@ function bind(){
  window.addEventListener('pagehide',()=>clearInterval(polling));
 }
 async function init(){
- bind();drawPairs();
+ bind();drawPairs();updatePreview('create');
  if(!token()){location.replace('/?next='+encodeURIComponent('/champion.html'));return}
  try{
   const [auth,snapshot,champions]=await Promise.all([request('/api/auth/me'),request('/api/teacher/snapshot'),request('/api/champion')]);

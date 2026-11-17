@@ -17,7 +17,9 @@ async function refresh(){
   if(stamp!==previous){previous=stamp;
    $('boardTitle').innerHTML='بطولة <em>'+esc(t.title)+'</em>';
    $('boardInfo').textContent=t.champion?'👑 بطل البطولة: '+t.champion:'شاهد جدول تصفيات '+(t.kind==='students'?'الطلاب':t.kind==='classes'?'الشعب':'الفرق')+' حتى المباراة النهائية.';
-   $('boardBracket').innerHTML=window.TAGChampionBracket.render(t,false)
+   window.TAGChampionTheme.apply(t.theme,t.background);
+   $('boardBracket').innerHTML=window.TAGChampionBracket.render(t,false);
+   window.TAGChampionBracket.afterRender($('boardBracket'))
   }
   $('boardStatus').textContent='تحديث تلقائي كل 8 ثوانٍ • آخر تحقق '+new Date().toLocaleTimeString('ar-JO');
  }catch(e){
