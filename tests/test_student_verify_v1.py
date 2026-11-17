@@ -96,6 +96,7 @@ class StudentVerifyContract(unittest.TestCase):
         status,issued=self.teacher_post('issue',{})
         self.assertEqual(status,200)
         self.assertEqual(len(issued['pins']),2)
+        self.assertEqual(len({row['pin'] for row in issued['pins']}),2)
         for row in issued['pins']:
             self.assertRegex(row['pin'],r'^[0-9]{6}$')
             record=store.query('SELECT pin_hash,pin_salt FROM student_verify_pins WHERE student_id=?',(row['id'],))
