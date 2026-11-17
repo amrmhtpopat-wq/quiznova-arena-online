@@ -170,5 +170,6 @@ if(view==='games'){
     document.querySelectorAll('[data-v32-bar]').forEach(e=>e.textContent='لديك أسئلة؟ جرّبها بلعبة '+byId.get(choice).name)}});
  }
 }
+window.TAG_LAB_V32_CHOOSE=id=>choose(id,false);
 choose(choice,false);
 })();
