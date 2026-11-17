@@ -14,27 +14,42 @@ jobs:
         with:
           python-version: '3.12'
       - name: Compile standalone routing and card client
-        run: python -m py_compile tag_independent_mode.py tag_card_client.py tag_lab_cards.py game_lab_api.py server.py
+        run: python -m py_compile tag_independent_mode.py tag_card_client.py tag_lab_cards.py game_lab_api.py game_lab_live.py server.py
       - name: Verify standalone route isolation
         run: python -m unittest discover -s tests -p 'test_tag_independent_mode.py' -v
       - name: Verify private card client
         run: python -m unittest discover -s tests -p 'test_tag_card_client.py' -v
       - name: Run synthetic roster and play flow
         run: python -m unittest discover -s tests -p 'test_tag_lab_cards.py' -v
+      - name: Verify synthetic live classroom and no official student lookups
+        run: python -m unittest discover -s tests -p 'test_tag_lab_live.py' -v
       - name: Verify separate LAB portal scripts
         run: |
           python - <<'PY'
           import re
           from pathlib import Path
-          for name in ('tag-lab-assign','tag-lab-student','tag-lab-account'):
+          for name in ('tag-lab-assign','tag-lab-student','tag-lab-account',
+                       'tag-lab-live-teacher','tag-lab-live-student',
+                       'tag-lab-live-display','tag-lab-results'):
               content=Path(name+'.html').read_text(encoding='utf-8')
-              scripts=re.findall(r'<script[^>]*>(.*?)</script>',content,re.S)
+              scripts=re.findall(r'<script(?![^>]*\\bsrc=)[^>]*>(.*?)</script>',content,re.S)
               assert len(scripts)==1, (name,len(scripts))
               Path('/tmp/'+name+'.js').write_text(scripts[0],encoding='utf-8')
           PY
           node --check /tmp/tag-lab-assign.js
           node --check /tmp/tag-lab-student.js
           node --check /tmp/tag-lab-account.js
+          node --check /tmp/tag-lab-live-teacher.js
+          node --check /tmp/tag-lab-live-student.js
+          node --check /tmp/tag-lab-live-display.js
+          node --check /tmp/tag-lab-results.js
+          node --check tag-lab-visual-v1.js
+          python - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          for name in ('tag-lab-visual-v1.svg','tag-lab-hero-v1.svg'):
+              ET.parse(Path('assets/brand')/name)
+          PY
       - name: Check independent routing excludes obsolete endpoints
         run: |
           python - <<'PY'
@@ -42,8 +57,10 @@ jobs:
           os.environ['TAG_LAB_ONLY_MODE']='1'
           assert not m.allowed('GET','/tag-lab-live.html')
           assert not m.allowed('GET','/tag-lab-students.html')
-          assert not m.allowed('POST','/api/game-lab/live/create')
+          assert m.allowed('POST','/api/game-lab/live/create')
           assert not m.allowed('GET','/api/game-lab/pro/assignments')
           assert m.allowed('POST','/api/tag-independent/student/login')
           assert m.allowed('GET','/tag-lab-account.html')
+          assert m.allowed('GET','/tag-lab-live-student.html')
+          assert m.allowed('GET','/tag-lab-results.html')
           PY
