@@ -8,10 +8,10 @@ import os
 from urllib.parse import urlparse
 
 _ENABLED = {"1", "true", "yes", "on"}
-_AUTH_PATHS = {
+_AUTH_GET_PATHS = {"/api/auth/me", "/api/auth/reset-status"}
+_AUTH_POST_PATHS = {
     "/api/auth/register", "/api/auth/login", "/api/auth/logout",
-    "/api/auth/me", "/api/auth/password", "/api/auth/forgot",
-    "/api/auth/reset", "/api/auth/reset-status",
+    "/api/auth/password", "/api/auth/forgot", "/api/auth/reset",
 }
 _API_READ = {"/api/health", "/api/status", "/api/qr"}
 _API_POST_BLOCKED = {
@@ -32,7 +32,7 @@ def allowed(method, path):
         if p in ("", "/", "/favicon.ico", "/robots.txt"):
             return True
         if p.startswith("/api/"):
-            return (p in _API_READ or p in _AUTH_PATHS or
+            return (p in _API_READ or p in _AUTH_GET_PATHS or
                     p.startswith("/api/game-lab/"))
         if p.lower().endswith(".html"):
             return p.startswith("/tag-lab-") or p.startswith("/game-lab-")
@@ -43,7 +43,7 @@ def allowed(method, path):
             return True
         if p in _API_POST_BLOCKED:
             return False
-        return p in _AUTH_PATHS or p.startswith("/api/game-lab/")
+        return p in _AUTH_POST_PATHS or p.startswith("/api/game-lab/")
     return False
 
 def reject(handler, method, path):
