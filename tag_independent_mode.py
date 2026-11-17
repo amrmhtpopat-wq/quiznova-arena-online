@@ -39,6 +39,8 @@ def allowed(method, path):
         # The existing server's translate_path still disallows Python, env and DB files.
         return True
     if method == "POST":
+        if p == "/api/tag-independent/card/verify":
+            return True
         if p in _API_POST_BLOCKED:
             return False
         return p in _AUTH_PATHS or p.startswith("/api/game-lab/")
