@@ -21,3 +21,6 @@ body.v105-portal .tag-verify-reveal small{display:block;color:#fff0d0;margin:6px
 body.v105-portal .tag-verify-reveal pre{white-space:pre-wrap;overflow:auto;max-height:280px;user-select:text;border-radius:10px;background:#f6fbff;color:#0b2944;padding:12px;direction:rtl;line-height:1.8;font-size:13px}
 body.v105-portal .tag-verify-reveal button:focus-visible,body.v105-portal .tag-verify-single input:focus-visible{outline:3px solid #fff3aa;outline-offset:3px}
 @media(max-width:600px){body.v105-portal .tag-verify-single button{flex:1 1 100%}body.v105-portal .tag-verify-panel{padding:12px!important}}
+
+/* PIN secrets must never accidentally appear when printing student QR cards. */
+@media print{body.v105-portal #studentVerifyPanel,body.v105-portal #verifyReveal{display:none!important}}
