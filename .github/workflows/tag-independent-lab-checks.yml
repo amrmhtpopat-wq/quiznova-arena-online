@@ -47,7 +47,7 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           import xml.etree.ElementTree as ET
-          for name in ('tag-lab-visual-v1.svg','tag-lab-hero-v1.svg'):
+          for name in ('tag-lab-visual-v1.svg','tag-lab-visual-v1-dark.svg','tag-lab-hero-v1.svg'):
               ET.parse(Path('assets/brand')/name)
           PY
       - name: Check independent routing excludes obsolete endpoints
