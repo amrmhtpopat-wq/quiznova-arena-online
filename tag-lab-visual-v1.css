@@ -234,6 +234,10 @@ body.tagv-enabled .tagv-leader td,body.tagv-enabled .tagv-leader th{padding:12px
 body.tagv-enabled .tagv-leader th{background:var(--tagv-soft)}
 body.tagv-enabled .tagv-room-display{max-width:1400px;margin:auto}
 body.tagv-enabled .tagv-room-display .tagv-question{font-size:clamp(2rem,4.8vw,4rem)}
+/* Never show legacy blank media placeholders. */
+body.tagv-enabled img[src=""],body.tagv-enabled img:not([src]){display:none!important}
+/* Preview-only game gallery uses independent account navigation; no inline login box. */
+html[data-tag-view="games"] body.tagv-enabled .tag-simple-auth{display:none!important}
 /* Approved six-template gallery: glossy educational cards and clear actions. */
 html[data-tag-view="games"] body.tagv-enabled .tag-v32-art-generic{
  font-size:clamp(5rem,9vw,8rem);filter:drop-shadow(0 12px 7px rgba(88,59,169,.2));
