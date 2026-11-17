@@ -236,8 +236,15 @@ body.tagv-enabled .tagv-room-display{max-width:1400px;margin:auto}
 body.tagv-enabled .tagv-room-display .tagv-question{font-size:clamp(2rem,4.8vw,4rem)}
 /* Never show legacy blank media placeholders. */
 body.tagv-enabled img[src=""],body.tagv-enabled img:not([src]){display:none!important}
-/* Preview-only game gallery uses independent account navigation; no inline login box. */
-html[data-tag-view="games"] body.tagv-enabled .tag-simple-auth{display:none!important}
+/* All authoring uses the dedicated TAG LAB account page rather than duplicated login panels. */
+html[data-tag-view="games"] body.tagv-enabled .tag-simple-auth,
+html[data-tag-view="create"] body.tagv-enabled .tag-simple-auth{display:none!important}
+html[data-tag-view] body.tagv-enabled .tag-simple-intro .tagv-intro-art{
+ display:block;width:clamp(115px,17vw,220px);height:145px;object-fit:contain;flex:none
+}
+@media(max-width:650px){
+ html[data-tag-view] body.tagv-enabled .tag-simple-intro .tagv-intro-art{display:none!important}
+}
 /* Approved six-template gallery: glossy educational cards and clear actions. */
 html[data-tag-view="games"] body.tagv-enabled .tag-v32-art-generic{
  font-size:clamp(5rem,9vw,8rem);filter:drop-shadow(0 12px 7px rgba(88,59,169,.2));
