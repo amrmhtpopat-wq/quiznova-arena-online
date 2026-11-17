@@ -33,19 +33,44 @@ function current(){const lines=$('activityData').value.split(/\r?\n/).map(s=>s.t
          mode:$('cloudMode').value,time:Number($('roundTime').value)||25,rows:enhancedRows(rows),
          bookId:window.BOOYAH_LAB_BOOK_ID||'',imageId:window.BOOYAH_LAB_IMAGE_ID||'',
          sourceGroup:window.BOOYAH_LAB_SOURCE_GROUP||''}}
-function fill(a){currentId=a.id;const p=a.activity||a;window.BOOYAH_LAB_BOOK_ID=p.bookId||'';window.BOOYAH_LAB_IMAGE_ID=p.imageId||'';
+function fill(a){
+ const p=a.activity||a;
+ if(document.documentElement.dataset.tagView==='create'&&typeof window.TAG_LAB_V33_SELECT==='function')
+  window.TAG_LAB_V33_SELECT(p.mode||'quiz');
+ currentId=a.id;
+ window.BOOYAH_LAB_BOOK_ID=p.bookId||'';window.BOOYAH_LAB_IMAGE_ID=p.imageId||'';
 window.BOOYAH_LAB_SOURCE_GROUP=p.sourceGroup||a.sourceGroup||'';
  window.TG_QUESTION_BANK_ROWS=p.rows.map(x=>({...x}));window.TG_CREATOR_PREVIEW_ROWS=p.rows.map(x=>({...x}));
- $('activityTitle').value=p.title;$('subject').value=p.subject;$('grade').value=p.grade;$('roundTime').value=String(p.time);$('activityData').value=p.rows.map(x=>x.q+' | '+x.a+' | '+x.g+(x.sourcePage?' | '+x.sourcePage:'')).join('\n');$('cloudMode').value=p.mode||'quiz';selectedMode=$('cloudMode').value;$('cloudMaxAttempts').value=String(a.maxAttempts||1);$('applyContent').click();note('تم فتح «'+p.title+'» للتعديل. احفظ التغييرات على حسابك.');document.getElementById('builder').scrollIntoView({behavior:'smooth'})}
+ $('activityTitle').value=p.title;$('subject').value=p.subject;$('grade').value=p.grade;$('roundTime').value=String(p.time);$('activityData').value=p.rows.map(x=>x.q+' | '+x.a+' | '+x.g+(x.sourcePage?' | '+x.sourcePage:'')).join('\n');$('cloudMode').value=p.mode||'quiz';selectedMode=$('cloudMode').value;$('cloudMaxAttempts').value=String(a.maxAttempts||1);$('applyContent').click();note('تم فتح «'+p.title+'» للتعديل. احفظ التغييرات على حسابك.');document.getElementById('builder').scrollIntoView({behavior:'smooth'});
+ document.dispatchEvent(new CustomEvent('taglab:saved-activity-opened',{detail:{id:a.id,activity:p}}))
+}
+window.TAG_LAB_V33_CLEAR_SAVED=()=>{currentId=null};
+function editSavedInCreator(item){
+ const id=item?.id||'';
+ if(!/^[a-f0-9]{32}$/.test(id)){note('رقم النشاط غير صحيح.',true);return}
+ try{sessionStorage.setItem('tag_lab_v33_edit_saved_id',id)}
+ catch(_){note('تعذّر فتح النشاط في صفحة التعديل، جرّب مجددًا.',true);return}
+ location.href='/tag-lab-create.html?edit='+encodeURIComponent(id);
+}
 function resetSelection(){window.TG_QUESTION_BANK_ROWS=null;window.TG_CREATOR_PREVIEW_ROWS=null;window.BOOYAH_LAB_BOOK_ID='';window.BOOYAH_LAB_IMAGE_ID='';window.BOOYAH_LAB_SOURCE_GROUP='';currentId=null;$('cloudMaxAttempts').value='1';note('نشاط جديد: اختر القالب، عدّل محتوى الدرس، ثم احفظه على حسابك.')}
 function buildLink(item){return location.origin+'/game-lab-play.html?game='+encodeURIComponent(item.publicCode||'')}
 function element(tag,cls,content){const e=document.createElement(tag);if(cls)e.className=cls;if(content!==undefined)e.textContent=String(content);return e}
 function button(text,act,cls='button alt small'){const e=element('button',cls,text);e.type='button';e.onclick=act;return e}
-async function refresh(){if(!token){setLoggedOut();return}try{const [account,data]=await Promise.all([api('/api/auth/me'),api('/api/game-lab/teacher/list')]);me=account.teacher;items=data.activities||[];setLoggedIn();renderItems();document.dispatchEvent(new CustomEvent('gamelab:library',{detail:{items}}))}catch(e){if(e.message==='login_required'){token='';localStorage.removeItem(tokenKey);setLoggedOut()}else note(translations[e.message]||'فشل تحميل الأنشطة: '+e.message,true)}}
+async function refresh(){if(!token){setLoggedOut();return}try{const [account,data]=await Promise.all([api('/api/auth/me'),api('/api/game-lab/teacher/list')]);me=account.teacher;items=data.activities||[];setLoggedIn();renderItems();document.dispatchEvent(new CustomEvent('gamelab:library',{detail:{items}}));
+ if(document.documentElement.dataset.tagView==='create'){
+  const storedId=sessionStorage.getItem('tag_lab_v33_edit_saved_id');
+  if(storedId){
+   const match=items.find(item=>item.id===storedId);
+   sessionStorage.removeItem('tag_lab_v33_edit_saved_id');
+   if(match)fill(match);
+   else note('لم أعثر على هذا النشاط في حساب المعلم؛ لم أغيّر المسودات.',true)
+  }
+ }}catch(e){if(e.message==='login_required'){token='';localStorage.removeItem(tokenKey);setLoggedOut()}else note(translations[e.message]||'فشل تحميل الأنشطة: '+e.message,true)}}
 function setLoggedOut(){me=null;$('cloudLogin').classList.remove('hide');$('cloudWorkspace').classList.add('hide');$('cloudLoginLabel').textContent='يُرجى تسجيل دخول المعلم للاستفادة من الحفظ والنشر الحقيقي.'}
 function setLoggedIn(){$('cloudLogin').classList.add('hide');$('cloudWorkspace').classList.remove('hide');$('cloudTeacher').textContent='مرحبًا، '+(me.name||'المعلم');}
 async function signIn(){const email=$('cloudEmail').value.trim(),password=$('cloudPassword').value;if(!email||!password){note('أدخل البريد وكلمة المرور.',true);return}const btn=$('cloudSignIn');busy(btn,true);try{const d=await api('/api/auth/login',{email,password});token=d.token;localStorage.setItem(tokenKey,token);$('cloudPassword').value='';await refresh();note('✓ تم الدخول إلى مكتبتك الشخصية.') }catch(e){note(translations[e.message]||e.message,true)}finally{busy(btn,false)}}
-async function save(){const btn=$('cloudSave');busy(btn,true);try{const d=await api('/api/game-lab/teacher/save',{id:currentId||undefined,activity:current()});currentId=d.id;await refresh();note('✓ حُفظ نشاطك على قاعدة البيانات الخاصة بحسابك.');}catch(e){note(translations[e.message]||e.message,true)}finally{busy(btn,false)}}
+async function save(){const btn=$('cloudSave');busy(btn,true);try{const d=await api('/api/game-lab/teacher/save',{id:currentId||undefined,activity:current()});currentId=d.id;await refresh();note('✓ حُفظ نشاطك على قاعدة البيانات الخاصة بحسابك.');
+ document.dispatchEvent(new CustomEvent('taglab:activity-saved',{detail:{id:d.id,mode:$('cloudMode').value}}));}catch(e){note(translations[e.message]||e.message,true)}finally{busy(btn,false)}}
 async function generateAll(){
  const btn=$('cloudGenerateAll');btn.disabled=true;
  try{
@@ -167,7 +192,7 @@ function exportAllCloud(){
  note('✓ تم تصدير محتوى '+bundle.activities.length+' نشاطًا. احفظ الملف في مكان آمن؛ فهو يحتوي إجابات الاختبارات.');
 }
 
-function renderItems(){const host=$('cloudList');host.replaceChildren();$('cloudCount').textContent=items.length;const query=($('cloudLibrarySearch').value||'').trim().toLocaleLowerCase('ar'),filter=$('cloudLibraryFilter').value;const visible=items.filter(x=>(filter==='all'||(filter==='published'&&x.published)||(filter==='draft'&&!x.published))&&(!query||(x.title+' '+x.subject+' '+x.grade+' '+label(x.mode)).toLocaleLowerCase('ar').includes(query)));if(!visible.length){host.append(element('div','empty',items.length?'لا توجد أنشطة تطابق البحث أو الفلتر.':'لم تنشئ أنشطة على حسابك بعد. أنشئ أول نشاط من صانع الأنشطة.'));return}for(const item of visible){const row=element('div','cloud-activity'),left=element('div','cloud-info'),right=element('div','buttons');left.append(element('b','',item.title),element('small','',item.subject+' • '+item.grade+' • '+label(item.mode)+' • '+item.questionCount+' أسئلة'));left.append(element('small','',item.published?'🟢 منشور للطلاب':'⚪ مسودة خاصة'));right.append(button('✏️ تعديل',()=>fill(item)),
+function renderItems(){const host=$('cloudList');host.replaceChildren();$('cloudCount').textContent=items.length;const query=($('cloudLibrarySearch').value||'').trim().toLocaleLowerCase('ar'),filter=$('cloudLibraryFilter').value;const visible=items.filter(x=>(filter==='all'||(filter==='published'&&x.published)||(filter==='draft'&&!x.published))&&(!query||(x.title+' '+x.subject+' '+x.grade+' '+label(x.mode)).toLocaleLowerCase('ar').includes(query)));if(!visible.length){host.append(element('div','empty',items.length?'لا توجد أنشطة تطابق البحث أو الفلتر.':'لم تنشئ أنشطة على حسابك بعد. أنشئ أول نشاط من صانع الأنشطة.'));return}for(const item of visible){const row=element('div','cloud-activity'),left=element('div','cloud-info'),right=element('div','buttons');left.append(element('b','',item.title),element('small','',item.subject+' • '+item.grade+' • '+label(item.mode)+' • '+item.questionCount+' أسئلة'));left.append(element('small','',item.published?'🟢 منشور للطلاب':'⚪ مسودة خاصة'));right.append(button('✏️ تعديل',()=>document.documentElement.dataset.tagView==='library'?editSavedInCreator(item):fill(item)),
  button('🧩 تعديل أنواع الأسئلة',()=>{
   fill(item);
   document.dispatchEvent(new CustomEvent('gamelab:edit-structured-bank',
