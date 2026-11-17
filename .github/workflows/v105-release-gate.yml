@@ -67,4 +67,5 @@ jobs:
           python -m unittest discover -s tests -p 'test_visitor_analytics_v125.py' -v
           python -m unittest discover -s tests -p 'test_v121_cards_media_scenes.py' -v
       - name: Read-only production release smoke (no test users or mutations)
+        if: github.event_name != 'pull_request'
         run: python tests/hosted_production_readonly.py
