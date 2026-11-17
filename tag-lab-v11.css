@@ -116,3 +116,12 @@ body{background-image:radial-gradient(circle at 88% 1%,#dcf3ff 0,transparent 34%
 #labBookApprove{font-size:15px!important;font-weight:900!important}
 #labBookSummary{font-size:14px!important;line-height:1.8!important;color:#3a5872!important}
 @media(max-width:720px){#labBookPreview .tag-book-review-card{padding:11px!important}#labBookPreview .tag-book-review-card textarea{font-size:14px!important}#labBookPreview .tag-book-review-top{align-items:flex-start}}
+
+/* TAG LAB V27 — AI-assisted textbook question authoring. */
+#bookLab .tag-ai-settings{padding:14px 16px;margin:12px 0;border:1.5px solid #9ccdd5;border-radius:14px;background:#edf8fb;color:#193b4e}
+#bookLab .tag-ai-settings[hidden]{display:none!important}
+#bookLab .tag-ai-title{font-weight:900;font-size:16px;color:#14587b;margin-bottom:12px}
+#bookLab .tag-ai-settings label{font-size:13px;font-weight:800;color:#244861}
+#bookLab .tag-ai-settings select{background:#fff!important;color:#173a52!important;border:1.5px solid #adc8d9!important;min-height:44px!important;font-size:14px!important}
+#bookLab #labAiStatus{padding:8px 12px;border-radius:10px;background:#eaf2f8;color:#254965;font-size:13px;line-height:1.8;margin:10px 0}
+@media(max-width:720px){#bookLab .tag-ai-settings{padding:11px}#bookLab .tag-ai-title{font-size:15px}}
