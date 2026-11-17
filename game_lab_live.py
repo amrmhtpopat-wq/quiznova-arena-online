@@ -14,6 +14,7 @@ from random import Random, SystemRandom
 import platform_store as db
 import platform_api as auth
 import solo_api
+import student_verify
 import game_lab_api as games
 
 GET={'/api/game-lab/live/state','/api/game-lab/live/rooms','/api/game-lab/live/report'}
@@ -42,6 +43,17 @@ def init():
       "answers TEXT NOT NULL,joined_at BIGINT NOT NULL,updated_at BIGINT NOT NULL)",
       "CREATE INDEX IF NOT EXISTS ix_gl_live_code ON game_lab_live_players(code,score)"
     ):db.exec_sql(sql)
+    if db.DATABASE_URL:
+        columns={x['column_name'] for x in db.query(
+            "SELECT column_name FROM information_schema.columns "
+            "WHERE table_name='game_lab_live_players'",many=True)}
+    else:
+        with db.db_connection() as con:
+            columns={x[1] for x in con.execute(
+                "PRAGMA table_info(game_lab_live_players)").fetchall()}
+    if 'pin_verified' not in columns:
+        db.exec_sql("ALTER TABLE game_lab_live_players ADD COLUMN "
+                    "pin_verified INTEGER NOT NULL DEFAULT 0")
 
 
 def load(code):
@@ -188,6 +200,8 @@ def join(h,data):
     student=solo_api.find_student(card) if card else None
     if card and not student:return error(h,'invalid_card',403)
     if student and student['teacher_id']!=room['teacher_id']:return error(h,'card_other_teacher',403)
+    verify_on=student_verify.is_enabled(room['teacher_id'])
+    if verify_on and not student:return error(h,'card_required',403)
     if s.get('cardRequired') and not student:return error(h,'card_required',403)
     if student and s.get('enforceGrade') and s.get('targetGrade'):
         grade=s['targetGrade'].strip().casefold()
@@ -206,9 +220,26 @@ def join(h,data):
             cur=conn.execute(db.sql('SELECT COUNT(*) FROM game_lab_live_players WHERE code=?'),(code,))
             count=int(cur.fetchone()[0])
             if student:
+                if verify_on:
+                    lock='SELECT id FROM students WHERE id=? AND teacher_id=? AND archived=0'+(' FOR UPDATE' if db.DATABASE_URL else '')
+                    cur.execute(db.sql(lock),(student['id'],room['teacher_id']))
+                    if not cur.fetchone():return error(h,'invalid_card',403)
+                    pin_error=student_verify.verify_in_transaction(
+                        cur,room['teacher_id'],student['id'],data.get('pin'))
+                    if pin_error:return error(h,pin_error,429 if pin_error=='student_pin_locked' else 403)
                 cur.execute(db.sql('SELECT id FROM game_lab_live_players WHERE code=? AND student_id=?'),
                             (code,student['id']))
                 if cur.fetchone():return error(h,'already_joined',409)
+                if verify_on:
+                    active=cur.execute(db.sql(
+                        'SELECT r.state,r.updated_at FROM game_lab_live_players AS p '
+                        'JOIN game_lab_live_rooms AS r ON r.code=p.code '
+                        'WHERE p.student_id=? AND r.teacher_id=?'),
+                        (student['id'],room['teacher_id'])).fetchall()
+                    for raw,updated_at in active:
+                        prior=db.jload(raw,{})
+                        if prior and prior.get('status')!='finished' and 0<=stamp()-int(updated_at)<TTL:
+                            return error(h,'active_attempt',409)
             if count>=200:return error(h,'room_full',403)
             # A late join must not reopen a round whose results have already
             # been decided by all current players (or the server deadline).
@@ -226,9 +257,10 @@ def join(h,data):
             team=s['teamNames'][count%len(s['teamNames'])] if s['teams'] else ''
             conn.execute(db.sql('INSERT INTO game_lab_live_players '
               '(id,code,teacher_id,student_id,student_name,class_name,team,token_hash,'
-              'answers,joined_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)'),
+              'pin_verified,answers,joined_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)'),
               (uuid.uuid4().hex,code,room['teacher_id'],student['id'] if student else None,
-               name,student['class_name'] if student else 'ضيف',team,sha(token),db.jdump(initial_answers),stamp(),stamp()))
+               name,student['class_name'] if student else 'ضيف',team,sha(token),
+               1 if (verify_on and student) else 0,db.jdump(initial_answers),stamp(),stamp()))
     h.send_json({'ok':True,'token':token,'state':read_public_state(code,token)})
     return True
 
@@ -294,6 +326,8 @@ def answer(h,data):
             found=cur.fetchone()
             if not found:return error(h,'invalid_session',403)
             cols=[x[0] for x in cur.description];player=dict(zip(cols,found))
+            if student_verify.is_enabled(room['teacher_id']) and not int(player['pin_verified']):
+                return error(h,'student_pin_required',403)
             answers=db.jload(player['answers'],{})
             if str(idx) in answers:return error(h,'already_answered',409)
             q=question(s,with_answers=True)
@@ -384,6 +418,8 @@ def post_state(h,data):
     token=str(data.get('token') or '')
     person=get_player(code,token)
     if not person:return error(h,'invalid_session',403)
+    if student_verify.is_enabled(room['teacher_id']) and not int(person['pin_verified']):
+        return error(h,'student_pin_required',403)
     h.send_json({'ok':True,'state':snapshot(room,roster(code),person=person)})
     return True
 
