@@ -94,10 +94,11 @@ class ChampionV3UI(unittest.TestCase):
             self.assertIn('data-ct-theme="'+theme+'"',html)
         for background in champion.BACKGROUNDS:
             self.assertIn('data-ct-bg="'+background+'"',html)
-            self.assertTrue((ROOT/'assets/champion'/('bg-'+background+'.svg')).is_file())
+            asset=('bg-'+background+'-v4.svg') if background in ('daylight','finals') else ('bg-'+background+'.svg')
+            self.assertTrue((ROOT/'assets/champion'/asset).is_file())
         self.assertIn('champion-themes-v3.css?v=3.0',html)
         self.assertIn('saveChampionAppearance',html)
-        self.assertIn('champion-theme-engine-v3.js?v=3.0',html)
+        self.assertIn('champion-theme-engine-v3.js?v=4.0',html)
 
     def test_teacher_persists_and_projector_replays(self):
         script=(ROOT/'champion-tag.js').read_text(encoding='utf-8')
