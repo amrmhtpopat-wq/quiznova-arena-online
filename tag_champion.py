@@ -111,7 +111,7 @@ def create(teacher_id, data):
     kind = data.get('kind')
     mode = data.get('seedMode')
     names = data.get('participants')
-    if kind not in ('students', 'classes') or mode not in ('random', 'manual'):
+    if kind not in ('students', 'classes', 'teams') or mode not in ('random', 'manual'):
         raise ValueError('invalid_tournament_type')
     if not isinstance(names, list) or not 2 <= len(names) <= MAX_ENTRANTS:
         raise ValueError('participants_2_to_32')
@@ -203,7 +203,7 @@ def complete_match(teacher_id, data, rooms):
         if match['status'] != 'live':
             raise ValueError('match_not_started')
         room=rooms.get(match['code'])
-        if not room or room.get('teacherId') != teacher_id or room.get('status') != 'finished':
+        if not room or room.get('teacherId') != teacher_id or room.get('status') != 'finished' or room.get('championId') != tournament_id or room.get('championMatchId') != match_id:
             raise ValueError('room_not_finished')
         sides=[match['a'], match['b']]
         results=[]

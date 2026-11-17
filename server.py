@@ -435,6 +435,11 @@ class Handler(SimpleHTTPRequestHandler):
         return json.loads(raw.decode('utf-8') or '{}')
     def do_GET(self):
         u=urlparse(self.path)
+        if u.path=='/api/champion/public':
+            identifier=(parse_qs(u.query).get('id') or [''])[0]
+            try:
+                return self.send_json({'ok':True,'tournament':tag_champion.public_board(identifier)})
+            except ValueError as exc:return self.send_json({'ok':False,'error':str(exc)},404)
         if admin_api.handle_get(self,u):return
         if platform_api.handle_get(self,u):return
         if u.path=='/api/champion':
