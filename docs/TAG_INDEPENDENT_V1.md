@@ -26,18 +26,23 @@ LAB consumer, opt-in: `POST /api/tag-independent/card/verify`.
 - Provider code is on `feature/tag-independent-v1-card-provider`, NOT on the live official `main` branch.
 - **Do not activate until end-to-end tests on isolated, synthetic data pass.** The official endpoint is currently unavailable, and so independent LAB card verification deliberately returns 503.
 
-## LAB local roster and assignment model (next coding phase)
-1. Each independent LAB teacher authenticates to LAB's own teacher table.
-2. Enroll a card with its physical code: the server verifies via the official provider, then stores `cardRef` under the LAB teacher, plus a **LAB-local** display label and a LAB-local group. This is not a copy of the official roster.
-3. Teacher assigns a published LAB game to one or more enrolled `cardRef` values or LAB-local groups.
-4. Student opens LAB's card games, submits existing physical code, receives a short lived LAB session; lookup resolves to `cardRef` and displays only assigned published games.
-5. Record LAB results solely in the dedicated LAB database; never credit or read official grades, XP or results.
-6. Existing code `game_lab_pro.student_catalog`, `game_lab_pro.assign` and `game_lab_api.start` still assume a shared `students` table. Refactor all three **before** enabling cards; do not silently fall back to a local fake student table.
+## LAB-only cards and play (implemented in the isolated preview)
+- `tag_lab_cards.py`: local enrolled card aliases, teacher-maintained name/class labels, classroom assignments, separate session table.
+- Private six-digit random PIN is generated on enrollment/reset, returned only once, and PBKDF2-HMAC-SHA256 hashed with a unique salt. No PIN or raw QR is stored.
+- Teachers use `/tag-lab-assign.html` to register a validated card, issue/reset PIN, and assign published games to students/groups/all.
+- Students use `/tag-lab-student.html` to enter card + PIN, see ONLY published assigned games, and play with a short-lived LAB session.
+- DB row lock and uniqueness reject simultaneous card login; unfinished active game runs block concurrent starts, and attempts remain limited by teacher.
+- Game results are written ONLY to LAB's `game_lab_runs`. All official students/XP/attempt writes are skipped in standalone mode.
+- `/tag-lab-account.html` supports LAB-only teacher registration and sign-in.
+- The earlier public card-to-cardRef verification API was deliberately removed: verification happens inside server handlers only.
+- Older /tag-lab-students and /tag-lab-live routes are blocked, along with old official roster and game-lab-live APIs.
+- GitHub Actions includes synthetic SQLite end-to-end tests and front-end JavaScript syntax checks.
+- **Card functionality remains disabled on the live LAB preview until the official provider is securely enabled.** Mocked tests are not evidence that real QR codes work.
 
 ## Required before launch
 - Move LAB source to a newly created independent GitHub repository (the available GitHub connector cannot create repositories).
-- Implement the LAB-local card enrollments, group assignments and activity start authorization.
-- Provision and rotate the server-side bridge secret on both services; store only in Render secrets.
+- Test and verify LAB-local card enrollment/assignments and player UI using synthetic cards on a protected integration environment.
+- Provision a shared server-side bridge secret (at least 32 characters) after provider staging verification; store only in Render secrets, not source. Rotate with deliberate cardRef remapping.
 - Validate no cross-database queries, cross-origin cookies, browser-exposed secrets or official endpoints except the single card contract.
 - Migrate **only** QA LAB teachers/activities/books/media/runs after backing them up, confirming mapping and verifying no raw QR/official student rows are copied. Card assignments require ref mapping.
 - Test teacher login, creating games, uploading books, AI generation, saving, publishing, student cards and reports.
