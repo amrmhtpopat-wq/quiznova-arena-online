@@ -108,6 +108,7 @@ async function openTournament(id){
  clearInterval(polling);polling=null;live=null;selectedId='';roomViewSig='';tiePending=false;
  const d=await request('/api/champion?id='+encodeURIComponent(id));
  active=d.tournament;
+ window.TAGChampionCeremony?.update(active,{autoplay:false});
  currentAppearance.theme=VISUAL.themes[active.theme]?active.theme:'gold';
  currentAppearance.background=VISUAL.backgrounds[active.background]?active.background:VISUAL.themes[currentAppearance.theme].defaultBackground;
  updatePreview('active');
@@ -224,6 +225,7 @@ async function settleMatch(tieWinner=''){
   const d=await request('/api/champion/match/complete','POST',{tournamentId,matchId,tieWinner});
   clearInterval(polling);polling=null;roomViewSig='';tiePending=false;
   active=d.tournament;await refreshList();renderBracket();
+  window.TAGChampionCeremony?.update(active,{autoplay:true});
   const m=BR.find(active,matchId);renderMatchDetails(m);toast('تم اعتماد النتيجة وتأهل '+m.winner+' إلى الدور التالي');
   if(active.champion)toast('🏆 بطل البطولة: '+active.champion);
  }catch(e){
@@ -268,7 +270,8 @@ async function forfeit(which){
  if(!confirm('هل تؤكد انسحاب الطرف المقابل وتأهل «'+winner+'» دون لعب؟'))return;
  try{
   const d=await request('/api/champion/match/forfeit','POST',{tournamentId:active.id,matchId:selectedId,winner});
-  active=d.tournament;await refreshList();renderBracket();renderMatchDetails(BR.find(active,selectedId));toast('تم التأهل دون لعب');
+  active=d.tournament;await refreshList();renderBracket();renderMatchDetails(BR.find(active,selectedId));
+  window.TAGChampionCeremony?.update(active,{autoplay:true});toast('تم التأهل دون لعب');
  }catch(e){toast(label(e.message),true)}
 }
 async function saveAppearance(){
