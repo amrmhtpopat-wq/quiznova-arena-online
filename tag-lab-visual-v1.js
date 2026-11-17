@@ -28,6 +28,7 @@
   theme=mode;h.setAttribute('data-tag-theme',mode);
   d.querySelector('meta[name="theme-color"]')?.setAttribute('content',mode==='dark'?'#10112D':'#F8F9FF');
   d.querySelectorAll('[data-tagv-theme]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.tagvTheme===mode)));
+  if(brandImage)brandImage.src=mode==='dark'?'/assets/brand/tag-lab-visual-v1-dark.svg':'/assets/brand/tag-lab-visual-v1.svg';
   try{localStorage.setItem(storageKey,mode)}catch(_){}
  }
  function el(tag,cls,txt){const e=d.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e}
