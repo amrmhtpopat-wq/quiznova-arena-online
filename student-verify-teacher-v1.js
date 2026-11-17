@@ -28,7 +28,7 @@ function render(showSummary=false){
  label.textContent=state.enabled?'مفعّل — PIN مطلوب':'غير مفعّل';
  const toggle=el('verifyToggle');
  toggle.textContent=state.enabled?'تعطيل الحماية':'🛡️ تفعيل الحماية';
- toggle.disabled=state.busy||(!state.enabled&&(state.students===0||state.issued!==state.students));
+ toggle.disabled=state.busy||(!state.enabled&&(state.students===0||state.issued!==state.students||!el('verifyDelivered').checked));
  for(const id of ['verifyIssueMissing','verifyRotate','verifyUnlock'])el(id).disabled=state.busy;
  if(showSummary&&!state.busy)notify('البطاقات: '+state.students+' • PIN صادر: '+state.issued+' • '+(state.enabled?'الحماية تعمل عند بدء كل اختبار.':'يجب إصدار وتسليم الرموز قبل التفعيل.'));
 }
@@ -82,16 +82,18 @@ async function identify(){
  if(!student)throw new Error('student_not_found');
  return student;
 }
+el('verifyDelivered').addEventListener('change',()=>render());
 el('verifyIssueMissing').onclick=()=>busy(async()=>{
  if(!confirm('إصدار رموز PIN شخصية عشوائية للبطاقات التي لا تملكها فقط؟\nسيظهر الكشف مرة واحدة ويجب توزيعه للطلاب على انفراد.'))return;
  const r=await api('/api/teacher/student-verify/issue',{method:'POST',body:JSON.stringify({})});
  state.enabled=Boolean(r.status.enabled);state.students=r.status.students;state.issued=r.status.issued;
+ el('verifyDelivered').checked=false;
  reveal(r.pins||[]);
 });
 el('verifyToggle').onclick=()=>busy(async()=>{
  const enable=!state.enabled;
  if(!confirm(enable?'تفعيل PIN الآن لجميع الطلاب في حسابك؟ لن يبدأ أي طالب الاختبار دون رمزه، ولا تحتاج موافقة يدوية.':'تعطيل طلب PIN للطلاب؟ سيُسمح بالدخول دون التحقق الشخصي.'))return;
- const r=await api('/api/teacher/student-verify/toggle',{method:'POST',body:JSON.stringify({enabled:enable})});
+ const r=await api('/api/teacher/student-verify/toggle',{method:'POST',body:JSON.stringify({enabled:enable,deliveredConfirmed:enable&&el('verifyDelivered').checked})});
  state.enabled=Boolean(r.enabled);state.students=r.students;state.issued=r.issued;
  notify(enable?'تم تفعيل PIN: لن يبدأ الطالب اختبارًا دون رمزه الشخصي.':'تم تعطيل التحقق للمعلم الحالي فقط.');
 });
