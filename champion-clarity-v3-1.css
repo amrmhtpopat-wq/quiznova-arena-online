@@ -1,0 +1,151 @@
+/* CHAMPION TAG V3.1 — broadcast readability + stadium visibility.
+   Targeted corrective layer over V3; 4 themes, manual matches and scores unchanged. */
+body.champion-portal,body.champion-board{
+ --ct-overlay-hero:rgba(2,13,32,.61);
+ --ct-overlay-bracket:rgba(2,13,32,.40);
+ --ct-stadium-size:cover;
+ --ct-stadium-pos:center 58%;
+}
+:is(.champion-portal,.champion-board) .hero.wc-worldcup-hero{
+ background-image:linear-gradient(100deg,rgba(3,11,27,.76) 0%,rgba(3,16,35,.49) 52%,rgba(2,12,28,.32) 100%),var(--ct-background)!important;
+ background-position:center center,var(--ct-stadium-pos)!important;
+ background-size:cover,var(--ct-stadium-size)!important;
+ background-repeat:no-repeat!important;
+}
+:is(.champion-portal,.champion-board) .wc-bracket-panel{
+ /* Stadium is the second layer; allow grass and stands to show through. */
+ background-image:linear-gradient(180deg,rgba(2,10,25,.44),rgba(2,12,29,.22) 68%,rgba(3,16,29,.16)),var(--ct-background)!important;
+ background-size:cover,var(--ct-stadium-size)!important;
+ background-position:center center,var(--ct-stadium-pos)!important;
+ background-repeat:no-repeat!important;
+}
+:is(.champion-portal,.champion-board) .wc-bracket-panel::before{
+ opacity:.025!important;pointer-events:none!important;
+}
+:is(.champion-portal,.champion-board) .wc-bracket-panel .bracket{
+ background:rgba(3,14,31,.10)!important;
+ border-radius:14px;
+}
+:is(.champion-portal,.champion-board) .wc-bracket-panel .round-title{
+ font-size:clamp(12px,1.1vw,15px)!important;font-weight:1000!important;
+ background:rgba(4,20,41,.96)!important;color:#fff6d8!important;
+ border:1px solid var(--ct-accent)!important;
+ text-shadow:0 1px 2px #000!important;
+ padding:7px 13px!important;letter-spacing:0!important;
+}
+:is(.champion-portal,.champion-board) .wc-bracket-panel .center-final{
+ background:radial-gradient(ellipse at 50% 52%,rgba(3,17,37,.72) 0%,rgba(3,17,37,.28) 58%,transparent 75%)!important;
+}
+:is(.champion-portal,.champion-board) .wc-bracket-panel .center-final .cup{
+ filter:drop-shadow(0 5px 21px rgba(0,0,0,.84))!important;
+}
+:is(.champion-portal,.champion-board) .wc-bracket-panel .center-final .champion-name{
+ background:rgba(4,19,39,.94)!important;color:#fff3d4!important;
+ text-shadow:0 1px 1px #000!important;
+}
+:is(.champion-portal,.champion-board) .wc-bracket-panel .bracket-connector-layer path{
+ stroke-width:2.7!important;filter:drop-shadow(0 1px 3px #000) drop-shadow(0 0 4px var(--ct-glow))!important;
+ opacity:1!important;
+}
+/* Broadcast Pro: dark ink throughout pale matchup cards, even over photo backgrounds.
+   Prevent the old global yellow-on-light and white-on-light color cascade. */
+body[data-champion-theme="broadcast"]{
+ --ct-card-bg:linear-gradient(140deg,rgba(255,255,255,.98),rgba(216,233,249,.98))!important;
+ --ct-card-text:#092344!important;
+ --ct-heading:#fff4c4!important;
+ --ct-accent:#eaf6ff!important;
+ --ct-accent2:#ffeaa0!important;
+ --ct-line:#fff3b5!important;
+ --ct-panel:rgba(6,26,56,.95)!important;
+}
+body[data-champion-theme="broadcast"] .wc-bracket-panel .match-card{
+ background:linear-gradient(145deg,#fff 0%,#e4f1fb 62%,#d0e3f2 100%)!important;
+ border:2px solid #96c4e7!important;
+ box-shadow:0 7px 24px rgba(0,9,28,.76),inset 0 1px rgba(255,255,255,.95)!important;
+}
+body[data-champion-theme="broadcast"] .wc-bracket-panel .match-card .fixture-team,
+body[data-champion-theme="broadcast"] .wc-bracket-panel .match-card .fixture-team span,
+body[data-champion-theme="broadcast"] .wc-bracket-panel .match-card .fixture-num,
+body[data-champion-theme="broadcast"] .wc-bracket-panel .match-card .fixture-num span{
+ color:#092344!important;
+ text-shadow:none!important;
+ font-weight:1000!important;
+ opacity:1!important;
+}
+body[data-champion-theme="broadcast"] .wc-bracket-panel .match-card .fixture-num{
+ border-bottom:1px solid #a1b7c9!important;
+ font-size:11px!important;
+}
+body[data-champion-theme="broadcast"] .wc-bracket-panel .match-card .fixture-vs{
+ color:#154776!important;
+ font-weight:1000!important;
+ text-shadow:none!important;
+ background:rgba(26,85,143,.11)!important;
+ border-radius:6px;
+}
+body[data-champion-theme="broadcast"] .wc-bracket-panel .match-card .fixture-team.winner,
+body[data-champion-theme="broadcast"] .wc-bracket-panel .match-card .fixture-team.winner span{
+ color:#086044!important;
+}
+body[data-champion-theme="broadcast"] .wc-bracket-panel .match-card .fixture-team.winner:before{
+ color:#06704e!important;
+}
+body[data-champion-theme="broadcast"] .wc-bracket-panel .match-card.live{
+ border:2px solid #057a75!important;
+ box-shadow:0 0 0 2px rgba(30,215,197,.55),0 7px 24px rgba(0,8,27,.7)!important;
+}
+body[data-champion-theme="broadcast"] .wc-bracket-panel .round-title,
+body[data-champion-theme="broadcast"] .wc-bracket-panel .champion-name{
+ background:#062747!important;
+ color:#fff4ce!important;
+ border:1px solid #e6c971!important;
+ font-weight:1000!important;
+}
+body[data-champion-theme="broadcast"] .wc-bracket-panel .center-final .match-card .fixture-team,
+body[data-champion-theme="broadcast"] .wc-bracket-panel .center-final .match-card .fixture-team span{
+ color:#092344!important;
+}
+body[data-champion-theme="broadcast"] .wc-bracket-panel .center-final .match-card .fixture-team.winner,
+body[data-champion-theme="broadcast"] .wc-bracket-panel .center-final .match-card .fixture-team.winner span{
+ color:#086044!important;
+}
+/* Match the photo references better with clearer, brighter field views. */
+body[data-champion-bg="stadium"]{--ct-stadium-pos:center 60%}
+body[data-champion-bg="night"]{--ct-stadium-pos:center 63%}
+body[data-champion-bg="lights"]{--ct-stadium-pos:center 60%}
+body[data-champion-bg="arena"]{--ct-stadium-pos:center 61%}
+body[data-champion-bg="grid"]{--ct-stadium-pos:center 50%}
+/* Keep pitch visible under bracket and information readable over it. */
+:is(.champion-portal,.champion-board) .wc-bracket-panel .bracket-head{
+ background:rgba(4,18,40,.76)!important;
+ border:1px solid rgba(214,230,235,.24)!important;
+ border-radius:13px;padding:12px!important;
+}
+:is(.champion-portal,.champion-board) .wc-bracket-panel .bracket-head h2,
+:is(.champion-portal,.champion-board) .wc-bracket-panel .bracket-head .muted,
+:is(.champion-portal,.champion-board) .wc-bracket-panel .bracket-head .eyebrow{
+ color:#f7fbff!important;text-shadow:0 1px 2px #000!important;
+}
+:is(.champion-portal,.champion-board) .wc-bracket-panel .ct-customizer{
+ background:rgba(4,20,43,.94)!important;
+}
+:is(.champion-portal,.champion-board) .wc-bracket-panel .hint{
+ color:#f0f8ff!important;
+ text-shadow:0 1px 2px rgba(0,0,0,.7);
+}
+:is(.champion-portal,.champion-board) .wc-bracket-panel .fixture-team span{
+ white-space:nowrap!important;
+ overflow:hidden!important;text-overflow:ellipsis!important;
+}
+/* Accurate preview plates, not washed out by style wrappers. */
+.ct-theme-preview,.ct-background-preview{
+ background-size:cover!important;background-position:center 62%!important;
+}
+@media(max-width:680px){
+ :is(.champion-portal,.champion-board) .wc-bracket-panel{
+ background-position:center,var(--ct-stadium-pos)!important;
+ }
+ :is(.champion-portal,.champion-board) .wc-bracket-panel .match-card .fixture-team{
+ font-size:12px!important;
+ }
+}
