@@ -2,7 +2,7 @@
 (()=>{'use strict';
 const $=id=>document.getElementById(id);
 const key='qn9_teacher_token';
-let books=[],bookId='',activities=[],students=[],images=[],imageUrl='',selectedImageId='',bookDraftReady=false;
+let books=[],bookId='',activities=[],students=[],images=[],imageUrl='',selectedImageId='',bookDraftReady=false,aiReady=false,aiModeTouched=false;
 const errors={
  login_required:'سجّل دخول المعلم من «مكتبتي على الحساب» أولًا.',
  book_not_found:'الكتاب غير متاح في حساب المعلم.',
@@ -22,7 +22,13 @@ const errors={
  empty_pages:'لا توجد نصوص في الصفحات المحددة.',
  ai_not_configured:'التوليد بالذكاء الاصطناعي غير مفعّل لعدم وجود مفتاح API على الخادم. استخدم الاستخراج المجاني أو أضف المفتاح عبر إعدادات Render الآمنة.',
  ai_consent_required:'وافق أولًا على إرسال الصفحات المختارة إلى مزود الذكاء الاصطناعي.',
- ai_daily_limit:'وصلت إلى الحد اليومي التجريبي (10 عمليات لكل معلم).',
+ ai_daily_limit:'وصلت إلى الحد اليومي (10 عمليات توليد لكل معلم). جرّب غدًا أو استخدم الاستخراج المجاني.',
+ ai_global_daily_limit:'وصلت المنصة إلى حد الأمان اليومي لطلبات الذكاء الاصطناعي. حاول غدًا.',
+ ai_too_many_pages:'لجودة أفضل وتكلفة أقل، اختر 25 صفحة أو أقل في عملية التوليد الواحدة.',
+ ai_invalid_key:'مفتاح خدمة الذكاء الاصطناعي غير صالح. يرجى من مدير المنصة تحديثه في Render.',
+ ai_no_credit:'رصيد واجهة الذكاء الاصطناعي غير كافٍ. يحتاج مسؤول المنصة إلى مراجعة فواتير API.',
+ ai_rate_limited:'طلبات الذكاء الاصطناعي كثيرة حاليًا. حاول بعد قليل.',
+ ai_provider_configuration:'تعذر تشغيل النموذج المهيأ. على مسؤول المنصة مراجعة اسم النموذج وإعدادات API.',
  ai_provider_unavailable:'مزود الذكاء الاصطناعي غير متاح الآن. جرّب الاستخراج المجاني.',
  ai_invalid_response:'لم يُرجع النموذج أسئلة صالحة. أعد المحاولة.',
  publish_first:'انشر النشاط أولًا ثم أضفه إلى بطاقات الطلاب.',
@@ -108,9 +114,12 @@ async function refreshBooks(){
   const list=await request('/api/game-lab/pro/books');
   books=list.books||[];
   renderBooks();
-  $('labBookMode').querySelector('option[value="ai"]').disabled=!list.aiEnabled;
-  if(!list.aiEnabled)$('labBookMode').value='extract';
-  $('labBookMode').title=list.aiEnabled?'الذكاء الاصطناعي متاح':'خدمة الذكاء الاصطناعي بحاجة إلى مفتاح API آمن';
+  aiReady=Boolean(list.aiEnabled);
+  $('labBookMode').querySelector('option[value="ai"]').disabled=!aiReady;
+  if(!aiReady)$('labBookMode').value='extract';
+  else if(!aiModeTouched)$('labBookMode').value='ai';
+  $('labBookMode').title=aiReady?'مفتاح API موجود على الخادم؛ الخدمة جاهزة للاختبار':'يتطلب التوليد الذكي مفتاح API محفوظًا في Render';
+  updateAiSettings();
  }catch(e){failed('labBookStatus',e)}
 }
 const MAX_BOOK_UPLOAD_BYTES=40000000;
@@ -163,13 +172,24 @@ async function uploadBook(){
   if(uploadId)request('/api/game-lab/pro/books/upload/cancel',{uploadId}).catch(()=>{});
  }finally{button.disabled=false}
 }
+function updateAiSettings(){
+ const enabled=$('labBookMode').value==='ai';
+ $('labAiSettings').hidden=!enabled;
+ const status=$('labAiStatus');
+ status.textContent=aiReady
+  ?(enabled?'✓ يوجد مفتاح API على الخادم. بعد اختيار الصفحات والموافقة، سيُرسل النص المحدد إلى خدمة التوليد.':'يمكنك اختيار التوليد الذكي من القائمة.')
+  :'خدمة الذكاء الاصطناعي غير مفعلة بعد. على مسؤول المنصة إضافة OPENAI_API_KEY إلى متغيرات البيئة في Render؛ الاستخراج المجاني يعمل دون مفتاح.';
+ $('labAiConsent').disabled=!enabled;
+ if(!enabled)$('labAiConsent').checked=false;
+}
 function requestDraft(){
  const id=$('labBookSelect').value;
  if(!id)throw Error('اختر كتابًا من مكتبتك أولًا');
  return {bookId:id,startPage:Number($('labBookStart').value)||1,
    endPage:Number($('labBookEnd').value)||1,
    count:Number($('labBookCount').value)||12,
-   subject:$('subject').value,grade:$('grade').value}
+   subject:$('subject').value,grade:$('grade').value,
+   difficulty:$('labAiDifficulty').value,focus:$('labAiFocus').value}
 }
 function clearBookReview(){
  bookDraftReady=false;
@@ -257,7 +277,7 @@ async function generate(){
  const button=$('labBookGenerate');button.disabled=true;
  bookDraftReady=false;$('labBookSaveCloud').disabled=true;$('labBookApprove').disabled=true;
  window.BOOYAH_LAB_BOOK_ID='';
- message('labBookStatus','أحلل مفاهيم الدرس وأهدافه وأمثلته ومعلوماته القابلة لصياغة أسئلة...');
+ message('labBookStatus',$('labBookMode').value==='ai'?'🧠 جارٍ توليد أسئلة ذكية متنوعة والتحقق من اقتباسات الكتاب... قد يستغرق ذلك نصف دقيقة.':'أحلل مفاهيم الدرس وأهدافه وأمثلته ومعلوماته القابلة لصياغة أسئلة...');
  try{
   const mode=$('labBookMode').value,params=requestDraft();
   if(mode==='ai'&&!$('labAiConsent').checked)throw Error('ai_consent_required');
@@ -441,6 +461,8 @@ async function createRoom(){
 $('labBookUpload').onclick=uploadBook;
 $('labBookRefresh').onclick=refreshBooks;
 $('labBookGenerate').onclick=generate;
+$('labBookMode').onchange=()=>{aiModeTouched=true;updateAiSettings()};
+updateAiSettings();
 $('labBookApprove').onclick=approveBookSuggestions;
 $('labBookSaveCloud').onclick=()=>{
  if(!bookDraftReady){message('labBookStatus','يلزم أربع أسئلة موثوقة على الأقل.',true);return}
