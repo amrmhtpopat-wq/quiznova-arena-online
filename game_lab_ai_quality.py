@@ -56,8 +56,28 @@ def verify_ai_rows(raw_rows,selected_pages,maximum):
             continue
         seen.add(signature)
         group=str(row.get('g') or '').strip()[:60] or ('صفحة '+str(page))
-        found.append({'q':q,'a':a,'g':group,'sourcePage':page,
-                      'sourceQuote':quote,'origin':'ai'})
+        question_type=str(row.get('questionType') or 'short').strip()
+        if question_type not in ('mcq','true_false','short'):
+            question_type='short'
+        level=str(row.get('difficulty') or 'medium').strip()
+        if level not in ('easy','medium','hard'):level='medium'
+        question={'q':q,'a':a,'g':group,'sourcePage':page,
+                  'sourceQuote':quote,'origin':'ai','questionType':question_type,
+                  'difficulty':level}
+        explanation=str(row.get('explanation') or '').strip()[:240]
+        if explanation:question['explanation']=explanation
+        if question_type=='mcq':
+            choices=row.get('choices')
+            if not isinstance(choices,list) or len(choices)!=4:continue
+            choices=[str(v).strip()[:100] for v in choices]
+            if any(not v for v in choices):continue
+            if len({v.casefold() for v in choices})!=4:continue
+            if sum(v.casefold()==a.casefold() for v in choices)!=1:continue
+            question['choices']=choices
+        elif question_type=='true_false':
+            if a not in ('صح','خطأ'):continue
+            question['choices']=['صح','خطأ']
+        found.append(question)
         if len(found)>=maximum:
             break
     # Distribute the retained questions across the pages when possible.
