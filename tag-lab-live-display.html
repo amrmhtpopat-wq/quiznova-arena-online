@@ -1,0 +1,59 @@
+<!doctype html><html lang="ar" dir="rtl"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<meta name="theme-color" content="#F8F9FF"><title>TAG LAB | شاشة عرض التحدي</title>
+<link rel="icon" href="/assets/brand/tag-lab-visual-v1.svg" type="image/svg+xml"><link rel="stylesheet" href="/tag-lab-visual-v1.css?v=1.0.0">
+<style>
+body.tagv-projector{padding:0!important}body.tagv-projector .tagv-sidebar,body.tagv-projector .tagv-topbar{display:none!important}
+body.tagv-enabled .tagv-room-display{max-width:1600px;padding:18px clamp(12px,3vw,35px) 45px}
+.tagv-display-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin:8px 0 20px}
+.tagv-display-head h1{margin:0}.tagv-display-head button{background:var(--tagv-purple-gradient);color:#fff;border:0;border-radius:13px;padding:12px 16px;font:800 1rem Tahoma,Arial;cursor:pointer}
+#displayQuestion{min-height:150px}
+#displayOptions{max-width:1100px;margin:auto}
+#statusText{color:var(--tagv-muted);font-weight:800;font-size:1.2rem}
+#statusError{color:#D64F65}
+</style></head><body>
+<main class="tagv-room-display">
+<div class="tagv-display-head"><h1>🎯 شاشة التحدي المباشر</h1><button id="full" type="button">⛶ ملء الشاشة</button></div>
+<section class="tagv-live-panel">
+<div class="tagv-score-row"><span>الغرفة: <b class="tagv-code" id="roomCode">—</b></span><span>الطلاب: <b id="players">0</b></span><span>السؤال: <b id="count">—</b></span><span>المؤقت: <b id="timer">00:00</b></span></div>
+<div class="tagv-progress"><span id="progressBar" style="width:0"></span></div>
+<p id="statusText" role="status">في انتظار بدء التحدي...</p>
+<div id="questionArea" hidden><p class="tagv-question" id="displayQuestion"></p>
+ <div class="tagv-answers" id="displayOptions"></div>
+</div>
+<div id="leaderArea" hidden><h2>🏆 لوحة الصدارة</h2><div id="leaders"></div></div>
+<p id="statusError" role="alert"></p>
+</section></main>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id);
+const code=new URLSearchParams(location.search).get('code')?.trim().toUpperCase()||'';
+const token=()=>localStorage.getItem('qn9_teacher_token')||'';
+$('roomCode').textContent=code||'—';
+$('full').onclick=()=>{document.body.classList.toggle('tagv-projector');if(!document.fullscreenElement)document.documentElement.requestFullscreen?.().catch(()=>{});else document.exitFullscreen?.().catch(()=>{})};
+async function update(){
+ if(!code)return $('statusError').textContent='افتح شاشة العرض من لوحة المعلم.';
+ try{
+  const r=await fetch('/api/game-lab/live/state?code='+encodeURIComponent(code),{headers:{Authorization:'Bearer '+token()},cache:'no-store'});
+  const d=await r.json();if(!r.ok||!d.ok)throw Error(d.error||'request_failed');
+  const s=d.state;
+  $('players').textContent=s.participants||0;$('count').textContent=s.status==='lobby'?'—':(s.index+1)+' / '+s.total;
+  const sec=s.status==='question'?Math.max(0,Number(s.deadline)-Math.floor(Date.now()/1000)):0;
+  $('timer').textContent=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');
+  $('progressBar').style.width=String(100*(s.status==='finished'?1:s.index/Math.max(1,s.total)))+'%';
+  $('questionArea').hidden=!s.question;$('leaderArea').hidden=s.status!=='finished'&&s.status!=='results';
+  $('statusText').textContent=({lobby:'استعدوا لبدء التحدي!',question:s.title,results:'انتهى السؤال، بانتظار التالي',finished:'انتهى التحدي!'})[s.status]||'';
+  $('displayQuestion').textContent=s.question?.text||'';
+  const host=$('displayOptions');host.replaceChildren();
+  (s.question?.options||[]).forEach(t=>{const item=document.createElement('div');item.className='tagv-answer';item.textContent=t;host.append(item)});
+  if(!$('leaderArea').hidden){
+   const lb=$('leaders');lb.replaceChildren();
+   s.leaderboard?.slice(0,10).forEach((x,i)=>{const p=document.createElement('p');p.textContent=(i+1)+'. '+x.name+' — '+x.score+' نقطة';lb.append(p)})
+  }
+  $('statusError').textContent='';
+ }catch(e){$('statusError').textContent=e.message==='unauthorized'?'يجب تسجيل الدخول بحساب المعلم.':'تعذر تحديث شاشة العرض.'}
+}
+update();setInterval(update,1700);
+})();
+</script><script src="/tag-lab-visual-v1.js?v=1.0.0"></script>
+</body></html>
