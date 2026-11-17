@@ -8,6 +8,9 @@ function pendingStudioDestination(){
   if(!raw)return '';
   try{
     const url=new URL(raw,location.origin);
+    // Permit the competition page as a local teacher-only post-login target.
+    if(url.origin===location.origin&&url.pathname==='/champion.html'&&!url.search&&!url.hash)
+      return '/champion.html';
     const allowed=['dashboard','generator','builder','bank','media','library','live','play','results','settings'];
     const target=url.hash.slice(1);
     return url.origin===location.origin&&url.pathname==='/studio.html'&&allowed.includes(target)
