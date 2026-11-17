@@ -1,0 +1,68 @@
+name: TAG LAB Official Integration Gate
+on:
+  push:
+    branches: [integration/tag-lab-v34-official]
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      QUIZNOVA_ALLOW_EPHEMERAL: 'yes'
+      PYTHONPATH: .
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install free requirements
+        run: pip install -r requirements.txt
+      - name: Compile official server and TAG LAB modules
+        run: |
+          python -m py_compile server.py platform_store.py platform_api.py game_lab_api.py game_lab_pro.py game_lab_live.py game_lab_ai_quality.py game_lab_uploads.py
+          node --check tag-lab-simple.js
+          node --check tag-lab-templates-v32.js
+          node --check tag-lab-template-editor-v33.js
+          node --check tag-lab-mixer-v34.js
+          node --check tag-lab-student-card-bridge-v34.js
+          node --check game-lab-cloud-v2.js
+          node --check game-lab-pro-v3.js
+      - name: Check official navigation and preserved champion endpoints
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          html=Path('index.html').read_text(encoding='utf-8')
+          for path in ('/champion.html','/studio.html','/tag-lab-home.html','/tag-lab-mixer.html'):
+              assert path in html,path
+          student=Path('student.html').read_text(encoding='utf-8')
+          assert 'tag-lab-student-card-bridge-v34.js' in student
+          server=Path('server.py').read_text(encoding='utf-8')
+          for marker in ('tag_champion.ensure_schema()','admin_api.handle_get','game_lab_api.handle_get','game_lab_pro.handle_post','game_lab_live.handle_post'):
+              assert marker in server,marker
+          PY
+      - name: Existing official data and student regressions
+        run: |
+          python tests/test_booyah_xp.py
+          python tests/test_v121_cards_media_scenes.py
+      - name: TAG LAB local database and content API regressions
+        run: |
+          python tests/test_game_lab_api.py
+          python tests/test_game_lab_pro.py
+          python tests/test_game_lab_ai.py
+          python tests/test_game_lab_quality.py
+      - name: Install browser test tools
+        run: |
+          pip install playwright
+          python -m playwright install --with-deps chromium
+      - name: Browser teacher review and saved question flows
+        run: |
+          python tests/browser_game_lab_pro_v3.py
+          python tests/browser_tag_lab_simple_v31.py
+          python tests/browser_tag_lab_templates_v32.py
+      - name: 'Browser same-card, mixer and synchronized class integration'
+        run: |
+          python tests/browser_tag_lab_mixer_v34.py
+          python tests/browser_student_entry_v120.py
