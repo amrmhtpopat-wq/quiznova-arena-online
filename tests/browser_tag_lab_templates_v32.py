@@ -76,7 +76,10 @@ try:
    assert page.locator('#playOverlay').get_attribute('data-v9-mode')=='pairs',page.locator('#playTitle').inner_text()
    page.locator('#closePlay').click()
    assert page.locator('#activityData').input_value()==raw
-   page.locator('#cloudEmail').fill(email);page.locator('#cloudPassword').fill(password)
+   page.locator('#cloudEmail').fill(email)
+   page.locator('#cloudPassword').fill(password)
+   assert page.locator('#cloudEmail').input_value()==email,('email changed before login',page.locator('#cloudEmail').input_value())
+   assert page.locator('#cloudPassword').input_value()==password,'password changed before login'
    page.locator('#cloudSignIn').click()
    page.wait_for_timeout(650)
    login_state=page.evaluate("""()=>({
