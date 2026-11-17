@@ -45,8 +45,16 @@ jobs:
           PY
       - name: Existing official data and student regressions
         run: |
-          python tests/test_booyah_xp.py
           python tests/test_v121_cards_media_scenes.py
+          python - <<'PY'
+          import os,tempfile
+          os.environ.pop('DATABASE_URL',None)
+          with tempfile.TemporaryDirectory() as d:
+              os.environ['QUIZNOVA_SQLITE_PATH']=d+'/check.db'
+              import platform_store as s
+              s.init()
+              assert s.xp_progress(1000)['title']=='أسطورة تيتش آند جيم'
+          PY
       - name: TAG LAB local database and content API regressions
         run: |
           python tests/test_game_lab_api.py
