@@ -264,4 +264,18 @@ def release_active_attempt(teacher_id, student_id):
                         "teacher_id=? AND student_id=?"),
                         (token_hash, teacher_id, student_id))
                     removed += 1
+            # TAG LAB assigned activities also reserve attempts. Release only
+            # unfinished runs; completed scores, XP and history are untouched.
+            lab = cur.execute(store.sql(
+                "SELECT token_hash,state FROM game_lab_runs "
+                "WHERE teacher_id=? AND student_id=? AND finished_at=0"),
+                (teacher_id, student_id)).fetchall()
+            for key, raw_state in lab:
+                attempt = store.jload(raw_state, {})
+                if attempt and not attempt.get("finished"):
+                    cur.execute(store.sql(
+                        "DELETE FROM game_lab_runs "
+                        "WHERE token_hash=? AND teacher_id=? AND student_id=?"),
+                        (key, teacher_id, student_id))
+                    removed += 1
     return {"revoked": removed, "studentId": student_id}
