@@ -1,0 +1,19 @@
+name: TAG Independent V1 card provider tests
+on:
+  push:
+    branches: ['feature/tag-independent-v1-card-provider']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  safety:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile official card bridge
+        run: python -m py_compile tag_card_provider.py server.py
+      - name: Verify disabled-by-default privacy boundary
+        run: python -m unittest discover -s tests -p 'test_tag_card_provider.py' -v
