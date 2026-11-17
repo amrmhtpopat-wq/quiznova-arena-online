@@ -5,8 +5,22 @@ const $=id=>document.getElementById(id);
 const safe=window.TAGChampionBracket.escape;
 const BR=window.TAGChampionBracket;
 const VISUAL=window.TAGChampionTheme;
-const draftAppearance={theme:'gold',background:'stadium'};
-const currentAppearance={theme:'gold',background:'stadium'};
+const draftAppearance={theme:'gold',background:'daylight'};
+const currentAppearance={theme:'gold',background:'daylight'};
+function syncLegacyOption(context,background){
+ const grid=$(context+'BackgroundGrid');if(!grid)return;
+ const existing=grid.querySelector('[data-ct-legacy="true"]');
+ const legacy=!!(VISUAL.backgrounds[background]&&!VISUAL.visibleBackgrounds.includes(background));
+ if(!legacy){existing?.remove();return}
+ const card=existing||document.createElement('button');
+ if(!existing){card.type='button';card.className='ct-background-card ct-legacy-card';card.dataset.ctLegacy='true';card.dataset.ctContext=context;grid.append(card)}
+ card.dataset.ctBg=background;
+ card.setAttribute('aria-label','خلفية محفوظة من إصدار سابق');
+ card.replaceChildren();
+ const preview=document.createElement('span');preview.className='ct-background-preview ct-bg-'+background;preview.setAttribute('aria-hidden','true');
+ const label=document.createElement('span');label.textContent='محفوظة سابقًا: '+VISUAL.backgrounds[background];
+ card.append(preview,label);
+}
 function updatePreview(context){
  const state=context==='create'?draftAppearance:currentAppearance;
  VISUAL.apply(state.theme,state.background);
