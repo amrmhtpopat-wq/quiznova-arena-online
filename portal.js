@@ -113,7 +113,7 @@ function renderStudents(){
     // For imported school IDs, preserve the exact payload of the already printed QR:
     // G9A-001, G8B-005, G7C-021, etc. Other TAG cards keep their original join URL QR.
     const schoolQrCode=String(student.cardCode||'').trim().toUpperCase();
-    const isSchoolId=/^G[789][ABC]-\\d{3}$/.test(schoolQrCode);
+    const isSchoolId=/^G[789][ABC]-\d{3}$/.test(schoolQrCode);
     const qr='/api/qr?text='+encodeURIComponent(isSchoolId?schoolQrCode:link);
     const qrCaption=isSchoolId?'رمز الهوية المدرسية الأصلي':'امسح للانضمام';
     const percent=Math.max(0,Math.min(100,Number(student.progress?.percent)||0));
