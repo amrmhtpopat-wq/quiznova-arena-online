@@ -215,6 +215,23 @@ class StudentVerifyContract(unittest.TestCase):
         self.assertEqual(status,403,answer)
         self.assertEqual(answer['error'],'student_pin_required')
 
+    def test_realistic_school_batch_226_pins_keeps_cards_and_qr_unchanged(self):
+        # Simulate the actual roster size without using real students or Neon.
+        extra=[{'name':'QA Student '+str(i).zfill(3),'className':'التاسع أ','avatar':'m01'}
+               for i in range(1,225)]
+        self.assertEqual(len(store.add_students(self.teacher_id,extra)),224)
+        before={x['id']:(x['cardCode'],x['card']) for x in store.list_students(self.teacher_id)}
+        self.assertEqual(len(before),226)
+        status,batch=self.teacher_post('issue',{})
+        self.assertEqual(status,200,batch if status!=200 else None)
+        self.assertEqual(len(batch['pins']),226)
+        self.assertEqual(len(set(p['pin'] for p in batch['pins'])),226)
+        self.assertTrue(all(len(p['pin'])==6 and p['pin'].isdigit() for p in batch['pins']))
+        after={x['id']:(x['cardCode'],x['card']) for x in store.list_students(self.teacher_id)}
+        self.assertEqual(before,after)
+        self.assertEqual(batch['status']['issued'],226)
+        self.assertFalse(batch['status']['enabled'])
+
     def test_wrong_teacher_cannot_reissue_or_unlock_others(self):
         pin=self.activate()
         other=store.create_teacher('pin-other-'+uuid.uuid4().hex+'@school.example',
