@@ -13,6 +13,8 @@ import tag_champion
 tag_champion.ensure_schema()
 import solo_api
 solo_api.ensure_schema()
+import student_verify
+student_verify.ensure_schema()
 # TAG LAB's tables are additive; main TEACH AND GAME student cards and
 # teacher authorization remain the single source of truth.
 import game_lab_api
@@ -521,7 +523,8 @@ class Handler(SimpleHTTPRequestHandler):
                 school_type=room.get('schoolType','mixed')
                 return self.send_json({'ok':True,'schoolType':school_type,'avatars':platform_store.avatar_pool(school_type),
                                       'section':room.get('section',''),'subject':room['quiz'].get('subject','عام'),
-                                      'examMode':bool(room.get('examMode')),'requireCard':bool(room.get('requireCard'))})
+                                      'examMode':bool(room.get('examMode')),'requireCard':bool(room.get('requireCard')),
+                                      'pinRequired':student_verify.is_enabled(room.get('teacherId',''))})
         if u.path=='/api/card/resolve':
             qs=parse_qs(u.query);card=(qs.get('card') or [''])[0];code=(qs.get('code') or [''])[0]
             with LOCK:
@@ -695,6 +698,19 @@ class Handler(SimpleHTTPRequestHandler):
                 if room.get('examMode') and room['status']!='lobby':return self.send_json({'ok':False,'error':'exam_started'},409)
                 student=platform_store.student_by_card(card,room.get('teacherId','')) if card else None
                 if card and not student:return self.send_json({'ok':False,'error':'invalid_card'},403)
+                verify_on=student_verify.is_enabled(room.get('teacherId',''))
+                if verify_on and not student:
+                    return self.send_json({'ok':False,'error':'card_required'},403)
+                if student and verify_on:
+                    pin_error=student_verify.verify_student(student,data.get('pin'))
+                    if pin_error:
+                        return self.send_json({'ok':False,'error':pin_error},
+                                              429 if pin_error=='student_pin_locked' else 403)
+                    # One verified school card can occupy only one live room at a time.
+                    if any(player.get('studentId')==student['id']
+                           for active in ROOMS.values() if active.get('status')!='finished'
+                           for player in active.get('players',{}).values()):
+                        return self.send_json({'ok':False,'error':'card_already_joined'},409)
                 if student:
                     name=student['name'];avatar=student['avatar']
                     if room.get('examMode') and room.get('section') and room['section']!=student['class_name']:
@@ -723,7 +739,7 @@ class Handler(SimpleHTTPRequestHandler):
                 total=len(room['quiz']['questions']); order=list(range(total))
                 if room.get('variantMode')=='models4':
                     model=['A','B','C','D'][len(room['players'])%4]; order=model_order(code,model,total)
-                room['players'][pid]={'id':pid,'name':name,'championSeat':(len(room['players']) if room.get('championId') else 0),'studentId':student['id'] if student else None,'level':platform_store.level_for_xp(student['xp']) if student else 1,'xp':int(student['xp']) if student else 0,'xpGain':0,'avatar':avatar,'team':team,'model':model,'questionOrder':order,'optionMaps':{},'score':0,'correct':0,'wrong':0,'streak':0,'answers':{},'lastResult':{},'powerups':{'double':True}}
+                room['players'][pid]={'id':pid,'name':name,'championSeat':(len(room['players']) if room.get('championId') else 0),'studentId':student['id'] if student else None,'pinVerified':bool(verify_on and student),'level':platform_store.level_for_xp(student['xp']) if student else 1,'xp':int(student['xp']) if student else 0,'xpGain':0,'avatar':avatar,'team':team,'model':model,'questionOrder':order,'optionMaps':{},'score':0,'correct':0,'wrong':0,'streak':0,'answers':{},'lastResult':{},'powerups':{'double':True}}
             snapshot_room(room)
             return self.send_json({'ok':True,'playerId':pid,'name':name,'quizTitle':room['quiz'].get('title',''),'team':team,'playType':room['playType'],'model':model,'variantMode':room.get('variantMode','options'),'avatar':avatar,'background':room.get('background','cartoon'),'examMode':room.get('examMode',False),'level':room['players'][pid]['level'],'xp':room['players'][pid]['xp'],'progress':platform_store.xp_progress(room['players'][pid]['xp'])})
         if u.path=='/api/room/control':
@@ -775,6 +791,10 @@ class Handler(SimpleHTTPRequestHandler):
             with LOCK:
                 room=ROOMS.get(code); p=room and room['players'].get(pid)
                 if not room or not p: return self.send_json({'ok':False,'error':'not_found'},404)
+                # Closing an activation race: students who joined BEFORE PIN
+                # protection was enabled must not submit answers afterward.
+                if student_verify.is_enabled(room.get('teacherId','')) and not p.get('pinVerified'):
+                    return self.send_json({'ok':False,'error':'student_pin_required'},403)
                 maybe_end_round(room)
                 if room['status']!='question' or room['index']!=idx: return self.send_json({'ok':False,'error':'question_changed'},409)
                 key=str(idx)

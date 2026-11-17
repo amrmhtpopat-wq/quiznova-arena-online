@@ -43,10 +43,16 @@ class TeachGameBrandChecks(unittest.TestCase):
         self.assertIn('TAG_{code}_report.xlsx',(ROOT/'server.py').read_text(encoding='utf-8'))
 
     def test_redirect_alias_pages_are_static_safe_and_preserve_query(self):
-        for path in ['index.html','student.html','studio.html','admin.html','about.html','for-teachers.html']:
+        # The short-link homepage is intentionally a crawlable SEO landing
+        # page now; only non-root legacy aliases redirect and stay noindex.
+        home=(ROOT/'short-link'/'index.html').read_text(encoding='utf-8')
+        self.assertIn('content="index,follow',home)
+        self.assertIn('href="https://teachgame.onrender.com/"',home)
+        self.assertIn('TEACH AND GAME',home)
+        for path in ['student.html','studio.html','admin.html','about.html','for-teachers.html']:
             with self.subTest(path=path):
                 html=(ROOT/'short-link'/path).read_text(encoding='utf-8')
-                dest='https://quiznova-arena-online.onrender.com/'+('' if path=='index.html' else path)
+                dest='https://quiznova-arena-online.onrender.com/'+path
                 self.assertIn('content="noindex,nofollow,noarchive"',html)
                 self.assertIn('location.replace(window.TAG_ENTRY_URL())',html)
                 self.assertIn(dest,html)
@@ -89,7 +95,7 @@ class TeachGameBrandChecks(unittest.TestCase):
 
     def test_updated_assets_and_cache_control(self):
         refs={
-          'index.html':['portal.js?v=23.0','booyah-badge-v112.css?v=13.1'],
+          'index.html':['portal.js?v=24.2','booyah-badge-v112.css?v=13.1'],
           'studio.html':['media_library.js?v=13.1','studio-auth.js?v=13.1','booyah-countdown-v121.js?v=13.1'],
           'student.html':['booyah-countdown-v121.js?v=13.1'],
           'stage.html':['booyah-countdown-v121.js?v=13.1']

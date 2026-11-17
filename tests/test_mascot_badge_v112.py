@@ -47,7 +47,7 @@ class MascotsAndBadgeTests(unittest.TestCase):
     def test_secure_qr_and_human_readable_codes_are_unmodified(self):
         portal=read('portal.js')
         self.assertIn("encodeURIComponent(student.card)",portal)
-        self.assertIn("'/api/qr?text='+encodeURIComponent(link)",portal)
+        self.assertIn("'/api/qr?text='+encodeURIComponent(isSchoolId?quizLink:link)",portal)
         self.assertIn('student.cardCode',portal)
         self.assertIn('BADJ-TH42',portal)
         self.assertIn('aria-label="بطاقة الطالب',portal)
@@ -59,7 +59,7 @@ class MascotsAndBadgeTests(unittest.TestCase):
         self.assertIn("await Promise.all(images.map(img=>",portal)
         self.assertIn('window.print()',portal)
         # BADJ-TH42 is design version, NOT a shared student login credential.
-        self.assertIn('title="بطاقة TeachGame الجديدة"',portal)
+        self.assertIn('تحديث البطاقات بهوية TEACH AND GAME', (ROOT/'index.html').read_text(encoding='utf-8'))
         self.assertIn("code=new_card_code()",read('platform_store.py'))
 
     def test_print_and_mobile_styles_are_loaded(self):

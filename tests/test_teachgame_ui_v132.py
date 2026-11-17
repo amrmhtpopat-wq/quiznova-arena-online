@@ -16,7 +16,7 @@ class UnifiedBrand(unittest.TestCase):
      self.assertNotIn('BOOYAHJO',text)
      self.assertNotIn('بويا جو',text)
   self.assertIn('tag-stage-logo',(ROOT/'stage.js').read_text(encoding='utf-8'))
-  self.assertIn('stage.js?v=21.0',(ROOT/'stage.html').read_text(encoding='utf-8'))
+  self.assertIn('stage.js?v=24.0',(ROOT/'stage.html').read_text(encoding='utf-8'))
   self.assertIn("a.download='TAG_'+liveRoom+'_report.xlsx';",(ROOT/'app.js').read_text(encoding='utf-8'))
  def test_cards_reissued_without_deletion(self):
   text=(ROOT/'portal.js').read_text(encoding='utf-8')
@@ -37,7 +37,8 @@ class UnifiedBrand(unittest.TestCase):
   self.assertNotIn('BOOYAHJO',content)
   self.assertNotIn('بويا جو',content)
   redirect=(ROOT/'short-link/index.html').read_text(encoding='utf-8')
-  self.assertIn('location.replace(window.TAG_ENTRY_URL())',redirect)
+  self.assertIn('href="https://teachgame.onrender.com/"',redirect)
+  self.assertIn('content="index,follow',redirect)
   self.assertIn('TEACH AND GAME',redirect)
 if __name__=='__main__':
  unittest.main()

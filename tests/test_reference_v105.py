@@ -180,7 +180,7 @@ class VisualAndDirectAnswerTests(unittest.TestCase):
         self.assertIn("function pendingStudioDestination()",portal)
         self.assertIn("if(resumeStudioAfterLogin())return",portal)
         self.assertIn("history.replaceState(null,'','#'+view)",app)
-        self.assertIn("portal.js?v=23.0",read('index.html'))
+        self.assertIn("portal.js?v=24.2",read('index.html'))
         self.assertIn("studio-auth.js?v=13.1",read('studio.html'))
         self.assertIn("script.src='/app.js?v=18.0'",studio_auth)
 
@@ -207,7 +207,7 @@ class VisualAndDirectAnswerTests(unittest.TestCase):
         self.assertIn('id="soloPublish"',studio)
         self.assertIn("publishedSolo:$('#soloPublish').checked",script)
         self.assertIn("window.toggleSoloPublish=async id=>",script)
-        self.assertIn('/solo-student-v120.js?v=12.8',student)
+        self.assertIn('/solo-student-v120.js?v=verify-1',student)
         self.assertIn('TEACH AND GAME',studio)
         self.assertIn('TEACH AND GAME',portal)
         self.assertIn('TEACH AND GAME',student)

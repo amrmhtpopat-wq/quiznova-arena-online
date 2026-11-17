@@ -1,5 +1,6 @@
 """BOOYAHJO V12.7 SEO teachers page: real Chromium and isolated SQLite acceptance tests."""
 import os
+import re
 import sys
 import tempfile
 import threading
@@ -48,13 +49,13 @@ try:
     landing=get('/for-teachers.html')
     parser=CrawlableParser();parser.feed(landing)
     assert_true(parser.h1==1,'One semantic H1 required')
-    assert_true(len(parser.description)==1 and 'اختبارات تفاعلية' in parser.description[0],
+    assert_true(len(parser.description)==1 and all(k in parser.description[0] for k in ('TEACH AND GAME','اختبارات','مسابقات تعليمية')),
                 'Unique Arabic teacher SEO description missing')
     assert_true(parser.canonical==['https://quiznova-arena-online.onrender.com/for-teachers.html'],
                 'Absolute canonical broken')
     assert_true(len(parser.robots)==1 and 'index,follow' in parser.robots[0],
                 'Teacher page wrongly blocked by robots')
-    assert_true('application/ld+json' in landing and '"@type":"WebPage"' in landing,
+    assert_true('application/ld+json' in landing and re.search(r'"@type"\s*:\s*"WebPage"',landing),
                 'Structured SEO metadata missing')
     assert_true('for-teachers-v127.css' in landing,'Standalone teacher landing style missing')
     sitemap=get('/sitemap.xml')

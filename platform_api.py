@@ -2,6 +2,7 @@
 from urllib.parse import parse_qs
 import time,threading,hashlib
 import platform_security as sec
+import student_verify
 RATES={}
 RATE_LOCK=threading.Lock()
 def check_rate(handler,route,identity=""):
@@ -37,7 +38,7 @@ def authorized(handler):
 def handle_get(h,u):
     if u.path=='/api/auth/reset-status':
         h.send_json({'ok':True,'enabled':sec.smtp_ready()});return True
-    if u.path not in ('/api/auth/me','/api/teacher/snapshot','/api/teacher/students','/api/teacher/history','/api/teacher/dashboard','/api/teacher/classwars','/api/teacher/mastery','/api/teacher/backup','/api/teacher/backups','/api/teacher/media'):return False
+    if u.path not in ('/api/auth/me','/api/teacher/snapshot','/api/teacher/students','/api/teacher/history','/api/teacher/dashboard','/api/teacher/classwars','/api/teacher/mastery','/api/teacher/backup','/api/teacher/backups','/api/teacher/media','/api/teacher/student-verify'):return False
     t=authorized(h)
     if not t:return True
     tid=t['id']
@@ -45,6 +46,7 @@ def handle_get(h,u):
     elif u.path=='/api/teacher/snapshot':h.send_json({'ok':True,**sec.snapshot_with_revision(tid)})
     elif u.path=='/api/teacher/students':h.send_json({'ok':True,'students':list_students(tid)})
     elif u.path=='/api/teacher/media':h.send_json({'ok':True,'images':list_teacher_media(tid)})
+    elif u.path=='/api/teacher/student-verify':h.send_json({'ok':True,**student_verify.status(tid)})
     elif u.path=='/api/teacher/history':h.send_json({'ok':True,'sessions':history(tid,150)})
     elif u.path=='/api/teacher/dashboard':h.send_json({'ok':True,'dashboard':dashboard(tid),'teacher':t})
     elif u.path=='/api/teacher/classwars':h.send_json({'ok':True,'classes':class_wars(tid)})
@@ -54,7 +56,7 @@ def handle_get(h,u):
     return True
 
 def handle_post(h,u,data):
-    if u.path not in ('/api/auth/register','/api/auth/login','/api/auth/forgot','/api/auth/reset','/api/auth/logout','/api/auth/password','/api/teacher/snapshot','/api/teacher/students','/api/teacher/students/shorten-codes','/api/teacher/students/edit','/api/teacher/students/delete','/api/teacher/media/save','/api/teacher/media/delete','/api/teacher/school-type','/api/teacher/backups/create','/api/teacher/backups/restore','/api/teacher/reset-view'):return False
+    if u.path not in ('/api/auth/register','/api/auth/login','/api/auth/forgot','/api/auth/reset','/api/auth/logout','/api/auth/password','/api/teacher/snapshot','/api/teacher/students','/api/teacher/students/shorten-codes','/api/teacher/students/edit','/api/teacher/students/delete','/api/teacher/media/save','/api/teacher/media/delete','/api/teacher/school-type','/api/teacher/backups/create','/api/teacher/backups/restore','/api/teacher/reset-view','/api/teacher/student-verify/issue','/api/teacher/student-verify/toggle','/api/teacher/student-verify/unlock'):return False
     try:
         if u.path in ('/api/auth/register','/api/auth/login','/api/auth/forgot','/api/auth/reset') and not check_rate(h,u.path,data.get("email") or data.get("token") or ""):
             h.send_json({'ok':False,'error':'rate_limited'},429);return True
@@ -92,6 +94,21 @@ def handle_post(h,u,data):
             h.send_json({'ok':True,'image':save_teacher_media(t['id'],data.get('label',''),data.get('file',''))});return True
         if u.path=='/api/teacher/media/delete':
             h.send_json({'ok':True,'deletedId':delete_teacher_media(t['id'],data.get('id',''))});return True
+        if u.path=='/api/teacher/student-verify/issue':
+            items=student_verify.issue_pins(
+                t['id'], data.get('studentId') or None,
+                data.get('rotate') is True)
+            h.send_json({'ok':True,'pins':items,'status':student_verify.status(t['id'])})
+            return True
+        if u.path=='/api/teacher/student-verify/toggle':
+            if data.get('enabled') is True and data.get('deliveredConfirmed') is not True:
+                h.send_json({'ok':False,'error':'distribution_confirmation_required'},400)
+                return True
+            setting=student_verify.set_enabled(t['id'],data.get('enabled'))
+            h.send_json({'ok':True,**setting});return True
+        if u.path=='/api/teacher/student-verify/unlock':
+            result=student_verify.release_active_attempt(t['id'],data.get('studentId'))
+            h.send_json({'ok':True,**result});return True
         if u.path=='/api/teacher/students/edit':
             result=edit_student_card(t['id'],data.get('id'),data.get('name'),data.get('className'),data.get('avatar'))
             h.send_json({'ok':True,'student':result});return True

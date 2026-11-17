@@ -85,7 +85,9 @@ jobs:
           python -m pip install -r requirements.txt
           python -m pip install playwright
           python -m playwright install chromium
-      - name: Test actual browser on desktop and mobile
+      - name: TAG Verify security browser QA on desktop/mobile (local test DB only)
+        run: python tests/browser_student_verify_v1.py
+      - name: Legacy student/teacher browser compatibility
         run: |
           python tests/browser_student_grade_fit_v128.py
           python tests/browser_stage_fit_v126.py
