@@ -33,7 +33,7 @@
 <link rel="stylesheet" href="/game-lab-premium-v9.css?v=9.0">
 <link rel="stylesheet" href="/game-lab-overhaul-v101.css?v=10.1.0">
 <link rel="stylesheet" href="/game-lab-cleanup-v102.css?v=10.2.0">
-<link rel="stylesheet" href="/tag-lab-v11.css?v=27.0">
+<link rel="stylesheet" href="/tag-lab-v11.css?v=30.0">
 </head>
 <body>
 <div class="mobilebar"><b><img class="tag-mobile-mark" src="/assets/brand/tag-logo-dark-v21.png" alt=""> TAG LAB</b><button class="button alt small" id="mobileMenu" aria-label="القائمة">☰</button></div><div id="shade" class="shade"></div>
@@ -225,7 +225,7 @@ function readRows(raw){
  if(rows.length<4)return {rows:[],error:'أضف 4 أسئلة وإجابات مختلفة على الأقل'};
  return {rows};
 }
-function getPayload(){const x=readRows($('activityData').value);if(x.error)return {error:x.error};return {title:$('activityTitle').value.trim().slice(0,90)||'نشاط جديد',subject:$('subject').value,grade:$('grade').value,time:Number($('roundTime').value)||25,rows:x.rows}}
+function getPayload(){const x=readRows($('activityData').value);if(x.error)return {error:x.error};return {title:$('activityTitle').value.trim().slice(0,90)||'نشاط جديد',subject:$('subject').value,grade:$('grade').value,time:Number($('roundTime').value)||25,rows:typeof window.TG_ENHANCE_QUESTION_ROWS==='function'?window.TG_ENHANCE_QUESTION_ROWS(x.rows):x.rows}}
 function report(s,warning=false){$('contentFeedback').textContent=s;$('contentFeedback').className=warning?'notice':'good'}
 function apply(){const p=getPayload();if(p.error){report(p.error,true);return false}content=(Array.isArray(window.TG_CREATOR_PREVIEW_ROWS)&&window.TG_CREATOR_PREVIEW_ROWS.length===p.rows.length&&window.TG_CREATOR_PREVIEW_ROWS.every((r,i)=>r.q===p.rows[i].q&&r.a===p.rows[i].a))?window.TG_CREATOR_PREVIEW_ROWS:p.rows;report('✓ '+content.length+' بطاقة جاهزة • '+new Set(content.map(x=>x.g)).size+' مجموعات • يمكن التبديل بين 8 ألعاب');renderPreview();return true}
 function renderPreview(){const el=$('dataPreview');el.replaceChildren();content.slice(0,4).forEach((r,i)=>{const div=document.createElement('div');div.className='saved';div.innerHTML='<div><b>'+secureText(r.q)+'</b><small>'+secureText(r.a)+' · '+secureText(r.g)+'</small></div><span class="pill">'+(i+1)+'</span>';el.appendChild(div)});if(content.length>4){const more=document.createElement('small');more.textContent='و '+(content.length-4)+' سؤال آخر';el.appendChild(more)}}
@@ -423,10 +423,27 @@ function boxesGame(){
  });
 }
 function sortGame(){const groups=[...new Set(content.map(x=>x.g))];if(groups.length<2){container('<div class="playcard"><h3>هذه اللعبة تحتاج مجموعتين مختلفتين على الأقل.</h3><p>أضف أسماء مجموعات إلى العمود الثالث من محرر النشاط.</p></div>');return}if(round>=content.length)return gameEnd();const row=content[round];updateCounter((round+1)+' / '+content.length);container('<div class="playinfo"><span>صنف العنصر '+(round+1)+' من '+content.length+'</span><b>⭐ '+score+'</b></div><div class="playcard"><p>إلى أي مجموعة تنتمي الإجابة التالية؟</p><h3>'+secureText(row.a)+'</h3></div><div class="sortopts" id="sortChoices"></div><div class="buttons" id="sortNext" style="justify-content:center"></div>');groups.forEach(group=>{const b=textButton('🗂️ '+group,()=>{ $('sortChoices').querySelectorAll('button').forEach(x=>x.disabled=true);if(group===row.g){score+=100;status('✅ تصنيف صحيح • +100')}else status('الإجابة الصحيحة: '+row.g);$('sortNext').append(textButton(round+1===content.length?'إظهار النتيجة 🏆':'العنصر التالي ⟵',nextRound,'button'))},'choice');$('sortChoices').append(b)})}
-function truthGame(){if(round>=Math.min(content.length,8))return gameEnd();const row=content[round],right=Math.random()<.5,wrong=shuffle(content.map(x=>x.a).filter(a=>a!==row.a))[0]||'إجابة أخرى',candidate=right?row.a:wrong;updateCounter((round+1)+' / '+Math.min(content.length,8));container('<div class="playinfo"><span>العلاقة '+(round+1)+' من '+Math.min(content.length,8)+'</span><b>⭐ '+score+'</b></div><div class="playcard"><p>هل هذه الإجابة مرتبطة بالسؤال بشكل صحيح؟</p><h3>'+secureText(row.q)+'</h3><h2 style="color:var(--gold)">'+secureText(candidate)+'</h2></div><div class="playchoices" id="truthActions"></div><div class="buttons" style="justify-content:center" id="truthNext"></div>');let used=false;[['✅ صح',true],['❌ خطأ',false]].forEach(([lab,value])=>{const b=textButton(lab,()=>{if(used)return;used=true;$('truthActions').querySelectorAll('button').forEach(x=>x.disabled=true);if(value===right){score+=100;status('✅ إجابة صحيحة • +100'+(row.explanation?' — '+row.explanation:''))}else status('💡 الإجابة الأصلية: '+row.a+(row.explanation?' — '+row.explanation:''));$('truthNext').append(textButton(round+1===Math.min(content.length,8)?'النتيجة 🏆':'السؤال التالي ⟵',nextRound,'button'))},'choice');$('truthActions').append(b)})}
+function truthGame(){
+ if(round>=Math.min(content.length,8))return gameEnd();
+ const row=content[round],explicit=row.questionType==='true_false';
+ const right=explicit?(row.a==='صح'):(Math.random()<.5);
+ const wrong=shuffle(content.map(x=>x.a).filter(a=>a!==row.a))[0]||'إجابة أخرى';
+ const candidate=explicit?row.q:(right?row.a:wrong);
+ updateCounter((round+1)+' / '+Math.min(content.length,8));
+ container('<div class="playinfo"><span>العلاقة '+(round+1)+' من '+Math.min(content.length,8)+'</span><b>⭐ '+score+'</b></div><div class="playcard"><p>'+(explicit?'هل العبارة التالية صحيحة أم خاطئة؟':'هل هذه الإجابة مرتبطة بالسؤال بشكل صحيح؟')+'</p><h3>'+secureText(explicit?'قيّم صحة العبارة':row.q)+'</h3><h2 style="color:var(--gold)">'+secureText(candidate)+'</h2></div><div class="playchoices" id="truthActions"></div><div class="buttons" id="truthNext" style="justify-content:center"></div>');
+ let used=false;
+ [['✅ صح',true],['❌ خطأ',false]].forEach(([lab,value])=>{
+  const b=textButton(lab,()=>{
+   if(used)return;used=true;$('truthActions').querySelectorAll('button').forEach(x=>x.disabled=true);
+   if(value===right){score+=100;status('✅ إجابة صحيحة • +100'+(row.explanation?' — '+row.explanation:''))}
+   else status((explicit?'💡 الإجابة الصحيحة: '+row.a:'💡 الإجابة الأصلية: '+row.a)+(row.explanation?' — '+row.explanation:''));
+   $('truthNext').append(textButton(round+1===Math.min(content.length,8)?'النتيجة 🏆':'السؤال التالي ⟵',nextRound,'button'));
+  },'choice');$('truthActions').append(b)
+ })
+}
 function refreshSaved(){const container=$('savedList');container.replaceChildren();$('countSaved').textContent=activities.length;if(!activities.length){const div=document.createElement('div');div.className='empty';div.textContent='لا توجد مسودات محفوظة بعد. أنشئ نشاطًا ثم اضغط «حفظ على هذا الجهاز». ';container.append(div);return}activities.forEach((a,i)=>{const row=document.createElement('div');row.className='saved';const info=document.createElement('div');info.innerHTML='<b>'+secureText(a.title)+'</b><small>'+secureText(a.subject)+' • '+secureText(a.grade)+' • '+a.rows.length+' أسئلة</small>';const actions=document.createElement('div');actions.className='buttons';actions.append(textButton('فتح',()=>{fill(a);scrollToId('builder')},'button small'),textButton('حذف',()=>{if(!confirm('حذف المسودة من هذا المتصفح؟'))return;activities.splice(i,1);persist();refreshSaved()},'button transparent small'));row.append(info,actions);container.append(row)})}
 function persist(){try{localStorage.setItem(K,JSON.stringify(activities.slice(0,25)))}catch(e){report('تعذر الحفظ في المتصفح. استخدم تصدير JSON لنسخة احتياطية.',true)}}
-function fill(p){$('activityTitle').value=p.title;$('subject').value=p.subject;$('grade').value=p.grade;$('roundTime').value=String(p.time);$('activityData').value=p.rows.map(x=>x.q+' | '+x.a+' | '+x.g+(x.sourcePage?' | '+x.sourcePage:'')).join('\n');window.TG_CREATOR_PREVIEW_ROWS=null;apply()}
+function fill(p){$('activityTitle').value=p.title;$('subject').value=p.subject;$('grade').value=p.grade;$('roundTime').value=String(p.time);$('activityData').value=p.rows.map(x=>x.q+' | '+x.a+' | '+x.g+(x.sourcePage?' | '+x.sourcePage:'')).join('\n');window.TG_QUESTION_BANK_ROWS=p.rows.map(x=>({...x}));window.TG_CREATOR_PREVIEW_ROWS=p.rows.map(x=>({...x}));apply()}
 function save(){const a=getPayload();if(a.error){report(a.error,true);return}if(activities.length>=25){report('الحد التجريبي 25 مسودة. احذف مسودة قديمة أو صدّر نسخك.',true);return}activities.unshift(a);persist();refreshSaved();report('✓ حفظت «'+a.title+'» في المتصفح الحالي. لا تُحفظ على حساب المعلم.')}
 function printable(){const p=getPayload();if(p.error){report(p.error,true);return}const page=$('printPage');page.replaceChildren();const h=document.createElement('h1');h.textContent='ورقة عمل | '+p.title;page.append(h);const meta=document.createElement('p');meta.textContent='المبحث: '+p.subject+'     الصف: '+p.grade+'       الاسم: ........................................';page.append(meta);p.rows.forEach((r,i)=>{const div=document.createElement('div');div.className='print-q';const question=document.createElement('p');question.textContent=(i+1)+'. '+r.q;div.append(question);for(let j=0;j<2;j++){const line=document.createElement('div');line.className='print-lines';div.append(line)}page.append(div)});window.print()}
 function exportFile(){const data=JSON.stringify({version:1,activities},null,2);const blob=new Blob([data],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='TAG-GameLab-activities.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),2000)}
@@ -456,8 +473,8 @@ $('countAll').textContent=catalog.length;$('countLive').textContent=catalog.filt
 renderCatalog();refreshSaved();report('ابدأ بإدخال أسئلتك أو اضغط استعادة المثال لتجربة طريقة اللعب.');
 })();
 </script>
-<script src="/game-lab-cloud-v2.js?v=2.3" defer></script>
-<script defer src="/game-lab-pro-v3.js?v=4.0"></script><script src="/game-lab-extra-v2.js?v=2.0"></script>
+<script src="/game-lab-cloud-v2.js?v=3.0" defer></script>
+<script defer src="/game-lab-pro-v3.js?v=4.1"></script><script src="/game-lab-extra-v2.js?v=2.0"></script>
 <script defer src="/game-lab-grade7-pilot.js?v=1.0"></script>
 <button id="v4BackToTop" type="button" aria-label="العودة إلى أعلى الصفحة">↑ للأعلى</button>
 <script defer src="/game-lab-v4.js?v=4.0"></script>
