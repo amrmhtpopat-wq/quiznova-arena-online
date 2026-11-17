@@ -134,7 +134,15 @@ try:
    live.goto(base+'/student.html?code='+room['code'],wait_until='domcontentloaded')
    live.locator('#playerName').fill('زائر ملء الشاشة '+str(width))
    live.locator('#joinBtn').click()
-   live.locator('.lobby-card').wait_for(state='visible',timeout=15000)
+   try:
+    live.locator('.lobby-card').wait_for(state='visible',timeout=15000)
+   except Exception:
+    print('LIVE JOIN DEBUG',{'roomCode':live.locator('#roomCode').input_value(),
+      'playerName':live.locator('#playerName').input_value(),
+      'joinError':live.locator('#joinError').inner_text(),
+      'joinHint':live.locator('#joinHint').inner_text(),
+      'pageErrors':live_errors},flush=True)
+    raise
    request('/api/room/control',{'code':room['code'],'hostToken':room['hostToken'],'action':'start'})
    live.locator('#gameView .question-card .answer').first.wait_for(timeout=17000)
    fit(live,width,height,'live')
