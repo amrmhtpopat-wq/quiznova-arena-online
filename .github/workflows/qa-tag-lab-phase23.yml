@@ -26,6 +26,10 @@ on:
       - tag-lab-templates-v32.css
       - tag-lab-template-editor-v33.js
       - tag-lab-template-editor-v33.css
+      - tag-lab-mixer.html
+      - tag-lab-mixer-v34.js
+      - tag-lab-student-card-bridge-v34.js
+      - tests/browser_tag_lab_mixer_v34.py
       - tests/browser_tag_lab_templates_v32.py
       - tests/browser_tag_lab_simple_v31.py
       - game-lab-pro-v3.js
@@ -59,6 +63,8 @@ jobs:
           node --check tag-lab-simple.js
           node --check tag-lab-templates-v32.js
           node --check tag-lab-template-editor-v33.js
+          node --check tag-lab-mixer-v34.js
+          node --check tag-lab-student-card-bridge-v34.js
           python - <<'PY'
           import re
           from pathlib import Path
@@ -104,3 +110,5 @@ jobs:
         run: python tests/browser_tag_lab_simple_v31.py
       - name: Game-first template previews and switching browser integration
         run: python tests/browser_tag_lab_templates_v32.py
+      - name: TAG integration: interactive lesson, official card and live challenge
+        run: python tests/browser_tag_lab_mixer_v34.py
