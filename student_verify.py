@@ -206,3 +206,32 @@ def verify_student(student, pin):
             return verify_in_transaction(
                 cur, student["teacher_id"], student["id"], pin
             )
+
+
+def release_active_attempt(teacher_id, student_id):
+    """Teacher-only recovery for a lost device; does not erase completed records."""
+    if not re.fullmatch(r"[0-9a-f]{32}", str(student_id or "")):
+        raise ValueError("invalid_student")
+    import solo_api
+    removed = 0
+    with store.DB_LOCK:
+        with store.db_connection() as con:
+            cur = con.cursor()
+            student = cur.execute(store.sql(
+                "SELECT id FROM students WHERE id=? AND teacher_id=? AND archived=0"),
+                (student_id, teacher_id)).fetchone()
+            if not student:
+                raise ValueError("student_not_found")
+            rows = cur.execute(store.sql(
+                "SELECT token_hash,payload FROM solo_sessions "
+                "WHERE teacher_id=? AND student_id=?"),
+                (teacher_id, student_id)).fetchall()
+            for token_hash, payload in rows:
+                state = store.jload(payload, {})
+                if state and not state.get("finished"):
+                    cur.execute(store.sql(
+                        "DELETE FROM solo_sessions WHERE token_hash=? AND "
+                        "teacher_id=? AND student_id=?"),
+                        (token_hash, teacher_id, student_id))
+                    removed += 1
+    return {"revoked": removed, "studentId": student_id}
