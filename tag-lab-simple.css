@@ -1,0 +1,127 @@
+/* TAG LAB Simple V31 — true separate page entry points; shared proven game engine */
+html[data-tag-view]{color-scheme:light;--bg:#f5f7fb;--shell:#f7f9fd;--panel:#ffffff;--panel2:#ecf5fc;--line:#dce7f0;--ink:#172b41;--muted:#526a7c;--aqua:#16a9a4;--blue:#087ab1;--gold:#f9b845}
+html[data-tag-view] body{background:#f4f7fb!important;color:#19334a!important;font-family:Tahoma,"Segoe UI",Arial,sans-serif!important;min-height:100vh;line-height:1.7}
+html[data-tag-view] .shell{display:block!important;min-height:auto!important}
+html[data-tag-view] .rail,html[data-tag-view] .mobilebar,html[data-tag-view] #shade,
+html[data-tag-view] .main>.bar,html[data-tag-view] .main>.mast,
+html[data-tag-view] #v4QuickStart,html[data-tag-view] #v4Steps,
+html[data-tag-view] #v4BackToTop,html[data-tag-view] #v4Toolbar,
+html[data-tag-view] .main>.kpis,html[data-tag-view] .main>.footer,
+html[data-tag-view] .main>section:not(.tag-visible-section){display:none!important}
+html[data-tag-view="books"] #bookLab,
+html[data-tag-view="create"] #builder,
+html[data-tag-view="games"] #catalog,
+html[data-tag-view="library"] #cloud,
+html[data-tag-view="mixer"] #mixer,
+html[data-tag-view="live"] #liveLab,
+html[data-tag-view="students"] #studentAssignments{display:block!important}
+html[data-tag-view] .main{width:min(100%,1140px)!important;max-width:1140px!important;padding:18px clamp(13px,3.3vw,35px) 65px!important;margin:0 auto!important;min-width:0}
+html[data-tag-view] .main>section{margin:0!important}
+html[data-tag-view] .section-head{margin:10px 0 17px!important;align-items:center!important}
+html[data-tag-view] .section-head h2{font-size:clamp(1.25rem,2.5vw,1.65rem)!important;line-height:1.4!important;color:#173450!important;font-weight:900!important}
+html[data-tag-view] .section-head p{color:#4e667a!important;font-size:.88rem!important;line-height:1.8!important}
+html[data-tag-view] .section-head .pill{background:#e7f4f5!important;border:1px solid #b8e4e4!important;color:#066d73!important;font-weight:750!important}
+html[data-tag-view] .block{background:#fff!important;color:#19354f!important;border:1px solid #d6e4ee!important;box-shadow:0 5px 22px #1b45620b!important;border-radius:17px!important;margin-bottom:16px!important;padding:clamp(15px,2.5vw,23px)!important}
+html[data-tag-view] .block h3{color:#174364!important;font-size:1.08rem!important}
+html[data-tag-view] .block p{color:#4e667a!important}
+html[data-tag-view] .field label{color:#21455f!important;font-weight:750!important}
+html[data-tag-view] input:not([type="checkbox"]):not([type="radio"]),html[data-tag-view] textarea,html[data-tag-view] select{background:#fff!important;border:1.4px solid #b9cedd!important;color:#1e374d!important;border-radius:10px!important;min-height:42px;font-size:clamp(.85rem,1.5vw,.95rem)!important}
+html[data-tag-view] textarea{min-height:125px}
+html[data-tag-view] input:focus-visible,html[data-tag-view] textarea:focus-visible,html[data-tag-view] select:focus-visible{outline:2px solid #158aaf!important;outline-offset:1px}
+html[data-tag-view] .button{background:#12a5a0!important;border:1px solid #0c9291!important;border-radius:11px!important;color:#fff!important;font-weight:850!important;text-align:center!important}
+html[data-tag-view] .button.alt{background:#edf5fb!important;border:1px solid #b3ccdd!important;color:#164c6b!important}
+html[data-tag-view] .button.gold{background:#ffcc58!important;border:1px solid #e5ab26!important;color:#593801!important}
+html[data-tag-view] .button.transparent{background:transparent!important;color:#1d5972!important;border:1px solid #a8c5d8!important}
+html[data-tag-view] button:disabled{opacity:.58!important}
+html[data-tag-view] .good{background:#eaf8f5!important;border:1px solid #a9dcd0!important;color:#145848!important}
+html[data-tag-view] .notice{background:#fff8e8!important;border:1px solid #f0d4a2!important;color:#7c591c!important}
+html[data-tag-view] .hint,html[data-tag-view] small{color:#506e81!important}
+html[data-tag-view] .pill{color:#144966!important;background:#e9f3fa!important;border-color:#c4dce9!important}
+html[data-tag-view] .tag-simple-nav{position:sticky;top:0;z-index:950;background:#fff;border-bottom:1px solid #dce6ef;box-shadow:0 3px 18px #193b5810}
+html[data-tag-view] .tag-simple-nav .inside{width:min(100%,1220px);margin:auto;min-height:76px;display:flex;align-items:center;gap:20px;padding:8px clamp(12px,2.5vw,28px)}
+html[data-tag-view] .tag-simple-logo{display:flex;align-items:center;gap:10px;flex:none;text-decoration:none}
+html[data-tag-view] .tag-simple-logo img{width:67px;height:55px;object-fit:contain}
+html[data-tag-view] .tag-simple-logo strong{display:block;color:#153b56;font-size:1.08rem;line-height:1.1}
+html[data-tag-view] .tag-simple-logo span{display:block;color:#658198;font-size:.7rem}
+html[data-tag-view] .tag-simple-links{display:flex;align-items:center;gap:5px;overflow-x:auto;white-space:nowrap;scrollbar-width:thin;flex:1;padding:5px 0}
+html[data-tag-view] .tag-simple-links a{padding:9px 12px;border-radius:10px;text-decoration:none;font-size:.85rem;font-weight:800;color:#31566e;flex:none}
+html[data-tag-view] .tag-simple-links a:hover{background:#f0f6fa;color:#0a7c85}
+html[data-tag-view] .tag-simple-links a[aria-current="page"]{background:#ddf5f0;color:#08716c}
+html[data-tag-view] .tag-simple-meta{font-size:.71rem;background:#e9f7ef;border:1px solid #bae4cc;color:#267052;padding:4px 9px;border-radius:99px;white-space:nowrap}
+html[data-tag-view] .tag-simple-intro{border:1px solid #d6e8ef;border-radius:20px;background:linear-gradient(120deg,#fff,#edf9f6);padding:clamp(16px,2.7vw,28px);margin-bottom:19px;display:flex;align-items:flex-start;justify-content:space-between;gap:15px}
+html[data-tag-view] .tag-simple-intro h1{color:#123c55;font-size:clamp(1.45rem,3vw,2rem);margin:5px 0;line-height:1.4}
+html[data-tag-view] .tag-simple-intro p{color:#587184;margin:4px 0;font-size:.91rem}
+html[data-tag-view] .tag-simple-intro .tag-step{font-size:.75rem;display:inline-flex;align-items:center;gap:5px;color:#076e71;background:#dff7f2;border:1px solid #a1e1d2;border-radius:99px;padding:5px 12px;font-weight:800}
+html[data-tag-view] .tag-simple-hint{font-size:.85rem;color:#4e6576;margin:11px 0 0;line-height:1.8}
+html[data-tag-view] .tag-simple-auth{margin:0 0 17px}
+html[data-tag-view] .tag-simple-auth #cloudLogin{max-width:750px;margin:0 auto}
+html[data-tag-view] .tag-simple-auth #cloudLogin .block{margin-bottom:0!important}
+html[data-tag-view] .tag-simple-auth[data-logged="yes"]{display:none!important}
+html[data-tag-view] .tag-simple-account{padding:10px 14px;background:#e9f8f5;border:1px solid #b9e4d8;border-radius:12px;color:#126858;display:flex;align-items:center;gap:8px;max-width:100%;margin-bottom:15px;font-size:.83rem}
+html[data-tag-view] .tag-simple-account[hidden]{display:none!important}
+html[data-tag-view] .tag-simple-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0}
+html[data-tag-view] .tag-simple-btn{background:#087c86;border:1px solid #08717d;color:#fff!important;min-height:46px;padding:10px 17px;border-radius:11px;font:800 .92rem Tahoma,Arial,sans-serif;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+html[data-tag-view] .tag-simple-btn.alt{background:#fff;color:#175171!important;border:1px solid #b6d3de}
+html[data-tag-view] .tag-simple-btn:disabled{opacity:.5;cursor:not-allowed}
+html[data-tag-view] .tag-simple-toast{color:#125947;background:#e7f7ef;padding:11px 14px;border:1px solid #a6dfc7;border-radius:11px;margin:9px 0;font-size:.84rem}
+html[data-tag-view] .tag-simple-toast.error{background:#fff2ee;border-color:#e8b1a4;color:#8e3a2a}
+html[data-tag-view] .tag-simple-footer{max-width:1110px;margin:0 auto 25px;padding:8px 20px;color:#647f91;text-align:center;font-size:.75rem}
+html[data-tag-view="create"] #builder #saveActivity,
+html[data-tag-view="create"] #builder #importButton,
+html[data-tag-view="create"] #builder #restoreExample{display:none!important}
+html[data-tag-view="books"] #labBookPreview .tag-book-review-card{background:#fff!important;color:#1a3a51!important}
+html[data-tag-view="books"] .tag-ai-settings{background:#ecf8fa!important}
+html[data-tag-view="games"] #catalog .game{background:#fff!important;border:1px solid #d1e2ec!important;color:#1b3d58!important;box-shadow:0 3px 12px #204c6010!important}
+html[data-tag-view="games"] #catalog .game h3{color:#1c3b54!important}
+html[data-tag-view="games"] #catalog .game p{color:#536c7d!important}
+html[data-tag-view="games"] #catalog .game .meta{color:#58778a!important}
+html[data-tag-view="games"] #catalog .game .figure .symbol{background:#e9f6fa!important}
+html[data-tag-view="games"] #catalog .game .state{color:#0a7770!important;background:#e4f6ef!important}
+html[data-tag-view="games"] body.tag-simple-compact #catalog .game:nth-child(n+7){display:none!important}
+html[data-tag-view="library"] #cloudImportQuiz,html[data-tag-view="library"] #cloudLoadQuizzes,html[data-tag-view="library"] #cloudUseQuiz,
+html[data-tag-view="library"] #cloudImportAll,html[data-tag-view="library"] #cloudExportAll{display:none!important}
+html[data-tag-view="library"] .cloud-activity{background:#fff!important;border:1px solid #d1e3ed!important;color:#233d50!important}
+html[data-tag-view="library"] .cloud-activity b{color:#163d56!important}
+html[data-tag-view="library"] .cloud-activity small{color:#557489!important}
+html[data-tag-view="library"] #cloud .section-head{margin-top:0!important}
+html[data-tag-view] #v4ThemeToggle{display:none!important}
+html[data-tag-view] #playOverlay:not([hidden]){color:#f0f8ff!important;background:radial-gradient(circle at top,#174c70,#071832 85%)!important;z-index:1300!important}
+html[data-tag-view] .tag-simple-back{font-weight:800;color:#157684;text-decoration:none;font-size:.85rem;display:inline-flex;align-items:center;gap:6px}
+html[data-tag-view] #cloudMessage{font-weight:700}
+html[data-tag-view] .tag-simple-savebar{position:sticky;bottom:12px;z-index:50;background:#fff;box-shadow:0 8px 40px #23445526;border:1px solid #d2e1eb;border-radius:15px;padding:12px 15px}
+@media(max-width:900px){html[data-tag-view] .tag-simple-nav .inside{flex-wrap:wrap;gap:1px;justify-content:space-between}html[data-tag-view] .tag-simple-logo img{height:45px;width:60px}html[data-tag-view] .tag-simple-links{order:2;flex:0 0 100%;justify-content:flex-start;width:100%;gap:2px}html[data-tag-view] .tag-simple-meta{display:none}html[data-tag-view] .main{padding-top:11px!important}}
+@media(max-width:650px){html[data-tag-view] .tag-simple-links a{font-size:.8rem;padding:8px 9px}html[data-tag-view] .tag-simple-intro{border-radius:14px}html[data-tag-view] .tag-simple-actions .tag-simple-btn{flex:1 1 auto}html[data-tag-view] .row2{grid-template-columns:1fr!important}html[data-tag-view] .games{grid-template-columns:repeat(2,minmax(0,1fr))!important}html[data-tag-view] .tag-simple-intro p{font-size:.83rem}html[data-tag-view] .tag-simple-auth #cloudLogin{max-width:100%}}
+
+/* Editing a saved question bank opens only its review panel in the library route. */
+html[data-tag-view="library"] body.tag-simple-editing #bookLab.tag-visible-section{display:block!important;margin:18px 0!important}
+html[data-tag-view="library"] body.tag-simple-editing #bookLab>.section-head{display:none!important}
+html[data-tag-view="library"] body.tag-simple-editing #bookLab>.layout2{display:block!important}
+html[data-tag-view="library"] body.tag-simple-editing #bookLab>.layout2>.block:first-child{display:none!important}
+html[data-tag-view="library"] body.tag-simple-editing #bookLab>.layout2>.block:nth-child(2){width:100%!important;max-width:100%!important}
+html[data-tag-view="library"] body.tag-simple-editing #bookLab #labBookSaveCloud,
+html[data-tag-view="library"] body.tag-simple-editing #bookLab #labBookOpenEditor{display:none!important}
+
+/* V34 Game Mixer dedicated page and official TAG blue palette */
+html[data-tag-view]{--tag-official-navy:#073a80;--tag-official-blue:#087dc2;--tag-official-gold:#f7bd46;--tag-official-teal:#108e9d}
+html[data-tag-view] .tag-simple-nav{background:linear-gradient(98deg,#073a80,#0962a7)!important;border-bottom:3px solid #f7bd46!important}
+html[data-tag-view] .tag-simple-nav .tag-simple-logo strong,html[data-tag-view] .tag-simple-nav .tag-simple-logo span{color:white!important}
+html[data-tag-view] .tag-simple-nav .tag-simple-links a{color:#eaf5ff!important}
+html[data-tag-view] .tag-simple-nav .tag-simple-links a[aria-current="page"]{color:#092f62!important;background:#fff1bd!important}
+html[data-tag-view] .tag-simple-nav .tag-simple-links a:hover:not([aria-current="page"]){color:white!important;background:#ffffff2c!important}
+html[data-tag-view] .tag-simple-nav .tag-simple-meta{background:#f8c65c!important;color:#15385c!important;border-color:#ffda84!important}
+html[data-tag-view] .tag-simple-intro{background:linear-gradient(110deg,#f6faff,#e9f4ff)!important;border-color:#b4d6ef!important;border-right:5px solid #f7bd46!important}
+html[data-tag-view] .tag-simple-intro h1{color:#083c7c!important}
+html[data-tag-view] .tag-simple-intro .tag-step{background:#e3f0ff!important;border-color:#bbd4f1!important;color:#07588f!important}
+html[data-tag-view] .tag-simple-btn{background:#0756a0!important;border-color:#0756a0!important;color:white!important}
+html[data-tag-view] .tag-simple-btn.alt{color:#0758a1!important;background:white!important;border-color:#aac9e4!important}
+html[data-tag-view] .button{background:#0a77b6!important;border-color:#086296!important}
+html[data-tag-view] .button.gold{background:#f7bd46!important;border-color:#dfa127!important;color:#31270d!important}
+html[data-tag-view="mixer"] #mixer>.section-head{display:none!important}
+html[data-tag-view="mixer"] #mixer .block{background:#fff!important}
+html[data-tag-view="mixer"] #mixerPlan{color:#075068!important}
+html[data-tag-view="mixer"] #tagMixerLibrary{background:#f5f9ff;border:1px solid #bfd9ef;border-radius:17px;padding:18px;margin-bottom:14px}
+html[data-tag-view="mixer"] #tagMixerLibrary h2{font-size:1.1rem;color:#074f94;margin:0 0 6px}
+html[data-tag-view="mixer"] #tagMixerLibrary p{font-size:.83rem;color:#536b83;margin:5px 0 11px}
+html[data-tag-view="mixer"] #tagMixerLibrary select{background:white!important;color:#174365!important;width:min(100%,700px)!important}
+html[data-tag-view="mixer"] #tagMixerStatus{padding:9px;border-radius:11px;background:#e6f8f0;color:#0d6c4c;font-weight:700;min-height:31px}
+html[data-tag-view="mixer"] #mixerStart:disabled{opacity:.55!important;cursor:not-allowed}

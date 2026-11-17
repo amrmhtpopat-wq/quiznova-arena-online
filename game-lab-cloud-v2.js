@@ -1,0 +1,219 @@
+/* BOOYAHJO GAME LAB V2 — teacher-owned cloud activities and student links. */
+(function(){'use strict';
+const $=id=>document.getElementById(id), tokenKey='qn9_teacher_token';
+let token=localStorage.getItem(tokenKey)||'',me=null,items=[],currentId=null,selectedMode='quiz';
+const MODES=[['quiz','تحدي الاختيار'],['fast','سباق الوقت'],['pairs','توصيل الأزواج'],['flash','بطاقات الذاكرة'],['wheel','عجلة الحظ'],['boxes','الصناديق الغامضة'],['sort','فرز وتصنيف'],['truth','صح أم خطأ'],['crossword','كلمات متقاطعة'],['wordsearch','البحث عن الكلمات'],['anagram','ترتيب الحروف'],['order','الترتيب المنطقي'],['maze','متاهة المعرفة'],['balloons','فرقعة البالونات'],['memory','لعبة الذاكرة'],['hidden','الصورة المخفية'],['cloze','أكمل الفراغ'],['diagram','تسمية الرسم'],['board','لوحة نقاط'],['teams','معركة الفرق'],['survey','تصويت الصف'],['exit','بطاقة الخروج'],['story','اختر مسارك'],['bingo','بينغو']];
+const translations={login_required:'سجل دخول المعلم من هنا.',wrong_credentials:'البريد الإلكتروني أو كلمة المرور غير صحيحة.',activity_not_found:'هذا النشاط غير موجود في حسابك.',invalid_question_count:'أدخل 4 إلى 80 سؤالًا.',title_required:'أدخل عنوان النشاط.',invalid_attempt_limit:'اختر عدد محاولات من 1 إلى 10.',server_error:'تعذر تنفيذ العملية حاليًا. جرّب لاحقًا.',activity_library_limit:'المكتبة ممتلئة (150 نشاطًا). أرشف أنشطة قديمة قبل إضافة مسودات جديدة.',book_not_found:'الكتاب المؤسس للنشاط غير متاح لحسابك.',invalid_source_page:'رقم صفحة المصدر غير صحيح.'};
+function label(x){return MODES.find(m=>m[0]===x)?.[1]||x}
+function note(message,warning=false){const p=$('cloudMessage');p.textContent=message;p.className=warning?'notice':'good'}
+function busy(button,flag){button.disabled=flag}
+async function api(path,data){const opts={headers:{'Authorization':'Bearer '+token},cache:'no-store'};if(data!==undefined){opts.method='POST';opts.headers['Content-Type']='application/json';opts.body=JSON.stringify(data)}
+ const response=await fetch(path,opts);let obj;try{obj=await response.json()}catch(_){throw Error('bad_response')}
+ if(!response.ok||!obj.ok)throw Error(obj.error||'network');return obj}
+function enhancedRows(rows){
+ const original=Array.isArray(window.TG_QUESTION_BANK_ROWS)?window.TG_QUESTION_BANK_ROWS:[];
+ const catalog=new Map(original.map(r=>[r.q+'\u0000'+r.a,r]));
+ return rows.map(row=>{
+  const match=catalog.get(row.q+'\u0000'+row.a);
+  if(!match)return row;
+  const {choices,questionType,difficulty,explanation,sourceQuote,origin}=match;
+  return {...row,...(Array.isArray(choices)?{choices:[...choices]}:{}),
+   ...(questionType?{questionType}:{}),...(difficulty?{difficulty}:{}),
+   ...(explanation?{explanation}:{}),...(sourceQuote?{sourceQuote}:{}),
+   ...(origin?{origin}:{})}
+ })
+}
+window.TG_ENHANCE_QUESTION_ROWS=enhancedRows;
+function current(){const lines=$('activityData').value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean),rows=[],uniq=new Set();if(lines.length>80)throw Error('الحد الأعلى 80 سؤالًا للنشاط المنشور');
+ for(const line of lines){const fields=line.split('|').map(v=>v.trim());if(fields.length<2||!fields[0]||!fields[1])throw Error('صحح السطر: السؤال | الإجابة | المجموعة');
+ const row={q:fields[0].slice(0,200),a:fields[1].slice(0,100),g:(fields[2]||'عام').slice(0,60)};
+ if(fields[3]){const page=Number(fields[3]);if(!Number.isInteger(page)||page<1||page>350)throw Error('رقم صفحة المصدر يجب أن يكون بين 1 و350');row.sourcePage=page;}const key=row.q+'|'+row.a;if(!uniq.has(key)){rows.push(row);uniq.add(key)}}
+ if(rows.length<4)throw Error('أدخل أربعة أسئلة مختلفة على الأقل.');
+ return {title:$('activityTitle').value.trim().slice(0,90),subject:$('subject').value,grade:$('grade').value,
+         mode:$('cloudMode').value,time:Number($('roundTime').value)||25,rows:enhancedRows(rows),
+         bookId:window.BOOYAH_LAB_BOOK_ID||'',imageId:window.BOOYAH_LAB_IMAGE_ID||'',
+         sourceGroup:window.BOOYAH_LAB_SOURCE_GROUP||''}}
+function fill(a){
+ const p=a.activity||a;
+ if(document.documentElement.dataset.tagView==='create'&&typeof window.TAG_LAB_V33_SELECT==='function')
+  window.TAG_LAB_V33_SELECT(p.mode||'quiz');
+ currentId=a.id;
+ window.BOOYAH_LAB_BOOK_ID=p.bookId||'';window.BOOYAH_LAB_IMAGE_ID=p.imageId||'';
+window.BOOYAH_LAB_SOURCE_GROUP=p.sourceGroup||a.sourceGroup||'';
+ window.TG_QUESTION_BANK_ROWS=p.rows.map(x=>({...x}));window.TG_CREATOR_PREVIEW_ROWS=p.rows.map(x=>({...x}));
+ $('activityTitle').value=p.title;$('subject').value=p.subject;$('grade').value=p.grade;$('roundTime').value=String(p.time);$('activityData').value=p.rows.map(x=>x.q+' | '+x.a+' | '+x.g+(x.sourcePage?' | '+x.sourcePage:'')).join('\n');$('cloudMode').value=p.mode||'quiz';selectedMode=$('cloudMode').value;$('cloudMaxAttempts').value=String(a.maxAttempts||1);$('applyContent').click();note('تم فتح «'+p.title+'» للتعديل. احفظ التغييرات على حسابك.');document.getElementById('builder').scrollIntoView({behavior:'smooth'});
+ document.dispatchEvent(new CustomEvent('taglab:saved-activity-opened',{detail:{id:a.id,activity:p}}))
+}
+window.TAG_LAB_V33_CLEAR_SAVED=()=>{currentId=null};
+function editSavedInCreator(item){
+ const id=item?.id||'';
+ if(!/^[a-f0-9]{32}$/.test(id)){note('رقم النشاط غير صحيح.',true);return}
+ try{sessionStorage.setItem('tag_lab_v33_edit_saved_id',id)}
+ catch(_){note('تعذّر فتح النشاط في صفحة التعديل، جرّب مجددًا.',true);return}
+ location.href='/tag-lab-create.html?edit='+encodeURIComponent(id);
+}
+function resetSelection(){window.TG_QUESTION_BANK_ROWS=null;window.TG_CREATOR_PREVIEW_ROWS=null;window.BOOYAH_LAB_BOOK_ID='';window.BOOYAH_LAB_IMAGE_ID='';window.BOOYAH_LAB_SOURCE_GROUP='';currentId=null;$('cloudMaxAttempts').value='1';note('نشاط جديد: اختر القالب، عدّل محتوى الدرس، ثم احفظه على حسابك.')}
+function buildLink(item){return location.origin+'/game-lab-play.html?game='+encodeURIComponent(item.publicCode||'')}
+function element(tag,cls,content){const e=document.createElement(tag);if(cls)e.className=cls;if(content!==undefined)e.textContent=String(content);return e}
+function button(text,act,cls='button alt small'){const e=element('button',cls,text);e.type='button';e.onclick=act;return e}
+async function refresh(){if(!token){setLoggedOut();return}try{const [account,data]=await Promise.all([api('/api/auth/me'),api('/api/game-lab/teacher/list')]);me=account.teacher;items=data.activities||[];setLoggedIn();renderItems();document.dispatchEvent(new CustomEvent('gamelab:library',{detail:{items}}));
+ if(document.documentElement.dataset.tagView==='create'){
+  const storedId=sessionStorage.getItem('tag_lab_v33_edit_saved_id');
+  if(storedId){
+   const match=items.find(item=>item.id===storedId);
+   sessionStorage.removeItem('tag_lab_v33_edit_saved_id');
+   if(match)fill(match);
+   else note('لم أعثر على هذا النشاط في حساب المعلم؛ لم أغيّر المسودات.',true)
+  }
+ }}catch(e){if(e.message==='login_required'){token='';localStorage.removeItem(tokenKey);setLoggedOut()}else note(translations[e.message]||'فشل تحميل الأنشطة: '+e.message,true)}}
+function setLoggedOut(){me=null;$('cloudLogin').classList.remove('hide');$('cloudWorkspace').classList.add('hide');$('cloudLoginLabel').textContent='يُرجى تسجيل دخول المعلم للاستفادة من الحفظ والنشر الحقيقي.'}
+function setLoggedIn(){$('cloudLogin').classList.add('hide');$('cloudWorkspace').classList.remove('hide');$('cloudTeacher').textContent='مرحبًا، '+(me.name||'المعلم');}
+async function signIn(){const email=$('cloudEmail').value.trim(),password=$('cloudPassword').value;if(!email||!password){note('أدخل البريد وكلمة المرور.',true);return}const btn=$('cloudSignIn');busy(btn,true);try{const d=await api('/api/auth/login',{email,password});token=d.token;localStorage.setItem(tokenKey,token);$('cloudPassword').value='';await refresh();note('✓ تم الدخول إلى مكتبتك الشخصية.') }catch(e){note(translations[e.message]||e.message,true)}finally{busy(btn,false)}}
+async function save(){const btn=$('cloudSave');busy(btn,true);try{const d=await api('/api/game-lab/teacher/save',{id:currentId||undefined,activity:current()});currentId=d.id;await refresh();note('✓ حُفظ نشاطك على قاعدة البيانات الخاصة بحسابك.');
+ document.dispatchEvent(new CustomEvent('taglab:activity-saved',{detail:{id:d.id,mode:$('cloudMode').value}}));}catch(e){note(translations[e.message]||e.message,true)}finally{busy(btn,false)}}
+async function generateAll(){
+ const btn=$('cloudGenerateAll');btn.disabled=true;
+ try{
+  const valid=current();
+  const saved=await api('/api/game-lab/teacher/save',{id:currentId||undefined,activity:valid});
+  currentId=saved.id;
+  const group=await api('/api/game-lab/teacher/generate-all',{sourceId:currentId,confirm:true});
+  await refresh();
+  note('✓ تم تجهيز '+group.templates+' قالبًا من أسئلة هذا الدرس: '+group.created+' جديدة و'+group.updated+' محدّثة. كلها مرتبطة بمجموعة XP واحدة.');
+  $('cloudList').scrollIntoView({behavior:'smooth',block:'start'});
+ }catch(e){note(translations[e.message]||e.message,true)}
+ finally{btn.disabled=false}
+}
+async function publish(id){const activity=items.find(x=>x.id===id);if(!activity)return;const max=Number($('cloudMaxAttempts').value)||1;try{const result=await api('/api/game-lab/teacher/publish',{id,maxAttempts:max});await refresh();const url=buildLink(result);note('✓ تم نشر النشاط. شارك الرابط أو رمز QR مع الطلاب.');showShare(url,result.title)}catch(e){note(translations[e.message]||e.message,true)}}
+async function unpublish(id){if(!confirm('إيقاف رابط هذا النشاط؟ لن يستطيع الطلاب بدء محاولات جديدة.'))return;try{await api('/api/game-lab/teacher/unpublish',{id});await refresh();note('تم إيقاف نشر النشاط، ولا تتأثر النتائج السابقة.')}catch(e){note(translations[e.message]||e.message,true)}}
+async function remove(id){if(!confirm('هل تريد أرشفة النشاط؟ لن يُحذف سجل المحاولات.'))return;try{await api('/api/game-lab/teacher/delete',{id,confirm:true});if(currentId===id)currentId=null;await refresh();note('تمت أرشفة النشاط دون حذف النتائج القديمة.')}catch(e){note(translations[e.message]||e.message,true)}}
+function showShare(url,title){const panel=$('cloudShare');panel.classList.remove('hide');$('cloudShareTitle').textContent=title||'نشاطك';$('cloudLink').value=url;$('cloudQR').src='/api/qr?format=svg&text='+encodeURIComponent(url);$('cloudQR').alt='رمز QR للنشاط: '+(title||'نشاط');}
+async function report(id){try{const data=await api('/api/game-lab/teacher/reports?id='+encodeURIComponent(id));const title=items.find(x=>x.id===id)?.title||'النتائج';$('cloudReport').classList.remove('hide');$('cloudReportTitle').textContent=title+' — '+data.total+' محاولة مكتملة · متوسط '+data.averagePercent+'%';const holder=$('cloudResults');holder.replaceChildren();const table=element('table','lab-results-table'),thead=element('thead');const header=element('tr');['الطالب','الشعبة','الإجابات الصحيحة','النسبة','النقاط','XP','التاريخ'].forEach(h=>{header.append(element('th','',h))});thead.append(header);table.append(thead);const body=element('tbody');for(const r of data.results){const row=element('tr');for(const val of [r.name+(r.guest?' (ضيف)':''),r.className,r.correct+' / '+r.questions,Math.round(r.correct*100/Math.max(1,r.questions))+'%',r.score,r.xpGain,new Date(r.finishedAt*1000).toLocaleDateString('ar-JO')])row.append(element('td','',val));body.append(row)}table.append(body);holder.append(table);if(!data.results.length)holder.append(element('p','hint','لا توجد محاولات مكتملة بعد.'));$('cloudExportCSV').onclick=()=>exportCSV(data.results,title);$('cloudReport').scrollIntoView({behavior:'smooth'})}catch(e){note('تعذر تحميل النتائج: '+e.message,true)}}
+function exportCSV(rows,title){const all=[['الطالب','الشعبة','الصحيح','العدد','النسبة','النقاط','XP','التاريخ'],...rows.map(r=>[r.name,r.className,r.correct,r.questions,Math.round(r.correct*100/Math.max(1,r.questions)),r.score,r.xpGain,new Date(r.finishedAt*1000).toISOString().slice(0,10)])];const escape=s=>'"'+String(s).replace(/"/g,'""')+'"';const csv='\ufeff'+all.map(row=>row.map(escape).join(',')).join('\r\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='TAG-LAB-'+title.replace(/[\/\\:*?"<>|]/g,'').slice(0,30)+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),500)}
+
+let existingQuizzes=[];
+async function loadExistingQuizzes(){
+ try{
+  const snapshot=await api('/api/teacher/snapshot');
+  const data=snapshot.data||{};
+  existingQuizzes=(Array.isArray(data.quizzes)?data.quizzes:[]).filter(q=>Array.isArray(q.questions)&&q.questions.length>=4);
+  const select=$('cloudImportQuiz');
+  select.replaceChildren();
+  const empty=document.createElement('option');empty.value='';empty.textContent='اختر اختبارًا محفوظًا';select.append(empty);
+  for(const q of existingQuizzes){
+   const option=document.createElement('option');option.value=String(q.id||'');option.textContent=(q.title||'اختبار')+' · '+q.questions.length+' سؤال';select.append(option)
+  }
+  note('✓ تم العثور على '+existingQuizzes.length+' اختبارًا في بنك أسئلة TAG.');
+ }catch(e){note('تعذر تحميل بنك الاختبارات: '+(translations[e.message]||e.message),true)}
+}
+function convertQuestion(q){
+ const text=String(q.text||q.prompt||q.question||'').trim();
+ const options=Array.isArray(q.options)?q.options:[];
+ let answer='';
+ if(typeof q.correct==='boolean')answer=q.correct?'صح':'خطأ';
+ else if(Array.isArray(q.correct)&&q.correct.length){
+  const pos=q.correct[0];const opt=options[Number(pos)];
+  answer=String(typeof opt==='object'?(opt?.text||opt?.label||''):(opt??pos));
+ }else if(Number.isInteger(q.correct)&&options.length){
+  const opt=options[q.correct];answer=String(typeof opt==='object'?(opt?.text||opt?.label||''):(opt??''));
+ }else if(typeof q.correct==='string')answer=q.correct;
+ else if(typeof q.answer==='string')answer=q.answer;
+ else if(typeof q.correctAnswer==='string')answer=q.correctAnswer;
+ if(!text||!answer)return null;
+ return {q:text.slice(0,200),a:answer.trim().slice(0,100),g:String(q.skill||q.outcome||'عام').slice(0,60)}
+}
+function useExistingQuiz(){
+ const id=$('cloudImportQuiz').value,q=existingQuizzes.find(x=>String(x.id||'')===id);
+ if(!q){note('اختر اختبارًا محفوظًا أولًا.',true);return}
+ const rows=q.questions.map(convertQuestion).filter(Boolean).slice(0,80);
+ if(rows.length<4){note('الاختبار لا يحتوي على أربع أسئلة مناسبة للتحويل. الأسئلة المعتمدة تحتاج إجابات محددة.',true);return}
+ fill({id:null,activity:{title:'أنشطة: '+String(q.title||'اختبار').slice(0,65),
+   subject:q.subject||'عام',grade:q.grade||'عام',time:25,mode:'quiz',rows}});
+ note('✓ تم تحويل '+rows.length+' سؤالًا من اختبارك إلى صانع الألعاب. لم نعدل الاختبار الأصلي.');
+}
+async function saveGeneratedBookDraft(event){
+ const btn=$('labBookSaveCloud');if(!token){note('سجّل دخول المعلم أولًا لحفظ مسودة الكتاب.',true);return}
+ if(event.detail?.bookId!==window.BOOYAH_LAB_BOOK_ID){note('أعد توليد مسودة الكتاب المحدد قبل الحفظ.',true);return}
+ btn.disabled=true;
+ try{
+  $('cloudMode').value='quiz';selectedMode='quiz';
+  const draft=current();draft.bookId=event.detail.bookId;draft.sourceGroup='';draft.imageId='';
+  const result=await api('/api/game-lab/teacher/save',{activity:draft});
+  currentId=result.id;await refresh();
+  note('✓ تم حفظ مسودة «'+draft.title+'» بشكل خاص في مكتبتك. يمكنك فتحها وتعديلها ثم نشرها.');
+  $('labBookStatus').textContent='✓ حُفظت مسودة الكتاب في حساب المعلم. انتقل إلى مكتبتي لمراجعتها ونشرها.';
+  $('cloudList').scrollIntoView({behavior:'smooth',block:'start'});
+ }catch(e){note('تعذر حفظ مسودة الكتاب: '+(translations[e.message]||e.message),true)}finally{btn.disabled=false}
+}
+async function duplicate(id){
+ const origin=items.find(x=>x.id===id);if(!origin)return;
+ try{const p=origin.activity||{};const duplicate={...p,title:('نسخة من '+origin.title).slice(0,90),sourceGroup:''};
+  const result=await api('/api/game-lab/teacher/save',{activity:duplicate});await refresh();
+  note('✓ أُنشئت نسخة خاصة جديدة دون إعادة نشر النشاط أو نسخ النتائج.');
+  const saved=items.find(x=>x.id===result.id);if(saved)fill(saved);
+ }catch(e){note('تعذر نسخ النشاط: '+(translations[e.message]||e.message),true)}
+}
+async function importAllCloud(event){
+ const file=event.target.files?.[0];if(!file)return;
+ const button=$('cloudImportAll');button.disabled=true;
+ try{
+  if(!token)throw Error('login_required');if(file.size>1200000)throw Error('حجم ملف النسخة الاحتياطية كبير جدًا');
+  const data=JSON.parse(await file.text()),list=data?.activities;
+  if(![1,2].includes(data?.version)||!Array.isArray(list)||!list.length||list.length>30)throw Error('ارفع نسخة JSON تحتوي بين 1 و30 نشاطًا (الإصدار 1 أو 2).');
+  const prepared=list.map(entry=>{
+   const p=entry?.activity||entry;if(!p||!Array.isArray(p.rows)||p.rows.length<4||p.rows.length>80)throw Error('في النسخة الاحتياطية نشاط بأسئلة غير مكتملة.');
+   const rows=p.rows.map(row=>({
+    q:String(row.q||'').trim().slice(0,200),
+    a:String(row.a||'').trim().slice(0,100),
+    g:String(row.g||'عام').slice(0,60),
+    ...(row.sourcePage&&Number.isInteger(Number(row.sourcePage))?{sourcePage:Number(row.sourcePage)}:{}),
+    ...(row.questionType?{questionType:String(row.questionType)}:{}),
+    ...(row.difficulty?{difficulty:String(row.difficulty)}:{}),
+    ...(Array.isArray(row.choices)?{choices:row.choices.map(x=>String(x).slice(0,100))}:{}),
+    ...(row.explanation?{explanation:String(row.explanation).slice(0,240)}:{}),
+    ...(row.sourceQuote?{sourceQuote:String(row.sourceQuote).slice(0,240)}:{}),
+    ...(row.origin?{origin:String(row.origin).slice(0,32)}:{})
+   }));
+   if(rows.some(r=>!r.q||!r.a))throw Error('وجد سؤال أو جواب فارغ في الملف.');
+   return {title:String(p.title||'نشاط مستورد').trim().slice(0,90),subject:String(p.subject||'عام').slice(0,80),grade:String(p.grade||'عام').slice(0,40),mode:MODES.some(x=>x[0]===p.mode)?p.mode:'quiz',time:Number(p.time)||25,rows,sourceGroup:'',imageId:'',bookId:''};
+  });
+  if(items.length+prepared.length>150)throw Error('المكتبة تسمح بحد أقصى 150 نشاطًا؛ أرشف أنشطة قديمة أولًا.');
+  if(!confirm('استيراد '+prepared.length+' نشاطًا كمسودات خاصة جديدة؟ لن تُنشر، ولن تُستورد بطاقات الطلاب أو سجلاتهم أو صور الكتب.'))return;
+  let done=0;
+  for(const activity of prepared){await api('/api/game-lab/teacher/save',{activity});done++}
+  await refresh();note('✓ استوردت '+done+' مسودة إلى حسابك. لن تظهر للطلاب حتى تنشرها.');
+ }catch(e){note('تعذر استيراد المسودات: '+(translations[e.message]||e.message),true)}finally{button.disabled=false;event.target.value=''}
+}
+function exportAllCloud(){
+ if(!items.length){note('لا توجد أنشطة محفوظة لتصديرها.',true);return}
+ const bundle={version:2,exportedAt:new Date().toISOString(),source:'TAG LAB QA',activities:items.map(x=>x.activity).filter(Boolean)};
+ const file=new Blob([JSON.stringify(bundle,null,2)],{type:'application/json;charset=utf-8'});
+ const url=URL.createObjectURL(file),a=document.createElement('a');a.href=url;a.download='TAG-LAB-Cloud-Backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1200);
+ note('✓ تم تصدير محتوى '+bundle.activities.length+' نشاطًا. احفظ الملف في مكان آمن؛ فهو يحتوي إجابات الاختبارات.');
+}
+
+function renderItems(){const host=$('cloudList');host.replaceChildren();$('cloudCount').textContent=items.length;const query=($('cloudLibrarySearch').value||'').trim().toLocaleLowerCase('ar'),filter=$('cloudLibraryFilter').value;const visible=items.filter(x=>(filter==='all'||(filter==='published'&&x.published)||(filter==='draft'&&!x.published))&&(!query||(x.title+' '+x.subject+' '+x.grade+' '+label(x.mode)).toLocaleLowerCase('ar').includes(query)));if(!visible.length){host.append(element('div','empty',items.length?'لا توجد أنشطة تطابق البحث أو الفلتر.':'لم تنشئ أنشطة على حسابك بعد. أنشئ أول نشاط من صانع الأنشطة.'));return}for(const item of visible){const row=element('div','cloud-activity'),left=element('div','cloud-info'),right=element('div','buttons');left.append(element('b','',item.title),element('small','',item.subject+' • '+item.grade+' • '+label(item.mode)+' • '+item.questionCount+' أسئلة'));left.append(element('small','',item.published?'🟢 منشور للطلاب':'⚪ مسودة خاصة'));right.append(button('✏️ تعديل',()=>document.documentElement.dataset.tagView==='library'?editSavedInCreator(item):fill(item)),
+ button('🧩 تعديل أنواع الأسئلة',()=>{
+  fill(item);
+  document.dispatchEvent(new CustomEvent('gamelab:edit-structured-bank',
+    {detail:{rows:(item.activity?.rows||[]).map(x=>({...x})),
+      bookId:item.activity?.bookId||''}}));
+ }),button('📄 نسخ كمسودة',()=>duplicate(item.id)));if(item.published){right.append(button('🔗 مشاركة',()=>showShare(buildLink(item),item.title)),button('⏸ إيقاف',()=>unpublish(item.id)))}else right.append(button('🚀 نشر',()=>publish(item.id),'button small'));right.append(button('🪪 بطاقات الطلاب',()=>document.dispatchEvent(new CustomEvent('gamelab:assign',{detail:{id:item.id}}))),
+button('📡 تنافس مباشر',()=>document.dispatchEvent(new CustomEvent('gamelab:live',{detail:{id:item.id}}))),
+button('📊 النتائج',()=>report(item.id)),button('🗑️ أرشفة',()=>remove(item.id),'button transparent small'));row.append(left,right);host.append(row)}}
+const m=$('cloudMode');for(const [id,name] of MODES){const option=document.createElement('option');option.value=id;option.textContent=name;m.append(option)}m.value='quiz';
+$('cloudLoadQuizzes').onclick=loadExistingQuizzes;$('cloudUseQuiz').onclick=useExistingQuiz;$('cloudExportAll').onclick=exportAllCloud;$('cloudSignIn').onclick=signIn;$('cloudSave').onclick=save;$('cloudGenerateAll').onclick=generateAll;$('cloudRefresh').onclick=refresh;$('cloudNew').onclick=resetSelection;$('cloudReportClose').onclick=()=>$('cloudReport').classList.add('hide');$('cloudCopy').onclick=()=>{const url=$('cloudLink').value;navigator.clipboard?.writeText(url).then(()=>note('✓ تم نسخ رابط النشاط.')).catch(()=>note('يمكنك نسخ الرابط من الحقل.',true))};$('cloudMode').onchange=()=>{selectedMode=m.value};$('cloudLogout').onclick=()=>{token='';me=null;localStorage.removeItem(tokenKey);setLoggedOut();note('تم الخروج من Game Lab على هذا المتصفح. يرجى تسجيل الدخول مجددًا.')};
+document.addEventListener('click',e=>{const card=e.target.closest('#gameGrid .game');if(card&&card.querySelector('h3')){const name=card.querySelector('h3').textContent;const hit=MODES.find(([id,label])=>label===name);if(hit){$('cloudMode').value=hit[0];selectedMode=hit[0]}}});
+$('cloudLibrarySearch').oninput=renderItems;$('cloudLibraryFilter').onchange=renderItems;
+$('cloudImportAll').onclick=()=>$('cloudImportFile').click();$('cloudImportFile').onchange=importAllCloud;
+document.addEventListener('gamelab:save-book-draft',e=>{void saveGeneratedBookDraft(e)});
+document.addEventListener('gamelab:book-bank-accepted',event=>{
+ if(event.detail?.editingExisting){
+  note('تم تحديث خيارات بنك الأسئلة في المحرر؛ اضغط «حفظ النشاط» لتحديث المسودة الأصلية.');
+ }else{
+  currentId=null;selectedMode='quiz';$('cloudMode').value='quiz';
+  note('تم إعداد بنك أسئلة جديد. احفظه كمسودة خاصة قبل النشر.');
+ }
+});
+refresh();
+})();
