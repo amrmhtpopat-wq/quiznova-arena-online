@@ -32,7 +32,7 @@ jobs:
                        'tag-lab-live-teacher','tag-lab-live-student',
                        'tag-lab-live-display','tag-lab-results'):
               content=Path(name+'.html').read_text(encoding='utf-8')
-              scripts=re.findall(r'<script(?![^>]*\\bsrc=)[^>]*>(.*?)</script>',content,re.S)
+              scripts=re.findall(r'<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>',content,re.S)
               assert len(scripts)==1, (name,len(scripts))
               Path('/tmp/'+name+'.js').write_text(scripts[0],encoding='utf-8')
           PY
