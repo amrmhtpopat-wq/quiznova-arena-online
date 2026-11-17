@@ -15,6 +15,7 @@ from urllib.parse import parse_qs
 import platform_store as db
 import platform_api as auth
 import solo_api
+import student_verify
 
 MAX_ROWS=80
 TEXT_MODES={'anagram','crossword','wordsearch','cloze','exit'}
@@ -380,6 +381,8 @@ def start(data,h):
     student=solo_api.find_student(card) if card else None
     if card and not student:return fail(h,'invalid_card',403)
     if student and student['teacher_id']!=a['teacher_id']:return fail(h,'card_other_teacher',403)
+    verify_on=student_verify.is_enabled(a['teacher_id'])
+    if verify_on and not student:return fail(h,'card_required',403)
     guest=not bool(student)
     name=str(data.get('guestName') or 'ضيف').strip()[:40]
     if guest and len(name)<2:return fail(h,'name_required')
@@ -397,6 +400,7 @@ def start(data,h):
             return fail(h,'not_assigned_to_card',403)
     token=secrets.token_urlsafe(36)
     state={'rows':rows,'title':a['title'],'mode':a['mode'],'duration':payload.get('time',25),
+           'pinVerified':bool(verify_on and student),
            'index':0,'score':0,'correct':0,'finished':False,'xpGain':0,
            'guest':guest,'studentName':student['name'] if student else name,
            'className':student['class_name'] if student else 'زائر',
@@ -409,9 +413,22 @@ def start(data,h):
         with db.db_connection() as con:
             cur=con.cursor()
             if student:
-                lock='SELECT id FROM students WHERE id=? AND teacher_id=?'+(' FOR UPDATE' if db.DATABASE_URL else '')
+                lock='SELECT id FROM students WHERE id=? AND teacher_id=? AND archived=0'+(' FOR UPDATE' if db.DATABASE_URL else '')
                 cur.execute(db.sql(lock),(student['id'],a['teacher_id']))
                 if not cur.fetchone():return fail(h,'invalid_card',403)
+                if verify_on:
+                    pin_error=student_verify.verify_in_transaction(
+                        cur,a['teacher_id'],student['id'],data.get('pin'))
+                    if pin_error:
+                        return fail(h,pin_error,429 if pin_error=='student_pin_locked' else 403)
+                    prior=cur.execute(db.sql(
+                        'SELECT state,updated_at FROM game_lab_runs '
+                        'WHERE teacher_id=? AND student_id=?'),
+                        (a['teacher_id'],student['id'])).fetchall()
+                    for old_state,old_time in prior:
+                        old=db.jload(old_state,{})
+                        if old and not old.get('finished') and now()-int(old_time)<RUN_TTL:
+                            return fail(h,'active_attempt',409)
                 cur.execute(db.sql('SELECT COUNT(*) FROM game_lab_runs WHERE activity_id=? '
                                    'AND student_id=?'),(a['id'],student['id']))
                 if int(cur.fetchone()[0])>=int(a['max_attempts']):
@@ -431,6 +448,8 @@ def read_state(data,h):
     row=db.query('SELECT * FROM game_lab_runs WHERE token_hash=?',(hashed(token),))
     if not row or now()-int(row['updated_at'])>RUN_TTL:return fail(h,'expired_session',403)
     state=db.jload(row['state'],{})
+    if student_verify.is_enabled(row['teacher_id']) and not state.get('pinVerified'):
+        return fail(h,'student_pin_required',403)
     h.send_json({'ok':True,'state':state_view(state,hashed(token))})
     return True
 
@@ -453,6 +472,8 @@ def answer(data,h):
             col=[x[0] for x in cur.description];session=dict(zip(col,row))
             if now()-int(session['updated_at'])>RUN_TTL:return fail(h,'expired_session',403)
             state=db.jload(session['state'],{})
+            if student_verify.is_enabled(session['teacher_id']) and not state.get('pinVerified'):
+                return fail(h,'student_pin_required',403)
             if state['finished'] or state['index']!=idx:return fail(h,'question_changed',409)
             right=expected_answer(state,key)
             graded=state['mode'] not in NON_GRADED_MODES
