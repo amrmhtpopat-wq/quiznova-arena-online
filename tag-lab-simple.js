@@ -11,11 +11,11 @@ const pages=[
  {id:'mixer',url:'/tag-lab-mixer.html',icon:'🧪',label:'الحصة التفاعلية'}
 ];
 const labels={
- books:{step:'1 • أنشئ الأسئلة',title:'حوّل كتابك إلى أسئلة',description:'ارفع الكتاب مرة واحدة، اختر الصفحات، ولّد الأسئلة مجانًا، ثم راجعها قبل استخدامها.',tip:'بعد مراجعة الأسئلة اضغط «التالي: صانع الألعاب». لا تحتاج إلى نسخ الإجابات يدويًا.'},
- create:{step:'2 • أسئلتك وقالبك',title:'صانع الألعاب المبسّط',description:'اختر قالبًا أو اكتب الأسئلة أولًا، ثم جرّبها وغيّر اللعبة بضغطة واحدة.',tip:'اكتب أربعة أسئلة على الأقل أو حمّل كتابك، ثم جرّب عدة قوالب بأسئلتك نفسها.'},
- games:{step:'1 • شاهد اللعبة أولًا',title:'اختر لعبة وانطلق',description:'عاين اللعبة بأسئلة تجريبية أولًا، ثم اختر قالبك وأضف أسئلتك.',tip:'الضغط على «معاينة» لا يغيّر القالب المختار أو يمسح أسئلتك.'},
- library:{step:'3 • احفظ وشارك',title:'مكتبتي الخاصة',description:'كل أنشطتك المحفوظة في مكان واحد. افتحها، عدّلها، انشرها أو راجع نتائج الطلاب.',tip:'المسودات خاصة بك، ولا تظهر للطلاب إلا بعد الضغط على «نشر».'},
- mixer:{step:'🧪 حصة تفاعلية',title:'الحصة متعددة الألعاب',description:'اختر نشاطًا محفوظًا وامزج ثلاث ألعاب متتابعة داخل الحصة، دون إعادة كتابة الأسئلة.',tip:'هذه حصة يقودها المعلم على شاشة العرض؛ للتنافس المتزامن وبطاقات الطلاب استخدم المنصة الرسمية.'},
+ books:{title:'الكتب وTAG AI',description:'ارفع كتابك وحوّل صفحاته إلى أسئلة.'},
+ create:{title:'صانع الألعاب',description:'أضف الأسئلة واختر القالب المناسب.'},
+ games:{title:'قوالب الألعاب',description:'اختر القالب الذي يناسب درسك.'},
+ library:{title:'مكتبتي',description:'أنشطتك المحفوظة في مكان واحد.'},
+ mixer:{title:'الحصة التفاعلية',description:'استخدم عدة ألعاب ضمن حصة واحدة.'}
 };
 const linkBySection={catalog:'games',builder:'create',bookLab:'books',mixer:'mixer',library:'library',cloud:'library',roadmap:'home'};
 const $=id=>document.getElementById(id);
@@ -28,31 +28,25 @@ const brand=make('span');brand.append(make('strong','', 'TAG LAB'),make('span','
 logo.append(mark,brand);
 const menu=make('nav','tag-simple-links');menu.setAttribute('aria-label','الصفحات الرئيسية');
 for(const p of pages){const a=make('a','',p.icon+' '+p.label);a.href=p.url;if(p.id===view)a.setAttribute('aria-current','page');menu.append(a)}
-inside.append(logo,menu,make('span','tag-simple-meta','نسخة تجريبية • مجانية'));nav.append(inside);
+inside.append(logo,menu);nav.append(inside);
 document.body.prepend(nav);
 const main=document.querySelector('.main');
 if(!main)return;
 const copy=labels[view]||labels.books;
 const intro=make('div','tag-simple-intro');
 const info=make('div');
-info.append(make('span','tag-step',copy.step),make('h1','',copy.title),make('p','',copy.description));
+info.append(make('h1','',copy.title),make('p','',copy.description));
 intro.append(info);
 const introActions=make('div','tag-simple-actions');
 const back=make('a','tag-simple-back','↩ الرئيسية');back.href='/tag-lab-home.html';introActions.append(back);intro.append(introActions);
 main.prepend(intro);
 const auth=make('div','tag-simple-auth');auth.id='tagSimpleAuth';
-const account=make('div','tag-simple-account','✓ حساب المعلم متصل؛ يمكنك الحفظ والنشر');
-account.id='tagSimpleAccount';account.hidden=true;
 if(view!=='library'){
  const login=$('cloudLogin');
- if(login){auth.append(login);intro.after(auth);auth.after(account)}
+ if(login){auth.append(login);intro.after(auth)}
 }
-const tip=make('p','tag-simple-hint','💡 '+copy.tip);
-intro.after(tip);
-const footer=make('footer','tag-simple-footer','TAG LAB — بيئة تجربة منفصلة عن الموقع الرسمي. تستخدم أدواتك الحالية دون رسوم ذكاء اصطناعي مدفوعة.');
-document.body.append(footer);
 function logged(){return Boolean($('cloudWorkspace')&&!$('cloudWorkspace').classList.contains('hide'))}
-function authView(){const ok=logged();if(view!=='library'){auth.dataset.logged=ok?'yes':'no';account.hidden=!ok}}
+function authView(){const ok=logged();if(view!=='library')auth.dataset.logged=ok?'yes':'no'}
 authView();
 const workspace=$('cloudWorkspace');if(workspace)new MutationObserver(authView).observe(workspace,{attributes:true,attributeFilter:['class']});
 document.addEventListener('gamelab:library',authView);
