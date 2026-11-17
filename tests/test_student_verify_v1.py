@@ -176,6 +176,20 @@ class StudentVerifyContract(unittest.TestCase):
         self.assertEqual(status,409,duplicate)
         self.assertEqual(duplicate['error'],'card_already_joined')
 
+    def test_rotating_pin_revokes_active_quiz_token(self):
+        old=self.activate()
+        req={'card':self.card,'quizId':self.quiz['id']}
+        status,started=self.solo_post('start',{**req,'pin':old})
+        self.assertEqual(status,200,started)
+        status,rotation=self.teacher_post('issue',{'studentId':self.student['id'],'rotate':True})
+        self.assertEqual(status,200,rotation)
+        new=rotation['pins'][0]['pin']
+        status,revoked=self.solo_post('state',{'token':started['token']})
+        self.assertEqual(status,401,revoked)
+        self.assertEqual(revoked['error'],'invalid_session')
+        status,again=self.solo_post('start',{**req,'pin':new})
+        self.assertEqual(status,200,again)
+
     def test_wrong_teacher_cannot_reissue_or_unlock_others(self):
         pin=self.activate()
         other=store.create_teacher('pin-other-'+uuid.uuid4().hex+'@school.example',
