@@ -1,0 +1,23 @@
+/* TAG Student Verify — teacher panel; isolated from badge and QR design. */
+body.v105-portal .tag-verify-panel{margin:18px 0;background:linear-gradient(130deg,#0a3158,#0b4460)!important;border:1px solid #63bed2a3!important;color:#eaf8ff!important}
+body.v105-portal .tag-verify-panel .pane-head{align-items:center;flex-wrap:wrap;gap:10px}
+body.v105-portal .tag-verify-panel .pane-head h3{margin:0;color:#fff!important}
+body.v105-portal .tag-verify-panel p{font-size:13px!important;color:#d8ebf7!important;line-height:1.7!important;margin:10px 0}
+body.v105-portal .tag-verify-chip{display:inline-block;padding:5px 13px;border-radius:80px;background:#402a34;color:#fff0d2;border:1px solid #f4b768;font-size:12px;font-weight:800}
+body.v105-portal .tag-verify-chip.is-on{background:#125644;border-color:#71e1b6;color:#d7fff1}
+body.v105-portal .tag-verify-status{border:1px solid #6e9fc677;border-radius:11px;padding:9px 13px;background:#092743bd;min-height:42px}
+body.v105-portal .tag-verify-status.error{border-color:#df7d7d;color:#ffe6e6!important}
+body.v105-portal .tag-verify-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+body.v105-portal .tag-verify-actions button{min-height:42px;padding:9px 14px;border-radius:11px;font-weight:800}
+body.v105-portal .tag-verify-single{padding:12px;background:#072541b6;border:1px solid #72b6cc76;border-radius:14px;margin-top:12px}
+body.v105-portal .tag-verify-single label{display:block;margin-bottom:9px;color:#d9efff;font-weight:800}
+body.v105-portal .tag-verify-single>div{display:flex;gap:8px;flex-wrap:wrap}
+body.v105-portal .tag-verify-single input{flex:1 1 170px;min-height:43px;border:1px solid #7faecb;border-radius:10px;color:#0b2e4f;background:#fff;padding:10px}
+body.v105-portal .tag-verify-single button{flex:0 0 auto;min-height:42px}
+body.v105-portal .tag-verify-reveal{border-radius:14px;border:2px solid #f0c97d;background:#3f351db0;padding:13px;margin-top:14px}
+body.v105-portal .tag-verify-reveal[hidden]{display:none!important}
+body.v105-portal .tag-verify-reveal strong{display:block;color:#fff2bd}
+body.v105-portal .tag-verify-reveal small{display:block;color:#fff0d0;margin:6px 0;line-height:1.5}
+body.v105-portal .tag-verify-reveal pre{white-space:pre-wrap;overflow:auto;max-height:280px;user-select:text;border-radius:10px;background:#f6fbff;color:#0b2944;padding:12px;direction:rtl;line-height:1.8;font-size:13px}
+body.v105-portal .tag-verify-reveal button:focus-visible,body.v105-portal .tag-verify-single input:focus-visible{outline:3px solid #fff3aa;outline-offset:3px}
+@media(max-width:600px){body.v105-portal .tag-verify-single button{flex:1 1 100%}body.v105-portal .tag-verify-panel{padding:12px!important}}
