@@ -18,6 +18,7 @@ class ExtendedGameLabTest(unittest.TestCase):
         cls.temp=tempfile.TemporaryDirectory()
         os.environ.pop('DATABASE_URL',None)
         os.environ.pop('OPENAI_API_KEY',None)
+        os.environ.pop('GEMINI_API_KEY',None)
         os.environ['QUIZNOVA_SQLITE_PATH']=str(Path(cls.temp.name)/'game_lab_pro.sqlite')
         os.environ['QUIZNOVA_ALLOW_EPHEMERAL']='yes'
         import platform_store as store
