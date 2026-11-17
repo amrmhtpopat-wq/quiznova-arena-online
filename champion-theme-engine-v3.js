@@ -2,21 +2,20 @@
 (function(){
  "use strict";
  const themes={
-  gold:{name:"كأس العالم الذهبي",defaultBackground:"stadium"},
-  neon:{name:"استاد المستقبل",defaultBackground:"arena"},
-  esports:{name:"ساحة الأبطال الإلكترونية",defaultBackground:"grid"},
-  broadcast:{name:"البث الرياضي الاحترافي",defaultBackground:"lights"}
+  gold:{name:"كأس العالم الذهبي",defaultBackground:"daylight"},
+  neon:{name:"استاد المستقبل",defaultBackground:"neon"},
+  esports:{name:"ساحة الأبطال الإلكترونية",defaultBackground:"neon"},
+  broadcast:{name:"البث الرياضي الاحترافي",defaultBackground:"elegant"}
  };
  const backgrounds={
-  stadium:"ملعب كأس العالم",
-  night:"استاد ليلي",
-  lights:"أضواء البث",
-  arena:"استاد النيون",
-  grid:"الساحة الإلكترونية",
-  minimal:"خلفية بسيطة",
-  daylight:"الملعب النهاري",
-  finals:"استاد النهائي الذهبي"
+  // Legacy assets stay valid for previously saved tournaments.
+  stadium:"ملعب كأس العالم (قديم)",night:"استاد ليلي (قديم)",lights:"أضواء البث (قديم)",
+  arena:"استاد النيون (قديم)",grid:"الساحة الإلكترونية (قديم)",minimal:"خلفية بسيطة (قديم)",
+  daylight:"ملعب كأس العالم",finals:"استاد النهائي الذهبي",
+  royal:"منصة التتويج الملكية",celebration:"أضواء الاحتفال",hall:"قاعة الأبطال",
+  neon:"موجات النيون",trophy:"الكأس الرسمية",elegant:"الخلفية الفاخرة البسيطة"
  };
+ const visibleBackgrounds=Object.freeze(["daylight","finals","royal","celebration","hall","neon","trophy","elegant"]);
  const permitted=(obj,value,fallback)=>Object.prototype.hasOwnProperty.call(obj,value)?value:fallback;
  function apply(theme,background){
   const t=permitted(themes,theme,"gold");
@@ -33,5 +32,5 @@
    button.setAttribute('aria-pressed',String(yes));
   });
  }
- window.TAGChampionTheme={themes,backgrounds,apply,syncButtons};
+ window.TAGChampionTheme={themes,backgrounds,visibleBackgrounds,apply,syncButtons};
 })();
