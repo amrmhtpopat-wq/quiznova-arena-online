@@ -329,3 +329,23 @@ html[data-tag-view="games"] body.tagv-enabled .tag-v32-art[data-art="quiz"]>*,
 html[data-tag-view="games"] body.tagv-enabled .tag-v32-art[data-art="fast"]>*,
 html[data-tag-view="games"] body.tagv-enabled .tag-v32-art[data-art="truth"]>*,
 html[data-tag-view="games"] body.tagv-enabled .tag-v32-art[data-art="boxes"]>*{display:none!important}
+
+/* Classroom student usability: a 2x2 grid at common phone widths, readable
+   text on narrower devices, and no clipped long Arabic questions. */
+@media (min-width:380px) and (max-width:700px){
+ body.tagv-enabled .tagv-answers{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
+ body.tagv-enabled .tagv-answer{
+  min-height:88px!important;padding:9px!important;
+  font-size:clamp(.93rem,3.7vw,1.18rem)!important;line-height:1.55!important;
+  overflow-wrap:anywhere;hyphens:auto
+ }
+ body.tagv-enabled .tagv-question{font-size:clamp(1.2rem,5vw,1.7rem);line-height:1.55!important}
+ body.tagv-enabled .tagv-live-hero{padding:9px 0 15px!important}
+ body.tagv-enabled .tagv-live-hero p{font-size:.86rem}
+ body.tagv-enabled .tagv-score-row{gap:6px}
+ body.tagv-enabled .tagv-score-row span{padding:6px 9px;font-size:.83rem}
+}
+@media(max-width:379px){
+ body.tagv-enabled .tagv-answers{grid-template-columns:1fr!important}
+ body.tagv-enabled .tagv-answer{min-height:70px!important}
+}
