@@ -17,6 +17,25 @@ class CardBridgeClientTests(unittest.TestCase):
                           "/../private", "x"*200, None):
                 with self.assertRaises(client.CardNotFound):
                     client.verify(value)
+    def test_parse_original_qr_from_trusted_url_without_following_link(self):
+        self.assertEqual(client.normalize_card("G9B-021"),"G9B-021")
+        self.assertEqual(client.normalize_card(
+            "https://school-qr-attendance.onrender.com/scan?card=G9B-021"),"G9B-021")
+        self.assertEqual(client.normalize_card(
+            "https://quiznova-arena-online.onrender.com/scan/G9B-021"),"G9B-021")
+        self.assertEqual(client.normalize_card(
+            "https://school-qr-transfer.onrender.com/?id=G9B-021"),"G9B-021")
+        for bad in (
+            "http://school-qr-attendance.onrender.com/scan?card=G9B-021",
+            "https://school-qr-attendance.onrender.com.evil.net/?card=G9B-021",
+            "https://example.org/?card=G9B-021",
+            "https://school-qr-attendance.onrender.com/?card=javascript%3Aalert",
+            "https://school-qr-attendance.onrender.com/?card=G9B-021#admin",
+            "https://school-qr-attendance.onrender.com:8080/?card=G9B-021",
+        ):
+            with self.subTest(bad=bad):
+                with self.assertRaises(client.CardNotFound):
+                    client.normalize_card(bad)
     def test_provider_is_pinned_to_https_official_origin(self):
         self.assertEqual(client.OFFICIAL_ENDPOINT,
             "https://quiznova-arena-online.onrender.com/api/tag-independent/card/resolve")
