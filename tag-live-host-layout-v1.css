@@ -1,0 +1,198 @@
+/* TAG LIVE HOST LAYOUT FIX V1 — CSS ONLY
+   Fixes the inherited 3-column grid from v8-theme (two ID selectors), which
+   incorrectly left the scene artwork in a skinny dropdown column.
+   Restores a full-width scene toolbar and paints the *central room/QR panel*
+   with the background already saved in the room state. Existing API/JS untouched. */
+body.v105-studio #view-live #liveHost[data-live-scene="cartoon"]{--tag-host-scene:url('/assets/backgrounds/cartoon.svg')}
+body.v105-studio #view-live #liveHost[data-live-scene="anime"]{--tag-host-scene:url('/assets/backgrounds/anime.svg')}
+body.v105-studio #view-live #liveHost[data-live-scene="cinematic"]{--tag-host-scene:url('/assets/backgrounds/cinematic.svg')}
+body.v105-studio #view-live #liveHost[data-live-scene="cine-stars"]{--tag-host-scene:url('/assets/backgrounds/cine-stars.svg')}
+body.v105-studio #view-live #liveHost[data-live-scene="cine-aurora"]{--tag-host-scene:url('/assets/backgrounds/cine-aurora.svg')}
+body.v105-studio #view-live #liveHost[data-live-scene="cine-neon"]{--tag-host-scene:url('/assets/backgrounds/cine-neon.svg')}
+body.v105-studio #view-live #liveHost[data-live-scene="cine-desert"]{--tag-host-scene:url('/assets/backgrounds/cine-desert.svg')}
+body.v105-studio #view-live #liveHost[data-live-scene="cine-arena"]{--tag-host-scene:url('/assets/backgrounds/cine-arena.svg')}
+body.v105-studio #view-live #liveHost[data-live-scene="tag-daylight"]{--tag-host-scene:url('/assets/champion/bg-daylight-v4.svg')}
+body.v105-studio #view-live #liveHost[data-live-scene="tag-finals"]{--tag-host-scene:url('/assets/champion/bg-finals-v4.svg')}
+body.v105-studio #view-live #liveHost[data-live-scene="tag-royal"]{--tag-host-scene:url('/assets/champion/bg-royal-v5.svg')}
+body.v105-studio #view-live #liveHost[data-live-scene="tag-celebration"]{--tag-host-scene:url('/assets/champion/bg-celebration-v5.svg')}
+body.v105-studio #view-live #liveHost[data-live-scene="tag-hall"]{--tag-host-scene:url('/assets/champion/bg-hall-v5.svg')}
+body.v105-studio #view-live #liveHost[data-live-scene="tag-neon"]{--tag-host-scene:url('/assets/champion/bg-neon-v5.svg')}
+body.v105-studio #view-live #liveHost[data-live-scene="tag-trophy"]{--tag-host-scene:url('/assets/champion/bg-trophy-v5.svg')}
+body.v105-studio #view-live #liveHost[data-live-scene="tag-elegant"]{--tag-host-scene:url('/assets/champion/bg-elegant-v5.svg')}
+/* Exact structural placement prevents an implicit third column on wide desktops.
+   Selector specificity intentionally exceeds legacy #view-live #liveHost .room-shell. */
+body.v105-studio #view-live #liveHost .room-shell{
+ display:grid!important;
+ grid-template-columns:minmax(0,1.65fr) minmax(260px,.83fr)!important;
+ grid-template-rows:auto auto auto!important;
+ grid-auto-flow:row!important;
+ gap:clamp(10px,1.15vw,17px)!important;
+ align-items:stretch!important;
+ justify-items:stretch!important;
+ direction:ltr!important;
+ min-width:0!important;
+ width:100%!important
+}
+body.v105-studio #view-live #liveHost .room-shell>*{direction:rtl!important;min-width:0!important}
+body.v105-studio #view-live #liveHost .room-shell>.bo-live-scene-control{
+ grid-column:1/-1!important;grid-row:1!important;
+ align-self:start!important;
+ width:100%!important;
+ min-width:0!important;
+ min-height:0!important;
+ margin:0!important;
+ padding:clamp(10px,1vw,14px) clamp(12px,1.5vw,22px)!important;
+ display:flex!important;flex-flow:row wrap!important;
+ justify-content:flex-start!important;align-items:center!important;gap:clamp(9px,1.2vw,16px)!important;
+ background-image:linear-gradient(120deg,#0a2543f5,#12395bec)!important;
+ background-color:#0b2949!important;
+ border:1px solid #88c9e0a3!important;
+ border-radius:15px!important;
+ box-shadow:inset 0 1px #ffffff22,0 8px 22px #00122c5a!important;
+ position:relative!important;overflow:visible!important
+}
+body.v105-studio #view-live #liveHost .bo-live-scene-control label{
+ flex:0 0 auto!important;
+ font:850 clamp(12px,1vw,15px)/1.5 Cairo,Tahoma,Arial,sans-serif!important;
+ color:#f5fbff!important;-webkit-text-fill-color:#f5fbff!important
+}
+body.v105-studio #view-live #liveHost .bo-live-scene-control select{
+ flex:1 1 300px!important;
+ width:auto!important;min-width:min(200px,100%)!important;max-width:580px!important;
+ color:#142e4c!important;-webkit-text-fill-color:#142e4c!important;
+ background:#f6fbff!important;border:1.5px solid #a5d8ed!important;
+ border-radius:12px!important;padding:10px 13px!important;
+ font:800 clamp(12px,1vw,15px)/1.5 Cairo,Tahoma,Arial,sans-serif!important;
+ height:auto!important;min-height:46px!important
+}
+body.v105-studio #view-live #liveHost .bo-live-scene-control #changeLiveScene{
+ flex:0 0 auto!important;
+ min-height:45px!important;
+ padding:10px 18px!important;border-radius:12px!important;
+ background:linear-gradient(115deg,#81e7f2,#22bfd9)!important;
+ color:#092f50!important;-webkit-text-fill-color:#092f50!important;
+ border:1px solid #c9f9ff!important;box-shadow:0 4px 14px #0c6e8b55!important;
+ font-weight:950!important;cursor:pointer
+}
+body.v105-studio #view-live #liveHost .room-shell>.room-code-card{
+ grid-column:1!important;grid-row:2!important;
+ width:100%!important;min-width:0!important;margin:0!important;
+ min-height:clamp(370px,32vw,480px)!important
+}
+body.v105-studio #view-live #liveHost .room-shell>.players-panel{
+ grid-column:2!important;grid-row:2!important;
+ width:100%!important;min-width:0!important;margin:0!important;
+ min-height:0!important;max-height:none!important
+}
+body.v105-studio #view-live #liveHost .room-shell>.sky-room-settings{
+ grid-column:1/-1!important;grid-row:3!important;
+ width:100%!important;min-width:0!important;margin:0!important
+}
+/* All 16 existing/new selectable scenes paint the prominent room itself.
+   Background is controlled by the existing data-live-scene attribute from app.js.
+   Keep a localized text gradient, not a near-black full-image cover. */
+body.v105-studio #view-live #liveHost[data-live-scene]{
+ background-image:linear-gradient(90deg,#03112655,#03112638),var(--tag-host-scene)!important;
+ background-position:center center!important;
+ background-size:cover!important;
+ background-repeat:no-repeat!important;
+ background-color:#071e38!important;
+ padding:clamp(9px,1.15vw,15px)!important;
+ border:1px solid #6cbde68a!important;
+ border-radius:22px!important;
+ box-shadow:0 12px 42px #00112a7a,inset 0 1px #ffffff35!important;
+ overflow:hidden
+}
+body.v105-studio #view-live #liveHost[data-live-scene] .room-shell>.room-code-card{
+ background-image:linear-gradient(105deg,rgba(2,20,43,.63),rgba(2,23,46,.15) 46%,rgba(2,18,39,.34)),var(--tag-host-scene)!important;
+ background-position:center center!important;
+ background-size:cover!important;
+ background-repeat:no-repeat!important;
+ background-color:#082541!important;
+ border:1.5px solid #e6edf7a6!important;
+ box-shadow:0 14px 32px #000a,inset 0 1px #fffc!important;
+ color:#fff!important
+}
+body.v105-studio #view-live #liveHost[data-live-scene] .room-code-card::before{
+ display:none!important
+}
+body.v105-studio #view-live #liveHost[data-live-scene] .room-code-card::after{
+ opacity:.16!important;pointer-events:none!important
+}
+body.v105-studio #view-live #liveHost[data-live-scene] .room-code-card :is(.room-code,.join-copy,.sky-room-title){
+ color:#fff!important;-webkit-text-fill-color:#fff!important;
+ text-shadow:0 2px 12px #000e!important
+}
+body.v105-studio #view-live #liveHost[data-live-scene] .room-code-card .sky-room-title{
+ background:#062340cb!important;border-color:#c7ebff91!important;
+ box-shadow:0 5px 20px #0007!important
+}
+body.v105-studio #view-live #liveHost[data-live-scene] .room-code-card .join-copy{
+ background:linear-gradient(110deg,#051a3499,#071d387d)!important;
+ border:1px solid #d4e8ff3d!important;border-radius:15px!important;
+ padding:clamp(11px,1.35vw,17px)!important;
+ backdrop-filter:blur(4px);
+ overflow-wrap:anywhere
+}
+body.v105-studio #view-live #liveHost[data-live-scene] .room-code-card .join-copy :is(small,p,b){
+ color:#fff!important;-webkit-text-fill-color:#fff!important;
+ text-shadow:0 2px 7px #001022!important
+}
+body.v105-studio #view-live #liveHost[data-live-scene] .room-code-card .qr-wrap{
+ position:relative!important;z-index:4!important;
+ box-shadow:0 10px 24px #00122b9e!important;
+ border:3px solid #fff!important
+}
+body.v105-studio #view-live #liveHost[data-live-scene] .room-code-card .host-actions{
+ position:relative!important;z-index:5!important
+}
+body.v105-studio #view-live #liveHost[data-live-scene] .room-code-card .host-actions button{
+ text-shadow:none!important
+}
+body.v105-studio #view-live #liveHost[data-live-scene] .players-panel{
+ background:#092c50ee!important;border:1px solid #8ac9e081!important;
+ box-shadow:0 9px 27px #0008!important
+}
+body.v105-studio #view-live #liveHost[data-live-scene] .sky-room-settings{
+ background:#0a3155ec!important;border:1px solid #a6d9f178!important;
+ padding:clamp(12px,1.5vw,18px)!important;
+ display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
+ gap:7px 14px!important
+}
+body.v105-studio #view-live #liveHost[data-live-scene] .sky-room-settings h3{
+ grid-column:1/-1!important;margin:0 0 3px!important
+}
+body.v105-studio #view-live #liveHost[data-live-scene] .sky-room-settings .sky-setting{
+ min-width:0!important;padding:7px 10px!important;
+ background:#03274b8a!important;border:1px solid #82bed560!important;
+ border-radius:10px!important
+}
+@media(max-width:1050px){
+ body.v105-studio #view-live #liveHost .room-shell{
+  grid-template-columns:minmax(0,1fr)!important;
+  grid-template-rows:auto auto auto auto!important
+ }
+ body.v105-studio #view-live #liveHost .room-shell>.bo-live-scene-control{grid-column:1!important;grid-row:1!important}
+ body.v105-studio #view-live #liveHost .room-shell>.room-code-card{grid-column:1!important;grid-row:2!important;min-height:340px!important}
+ body.v105-studio #view-live #liveHost .room-shell>.players-panel{grid-column:1!important;grid-row:3!important}
+ body.v105-studio #view-live #liveHost .room-shell>.sky-room-settings{grid-column:1!important;grid-row:4!important}
+ body.v105-studio #view-live #liveHost[data-live-scene] .sky-room-settings{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:650px){
+ body.v105-studio #view-live #liveHost[data-live-scene]{padding:7px!important;border-radius:14px!important}
+ body.v105-studio #view-live #liveHost .room-shell>.bo-live-scene-control{
+  display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+  padding:12px!important;gap:9px!important
+ }
+ body.v105-studio #view-live #liveHost .bo-live-scene-control :is(label,select,button){width:100%!important;max-width:100%!important;min-width:0!important}
+ body.v105-studio #view-live #liveHost[data-live-scene] .room-shell>.room-code-card{
+  min-height:0!important;padding:13px!important;
+ }
+ body.v105-studio #view-live #liveHost[data-live-scene] .sky-room-settings{grid-template-columns:minmax(0,1fr)!important}
+ body.v105-studio #view-live #liveHost[data-live-scene] .room-code-card .join-copy{
+  padding:10px!important;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ body.v105-studio #view-live #liveHost .room-shell>.bo-live-scene-control{scroll-behavior:auto}
+}
