@@ -1,0 +1,293 @@
+/* CHAMPION TAG V3 — four official playoff skins and freely replaceable stadium backdrops.
+   Teams, slots, live scores, result links and connector paths remain real UI elements.
+   No background image includes text or bracket positions. */
+body.champion-portal,body.champion-board{
+ --ct-gold:#f9d071;--ct-accent:#ffd67d;--ct-accent2:#fff5c3;
+ --ct-line:#ffca6d;--ct-glow:#f2b648aa;
+ --ct-btn-bg:linear-gradient(115deg,#ffecac,#d79c31);
+ --ct-card-bg:linear-gradient(135deg,#0a1935eF,#0c3155ec);
+ --ct-card-text:#f9fbff;--ct-heading:#fff0b4;--ct-panel:#091f3bde;
+ --ct-background:url('/assets/champion/bg-stadium.svg');
+}
+body.champion-portal[data-champion-theme="neon"],body.champion-board[data-champion-theme="neon"]{
+ --ct-accent:#7aff54;--ct-accent2:#dcffae;--ct-line:#55ffcc;--ct-glow:#46ffd1b9;
+ --ct-btn-bg:linear-gradient(115deg,#c5ff49,#38eaa7);
+ --ct-card-bg:linear-gradient(135deg,#061b22ef,#083244eb);
+ --ct-card-text:#f2fff7;--ct-heading:#b7ff87;--ct-panel:#061d2de5;
+}
+body.champion-portal[data-champion-theme="esports"],body.champion-board[data-champion-theme="esports"]{
+ --ct-accent:#ee6bff;--ct-accent2:#ffd0ff;--ct-line:#5ce6ff;--ct-glow:#bf48ffbd;
+ --ct-btn-bg:linear-gradient(110deg,#ff77e6,#9d5aff);
+ --ct-card-bg:linear-gradient(145deg,#1c0b43ef,#0b2051ef);
+ --ct-card-text:#fcf5ff;--ct-heading:#ffc4fc;--ct-panel:#190d3fe8;
+}
+body.champion-portal[data-champion-theme="broadcast"],body.champion-board[data-champion-theme="broadcast"]{
+ --ct-accent:#e3f4ff;--ct-accent2:#ffdf75;--ct-line:#8de1ff;--ct-glow:#62b5ff91;
+ --ct-btn-bg:linear-gradient(115deg,#e8fbff,#b5d0e8);
+ --ct-card-bg:linear-gradient(140deg,#f8fbff,#cddbed);
+ --ct-card-text:#061a38;--ct-heading:#ffe49b;--ct-panel:#082746e8;
+}
+body.champion-portal[data-champion-bg="stadium"],body.champion-board[data-champion-bg="stadium"]{--ct-background:url('/assets/champion/bg-stadium.svg')}
+body.champion-portal[data-champion-bg="night"],body.champion-board[data-champion-bg="night"]{--ct-background:url('/assets/champion/bg-night.svg')}
+body.champion-portal[data-champion-bg="lights"],body.champion-board[data-champion-bg="lights"]{--ct-background:url('/assets/champion/bg-lights.svg')}
+body.champion-portal[data-champion-bg="arena"],body.champion-board[data-champion-bg="arena"]{--ct-background:url('/assets/champion/bg-arena.svg')}
+body.champion-portal[data-champion-bg="grid"],body.champion-board[data-champion-bg="grid"]{--ct-background:url('/assets/champion/bg-grid.svg')}
+body.champion-portal[data-champion-bg="minimal"],body.champion-board[data-champion-bg="minimal"]{--ct-background:url('/assets/champion/bg-minimal.svg')}
+body.champion-portal,body.champion-board{
+ background-image:linear-gradient(180deg,#0107165e,#0110257c),var(--ct-background)!important;
+ background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important;
+ background-attachment:fixed!important;
+}
+:is(.champion-portal,.champion-board) .hero.wc-worldcup-hero{
+ background-image:linear-gradient(100deg,#06102ed9,#06142db1 55%,#07132db6),var(--ct-background)!important;
+ background-size:cover!important;background-position:center!important;
+ border-color:color-mix(in srgb,var(--ct-accent),transparent 46%)!important;
+ box-shadow:0 20px 55px #0009,inset 0 0 65px var(--ct-glow)!important;
+}
+:is(.champion-portal,.champion-board) .wc-worldcup-hero h1 em{
+ background:linear-gradient(118deg,var(--ct-accent2),var(--ct-accent),var(--ct-accent2))!important;
+ background-clip:text!important;-webkit-background-clip:text!important;
+ color:transparent!important;-webkit-text-fill-color:transparent!important;
+}
+:is(.champion-portal,.champion-board) .wc-worldcup-hero .eyebrow,
+:is(.champion-portal,.champion-board) .wc-live-line,
+:is(.champion-portal,.champion-board) .wc-section-eyebrow{color:var(--ct-accent)!important}
+:is(.champion-portal,.champion-board) .wc-art-cup{filter:drop-shadow(0 9px 17px #000a) drop-shadow(0 0 22px var(--ct-glow))!important}
+:is(.champion-portal,.champion-board) .ct-trophy-img{
+ display:block;width:min(100%,210px);height:auto;max-height:100%;object-fit:contain;filter:drop-shadow(0 0 25px var(--ct-glow));
+ animation:wc-cup-float 4s ease-in-out infinite;
+}
+:is(.champion-portal,.champion-board) .wc-art .ct-trophy-img{width:clamp(100px,13vw,190px)}
+:is(.champion-portal,.champion-board) .btn.gold,.champion-portal .wc-hero-buttons .btn.gold{
+ background:var(--ct-btn-bg)!important;color:#07203b!important;
+ border:1px solid #ffffff8c!important;
+}
+:is(.champion-portal,.champion-board) .panel{
+ border-color:color-mix(in srgb,var(--ct-accent),transparent 77%)!important;
+}
+:is(.champion-portal,.champion-board) .wc-bracket-panel{
+ position:relative;
+ background-image:linear-gradient(180deg,#04112cd1,#030c21cc),var(--ct-background)!important;
+ background-size:cover!important;background-position:center!important;
+ border:1px solid color-mix(in srgb,var(--ct-accent),transparent 48%)!important;
+ box-shadow:0 23px 62px #0008,inset 0 0 58px #0004!important;
+}
+:is(.champion-portal,.champion-board) .wc-bracket-panel:before{opacity:.07}
+:is(.champion-portal,.champion-board) .wc-bracket-panel .round-title{
+ color:var(--ct-heading)!important;background:var(--ct-panel)!important;
+ border:1px solid color-mix(in srgb,var(--ct-accent),transparent 30%)!important;
+ box-shadow:0 1px 11px var(--ct-glow);
+ font-size:11px!important;
+}
+:is(.champion-portal,.champion-board) .wc-bracket-panel .match-card{
+ position:relative;min-height:clamp(74px,10.3dvh,105px)!important;
+ background:var(--ct-card-bg)!important;color:var(--ct-card-text)!important;
+ border:1px solid color-mix(in srgb,var(--ct-accent),transparent 30%)!important;
+ border-radius:12px!important;
+ box-shadow:inset 0 1px #ffffff43,0 5px 19px #000b,0 0 12px color-mix(in srgb,var(--ct-glow),transparent 45%)!important;
+}
+:is(.champion-portal,.champion-board) .wc-bracket-panel .match-card:before{
+ background:var(--ct-accent)!important;box-shadow:0 0 13px var(--ct-glow)!important;opacity:.86!important;
+}
+:is(.champion-portal,.champion-board) .wc-bracket-panel .match-card:hover,
+:is(.champion-portal,.champion-board) .wc-bracket-panel .match-card.active{
+ border-color:var(--ct-accent2)!important;box-shadow:0 0 0 2px var(--ct-glow),0 8px 27px #0009!important;
+}
+:is(.champion-portal,.champion-board) .wc-bracket-panel .fixture-team{
+ color:var(--ct-card-text)!important;font-size:clamp(11px,1.1vw,15px)!important;
+ text-align:right;line-height:1.3;min-height:19px!important
+}
+:is(.champion-portal,.champion-board) .wc-bracket-panel .fixture-team.winner{color:var(--ct-accent2)!important}
+:is(.champion-portal,.champion-board) .wc-bracket-panel .fixture-num{
+ border-color:color-mix(in srgb,var(--ct-accent),transparent 79%)!important;
+ color:var(--ct-card-text)!important;font-size:10px!important;opacity:.82;
+}
+:is(.champion-portal,.champion-board) .wc-bracket-panel .fixture-vs{color:var(--ct-accent)!important;line-height:1.2!important}
+:is(.champion-portal,.champion-board) .wc-bracket-panel .center-final{
+ min-width:182px!important;width:182px!important;gap:6px!important;
+ background:radial-gradient(ellipse,#e8b55915,transparent 69%)!important;
+}
+:is(.champion-portal,.champion-board) .wc-bracket-panel .center-final .cup{
+ font-size:unset!important;height:clamp(112px,18dvh,177px)!important;line-height:1!important;
+ display:flex;align-items:center;justify-content:center;
+ filter:drop-shadow(0 5px 18px var(--ct-glow));
+}
+:is(.champion-portal,.champion-board) .wc-bracket-panel .center-final .ct-trophy-img{
+ max-height:100%;max-width:140px!important;
+}
+:is(.champion-portal,.champion-board) .wc-bracket-panel .champion-name{
+ min-width:155px!important;max-width:188px!important;
+ border-color:var(--ct-accent)!important;background:var(--ct-panel)!important;
+ color:var(--ct-heading)!important;font-size:13px;
+}
+:is(.champion-portal,.champion-board) .wc-bracket-panel .bracket{
+ position:relative!important;
+ gap:clamp(9px,1vw,18px)!important;
+ width:max-content;max-width:none;
+ margin:0 auto;
+ padding:9px 9px 13px!important;
+}
+:is(.champion-portal,.champion-board) .wc-bracket-panel .round-col{
+ min-height:clamp(340px,55dvh,540px)!important;
+ width:clamp(140px,12.5vw,182px)!important;
+ gap:10px!important;
+}
+:is(.champion-portal,.champion-board) .wc-bracket-panel .round-col .match-card{
+ width:100%!important;min-height:clamp(70px,10.3dvh,100px)!important;
+ padding:8px 10px!important;
+}
+:is(.champion-portal,.champion-board) .wc-bracket-panel .wing{gap:clamp(7px,.8vw,13px)!important}
+:is(.champion-portal,.champion-board) .wc-bracket-panel .bracket-connector-layer{
+ position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible;
+ z-index:0;
+}
+:is(.champion-portal,.champion-board) .wc-bracket-panel .bracket-connector-layer path{
+ fill:none;stroke:var(--ct-line);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;
+ filter:drop-shadow(0 0 4px var(--ct-glow));opacity:.85;
+}
+:is(.champion-portal,.champion-board) .wc-bracket-panel .bracket >:not(.bracket-connector-layer){
+ position:relative;z-index:1;
+}
+:is(.champion-portal,.champion-board) .wc-bracket-panel .wing .round-col .match-card::after{display:none!important}
+:is(.champion-portal,.champion-board) .wc-bracket-panel .bracket-viewport{
+ overflow-x:auto!important;overflow-y:hidden!important;scrollbar-color:var(--ct-accent) #102447!important;
+ padding:7px 3px 16px!important;
+}
+:is(.champion-portal,.champion-board) .wc-bracket-panel .center-final .round-title{
+ font-size:14px!important;letter-spacing:1px
+}
+:is(.champion-portal,.champion-board) .wc-bracket-panel .center-final::before{
+ content:"";display:block;position:absolute;inset:5% 0 5%;
+ border:1px solid color-mix(in srgb,var(--ct-accent),transparent 78%);
+ border-radius:100px;box-shadow:inset 0 0 30px var(--ct-glow);pointer-events:none;
+}
+:is(.champion-portal,.champion-board) .ct-customizer{
+ position:relative;z-index:2;margin:12px 0 21px;
+ padding:clamp(13px,2vw,22px);
+ background:linear-gradient(153deg,#08152fef,#0e2a4cdb);
+ border:1px solid #7ba4bc6b;border-radius:18px;box-shadow:0 9px 30px #0005;
+}
+.ct-pick-title{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:10px}
+.ct-pick-title h3{margin:2px 0 5px;font-size:clamp(16px,2vw,23px)}
+.ct-pick-title .hint{margin:0}
+.ct-canva-link{border:1px solid #bfcac061;border-radius:9px;background:#14334a;padding:6px 12px;font-size:12px}
+.ct-theme-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:11px 0 16px}
+.ct-theme-card{
+ color:#e9faff;min-width:0;min-height:142px;padding:7px 8px 11px;
+ border:1px solid #8dbac84d;border-radius:12px;
+ text-align:center;background:#0b2547;
+ cursor:pointer;transition:transform .2s,border-color .2s;
+}
+.ct-theme-card:hover,.ct-theme-card:focus-visible{transform:translateY(-2px);border-color:#d4e9e7}
+.ct-theme-card.is-selected{
+ outline:2px solid var(--ct-accent)!important;outline-offset:-2px;
+ border-color:var(--ct-accent)!important;
+ box-shadow:0 0 0 2px var(--ct-glow),0 0 20px color-mix(in srgb,var(--ct-glow),transparent 40%);
+}
+.ct-theme-card strong{display:block;font-size:clamp(11px,1.1vw,15px);margin:5px 0 1px}
+.ct-theme-card small{display:block;font-size:10px;color:#b0d1eb;white-space:normal}
+.ct-theme-preview{
+ position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;
+ width:100%;height:78px;border-radius:8px;overflow:hidden;
+ background-size:cover;background-position:center;border:1px solid #9cc7d47a;
+}
+.ct-theme-preview::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#0008,transparent 50%,#0008)}
+.ct-theme-preview-gold{background-image:url('/assets/champion/bg-stadium.svg')}
+.ct-theme-preview-neon{background-image:url('/assets/champion/bg-arena.svg')}
+.ct-theme-preview-esports{background-image:url('/assets/champion/bg-grid.svg')}
+.ct-theme-preview-broadcast{background-image:url('/assets/champion/bg-lights.svg')}
+.ct-theme-preview-neon{box-shadow:inset 0 0 15px #4cfeb34e}
+.ct-theme-preview-esports{box-shadow:inset 0 0 15px #e466ff5e}
+.ct-theme-preview-broadcast{box-shadow:inset 0 0 15px #bdedff6a}
+.ct-mini-brackets{color:#e1fcff;position:absolute;top:8px;font-size:clamp(10px,1vw,14px);text-shadow:0 0 4px #000}
+.ct-mini-cup{font-size:37px;position:relative;filter:drop-shadow(0 0 9px #facc62a8)}
+.ct-customizer h4{font-size:14px;color:#d7ebf4;margin:13px 0 8px}
+.ct-background-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.ct-background-card{min-width:0;text-align:center;background:#071b37;color:#e0f2ff;
+ border:1px solid #8bb5c45c;border-radius:11px;padding:5px 5px 8px;font-size:11px;
+ cursor:pointer;}
+.ct-background-card.is-selected{border-color:var(--ct-accent);outline:2px solid var(--ct-accent);outline-offset:-2px}
+.ct-background-preview{display:block;height:50px;margin-bottom:5px;border-radius:7px;
+ background-size:cover;background-position:center}
+.ct-bg-stadium{background-image:url('/assets/champion/bg-stadium.svg')}
+.ct-bg-night{background-image:url('/assets/champion/bg-night.svg')}
+.ct-bg-lights{background-image:url('/assets/champion/bg-lights.svg')}
+.ct-bg-arena{background-image:url('/assets/champion/bg-arena.svg')}
+.ct-bg-grid{background-image:url('/assets/champion/bg-grid.svg')}
+.ct-bg-minimal{background-image:url('/assets/champion/bg-minimal.svg')}
+.ct-active-customizer{margin:0 0 13px;background:#06152abf}
+#championThemeMessage{margin-top:12px}
+body.champion-board{height:100dvh;min-height:100dvh;overflow:hidden!important}
+body.champion-board .top{min-height:55px!important;height:55px;flex-wrap:nowrap!important}
+body.champion-board .brand-img{height:44px!important;max-width:168px!important}
+body.champion-board main.wrap{
+ height:calc(100dvh - 55px)!important;min-height:0;
+ padding:0 0 7px;display:grid;grid-template-rows:auto minmax(0,1fr);gap:6px;
+}
+body.champion-board .hero.wc-worldcup-board-hero{
+ min-height:95px!important;max-height:117px;height:auto!important;margin:4px 0!important;
+ padding:9px 25px!important;display:grid;grid-template-columns:minmax(0,1fr) 88px!important;
+ border-radius:14px!important;
+}
+body.champion-board .wc-worldcup-board-hero .wc-hero-copy{max-width:100%}
+body.champion-board .wc-worldcup-board-hero .wc-live-line{margin-bottom:1px;font-size:10px}
+body.champion-board .wc-worldcup-board-hero .eyebrow{font-size:10px}
+body.champion-board .wc-worldcup-board-hero h1{font-size:clamp(22px,2.6vw,36px)!important;margin:0!important}
+body.champion-board .wc-worldcup-board-hero .wc-hero-title{display:none!important}
+body.champion-board .wc-worldcup-board-hero .wc-hero-description{margin:0!important;font-size:12px;line-height:1.25}
+body.champion-board .wc-worldcup-board-hero .wc-art{display:flex!important;min-height:60px!important;height:70px!important;max-width:90px!important}
+body.champion-board .wc-worldcup-board-hero .wc-art-orbit,.champion-board .wc-worldcup-board-hero .wc-art-caption{display:none}
+body.champion-board .wc-worldcup-board-hero .ct-trophy-img{width:73px!important}
+body.champion-board .wc-bracket-panel{
+ min-height:0!important;max-height:100%!important;display:flex;flex-direction:column;
+ padding:9px 13px 8px!important;border-radius:12px!important;overflow:hidden!important;
+}
+body.champion-board .wc-bracket-panel .wc-section-eyebrow{flex:0 0 auto;margin-bottom:1px;font-size:9px}
+body.champion-board #boardBracket{
+ flex:1 1 0;min-height:0;max-height:100%;overflow:auto!important;
+ display:flex;align-items:stretch;justify-content:center;
+}
+body.champion-board #boardBracket .bracket{
+ align-items:stretch!important;min-height:100%!important;margin:auto!important;
+}
+body.champion-board .wc-bracket-panel .round-col{min-height:clamp(340px,61dvh,610px)!important}
+body.champion-board .wc-bracket-panel .round-col .match-card{
+ min-height:clamp(70px,11dvh,107px)!important;
+}
+body.champion-board .wc-bracket-panel .center-final .cup{
+ height:clamp(92px,16dvh,166px)!important;
+}
+body.champion-board #boardStatus{
+ flex:0 0 auto;margin:0!important;text-align:center;font-size:10px;
+}
+@media(min-width:1600px){
+ :is(.champion-portal,.champion-board) .wc-bracket-panel .round-col{width:clamp(172px,11vw,218px)!important}
+ :is(.champion-portal,.champion-board) .wc-bracket-panel .center-final{width:215px!important;min-width:215px!important}
+}
+@media(max-width:1100px){
+ .ct-background-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+ :is(.champion-portal,.champion-board) .wc-bracket-panel .round-col{width:150px!important}
+ :is(.champion-portal,.champion-board) .wc-bracket-panel .center-final{width:165px!important;min-width:165px!important}
+ body.champion-board #boardBracket{justify-content:flex-start!important}
+}
+@media(max-width:680px){
+ .ct-theme-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .ct-background-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .ct-pick-title{align-items:flex-start}
+ .ct-theme-card{min-height:126px}
+ .ct-theme-preview{height:70px}
+ body.champion-board .top{height:50px!important}
+ body.champion-board main.wrap{height:calc(100dvh - 50px)!important}
+ body.champion-board .hero.wc-worldcup-board-hero{min-height:100px!important;padding:8px!important}
+ body.champion-board .wc-worldcup-board-hero h1{font-size:24px!important}
+ body.champion-board .wc-bracket-panel{padding:6px 7px!important}
+ body.champion-board .wc-worldcup-board-hero .wc-art{display:none!important}
+ body.champion-board .hero.wc-worldcup-board-hero{grid-template-columns:minmax(0,1fr)!important}
+}
+@media(prefers-reduced-motion:reduce){.ct-trophy-img,.ct-theme-card{animation:none!important;transition:none!important}}
+@media print{
+ body.champion-board{height:auto!important;overflow:visible!important}
+ body.champion-board main.wrap{height:auto!important;display:block!important}
+ body.champion-board #boardBracket{height:auto!important;overflow:visible!important}
+ .ct-customizer{display:none!important}
+}
