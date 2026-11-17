@@ -5,22 +5,51 @@
 <title>CHAMPION TAG | بطولة التصفيات — TEACH AND GAME</title>
 <link rel="icon" type="image/svg+xml" href="/assets/brand/tag-icon.svg">
 <link rel="stylesheet" href="/champion-tag.css?v=1">
+<link rel="stylesheet" href="/champion-worldcup-v2.css?v=2.0">
 <script defer src="/champion-bracket.js?v=1"></script>
 <script defer src="/champion-tag.js?v=1"></script>
-</head><body>
+</head><body class="champion-portal">
 <header class="top wrap"><a class="brand" href="/?teacher=1" aria-label="العودة لمنصة TAG"><img class="brand-img" src="/assets/brand/tag-logo-dark-v21.png" alt="شعار TEACH AND GAME TAG"></a>
 <nav class="head-actions"><a href="/?teacher=1">لوحة المعلم</a><a href="/studio.html#live">التحدي المباشر</a><a href="/studio.html#library">اختباراتي</a></nav></header>
 <main class="wrap">
-<section class="hero"><div><span class="eyebrow">CHAMPION TAG • KNOCKOUT TOURNAMENT</span><h1>CHAMPION <em>TAG</em></h1><p><strong>بطولات TAG — نظام التصفيات</strong></p><p>أنشئ بطولة للشعب أو الفرق أو الطلاب، واختر القرعة العشوائية أو حدّد المواجهات بنفسك. يفوز أحد الطرفين في كل تحدٍ مباشر ليتأهل إلى الدور التالي حتى النهائي.</p></div><div class="hero-trophy" aria-hidden="true">🏆</div></section>
+
+<section class="hero wc-worldcup-hero" aria-labelledby="championHeroHeading">
+  <div class="wc-hero-copy">
+    <div class="wc-live-line"><span class="wc-signal" aria-hidden="true"></span><span>TAG WORLD CUP EXPERIENCE</span><span class="wc-season">موسم البطولات المدرسية</span></div>
+    <div class="eyebrow">THE ROAD TO GLORY · طريقك إلى اللقب</div>
+    <h1 id="championHeroHeading">CHAMPION <em>TAG</em></h1>
+    <p class="wc-hero-title">🏆 البطولة تبدأ من هنا</p>
+    <p class="wc-hero-description">حوّل منافسات الطلاب والشعب إلى بطولة عالمية بنظام خروج المغلوب. قرعة، مواجهات مباشرة، أدوار متتابعة، ونهائي يتوّج البطل.</p>
+    <div class="wc-hero-buttons">
+      <button class="btn gold" type="button" data-champion-jump="create">✦ إنشاء بطولة جديدة</button>
+      <button class="btn wc-glass-btn" type="button" data-champion-jump="archive">▤ بطولاتي</button>
+      <button class="btn wc-glass-btn" type="button" data-champion-jump="bracket">◈ مشاهدة التصفيات</button>
+    </div>
+    <div class="wc-hero-tags"><span>⚔️ خروج المغلوب</span><span>🎮 أسئلة مباشرة</span><span>🎲 قرعة عادلة</span><span>🏅 بطل واحد</span></div>
+  </div>
+  <div class="wc-art" aria-hidden="true">
+    <div class="wc-art-halo"></div><div class="wc-art-orbit orbit-1"></div><div class="wc-art-orbit orbit-2"></div>
+    <div class="wc-art-cup">🏆</div><div class="wc-art-base"></div>
+    <div class="wc-art-spark spark-1">✦</div><div class="wc-art-spark spark-2">✧</div><div class="wc-art-spark spark-3">✦</div>
+    <div class="wc-art-caption">ONE TROPHY · ONE CHAMPION</div>
+  </div>
+  <div class="wc-pitch-lines" aria-hidden="true"></div>
+</section>
+<div class="wc-worldcup-stats" aria-label="مؤشرات البطولة">
+ <div class="wc-stat"><span>01 / المشاركة</span><strong id="wcParticipants">—</strong><small>مشارك في البطولة</small></div>
+ <div class="wc-stat"><span>02 / المواجهات</span><strong id="wcFixtures">—</strong><small>مباراة في التصفيات</small></div>
+ <div class="wc-stat"><span>03 / التقدم</span><strong id="wcProgress">—</strong><small>مواجهة مكتملة</small></div>
+ <div class="wc-stat wc-stat-gold"><span>04 / اللقب</span><strong id="wcChampion">بانتظار البطل</strong><small>التتويج النهائي</small></div>
+</div>
 <div id="championLoading" class="panel" role="status">جارٍ التحقق من حساب المعلم وتحميل البطولات...</div>
 <div id="championApp" hidden>
-<div class="tabs" role="tablist" aria-label="أقسام البطولات">
+<div class="tabs wc-tabbar" role="tablist" aria-label="أقسام البطولات">
 <button class="tab active" id="tabCreate" type="button">＋ بطولة جديدة</button>
 <button class="tab" id="tabArchive" type="button">🏆 بطولاتي المحفوظة</button>
 <button class="tab" id="tabBracket" type="button">📊 جدول التصفيات</button>
 </div>
 <section class="create-screen panel" id="createScreen" aria-label="إنشاء بطولة جديدة">
-<h2>إنشاء بطولة CHAMPION TAG</h2><p class="muted">احفظ اختبارك أولًا في استوديو TAG، ثم اختره هنا لتُستخدم أسئلته في مواجهات البطولة.</p>
+<div class="wc-section-eyebrow">CHAMPIONSHIP CREATOR · صانع البطولات</div><h2>أنشئ بطولتك العالمية</h2><p class="muted">احفظ اختبارك أولًا في استوديو TAG، ثم اختره هنا لتُستخدم أسئلته في مواجهات البطولة.</p>
 <form id="championCreateForm">
 <div class="form-grid">
 <label class="field"><span>اسم البطولة</span><input id="championTitle" maxlength="100" value="بطولة أبطال TAG" required></label>
@@ -36,13 +65,13 @@
 </form></section>
 <section class="library-screen panel" id="archiveScreen" hidden><div class="bracket-head"><h2>بطولاتي المحفوظة</h2><button class="btn" type="button" id="refreshTournaments">تحديث القائمة ↻</button></div><div id="championArchive" class="library"></div></section>
 <section class="bracket-screen" id="bracketScreen" hidden>
-<div class="panel">
+<div class="panel wc-bracket-panel">
 <div class="bracket-head"><div><span class="eyebrow">CHAMPIONSHIP BRACKET</span><h2 id="currentTournamentTitle">جدول التصفيات</h2><p id="currentTournamentMeta" class="muted">اختر بطولة لعرض مواجهاتها.</p></div>
 <div class="row-actions" style="margin:0"><button class="btn" type="button" id="openPublicBoard">📺 شاشة عرض التصفيات</button><button class="btn" type="button" id="copyPublicBoard">🔗 نسخ رابط العرض</button><button class="btn" type="button" onclick="window.print()">🖨 طباعة</button></div></div>
 <div id="bracketCanvas" class="bracket-viewport" aria-label="مخطط تصفيات البطولة"></div>
 <p class="hint">اضغط على أي مواجهة لفتح تفاصيلها. ينقل النظام الفائز تلقائيًا إلى المواجهة التالية بعد اعتماد نتيجتها.</p>
 </div>
-<section class="match-section"><div class="panel" id="championMatchDetails"><h3>اختر مواجهة</h3><p class="muted">اضغط على إحدى مواجهات جدول التصفيات لتشغيل التحدي المباشر أو مشاهدة نتيجتها.</p></div>
+<section class="match-section wc-match-arena"><div class="panel" id="championMatchDetails"><h3>اختر مواجهة</h3><p class="muted">اضغط على إحدى مواجهات جدول التصفيات لتشغيل التحدي المباشر أو مشاهدة نتيجتها.</p></div>
 <div class="panel live-pane" id="championLiveHost"><h3>ساحة التحدي المباشر</h3><p class="muted">تظهر غرفة المباراة ورمز QR والتحكم بالأسئلة هنا بعد إنشاء مواجهة.</p></div></section>
 </section>
 </div>
