@@ -739,7 +739,7 @@ class Handler(SimpleHTTPRequestHandler):
                 total=len(room['quiz']['questions']); order=list(range(total))
                 if room.get('variantMode')=='models4':
                     model=['A','B','C','D'][len(room['players'])%4]; order=model_order(code,model,total)
-                room['players'][pid]={'id':pid,'name':name,'championSeat':(len(room['players']) if room.get('championId') else 0),'studentId':student['id'] if student else None,'level':platform_store.level_for_xp(student['xp']) if student else 1,'xp':int(student['xp']) if student else 0,'xpGain':0,'avatar':avatar,'team':team,'model':model,'questionOrder':order,'optionMaps':{},'score':0,'correct':0,'wrong':0,'streak':0,'answers':{},'lastResult':{},'powerups':{'double':True}}
+                room['players'][pid]={'id':pid,'name':name,'championSeat':(len(room['players']) if room.get('championId') else 0),'studentId':student['id'] if student else None,'pinVerified':bool(verify_on and student),'level':platform_store.level_for_xp(student['xp']) if student else 1,'xp':int(student['xp']) if student else 0,'xpGain':0,'avatar':avatar,'team':team,'model':model,'questionOrder':order,'optionMaps':{},'score':0,'correct':0,'wrong':0,'streak':0,'answers':{},'lastResult':{},'powerups':{'double':True}}
             snapshot_room(room)
             return self.send_json({'ok':True,'playerId':pid,'name':name,'quizTitle':room['quiz'].get('title',''),'team':team,'playType':room['playType'],'model':model,'variantMode':room.get('variantMode','options'),'avatar':avatar,'background':room.get('background','cartoon'),'examMode':room.get('examMode',False),'level':room['players'][pid]['level'],'xp':room['players'][pid]['xp'],'progress':platform_store.xp_progress(room['players'][pid]['xp'])})
         if u.path=='/api/room/control':
@@ -791,6 +791,10 @@ class Handler(SimpleHTTPRequestHandler):
             with LOCK:
                 room=ROOMS.get(code); p=room and room['players'].get(pid)
                 if not room or not p: return self.send_json({'ok':False,'error':'not_found'},404)
+                # Closing an activation race: students who joined BEFORE PIN
+                # protection was enabled must not submit answers afterward.
+                if student_verify.is_enabled(room.get('teacherId','')) and not p.get('pinVerified'):
+                    return self.send_json({'ok':False,'error':'student_pin_required'},403)
                 maybe_end_round(room)
                 if room['status']!='question' or room['index']!=idx: return self.send_json({'ok':False,'error':'question_changed'},409)
                 key=str(idx)
