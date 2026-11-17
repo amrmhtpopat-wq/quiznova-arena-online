@@ -101,6 +101,9 @@ def handle_post(h,u,data):
             h.send_json({'ok':True,'pins':items,'status':student_verify.status(t['id'])})
             return True
         if u.path=='/api/teacher/student-verify/toggle':
+            if data.get('enabled') is True and data.get('deliveredConfirmed') is not True:
+                h.send_json({'ok':False,'error':'distribution_confirmation_required'},400)
+                return True
             setting=student_verify.set_enabled(t['id'],data.get('enabled'))
             h.send_json({'ok':True,**setting});return True
         if u.path=='/api/teacher/student-verify/unlock':
