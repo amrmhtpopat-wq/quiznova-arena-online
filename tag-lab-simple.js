@@ -32,7 +32,7 @@ const brand=make('span');brand.append(make('strong','', 'TAG LAB'),make('span','
 logo.append(mark,brand);
 const menu=make('nav','tag-simple-links');menu.setAttribute('aria-label','الصفحات الرئيسية');
 for(const p of pages){const a=make('a','',p.icon+' '+p.label);a.href=p.url;if(p.id===view)a.setAttribute('aria-current','page');menu.append(a)}
-inside.append(logo,menu,make('span','tag-simple-meta','نسخة تجريبية • مجانية'));nav.append(inside);
+inside.append(logo,menu,make('span','tag-simple-meta','TAG LAB • ضمن المنصة الرسمية'));nav.append(inside);
 document.body.prepend(nav);
 const main=document.querySelector('.main');
 if(!main)return;
@@ -53,7 +53,7 @@ if(view!=='library'){
 }
 const tip=make('p','tag-simple-hint','💡 '+copy.tip);
 intro.after(tip);
-const footer=make('footer','tag-simple-footer','TAG LAB — بيئة تجربة منفصلة عن الموقع الرسمي. تستخدم أدواتك الحالية دون رسوم ذكاء اصطناعي مدفوعة.');
+const footer=make('footer','tag-simple-footer','TAG LAB — مختبر الألعاب متصل بحساب TEACH AND GAME نفسه وبطاقات طلابه، دون رسوم ذكاء اصطناعي مدفوعة.');
 document.body.append(footer);
 function logged(){return Boolean($('cloudWorkspace')&&!$('cloudWorkspace').classList.contains('hide'))}
 function authView(){const ok=logged();if(view!=='library'){auth.dataset.logged=ok?'yes':'no';account.hidden=!ok}}
