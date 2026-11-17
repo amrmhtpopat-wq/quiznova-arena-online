@@ -61,27 +61,26 @@ function demo(id,forceDemo){
  let notice=$('tagV32SampleNotice');
  if(!notice){notice=make('div','tag-v32-demo-caption');notice.id='tagV32SampleNotice';notice.setAttribute('role','status');overlay.querySelector('.playhead')?.after(notice)}
  notice.hidden=!window.TAG_LAB_V32_DEMO_ACTIVE;
- notice.textContent='🎮 هذه معاينة تفاعلية بأسئلة تجريبية. يمكنك إغلاقها ثم اختيار القالب، ولن تتغير أسئلتك.';
+ notice.textContent='معاينة تجريبية';
 }
 function art(p){
  const art=make('div','tag-v32-art');art.dataset.art=p.art;
  if(p.art==='wheel'){const wheel=make('div','tag-v32-wheel');wheel.append(make('b','','؟'));art.append(wheel)}
- else if(p.art==='quiz'){const board=make('div','tag-v32-artboard');board.append(make('span','qline'),make('span','qline short'));
-  const opts=make('div','opt');for(let i=0;i<4;i++)opts.append(document.createElement('i'));board.append(opts);art.append(board)}
+ else if(p.art==='quiz'){art.append(make('div','tag-v32-art-generic','🏆'))}
  else if(p.art==='pairs'){const grid=make('div','tag-v32-pairs');for(const icon of ['🧮','🐱','🐱','🌍','🌍','🧮','📖','📖'])grid.append(make('span','',icon));art.append(grid)}
- else if(p.art==='boxes'){const grid=make('div','tag-v32-boxes');for(const icon of ['🎁','❔','🎁','🎁','🎁','🎁'])grid.append(make('span','',icon));art.append(grid)}
+ else if(p.art==='boxes'){art.append(make('div','tag-v32-art-generic','🎁'))}
  else if(p.art==='truth'){const flex=make('div','tag-v32-truth');flex.append(make('span','','✓'),make('span','','✕'));art.append(flex)}
- else if(p.art==='fast'){const clock=make('div','tag-v32-fast');clock.append(make('strong','','00:15'),make('div','bar'));art.append(clock)}
+ else if(p.art==='fast'){art.append(make('div','tag-v32-art-generic','⏱️'))}
  else art.append(make('div','tag-v32-art-generic',p.icon));
  return art
 }
 function gameCard(p){
  const card=make('article','tag-v32-game');card.dataset.mode=p.id;card.setAttribute('aria-selected',String(p.id===choice));card.append(art(p));
  const body=make('div','tag-v32-body');body.append(make('h3','',p.icon+' '+p.name),make('p','',p.desc));
- const tags=make('div','tag-v32-tags');tags.append(make('span','goodfit',p.tag),make('span','','يمكن تغيير القالب لاحقًا'));body.append(tags);
+ const tags=make('div','tag-v32-tags');tags.append(make('span','goodfit',p.tag));body.append(tags);
  const buttons=make('div','tag-v32-buttons');
- const preview=make('button','','▶ معاينة');preview.type='button';preview.setAttribute('aria-label','معاينة لعبة '+p.name+' بأسئلة تجريبية');preview.onclick=()=>demo(p.id,true);
- const pick=make('button','pick','✏️ اكتب أسئلة هذا القالب');pick.type='button';pick.onclick=()=>choose(p.id,true);
+ const preview=make('button','','جرّب');preview.type='button';preview.setAttribute('aria-label','معاينة لعبة '+p.name+' بأسئلة تجريبية');preview.onclick=()=>demo(p.id,true);
+ const pick=make('button','pick','اختر القالب');pick.type='button';pick.onclick=()=>choose(p.id,true);
  buttons.append(preview,pick);body.append(buttons);card.append(body);return card
 }
 function option(p,chooser=()=>choose(p.id,false)){
