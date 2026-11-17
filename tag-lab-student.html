@@ -1,0 +1,148 @@
+<!doctype html><html lang="ar" dir="rtl"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive"><meta name="theme-color" content="#092c4b">
+<title>TAG LAB | ألعابي التعليمية</title>
+<link rel="icon" href="/assets/brand/tag-icon.svg" type="image/svg+xml">
+<style>
+*{box-sizing:border-box}html{font-family:Tahoma,"Segoe UI",Arial,sans-serif}
+body{margin:0;min-height:100vh;background:linear-gradient(160deg,#081c3b,#0b3d66 60%,#075b5d);color:#ecfcff;line-height:1.65}
+header{padding:14px clamp(15px,4vw,38px);display:flex;align-items:center;gap:15px;border-bottom:1px solid #ffffff2c}
+header img{width:85px;max-height:54px;object-fit:contain}header a{color:#c1f6ee;text-decoration:none}
+main{max-width:880px;margin:auto;padding:26px 16px 70px}
+h1{font-size:clamp(1.55rem,3.5vw,2.3rem);margin:0}h2{font-size:1.22rem;margin:0 0 14px}
+.sub{color:#bfd3e5;margin:7px 0 25px}
+.panel{background:#fff;color:#15374e;border-radius:19px;padding:clamp(19px,4vw,29px);margin-bottom:19px;box-shadow:0 18px 30px #06162b34}
+.panel[hidden]{display:none}label{display:block;font-size:.9rem;font-weight:750;margin:0 0 8px}
+input{min-height:49px;width:100%;padding:11px 14px;border-radius:11px;border:1.5px solid #b3cfde;font:inherit;background:#fff;color:#193b50}
+.field{margin:0 0 19px}.row{display:flex;flex-wrap:wrap;gap:11px;align-items:center}
+button{border:0;cursor:pointer;background:#118b8a;color:#fff;border-radius:12px;padding:12px 19px;min-height:46px;font:800 .97rem Tahoma,Arial,sans-serif}
+button.secondary{background:#e8f3f7;color:#135e70}button:disabled{opacity:.52}
+.status{min-height:25px;color:#08766f;margin:12px 0 0;font-size:.88rem}.status.error{color:#a32939}
+.games{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.game{border:1px solid #d8e6ec;border-radius:13px;padding:15px;background:#f8fbfd}
+.game h3{margin:0 0 6px}.game p{font-size:.87rem;color:#587483}.game button{width:100%}
+#question{font-size:clamp(1.3rem,3vw,1.8rem);font-weight:850;line-height:1.65}
+.choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:20px}
+.choices button{background:#e3f4f7;color:#12415d;border:2px solid #c2e2ea;min-height:72px;white-space:normal;overflow-wrap:anywhere}
+.choices button:hover{background:#b4eddf}.choices button:disabled{opacity:.7}
+#previewImage{display:none;max-width:100%;max-height:320px;border-radius:13px;margin:16px auto}
+#answerStatus{padding:8px 0;min-height:37px;font-weight:800}
+#next{display:none}.small{color:#62798a;font-size:.87rem}
+:focus-visible{outline:3px solid #efbf54;outline-offset:3px}
+@media(max-width:520px){.choices{grid-template-columns:1fr}.choices button{min-height:60px}}
+</style></head><body>
+<header><img src="/assets/brand/tag-logo-dark-v21.png" alt="TAG LAB"><a href="/tag-lab-home.html">الصفحة الرئيسية</a></header>
+<main><h1>🎮 ألعابي التعليمية</h1><p class="sub">استخدم بطاقة الطالب الحالية ورمز PIN الخاص بك.</p>
+<section id="loginPanel" class="panel">
+<h2>الدخول ببطاقة الطالب</h2>
+<form id="loginForm">
+<div class="field"><label for="card">رمز بطاقتك</label><input id="card" required maxlength="150" autocomplete="off" placeholder="امسح QR أو أدخل رمز بطاقتك"></div>
+<div class="field"><label for="pin">رمز PIN الشخصي</label><input id="pin" type="password" inputmode="numeric" pattern="[0-9]{6}" minlength="6" maxlength="6" required autocomplete="off" placeholder="6 أرقام"></div>
+<button id="loginBtn" type="submit">دخول</button></form><p id="loginStatus" class="status" role="status"></p>
+</section>
+<section id="libraryPanel" class="panel" hidden>
+<div class="row" style="justify-content:space-between"><h2 id="welcome">ألعابي</h2><button id="logout" class="secondary">خروج</button></div>
+<div id="games" class="games"></div><p id="gamesStatus" class="status" role="status"></p>
+</section>
+<section id="playPanel" class="panel" hidden>
+<div class="row" style="justify-content:space-between"><strong id="activityTitle"></strong><span class="small" id="progress"></span></div>
+<img id="previewImage" alt="صورة السؤال"><p id="question"></p><p id="candidate"></p>
+<div id="choices" class="choices"></div>
+<div id="textWrap" class="field" hidden><label for="textAnswer">الإجابة</label><input id="textAnswer" autocomplete="off" maxlength="120"></div>
+<div class="row"><button id="submitText" hidden>إرسال الإجابة</button><button id="next" class="secondary">متابعة</button></div>
+<p id="answerStatus" role="status"></p>
+<div id="final" hidden><h2>انتهت اللعبة!</h2><p id="finalScore"></p><button id="backToGames">ألعابي</button></div>
+</section></main>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id);
+let cardSession=sessionStorage.getItem('taglab_student_session')||'';
+let runToken=sessionStorage.getItem('taglab_game_run')||'';
+let current=null,pending=null;
+const errorText={invalid_credentials:'البطاقة أو رمز PIN غير صحيح.',card_bridge_unavailable:'لم تُفعّل خدمة التحقق من البطاقات بعد.',rate_limited:'محاولات كثيرة. حاول لاحقًا.',session_already_active:'هناك جلسة مفتوحة بهذه البطاقة. أنهها أولًا من الجهاز الآخر.',invalid_session:'انتهت الجلسة، سجل الدخول مجددًا.',another_attempt_active:'توجد محاولة نشطة على جهاز آخر.',attempt_limit:'انتهى عدد المحاولات المسموح.',not_assigned_to_card:'هذه اللعبة غير مخصصة لبطاقتك.',card_session_required:'سجل الدخول إلى بطاقة الطالب أولًا.'};
+function msg(id,val,bad=false){$(id).textContent=val;$(id).className='status'+(bad?' error':'')}
+function err(e){return errorText[e.message]||'تعذر إكمال العملية: '+e.message}
+async function api(path,data){
+ const opts={method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data||{}),cache:'no-store'};
+ const response=await fetch(path,opts);const out=await response.json().catch(()=>({}));
+ if(!response.ok||out.ok===false)throw Error(out.error||'server_error');return out;
+}
+function elem(tag,txt){const x=document.createElement(tag);x.textContent=txt;return x}
+function setSession(t){cardSession=t||'';if(t)sessionStorage.setItem('taglab_student_session',t);else sessionStorage.removeItem('taglab_student_session')}
+function setRun(t){runToken=t||'';if(t)sessionStorage.setItem('taglab_game_run',t);else sessionStorage.removeItem('taglab_game_run')}
+function show(id){['loginPanel','libraryPanel','playPanel'].forEach(x=>$(x).hidden=x!==id)}
+function renderLibrary(data){
+ show('libraryPanel');$('welcome').textContent='ألعاب '+(data.student?.label||'الطالب');
+ const host=$('games');host.replaceChildren();
+ const items=data.activities||[];
+ if(!items.length){host.append(elem('p','لا توجد ألعاب منشورة لهذه البطاقة حاليًا.'));return}
+ items.forEach(a=>{
+  const card=elem('article','');card.className='game';
+  const title=elem('h3',a.title);const desc=elem('p',(a.questions||0)+' سؤال • '+(a.subject||'عام'));
+  const btn=elem('button',a.remaining>0?'العب الآن':'انتهت المحاولات');
+  btn.disabled=!a.remaining;
+  btn.onclick=()=>start(a.code,btn);card.append(title,desc,btn);host.append(card)
+ });
+}
+async function loadCatalog(){
+ if(!cardSession)return show('loginPanel');
+ try{const d=await api('/api/tag-independent/student/catalog',{session:cardSession});renderLibrary(d)}
+ catch(e){setSession('');show('loginPanel');msg('loginStatus',err(e),true)}
+}
+$('loginForm').onsubmit=async e=>{
+ e.preventDefault();const b=$('loginBtn');b.disabled=true;msg('loginStatus','');
+ try{
+  const result=await api('/api/tag-independent/student/login',{card:$('card').value.trim(),pin:$('pin').value.trim()});
+  $('card').value='';$('pin').value='';setSession(result.session);renderLibrary(result);
+ }catch(e){msg('loginStatus',err(e),true)}finally{b.disabled=false}
+};
+$('logout').onclick=async()=>{
+ try{await api('/api/tag-independent/student/logout',{session:cardSession})}catch(_){}
+ setSession('');setRun('');current=null;show('loginPanel');
+};
+async function start(code,button){
+ button.disabled=true;msg('gamesStatus','');
+ try{
+  const d=await api('/api/game-lab/student/start',{code,cardSession});
+  setRun(d.token);current=d.state;show('playPanel');renderState(d.state)
+ }catch(e){msg('gamesStatus',err(e),true)}finally{button.disabled=false}
+}
+function renderState(s){
+ current=s;pending=null;
+ if(s.finished){
+  $('final').hidden=false;$('question').textContent='';$('candidate').textContent='';
+  $('choices').replaceChildren();$('textWrap').hidden=true;$('submitText').hidden=true;$('next').style.display='none';
+  $('progress').textContent='';$('finalScore').textContent='النقاط: '+(s.score||0)+' • إجابات صحيحة: '+(s.correct||0);setRun('');return;
+ }
+ $('final').hidden=true;$('answerStatus').textContent='';$('next').style.display='none';
+ $('activityTitle').textContent=s.activityTitle||'لعبة تعليمية';
+ const q=s.question||{};$('progress').textContent='السؤال '+((q.index??s.index)+1)+' / '+(q.total||s.total||0);
+ $('question').textContent=q.question||'';$('candidate').textContent=q.candidate||'';
+ $('previewImage').style.display=q.imageUrl?'block':'none';if(q.imageUrl)$('previewImage').src=q.imageUrl;
+ const opts=$('choices');opts.replaceChildren();
+ const choices=Array.isArray(q.choices)?q.choices:[];
+ $('textWrap').hidden=choices.length>0;$('submitText').hidden=choices.length>0;
+ choices.forEach(v=>{const b=elem('button',v);b.onclick=()=>send(v);opts.append(b)});
+ $('textAnswer').value='';
+}
+async function send(value){
+ if(pending!==null)return;
+ pending=value;
+ $('choices').querySelectorAll('button').forEach(b=>b.disabled=true);
+ $('submitText').disabled=true;
+ try{
+   const d=await api('/api/game-lab/student/answer',{token:runToken,index:current.index,answer:value});
+   $('answerStatus').textContent=d.correct===true?'✅ إجابة صحيحة':d.correct===false?'الإجابة الصحيحة: '+(d.correctAnswer||''):'تم تسجيل الإجابة';
+   current=d.state;$('next').style.display='inline-block';
+ }catch(e){pending=null;$('submitText').disabled=false;$('choices').querySelectorAll('button').forEach(b=>b.disabled=false);$('answerStatus').textContent=err(e)}
+}
+$('submitText').onclick=()=>send($('textAnswer').value.trim());
+$('textAnswer').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();if($('textAnswer').value.trim())send($('textAnswer').value.trim())}};
+$('next').onclick=()=>renderState(current);
+$('backToGames').onclick=()=>loadCatalog();
+if(runToken){
+ api('/api/game-lab/student/state',{token:runToken}).then(d=>{show('playPanel');renderState(d.state)})
+ .catch(()=>{setRun('');loadCatalog()});
+}else loadCatalog();
+})();
+</script></body></html>
