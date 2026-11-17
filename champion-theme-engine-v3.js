@@ -13,7 +13,9 @@
   lights:"أضواء البث",
   arena:"استاد النيون",
   grid:"الساحة الإلكترونية",
-  minimal:"خلفية بسيطة"
+  minimal:"خلفية بسيطة",
+  daylight:"الملعب النهاري",
+  finals:"استاد النهائي الذهبي"
  };
  const permitted=(obj,value,fallback)=>Object.prototype.hasOwnProperty.call(obj,value)?value:fallback;
  function apply(theme,background){
