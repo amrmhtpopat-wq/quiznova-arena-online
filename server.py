@@ -10,6 +10,7 @@ import platform_store
 platform_store.init()
 import platform_api
 import tag_independent_mode
+import tag_card_client
 import solo_api
 solo_api.ensure_schema()
 import game_lab_api
@@ -559,6 +560,16 @@ class Handler(SimpleHTTPRequestHandler):
         u=urlparse(self.path)
         try: data=self.read_json()
         except Exception: return self.send_json({'ok':False,'error':'bad_json'},400)
+        if u.path=='/api/tag-independent/card/verify':
+            card=str(data.get('card') or '') if isinstance(data,dict) else ''
+            if solo_api.limited(self,card or 'empty'):
+                return self.send_json({'ok':False,'error':'rate_limited'},429)
+            try:ref=tag_card_client.verify(card)
+            except tag_card_client.CardNotFound:
+                return self.send_json({'ok':False,'error':'invalid_card'},403)
+            except tag_card_client.CardBridgeUnavailable:
+                return self.send_json({'ok':False,'error':'card_bridge_unavailable'},503)
+            return self.send_json({'ok':True,'version':1,'cardRef':ref})
         if admin_api.handle_post(self,u,data):return
         if platform_api.handle_post(self,u,data):return
         if solo_api.handle_post(self,u,data):return
