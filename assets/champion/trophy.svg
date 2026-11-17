@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 510" role="img" aria-label="كأس بطولة CHAMPION TAG">
+<defs>
+<linearGradient id="gold" x1="0" y1=".1" x2="1" y2="0.55">
+<stop stop-color="#6b3909"/><stop offset=".13" stop-color="#c58725"/>
+<stop offset=".29" stop-color="#fff5c3"/><stop offset=".47" stop-color="#ffdc72"/>
+<stop offset=".62" stop-color="#d49b21"/><stop offset=".79" stop-color="#fff3b1"/><stop offset="1" stop-color="#8b5213"/>
+</linearGradient>
+<linearGradient id="base" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff7b4"/><stop offset=".42" stop-color="#c18a28"/><stop offset="1" stop-color="#5e3408"/></linearGradient>
+<radialGradient id="light"><stop stop-color="#fff0aa" stop-opacity=".56"/><stop offset="1" stop-color="#f9c549" stop-opacity="0"/></radialGradient>
+<filter id="glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="12"/></filter>
+</defs>
+<ellipse cx="220" cy="227" rx="155" ry="205" fill="url(#light)" filter="url(#glow)"/>
+<g fill="url(#gold)" stroke="#774712" stroke-width="8">
+<path d="M108 90 Q21 90 30 199 Q39 299 143 286 L139 239 Q75 243 78 175 Q79 143 119 147Z"/>
+<path d="M332 90 Q419 90 410 199 Q401 299 297 286 L301 239 Q365 243 362 175 Q361 143 321 147Z"/>
+</g>
+<path d="M112 64 H328 L311 263 Q302 318 251 337 L242 361 H198 L189 337 Q139 317 128 263Z" fill="url(#gold)" stroke="#fceaa3" stroke-width="9"/>
+<path d="M144 89 L160 257 Q167 298 202 317" fill="none" stroke="#fff8d6" stroke-width="10" opacity=".58"/>
+<path d="M291 87 L278 261 Q271 300 252 311" fill="none" stroke="#75450b" stroke-width="13" opacity=".38"/>
+<ellipse cx="220" cy="62" rx="110" ry="24" fill="url(#gold)" stroke="#f9de8e" stroke-width="6"/>
+<ellipse cx="220" cy="61" rx="87" ry="11" fill="#7c480e" opacity=".48"/>
+<path d="M188 361 H252 V411 H188Z" fill="url(#gold)" stroke="#f0d077" stroke-width="6"/>
+<path d="M147 405 H293 L308 447 H132Z" fill="url(#base)" stroke="#e9b646" stroke-width="8"/>
+<path d="M103 439 H337 L355 477 H85Z" fill="url(#base)" stroke="#fff5a0" stroke-width="8"/>
+<rect x="89" y="476" width="262" height="15" rx="4" fill="#754511" stroke="#eab65c" stroke-width="4"/>
+<path d="M220 122l13 34 36 1-28 22 10 35-31-20-31 20 10-35-28-22 36-1z" fill="#fff5c4" stroke="#b67d1d" stroke-width="5"/>
+<g fill="#fff9dc" opacity=".9"><circle cx="122" cy="46" r="5"/><circle cx="344" cy="87" r="3"/><circle cx="57" cy="277" r="3"/><circle cx="385" cy="249" r="4"/></g>
+</svg>
