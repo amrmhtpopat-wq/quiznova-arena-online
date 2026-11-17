@@ -149,3 +149,13 @@ body[data-champion-bg="grid"]{--ct-stadium-pos:center 50%}
  font-size:12px!important;
  }
 }
+
+/* V3.1 visible stadium asset cache refresh, for existing saved tournaments. */
+body.champion-portal[data-champion-bg="stadium"],body.champion-board[data-champion-bg="stadium"]{--ct-background:url('/assets/champion/bg-stadium.svg?v=31')}
+body.champion-portal[data-champion-bg="night"],body.champion-board[data-champion-bg="night"]{--ct-background:url('/assets/champion/bg-night.svg?v=31')}
+body.champion-portal[data-champion-bg="lights"],body.champion-board[data-champion-bg="lights"]{--ct-background:url('/assets/champion/bg-lights.svg?v=31')}
+body.champion-portal[data-champion-bg="arena"],body.champion-board[data-champion-bg="arena"]{--ct-background:url('/assets/champion/bg-arena.svg?v=31')}
+.ct-bg-stadium,.ct-theme-preview-gold{background-image:url('/assets/champion/bg-stadium.svg?v=31')!important}
+.ct-bg-night{background-image:url('/assets/champion/bg-night.svg?v=31')!important}
+.ct-bg-lights,.ct-theme-preview-broadcast{background-image:url('/assets/champion/bg-lights.svg?v=31')!important}
+.ct-bg-arena,.ct-theme-preview-neon{background-image:url('/assets/champion/bg-arena.svg?v=31')!important}
