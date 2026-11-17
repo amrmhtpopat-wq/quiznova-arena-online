@@ -96,6 +96,11 @@ document.addEventListener('gamelab:library',e=>{
  }
 });
 document.addEventListener('gamelab:assign',e=>{
+ if(document.documentElement.dataset.tagView){
+   const id=e.detail?.id||'';
+   location.href='/tag-lab-assign.html'+(id?'?activity='+encodeURIComponent(id):'');
+   return;
+ }
  $('labAssignActivity').value=e.detail.id;scroll('studentAssignments');void showAssignments();
 });
 document.addEventListener('gamelab:live',e=>{
@@ -366,6 +371,8 @@ async function showPages(){
 }
 
 async function loadStudents(){
+ // The independent LAB uses a local roster on its separate assignment page.
+ if(document.documentElement.dataset.tagView)return;
  if(!token())return;
  try{
   const result=await request('/api/teacher/students');students=result.students||[];
@@ -470,6 +477,8 @@ async function selectSavedImage(id){
 window.addEventListener('pagehide',()=>{if(imageUrl)URL.revokeObjectURL(imageUrl)});
 
 async function refreshRooms(){
+ // Legacy live rooms used official-platform records; keep disabled in LAB.
+ if(document.documentElement.dataset.tagView)return;
  if(!token())return;
  try{
   const result=await request('/api/game-lab/live/rooms');
