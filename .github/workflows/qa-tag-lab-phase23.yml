@@ -110,5 +110,5 @@ jobs:
         run: python tests/browser_tag_lab_simple_v31.py
       - name: Game-first template previews and switching browser integration
         run: python tests/browser_tag_lab_templates_v32.py
-      - name: TAG integration: interactive lesson, official card and live challenge
+      - name: 'TAG integration: interactive lesson, official card and live challenge'
         run: python tests/browser_tag_lab_mixer_v34.py
