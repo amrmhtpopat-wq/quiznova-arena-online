@@ -73,7 +73,7 @@ try:
    page.locator('.tag-v32-modebar button').filter(has_text='تجربة بأسئلتي').click()
    page.locator('#playOverlay').wait_for(state='visible',timeout=12000)
    assert not page.locator('#tagV32SampleNotice').is_visible(),'Full draft should preview with own questions'
-   assert 'المطابقة' in page.locator('#playTitle').inner_text()
+   assert page.locator('#playOverlay').get_attribute('data-v9-mode')=='pairs',page.locator('#playTitle').inner_text()
    page.locator('#closePlay').click()
    assert page.locator('#activityData').input_value()==raw
    page.locator('#cloudEmail').fill(email);page.locator('#cloudPassword').fill(password)
