@@ -3,6 +3,7 @@
 No production data, Render deploy, remote network, or real student PINs.
 """
 import json
+import re
 import os
 import sys
 import tempfile
@@ -231,6 +232,53 @@ class StudentVerifyContract(unittest.TestCase):
         self.assertEqual(before,after)
         self.assertEqual(batch['status']['issued'],226)
         self.assertFalse(batch['status']['enabled'])
+
+    def test_teacher_can_safely_replace_226_lost_pins_after_confirmation(self):
+        # Exactly the school's roster size, but entirely synthetic students.
+        extra=[{'name':'QA Student '+str(i).zfill(3),'className':'التاسع أ','avatar':'m01'}
+               for i in range(1,225)]
+        self.assertEqual(len(store.add_students(self.teacher_id,extra)),224)
+        before={s['id']:(s['cardCode'],s['card']) for s in store.list_students(self.teacher_id)}
+        status,first=self.teacher_post('issue',{})
+        self.assertEqual(status,200,first)
+        self.assertEqual(len(first['pins']),226)
+        self.assertEqual(self.teacher_post('issue',{})[1]['pins'],[])
+        old_hash=store.query('SELECT pin_hash FROM student_verify_pins WHERE student_id=?',
+                             (self.student['id'],))['pin_hash']
+        request_body={'expectedStudents':226,'confirmation':'REISSUE 226'}
+        unauth=request('POST','/api/teacher/student-verify/reissue-all',request_body)
+        self.assertEqual(unauth[0],401)
+        missing=self.teacher_post('reissue-all',{'expectedStudents':226})
+        self.assertEqual(missing[0],400,missing)
+        self.assertEqual(missing[1]['error'],'pin_rotation_confirmation_required')
+        mismatch=self.teacher_post('reissue-all',{'expectedStudents':225,'confirmation':'REISSUE 225'})
+        self.assertEqual(mismatch[0],400,mismatch)
+        self.assertEqual(mismatch[1]['error'],'student_count_changed')
+        self.assertEqual(store.query('SELECT pin_hash FROM student_verify_pins WHERE student_id=?',
+                            (self.student['id'],))['pin_hash'],old_hash)
+        status,recovered=self.teacher_post('reissue-all',request_body)
+        self.assertEqual(status,200,recovered if status!=200 else None)
+        self.assertEqual(len(recovered['pins']),226)
+        self.assertEqual(len({r['pin'] for r in recovered['pins']}),226)
+        self.assertEqual(recovered['status']['issued'],226)
+        self.assertFalse(recovered['status']['enabled'])
+        self.assertTrue(all(re.fullmatch(r'[0-9]{6}',r['pin']) for r in recovered['pins']))
+        after={s['id']:(s['cardCode'],s['card']) for s in store.list_students(self.teacher_id)}
+        self.assertEqual(before,after)
+        self.assertNotEqual(store.query('SELECT pin_hash FROM student_verify_pins WHERE student_id=?',
+                             (self.student['id'],))['pin_hash'],old_hash)
+        self.assertEqual(self.teacher_post('issue',{})[1]['pins'],[])
+
+    def test_bulk_recovery_denied_when_protection_enabled(self):
+        pin=self.activate()
+        status,result=self.teacher_post('reissue-all',
+                                       {'expectedStudents':2,'confirmation':'REISSUE 2'})
+        self.assertEqual(status,400,result)
+        self.assertEqual(result['error'],'pin_protection_must_be_disabled')
+        status,bad=self.teacher_post('reissue-all',
+                                     {'expectedStudents':True,'confirmation':'REISSUE True'})
+        self.assertEqual(status,400,bad)
+        self.assertEqual(bad['error'],'invalid_expected_students')
 
     def test_tag_lab_solo_and_live_require_student_pin(self):
         import game_lab_api as games
