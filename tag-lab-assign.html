@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>TAG LAB | إسناد الألعاب</title>
+<link rel="icon" href="/assets/brand/tag-icon.svg" type="image/svg+xml">
+<style>
+:root{font-family:Tahoma,"Segoe UI",Arial,sans-serif;color-scheme:light}
+*{box-sizing:border-box}body{margin:0;background:#f4f8fb;color:#14394f;line-height:1.65}
+header{background:#fff;border-bottom:1px solid #dae5ef;padding:15px clamp(15px,4vw,42px)}
+nav{max-width:1100px;display:flex;align-items:center;gap:15px;margin:auto;flex-wrap:wrap}
+nav img{width:75px;max-height:54px;object-fit:contain}a{color:#087b91;text-decoration:none;font-weight:700}
+nav a{padding:8px 12px;border-radius:10px}nav a:hover{background:#eaf7f6}
+main{max-width:1100px;margin:auto;padding:27px 16px 60px}
+h1{font-size:clamp(1.35rem,3vw,1.9rem);margin:0}h2{font-size:1.15rem;margin:0 0 15px}
+main>p{margin:6px 0 24px;color:#5a6f7d}
+section{background:#fff;border:1px solid #dae7ee;border-radius:17px;padding:20px;margin:0 0 19px;box-shadow:0 7px 24px #102a3d08}
+.columns{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.field{margin:0 0 14px}label{display:block;font-size:.89rem;font-weight:700;margin-bottom:6px}
+input,select{width:100%;min-height:44px;padding:9px 12px;border:1px solid #b8cdda;border-radius:10px;font:inherit;color:#17394d;background:#fff}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid #7ad8d1;outline-offset:2px}
+button,.btn{background:#087e8a;color:#fff;border:0;border-radius:11px;padding:11px 16px;min-height:44px;font:700 .9rem Tahoma,Arial;cursor:pointer}
+button.secondary{background:#e9f5f6;color:#075f6c;border:1px solid #c2dfe0}button:disabled{opacity:.55;cursor:not-allowed}
+.actions{display:flex;gap:9px;flex-wrap:wrap}.muted{color:#5c7180;font-size:.87rem}
+.status{min-height:28px;margin:12px 0 0;font-size:.86rem;color:#175e59}.status.bad{color:#a13240}
+.pin{background:#fef8df;border:1px solid #ead589;border-radius:13px;padding:14px;margin-top:14px}
+.pin strong{font-size:1.7rem;letter-spacing:.2em;direction:ltr;display:inline-block}
+.cardrow{border-bottom:1px solid #e3edf1;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0}
+.cardrow:last-child{border:0}.cardrow .info{display:grid;gap:4px}.cardrow small{color:#69808e}
+.targets{max-height:235px;overflow:auto;display:grid;gap:10px;margin:10px 0}
+.target{display:flex;gap:8px;align-items:center;background:#f7fafc;border:1px solid #e0ebf0;border-radius:9px;padding:9px}
+.target input{width:18px;min-height:18px}
+@media(max-width:750px){.columns{grid-template-columns:1fr}.cardrow{align-items:start;flex-direction:column}}
+</style></head>
+<body>
+<header><nav>
+<a href="/tag-lab-home.html" aria-label="الرئيسية"><img src="/assets/brand/tag-logo-dark-v21.png" alt="TAG LAB"></a>
+<a href="/tag-lab-home.html">الرئيسية</a><a href="/tag-lab-create.html">صانع الألعاب</a>
+<a href="/tag-lab-library.html">مكتبتي</a><a href="/tag-lab-student.html">بوابة الطالب</a>
+</nav></header>
+<main>
+<h1>🪪 إسناد الألعاب التعليمية</h1><p>سجل محلي لطلاب TAG LAB، باستخدام رمز البطاقة الأصلي ورمز PIN مستقل.</p>
+<div class="columns"><section>
+<h2>تسجيل بطاقة الطالب</h2>
+<form id="registerForm">
+<div class="field"><label for="card">رمز البطاقة الحالي</label><input id="card" autocomplete="off" required maxlength="150" placeholder="امسح QR أو اكتب رمز البطاقة"></div>
+<div class="field"><label for="label">اسم الطالب داخل المختبر</label><input id="label" required maxlength="70" placeholder="اسم الطالب"></div>
+<div class="field"><label for="className">الصف والشعبة</label><input id="className" required maxlength="70" placeholder="السابع أ"></div>
+<button type="submit" id="enroll">تسجيل البطاقة وإنشاء PIN</button></form>
+<div id="pinBox" class="pin" hidden><span>رمز PIN الجديد — يظهر مرة واحدة:</span> <strong id="pinValue"></strong><p class="muted">احفظ الرمز لتسليمه للطالب. لن يُعرض مرة أخرى ويمكن تغييره لاحقًا.</p><button id="copyPin" type="button" class="secondary">نسخ الرمز</button></div>
+<div id="registerStatus" class="status" role="status"></div>
+</section><section>
+<h2>طلاب المختبر</h2>
+<div id="students" aria-live="polite"><p class="muted">جارٍ تحميل القائمة...</p></div>
+<div id="studentsStatus" class="status" role="status"></div>
+</section></div>
+<section><h2>تخصيص الألعاب المنشورة</h2>
+<div class="field"><label for="activity">اختر نشاطًا من مكتبتك</label><select id="activity"><option value="">اختر النشاط المنشور</option></select></div>
+<div class="field"><label for="targetType">إسناد إلى</label><select id="targetType">
+<option value="all">جميع الطلاب المسجلين في المختبر</option>
+<option value="class">شعبة أو أكثر</option><option value="student">طالب أو أكثر</option>
+</select></div>
+<div id="targets" class="targets"></div>
+<div class="actions"><button id="saveAssign" type="button">حفظ الإسناد</button><button class="secondary" id="refresh" type="button">تحديث القائمة</button></div>
+<div id="assignmentStatus" class="status" role="status"></div>
+</section></main>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id);
+const token=()=>localStorage.getItem('qn9_teacher_token')||'';
+let roster=[],activities=[];
+function status(id,message,bad=false){$(id).textContent=message;$(id).className='status'+(bad?' bad':'')}
+async function api(path,data){
+ const opt={cache:'no-store',headers:{Authorization:'Bearer '+token()}};
+ if(data!==undefined){opt.method='POST';opt.headers['Content-Type']='application/json';opt.body=JSON.stringify(data)}
+ const r=await fetch(path,opt);const body=await r.json().catch(()=>({}));
+ if(!r.ok||body.ok===false)throw Error(body.error||'request_failed');return body;
+}
+const errors={login_required:'سجّل الدخول من صفحة مكتبتي أولًا.',bridge_unconfigured:'لم يُفعّل ربط البطاقات بعد.',card_bridge_unavailable:'خدمة التحقق من البطاقة غير جاهزة بعد.',invalid_card:'لم يُعثر على البطاقة.',card_already_enrolled:'هذه البطاقة مسجلة مسبقًا.',card_not_found:'هذه البطاقة غير موجودة.',activity_not_found:'هذا النشاط غير موجود.',publish_first:'يجب نشر النشاط أولًا.',student_not_found:'الطالب غير موجود.',class_not_found:'الشعبة غير موجودة.'};
+const readable=e=>errors[e.message]||e.message;
+function make(tag,text){const el=document.createElement(tag);el.textContent=text;return el}
+function reset(pin){$('pinBox').hidden=false;$('pinValue').textContent=pin}
+function renderRoster(){
+ const host=$('students');host.replaceChildren();
+ if(!roster.length){host.append(make('p','لا توجد بطاقات مسجلة بعد.'));return}
+ roster.forEach(c=>{
+   const row=make('div','');row.className='cardrow';
+   const info=make('div','');info.className='info';
+   info.append(make('b',c.label),make('small',c.className));
+   const b=make('button','إصدار PIN جديد');b.type='button';b.className='secondary';
+   b.onclick=async()=>{
+    if(!confirm('هل تريد إلغاء رمز PIN السابق وإصدار رمز جديد لهذا الطالب؟'))return;
+    b.disabled=true;
+    try{const r=await api('/api/tag-independent/teacher/cards/reset-pin',{id:c.id});
+        reset(r.pin);status('studentsStatus','صدر رمز PIN جديد. سلم الرمز للطالب.')}
+    catch(e){status('studentsStatus',readable(e),true)}finally{b.disabled=false}
+   };
+   row.append(info,b);host.append(row);
+ })
+}
+function renderTargets(){
+ const type=$('targetType').value,host=$('targets');host.replaceChildren();
+ if(type==='all'){host.append(make('p','سيظهر النشاط لجميع الطلاب المسجلين في TAG LAB.'));return}
+ const opts=type==='class'?[...new Set(roster.map(c=>c.className))].sort().map(x=>({id:x,label:x})):
+ roster.map(x=>({id:x.id,label:x.label+' — '+x.className}));
+ if(!opts.length){host.append(make('p','سجّل الطلاب أولًا.'));return}
+ opts.forEach(x=>{
+  const label=make('label','');label.className='target';
+  const ck=document.createElement('input');ck.type='checkbox';ck.value=x.id;
+  label.append(ck,document.createTextNode(x.label));host.append(label);
+ })
+}
+async function refresh(){
+ if(!token()){status('registerStatus','سجّل الدخول في مكتبتك أولًا.',true);return}
+ try{
+  const [a,b]=await Promise.all([api('/api/tag-independent/teacher/cards'),api('/api/game-lab/teacher/list')]);
+  roster=a.cards||[];activities=(b.activities||[]).filter(x=>x.published);
+  renderRoster();const sel=$('activity');const current=sel.value;sel.replaceChildren();
+  const empty=document.createElement('option');empty.value='';empty.textContent='اختر النشاط المنشور';sel.append(empty);
+  activities.forEach(x=>{const opt=document.createElement('option');opt.value=x.id;opt.textContent=x.title;sel.append(opt)});
+  if(activities.some(a=>a.id===current))sel.value=current;
+  renderTargets();if(sel.value)await loadAssignment();
+ }catch(e){status('assignmentStatus',readable(e),true)}
+}
+async function loadAssignment(){
+ const aid=$('activity').value;if(!aid)return;
+ try{
+  const a=await api('/api/tag-independent/teacher/assignments?activityId='+encodeURIComponent(aid));
+  const targets=a.targets||[];
+  const typ=targets[0]?.type||'all';$('targetType').value=typ;renderTargets();
+  $('targets').querySelectorAll('input').forEach(c=>c.checked=targets.some(t=>t.type===typ&&t.value===c.value));
+ }catch(e){status('assignmentStatus',readable(e),true)}
+}
+$('registerForm').onsubmit=async e=>{
+ e.preventDefault();const b=$('enroll');b.disabled=true;$('pinBox').hidden=true;
+ try{
+  const obj=await api('/api/tag-independent/teacher/cards/enroll',
+   {card:$('card').value,label:$('label').value,className:$('className').value});
+  reset(obj.pin);$('card').value='';status('registerStatus','تم تسجيل الطالب، وظهر رمز PIN الجديد.');
+  await refresh();
+ }catch(err){status('registerStatus',readable(err),true)}finally{b.disabled=false}
+};
+$('copyPin').onclick=()=>navigator.clipboard?.writeText($('pinValue').textContent);
+$('targetType').onchange=renderTargets;$('activity').onchange=loadAssignment;
+$('saveAssign').onclick=async()=>{
+ const id=$('activity').value;if(!id){status('assignmentStatus','اختر نشاطًا أولًا.',true);return}
+ const typ=$('targetType').value;
+ const values=typ==='all'?['*']:[...$('targets').querySelectorAll('input:checked')].map(x=>x.value);
+ if(!values.length){status('assignmentStatus','حدد شعبة أو طالبًا واحدًا على الأقل.',true);return}
+ const b=$('saveAssign');b.disabled=true;
+ try{await api('/api/tag-independent/teacher/assign',{activityId:id,targets:values.map(value=>({type:typ,value}))});status('assignmentStatus','تم حفظ إسناد اللعبة.')}
+ catch(e){status('assignmentStatus',readable(e),true)}finally{b.disabled=false}
+};
+$('refresh').onclick=refresh;refresh();
+})();
+</script></body></html>
