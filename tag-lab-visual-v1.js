@@ -91,7 +91,7 @@
   const hero=d.querySelector('section.hero');
   const art=hero?.querySelector('.visual');if(art)art.replaceChildren();
   if(art){const image=el('img');image.src='/assets/brand/tag-lab-hero-v1.svg';image.alt='ألعاب وكتب وجوائز تعليمية';art.append(image)}
-  if(hero){
+  if(hero&&!d.querySelector('section.summary')){
    const summary=el('section','tagv-summary');summary.setAttribute('aria-live','polite');
    summary.innerHTML='<div class="tagv-stat"><span>أنشطتي</span><strong id="tagvActivityCount">—</strong></div>'+
     '<div class="tagv-stat"><span>الأنشطة المنشورة</span><strong id="tagvPublishedCount">—</strong></div>'+
