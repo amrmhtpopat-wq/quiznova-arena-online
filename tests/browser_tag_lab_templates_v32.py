@@ -78,7 +78,14 @@ try:
    assert page.locator('#activityData').input_value()==raw
    page.locator('#cloudEmail').fill(email);page.locator('#cloudPassword').fill(password)
    page.locator('#cloudSignIn').click()
-   page.wait_for_function("()=>document.querySelector('#cloudWorkspace')&&!document.querySelector('#cloudWorkspace').classList.contains('hide')",timeout=15000)
+   page.wait_for_timeout(650)
+   login_state=page.evaluate("""()=>({
+     logged:!document.querySelector('#cloudWorkspace').classList.contains('hide'),
+     msg:document.querySelector('#cloudMessage').textContent,
+     label:document.querySelector('#cloudLoginLabel').textContent,
+     token:!!localStorage.getItem('qn9_teacher_token')
+   })""")
+   assert login_state['logged'],login_state
    page.locator('.tag-simple-savebar button').filter(has_text='حفظ في مكتبتي').click()
    page.wait_for_function("()=>document.querySelector('#cloudMessage').textContent.includes('حُفظ')",timeout=12000)
    page.goto(base+'/tag-lab-library.html',wait_until='domcontentloaded')
