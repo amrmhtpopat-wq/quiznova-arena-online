@@ -1,0 +1,21 @@
+name: TAG Independent V1 LAB isolation tests
+on:
+  push:
+    branches: ['feature/tag-independent-v1-lab']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  safety:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile standalone routing and card client
+        run: python -m py_compile tag_independent_mode.py tag_card_client.py server.py
+      - name: Verify standalone route isolation
+        run: python -m unittest discover -s tests -p 'test_tag_independent_mode.py' -v
+      - name: Verify private card client
+        run: python -m unittest discover -s tests -p 'test_tag_card_client.py' -v
