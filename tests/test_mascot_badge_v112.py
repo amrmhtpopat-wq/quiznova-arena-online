@@ -47,7 +47,7 @@ class MascotsAndBadgeTests(unittest.TestCase):
     def test_secure_qr_and_human_readable_codes_are_unmodified(self):
         portal=read('portal.js')
         self.assertIn("encodeURIComponent(student.card)",portal)
-        self.assertIn("'/api/qr?text='+encodeURIComponent(link)",portal)
+        self.assertIn("'/api/qr?text='+encodeURIComponent(isSchoolId?quizLink:link)",portal)
         self.assertIn('student.cardCode',portal)
         self.assertIn('BADJ-TH42',portal)
         self.assertIn('aria-label="بطاقة الطالب',portal)
