@@ -455,6 +455,14 @@ class Handler(SimpleHTTPRequestHandler):
                 return self.send_json({'ok':False,'error':'pilot_unavailable'},503)
             return self.send_json({'ok':True,'pilot':example})
         if u.path=='/api/health':
+            if tag_independent_mode.enabled():
+                try:
+                    platform_store.query('SELECT 1 AS ok')
+                except Exception:
+                    return self.send_json({'ok':False,'service':'tag-lab-independent-v1','database':'unavailable'},503)
+                return self.send_json({'ok':True,'service':'tag-lab-independent-v1','version':'1.0-beta',
+                                       'storage':platform_store.DATABASE_KIND,'database':'ready',
+                                       'cardBridge':'configured' if tag_card_client.configured() else 'disabled'})
             try:
                 result=platform_store.query('SELECT 1 AS ok')
                 if not result or int(result['ok'])!=1:raise RuntimeError('db_not_ready')
@@ -462,6 +470,11 @@ class Handler(SimpleHTTPRequestHandler):
                 return self.send_json({'ok':False,'service':'quiznova-arena','version':'10.5-beta','database':'unavailable'},503)
             return self.send_json({'ok':True,'service':'quiznova-arena','version':'10.5-beta','storage':platform_store.DATABASE_KIND,'database':'ready','rooms':len(ROOMS)})
         if u.path=='/api/status':
+            if tag_independent_mode.enabled():
+                return self.send_json({'ok':True,'service':'tag-lab-independent-v1',
+                     'mode':'standalone','teacher_url':public_base(self)+'/tag-lab-home.html',
+                     'features':['games','books','ai','mixer','library'],
+                     'cardBridge':'configured' if tag_card_client.configured() else 'disabled'})
             base=public_base(self); return self.send_json({'ok':True,'mode':('cloud' if IS_CLOUD else 'local'),'student_url':base+'/student.html','teacher_url':base+'/', 'features':['qr','pin','teams','live-analytics','powerups','reactions','internet','auth','student-cards','solo-practice','exams','classwars','mastery','persistent-reports']})
         if u.path=='/api/qr':
             qs=parse_qs(u.query);text=(qs.get('text') or [''])[0]
