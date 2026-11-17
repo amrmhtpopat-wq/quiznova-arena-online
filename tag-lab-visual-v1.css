@@ -302,3 +302,30 @@ html[data-tag-view="create"] body.tagv-enabled .tag-v33-field textarea{
  body.tagv-enabled .hero .visual{display:none}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+/* V1.1: replace the six flat gallery symbols with custom illustrated game graphics.
+   Fixed SVG is inert artwork; it does not intercept template click / preview events. */
+html[data-tag-view="games"] body.tagv-enabled .tag-v32-art[data-art="wheel"],
+html[data-tag-view="games"] body.tagv-enabled .tag-v32-art[data-art="pairs"],
+html[data-tag-view="games"] body.tagv-enabled .tag-v32-art[data-art="quiz"],
+html[data-tag-view="games"] body.tagv-enabled .tag-v32-art[data-art="fast"],
+html[data-tag-view="games"] body.tagv-enabled .tag-v32-art[data-art="truth"],
+html[data-tag-view="games"] body.tagv-enabled .tag-v32-art[data-art="boxes"]{
+ background-image:url('/assets/brand/tag-lab-six-gloss-v2.svg')!important;
+ background-size:300% 200%!important;
+ background-repeat:no-repeat!important;
+ min-height:188px!important;padding:0!important;
+ border-radius:18px
+}
+html[data-tag-view="games"] body.tagv-enabled .tag-v32-art[data-art="wheel"]{background-position:0% 0%!important}
+html[data-tag-view="games"] body.tagv-enabled .tag-v32-art[data-art="pairs"]{background-position:50% 0%!important}
+html[data-tag-view="games"] body.tagv-enabled .tag-v32-art[data-art="quiz"]{background-position:100% 0%!important}
+html[data-tag-view="games"] body.tagv-enabled .tag-v32-art[data-art="fast"]{background-position:0% 100%!important}
+html[data-tag-view="games"] body.tagv-enabled .tag-v32-art[data-art="truth"]{background-position:50% 100%!important}
+html[data-tag-view="games"] body.tagv-enabled .tag-v32-art[data-art="boxes"]{background-position:100% 100%!important}
+html[data-tag-view="games"] body.tagv-enabled .tag-v32-art[data-art="wheel"]>*,
+html[data-tag-view="games"] body.tagv-enabled .tag-v32-art[data-art="pairs"]>*,
+html[data-tag-view="games"] body.tagv-enabled .tag-v32-art[data-art="quiz"]>*,
+html[data-tag-view="games"] body.tagv-enabled .tag-v32-art[data-art="fast"]>*,
+html[data-tag-view="games"] body.tagv-enabled .tag-v32-art[data-art="truth"]>*,
+html[data-tag-view="games"] body.tagv-enabled .tag-v32-art[data-art="boxes"]>*{display:none!important}
