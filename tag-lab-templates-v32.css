@@ -99,3 +99,16 @@ html[data-tag-view="create"] .tag-v32-creator-choose{direction:rtl;color:#173a52
 .tag-v32-demo-caption{background:#d5f8ef;border:1px solid #7cdbc2;border-radius:10px;padding:8px 13px;color:#115e57;font-weight:850;font-size:.86rem;margin:9px 0}
 @media(max-width:1000px){.tag-v32-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.tag-v32-quick{grid-template-columns:repeat(3,minmax(0,1fr))}.tag-v32-all{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:650px){.tag-v32-grid{grid-template-columns:1fr 1fr;gap:10px}.tag-v32-art{min-height:119px}.tag-v32-wheel{width:97px;height:97px}.tag-v32-wheel b{width:30px;height:30px;font-size:17px}.tag-v32-truth{gap:6px}.tag-v32-truth span{width:65px;height:67px;font-size:32px}.tag-v32-pairs{gap:3px}.tag-v32-pairs span{width:30px;height:41px;font-size:18px}.tag-v32-boxes{gap:5px}.tag-v32-boxes span{width:39px;height:42px;font-size:22px}.tag-v32-fast strong{font-size:30px;width:89px;height:62px;line-height:58px}.tag-v32-fast .bar{width:130px}.tag-v32-artboard{padding:8px;min-width:85%}.tag-v32-artboard .opt i{min-width:28px;height:18px}.tag-v32-body{padding:10px}.tag-v32-body h3{font-size:.88rem!important}.tag-v32-body p{font-size:.72rem!important}.tag-v32-tags{display:none}.tag-v32-buttons{flex-direction:column}.tag-v32-buttons button{min-height:39px;font-size:.77rem}.tag-v32-more{padding:12px}.tag-v32-all,.tag-v32-dialog .tag-v32-all{grid-template-columns:repeat(2,minmax(0,1fr))}.tag-v32-option{min-height:58px;font-size:.75rem}.tag-v32-current{flex-wrap:wrap}.tag-v32-quick{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+/* Keep V32 creator focused; legacy playground controls remain functional behind the existing engine. */
+html[data-tag-view="create"] #builder>.section-head,
+html[data-tag-view="create"] #builder #quickTemplates,
+html[data-tag-view="create"] #builder #v4TrySelected,
+html[data-tag-view="create"] #builder #v4SaveSelected,
+html[data-tag-view="create"] #builder #printActivity,
+html[data-tag-view="create"] #builder #quickPlay,
+html[data-tag-view="create"] #builder #saveActivity,
+html[data-tag-view="create"] #builder #restoreExample{display:none!important}
+html[data-tag-view="create"] #builder>.tag-v32-create-panel{display:block!important}
+html[data-tag-view="games"] #catalog .tag-v32-art .tag-v32-fast .bar{display:block!important;margin:0!important}
+html[data-tag-view="games"] .tag-v32-grid .tag-v32-game[aria-selected="true"] .tag-v32-body h3:after{content:" • القالب المختار";color:#05856f;font-size:.72rem;font-weight:750}
