@@ -33,17 +33,19 @@ def allowed(method, path):
             return True
         if p.startswith("/api/"):
             return (p in _API_READ or p in _AUTH_GET_PATHS or
+                    p.startswith("/api/tag-independent/teacher/") or
                     p.startswith("/api/game-lab/"))
         if p.lower().endswith(".html"):
             return p.startswith("/tag-lab-") or p.startswith("/game-lab-")
         # The existing server's translate_path still disallows Python, env and DB files.
         return True
     if method == "POST":
-        if p == "/api/tag-independent/card/verify":
-            return True
         if p in _API_POST_BLOCKED:
             return False
-        return p in _AUTH_POST_PATHS or p.startswith("/api/game-lab/")
+        return (p in _AUTH_POST_PATHS or
+                p.startswith("/api/tag-independent/teacher/") or
+                p.startswith("/api/tag-independent/student/") or
+                p.startswith("/api/game-lab/"))
     return False
 
 def reject(handler, method, path):
