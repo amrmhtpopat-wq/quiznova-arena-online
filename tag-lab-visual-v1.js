@@ -91,8 +91,8 @@
  // Assistant is only mounted in teacher pages. No student or projector prompts.
  if(!student&&!display){
   const aiStyle=d.createElement('link');aiStyle.rel='stylesheet';
-  aiStyle.href='/tag-ai-assistant-v1.css?v=1.1.0';d.head.append(aiStyle);
-  const aiScript=d.createElement('script');aiScript.src='/tag-ai-assistant-v1.js?v=1.1.0';
+  aiStyle.href='/tag-ai-assistant-v1.css?v=1.2.0';d.head.append(aiStyle);
+  const aiScript=d.createElement('script');aiScript.src='/tag-ai-assistant-v1.js?v=1.2.0';
   aiScript.async=true;d.body.append(aiScript);
  }
  if(currentPath==='/tag-lab-home.html'){
