@@ -2,8 +2,16 @@
 import io
 import json
 import os
+import tempfile
 import unittest
 from unittest.mock import patch
+import platform_store as db
+
+# Initialize only disposable synthetic test storage before importing auth.
+_TEST_DB=tempfile.TemporaryDirectory()
+db.LOCAL_DB=os.path.join(_TEST_DB.name,'assistant.sqlite')
+db.DATABASE_URL=''
+db.init()
 import tag_ai_assistant as assistant
 
 class Handler:
