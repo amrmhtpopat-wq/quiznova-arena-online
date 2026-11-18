@@ -1,0 +1,88 @@
+/* TAG AI Assistant V1 — independently scoped light and dark UI. */
+.tagai-fab{
+ position:fixed;bottom:23px;left:24px;z-index:1290;border:0;cursor:pointer;
+ display:inline-flex;align-items:center;justify-content:center;gap:10px;
+ padding:14px 21px;min-height:54px;background:linear-gradient(120deg,#8753FC,#5C35E2);
+ color:#fff;border-radius:99px;box-shadow:0 12px 34px #6136CF65;
+ font:800 1rem Tahoma,"Segoe UI",Arial,sans-serif;direction:rtl
+}
+.tagai-fab:focus-visible,.tagai-shell button:focus-visible,.tagai-shell textarea:focus-visible,
+.tagai-shell input:focus-visible,.tagai-shell select:focus-visible{
+ outline:3px solid #12B8AD!important;outline-offset:3px
+}
+.tagai-fab:hover{filter:brightness(1.07);transform:translateY(-1px)}
+.tagai-fab-icon{font-size:1.35rem}
+.tagai-overlay{
+ position:fixed;inset:0;z-index:1995;background:#0C1432A8;
+ display:grid;place-items:center;padding:14px;overflow:auto;
+ backdrop-filter:blur(5px);direction:rtl
+}
+.tagai-overlay[hidden]{display:none!important}
+.tagai-shell{
+ width:min(880px,100%);max-height:min(91dvh,970px);overflow-y:auto;
+ border:1px solid var(--tagv-border,#ddd);border-radius:25px;
+ background:var(--tagv-surface,#fff)!important;color:var(--tagv-text,#17284C)!important;
+ box-shadow:0 22px 80px #050C225E;direction:rtl;font:inherit
+}
+.tagai-shell *{box-sizing:border-box}
+.tagai-top{
+ position:sticky;top:0;background:var(--tagv-surface,#fff);z-index:2;
+ display:flex;align-items:center;justify-content:space-between;gap:10px;
+ padding:18px 23px;border-bottom:1px solid var(--tagv-border,#e2e1fa)
+}
+.tagai-top h2{margin:0;font-size:1.3rem;color:var(--tagv-text,#17284C)}
+.tagai-top small{font-size:.75rem;color:var(--tagv-muted,#59677F);display:block}
+.tagai-close{border:1px solid var(--tagv-border,#ddd)!important;background:var(--tagv-soft,#f5f1ff)!important;
+ border-radius:13px!important;min-width:40px;min-height:40px;color:var(--tagv-text,#17284C)!important;font-size:1.25rem}
+.tagai-body{padding:20px 23px 27px}
+.tagai-prompt,.tagai-field{display:grid;gap:7px;margin:0 0 16px}
+.tagai-prompt label,.tagai-field label{font-weight:800;color:var(--tagv-text,#17284C);font-size:.94rem}
+.tagai-shell textarea,.tagai-shell select,.tagai-shell input{
+ width:100%;border-radius:13px;border:1.4px solid var(--tagv-border,#ddd);
+ background:var(--tagv-surface,#fff)!important;color:var(--tagv-text,#17284C)!important;
+ font:inherit;padding:11px 13px;line-height:1.6;min-height:44px
+}
+.tagai-prompt textarea{min-height:125px;resize:vertical;font-size:1rem}
+.tagai-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.tagai-consent{display:flex;align-items:start;gap:10px;color:var(--tagv-muted,#59677F);font-size:.83rem;
+ background:var(--tagv-soft,#f3f1ff);padding:12px;border-radius:11px;line-height:1.7;margin-bottom:15px}
+.tagai-consent input{flex:none;width:19px;min-height:19px;height:19px;margin-top:4px;accent-color:#7547F5}
+.tagai-buttons{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+.tagai-shell .tagai-primary,.tagai-shell .tagai-secondary{
+ min-height:45px;padding:10px 16px;font:800 .9rem Tahoma,Arial;border-radius:12px;cursor:pointer
+}
+.tagai-shell .tagai-primary{background:linear-gradient(120deg,#8553FB,#6041EB);color:#fff;border:1px solid transparent}
+.tagai-shell .tagai-secondary{background:var(--tagv-soft,#f4f0ff);color:var(--tagv-primary,#7547F5);
+ border:1px solid var(--tagv-border,#ddd)}
+.tagai-shell button:disabled{opacity:.54;cursor:not-allowed}
+.tagai-status{min-height:25px;font-size:.88rem;color:var(--tagv-muted,#59677F);margin:10px 0}
+.tagai-status[data-error=true]{color:#d44568}
+.tagai-results[hidden]{display:none}
+.tagai-results-head{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;
+ border-top:1px solid var(--tagv-border,#e2e1fa);padding-top:19px;margin-top:17px}
+.tagai-results-head h3{margin:0;font-size:1.15rem;color:var(--tagv-text,#17284C)}
+.tagai-questions{display:grid;gap:13px;max-height:43dvh;overflow-y:auto;margin-top:14px}
+.tagai-question{border:1px solid var(--tagv-border,#ddd);background:var(--tagv-soft,#f3f1ff);
+ border-radius:17px;padding:15px;display:grid;gap:11px}
+.tagai-qtop{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.tagai-qtop strong{color:var(--tagv-primary,#7547F5)}
+.tagai-difficulty{font-size:.75rem;font-weight:800;padding:5px 10px;border-radius:99px;background:var(--tagv-surface,#fff)}
+.tagai-choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.tagai-choice-grid label{font-size:.81rem;font-weight:800;display:grid;gap:5px}
+.tagai-question textarea{min-height:65px;resize:vertical}
+.tagai-question label{display:grid;gap:5px;font-size:.86rem;font-weight:800}
+.tagai-rules{font-size:.8rem;color:var(--tagv-muted,#59677F);line-height:1.7}
+.tagai-shell .tagai-danger{border:1px solid #df8d9a;background:transparent;color:#c84561;border-radius:10px;padding:6px 11px;cursor:pointer}
+.tagai-actions-fixed{position:sticky;bottom:0;z-index:1;background:var(--tagv-surface,#fff);
+ border-top:1px solid var(--tagv-border,#ddd);padding:13px 0 0;margin-top:20px}
+body.tagai-modal-open{overflow:hidden}
+@media(max-width:700px){
+ .tagai-fab{bottom:14px;left:12px;padding:12px 15px}
+ .tagai-overlay{padding:8px}
+ .tagai-shell{width:100%;max-height:96dvh;border-radius:18px}
+ .tagai-top{padding:13px}.tagai-body{padding:13px}
+ .tagai-grid{grid-template-columns:1fr}
+ .tagai-choice-grid{grid-template-columns:1fr}
+ .tagai-questions{max-height:42dvh}
+}
+@media(prefers-reduced-motion:reduce){.tagai-fab{transition:none}}
