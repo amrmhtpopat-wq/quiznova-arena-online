@@ -1,6 +1,6 @@
 /* TAG Home Mobile V5: phone-only teacher dashboard.
    Outside <=650px every original desktop/tablet dashboard rule stays unchanged. */
-.tag-v5-only{display:none}
+.tag-v5-only{display:none!important}
 @media screen and (max-width:650px){
   body.v105-portal #workspace>.main:has(#panel-home.active)>.topbar{
     display:flex!important;flex-direction:row!important;flex-wrap:wrap!important;
