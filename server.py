@@ -423,7 +423,7 @@ class Handler(SimpleHTTPRequestHandler):
         # Revalidate HTML after each release; student cards and teacher screens
         # must not remain on an old cached brand or bundled script references.
         requested=urlparse(self.path).path
-        if requested=='/' or requested.lower().endswith('.html'):
+        if requested in ('/','/sw.js','/manifest.webmanifest') or requested.lower().endswith('.html'):
             self.send_header('Cache-Control','no-cache, max-age=0, must-revalidate')
         self.send_header('X-Content-Type-Options','nosniff')
         # Only the same-origin teacher creator may appear inside its preview frame.
@@ -435,6 +435,9 @@ class Handler(SimpleHTTPRequestHandler):
         self.send_header('Permissions-Policy','camera=(), microphone=(), geolocation=()')
         if IS_CLOUD:self.send_header('Strict-Transport-Security','max-age=15552000')
         return super().end_headers()
+    def guess_type(self,path):
+        if path.endswith('.webmanifest'):return 'application/manifest+json'
+        return super().guess_type(path)
     def translate_path(self,path):
         parsed=urlparse(path).path
         rel=parsed.lstrip('/') or 'index.html'
@@ -443,7 +446,7 @@ class Handler(SimpleHTTPRequestHandler):
         # Never expose database credentials, Python sources or other private server files.
         if safe.is_dir():return str(ROOT/'__not_found__')
         # Serve only the two public SEO resources; do not expose arbitrary .txt/.xml files.
-        if rel in ('robots.txt', 'sitemap.xml'):return str(safe)
+        if rel in ('robots.txt', 'sitemap.xml', 'manifest.webmanifest'):return str(safe)
         allowed={'.html','.js','.css','.svg','.png','.jpg','.jpeg','.webp','.ico','.woff','.woff2'}
         if safe.suffix.lower() not in allowed:return str(ROOT/'__not_found__')
         return str(safe)

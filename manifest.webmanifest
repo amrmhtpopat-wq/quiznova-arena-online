@@ -1,0 +1,86 @@
+{
+  "id": "/app.html",
+  "name": "TEACH AND GAME — TAG",
+  "short_name": "TAG",
+  "description": "منصة TAG التعليمية: اختبارات تفاعلية وبطاقات طلاب وتحديات مباشرة وTAG LAB.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "/app.html",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": [
+    "standalone"
+  ],
+  "orientation": "any",
+  "background_color": "#061b31",
+  "theme_color": "#073a80",
+  "categories": [
+    "education",
+    "games"
+  ],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/assets/pwa/tag-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/pwa/tag-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/pwa/tag-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/assets/brand/tag-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "بوابة الطالب",
+      "short_name": "الطالب",
+      "url": "/student.html",
+      "icons": [
+        {
+          "src": "/assets/pwa/tag-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "لوحة المعلم",
+      "short_name": "المعلم",
+      "url": "/?teacher=1",
+      "icons": [
+        {
+          "src": "/assets/pwa/tag-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "TAG LAB",
+      "short_name": "الألعاب",
+      "url": "/tag-lab-home.html?v=34",
+      "icons": [
+        {
+          "src": "/assets/pwa/tag-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}
