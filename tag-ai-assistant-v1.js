@@ -27,9 +27,17 @@
   ai_provider_configuration:'إعدادات النموذج لا تسمح بالتوليد بهذا الطلب.',
   ai_provider_unavailable:'خدمة TAG AI غير متاحة الآن.',
  };
- const fab=native('button','tagai-fab');fab.id='tagaiOpen';fab.type='button';
+ const fab=native('button','tagai-fab tagai-robot-trigger');fab.id='tagaiOpen';fab.type='button';
  fab.setAttribute('aria-haspopup','dialog');fab.setAttribute('aria-expanded','false');
- fab.append(native('span','tagai-fab-icon','✦'),native('span',null,'TAG AI'));
+ fab.setAttribute('aria-label','فتح المساعد الذكي TAG AI');fab.title='افتح مساعد TAG AI';
+ const bot=native('img','tagai-robot-art');bot.alt='';bot.width=110;bot.height=160;
+ bot.src='/assets/brand/tag-ai-robot-slow-v1.svg';bot.decoding='async';bot.draggable=false;
+ const prefersReduced=window.matchMedia?.('(prefers-reduced-motion: reduce)');
+ if(prefersReduced?.matches)bot.src='/assets/brand/tag-ai-robot-still-v1.svg';
+ prefersReduced?.addEventListener?.('change',e=>{
+  bot.src=e.matches?'/assets/brand/tag-ai-robot-still-v1.svg':'/assets/brand/tag-ai-robot-slow-v1.svg'
+ });
+ fab.append(bot);
  const overlay=native('div','tagai-overlay');overlay.hidden=true;overlay.id='tagaiOverlay';
  const shell=native('section','tagai-shell');shell.setAttribute('role','dialog');
  shell.setAttribute('aria-modal','true');shell.setAttribute('aria-labelledby','tagaiTitle');
