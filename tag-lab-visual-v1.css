@@ -354,6 +354,10 @@ html[data-tag-view="games"] body.tagv-enabled .tag-v32-art[data-art="boxes"]>*{d
 
 /* TAG LAB COMPACT UI V1 — consistent dimensions, NOT browser zoom or transforms.
    Keep student questions large and preserve the approved TAG LAB identity. */
+/* Include padding in header/sidebar dimensions: prevent covering the first row
+   of content or extending sidebar over the main column. */
+.tagv-topbar,.tagv-sidebar{box-sizing:border-box!important}
+
 @media(min-width:901px){
  body.tagv-enabled{padding-top:69px!important}
  .tagv-topbar{height:69px!important;padding:8px clamp(12px,1.8vw,24px)!important}
