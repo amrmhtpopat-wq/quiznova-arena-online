@@ -132,6 +132,9 @@ try:
    live=live_ctx.new_page();live_errors=[]
    live.on('pageerror',lambda error:live_errors.append(str(error)))
    live.goto(base+'/student.html?code='+room['code'],wait_until='domcontentloaded')
+   # Room configuration is loaded asynchronously; enter the name only once
+   # the room-specific join rules have initialized (as a real user would).
+   live.wait_for_function("document.querySelector('#joinHint')?.textContent.includes('التاسع أ')",timeout=12000)
    live.locator('#playerName').fill('زائر ملء الشاشة '+str(width))
    live.locator('#joinBtn').click()
    try:
