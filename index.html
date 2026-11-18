@@ -89,7 +89,7 @@
 <meta name="twitter:description" content="TEACH AND GAME (TAG) منصة عربية لإنشاء اختبارات تفاعلية وألعاب تعليمية ومسابقات صفية مباشرة. شارك الطلاب عبر الرمز أو QR، وتابع نتائجهم وتقدمهم بسهولة.">
 <meta name="twitter:image" content="https://quiznova-arena-online.onrender.com/assets/brand/tag-logo-v15.png">
 <script defer src="/tag-clean-links-v18.js?v=18"></script>
-<link rel="stylesheet" href="/tag-mobile-v2.css?v=3">
+<link rel="stylesheet" href="/tag-mobile-v2.css?v=4">
 <script defer src="/tag-app-bridge-v2.js?v=2"></script>
 </head>
 <body class="v105-portal">
@@ -160,11 +160,17 @@
  <aside class="sidebar" aria-label="قائمة المنصة">
   <div class="sidebar-brand tag-brand-only"><img class="tag-official-logo" src="/assets/brand/tag-logo-dark-v21.png?v=16.0" width="220" height="85" alt="شعار TEACH AND GAME – TAG"></div>
   <div class="workspace-tag">✦ مساحتك التعليمية الخاصة</div>
-  <nav aria-label="أقسام لوحة المعلم">
+  <button type="button" id="tagTeacherMobileToggle" class="tag-teacher-mobile-toggle" aria-controls="tagTeacherSections" aria-expanded="false" aria-label="فتح قائمة أقسام المعلم">
+    <span class="tag-teacher-mobile-hamburger" aria-hidden="true">☰</span>
+    <span>القائمة</span><span class="tag-teacher-mobile-chevron" aria-hidden="true">▾</span>
+  </button>
+  <nav id="tagTeacherSections" aria-label="أقسام لوحة المعلم">
+    <div class="tag-teacher-nav-label">لوحة المعلم</div>
     <button type="button" class="nav active" data-panel="home"><span>▦</span> لوحة القيادة <b>الرئيسية</b></button>
     <button type="button" class="nav" data-panel="classes"><span>⚔️</span> حرب الشعب</button>
     <a class="nav" href="/champion.html" style="display:flex;text-decoration:none;align-items:center"><span>🏆</span> المسابقات — CHAMPION TAG</a>
-    <a class="nav" href="/tag-lab-home.html?v=34" style="display:flex;text-decoration:none;align-items:center"><span>🎮</span> TAG LAB — مختبر الألعاب</a>
+    <a class="nav" href="/tag-lab-home.html?v=34" style="display:flex;text-decoration:none;align-items:center" target="_blank" rel="noopener noreferrer external"><span>🎮</span> TAG LAB — مختبر الألعاب</a>
+    <div class="tag-teacher-nav-label">متابعة الطلاب والإدارة</div>
     <button type="button" class="nav" data-panel="mastery"><span>◈</span> خريطة إتقان المهارات</button>
     <button type="button" class="nav" data-panel="students"><span>🪪</span> الطلاب والبطاقات</button>
     <button type="button" class="nav" data-panel="history"><span>▤</span> سجل النتائج</button>
@@ -223,5 +229,6 @@
 <script src="/portal.js?v=24.2" defer></script>
 <script src="/student-verify-teacher-v1.js?v=verify-2" defer></script>
 <script src="/portal-security.js?v=10.4" defer></script>
+<script src="/tag-teacher-mobile-menu-v4.js?v=4" defer></script>
 </body>
 </html>
