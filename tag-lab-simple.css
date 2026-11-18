@@ -129,3 +129,48 @@ html[data-tag-view="mixer"] #mixerStart:disabled{opacity:.55!important;cursor:no
 /* Independent LAB: do not offer imports from the official teacher quiz bank. */
 html[data-tag-view] #cloudWorkspace h3:has(+ .row2 #cloudImportQuiz),
 html[data-tag-view] #cloudWorkspace .row2:has(#cloudImportQuiz){display:none!important}
+
+/* TAG LAB V35: template inline editing on the games route only. */
+html[data-tag-view="games"] #builder.tag-visible-section{display:block!important;margin:20px auto!important;scroll-margin-top:100px}
+html[data-tag-view="games"] #builder.tag-visible-section>.section-head,
+html[data-tag-view="games"] #builder.tag-visible-section>.layout2{display:none!important}
+html[data-tag-view="games"] #builder .tag-v33-editor{display:block!important;max-width:100%;margin:0}
+html[data-tag-view="games"] #tagV33Editor{scroll-margin-top:105px}
+html[data-tag-view="games"] .tag-v33-meta{display:grid;grid-template-columns:1.5fr repeat(3,minmax(130px,1fr));gap:10px;margin:12px 0 18px}
+html[data-tag-view="games"] .tag-v33-meta .tag-v33-field{min-width:0}
+html[data-tag-view="games"] .tag-v33-library{display:inline-flex;align-items:center;min-height:45px;padding:9px 15px;border:1px solid #adcce0;background:#fff;color:#165480;border-radius:11px;font-weight:850;text-decoration:none}
+html[data-tag-view="games"] .tag-v32-buttons button.pick{background:#106eae;color:#fff}
+@media(max-width:810px){html[data-tag-view="games"] .tag-v33-meta{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:550px){html[data-tag-view="games"] .tag-v33-meta{grid-template-columns:1fr}html[data-tag-view="games"] #builder.tag-visible-section{margin:12px auto!important}}
+
+/* Fit game previews inside the device viewport at 100% browser zoom. */
+html[data-tag-view] #playOverlay.v101-overhaul:not([hidden]){
+ position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;
+ max-height:100dvh!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;
+ padding:clamp(5px,1vw,11px)!important;overscroll-behavior:contain
+}
+html[data-tag-view] #playOverlay.v101-overhaul>.playhead{
+ flex:0 0 auto!important;padding:clamp(6px,1vh,10px)!important;margin:0 0 5px!important;
+ min-height:0!important;gap:6px!important
+}
+html[data-tag-view] #playOverlay.v101-overhaul>.playhead img{max-width:64px!important;max-height:40px!important}
+html[data-tag-view] #playOverlay.v101-overhaul>.playhead h2{font-size:clamp(14px,2.5vh,23px)!important;margin:0!important}
+html[data-tag-view] #playOverlay.v101-overhaul .playbody{
+ flex:1 1 auto!important;min-height:0!important;max-height:100%!important;
+ width:100%!important;overflow:auto!important;overscroll-behavior:contain!important;
+ padding:clamp(5px,1vh,12px)!important;gap:clamp(6px,1vh,11px)!important
+}
+html[data-tag-view] #playOverlay.v101-overhaul .playbody>.playcard{padding:clamp(9px,1.5vh,16px)!important;margin:0!important;min-height:0!important}
+html[data-tag-view] #playOverlay.v101-overhaul .playbody>.playcard h3{font-size:clamp(15px,3.1vh,28px)!important;line-height:1.35!important;margin:5px 0!important}
+html[data-tag-view] #playOverlay.v101-overhaul .playbody>.playcard p{margin:5px 0!important}
+html[data-tag-view] #playOverlay.v101-overhaul .choice{min-height:clamp(38px,7vh,62px)!important;padding:clamp(7px,1vh,12px)!important}
+html[data-tag-view] #playOverlay.v101-overhaul>.status{flex:0 0 auto!important;max-height:15vh;overflow:auto!important;margin:2px 0!important}
+html[data-tag-view] #playOverlay.v101-overhaul .v101-wheel-frame{width:min(100%,40vh,365px)!important}
+html[data-tag-view] #playOverlay.v101-overhaul .flipcard{min-height:min(28vh,200px)!important}
+@media(max-height:660px){
+ html[data-tag-view] #playOverlay.v101-overhaul>.playhead .eyebrow{display:none!important}
+ html[data-tag-view] #playOverlay.v101-overhaul>.playhead{padding:3px 6px!important}
+ html[data-tag-view] #playOverlay.v101-overhaul>.playhead .button{min-height:30px!important;padding:4px 7px!important}
+ html[data-tag-view] #playOverlay.v101-overhaul .playbody>.playcard{padding:7px 10px!important}
+ html[data-tag-view] #playOverlay.v101-overhaul .v101-wheel-frame{width:min(100%,33vh,300px)!important}
+}
