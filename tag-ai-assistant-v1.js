@@ -30,7 +30,7 @@
  const fab=native('button','tagai-fab tagai-robot-trigger');fab.id='tagaiOpen';fab.type='button';
  fab.setAttribute('aria-haspopup','dialog');fab.setAttribute('aria-expanded','false');
  fab.setAttribute('aria-label','فتح المساعد الذكي TAG AI');fab.title='افتح مساعد TAG AI';
- const bot=native('img','tagai-robot-art');bot.alt='';bot.width=110;bot.height=160;
+ const bot=native('img','tagai-robot-art');bot.alt='';bot.width=49;bot.height=58;
  bot.src='/assets/brand/tag-ai-robot-slow-v1.svg';bot.decoding='async';bot.draggable=false;
  const prefersReduced=window.matchMedia?.('(prefers-reduced-motion: reduce)');
  if(prefersReduced?.matches)bot.src='/assets/brand/tag-ai-robot-still-v1.svg';
@@ -100,6 +100,13 @@
  actions.append(hint,transfer);results.append(actions);
  main.append(results);shell.append(main);overlay.append(shell);
  d.body.append(fab,overlay);
+ // A fixed floating mascot used to overlap bottom buttons. Keep it visible
+ // inside the shared topbar instead, retaining exactly the same animated SVG.
+ const headerDock=d.querySelector('.tagv-topbar .tagv-header-actions');
+ if(headerDock){
+  headerDock.append(fab);
+  fab.classList.add('tagai-header-dock');
+ }
  function notify(message,isError=false){status.textContent=message;status.dataset.error=String(isError)}
  function open(){
   s.lastFocus=d.activeElement;overlay.hidden=false;d.body.classList.add('tagai-modal-open');
