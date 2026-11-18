@@ -28,9 +28,9 @@ def get(path):
     req=urllib.request.Request(BASE+path)
     try:
         with urllib.request.urlopen(req,timeout=12) as resp:
-            return resp.status,dict(resp.headers),resp.read()
+            return resp.status,resp.headers,resp.read()
     except urllib.error.HTTPError as e:
-        return e.code,dict(e.headers),e.read()
+        return e.code,e.headers,e.read()
 
 
 class PWASafeInstallContract(unittest.TestCase):
