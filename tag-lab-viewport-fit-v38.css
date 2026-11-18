@@ -6,7 +6,9 @@ html[data-tag-view] #playOverlay.v101-overhaul:not([hidden]){
  width:100%!important;height:100dvh!important;max-height:100dvh!important;
  overflow:hidden!important;display:flex!important;flex-direction:column!important;
  justify-content:flex-start!important;gap:clamp(4px,.7vh,8px)!important;
- padding:clamp(4px,.7vh,9px)!important;overscroll-behavior:none!important
+ padding:clamp(4px,.7vh,9px)!important;
+ padding-bottom:max(8px,env(safe-area-inset-bottom))!important;
+ overscroll-behavior:none!important
 }
 html[data-tag-view] #playOverlay.v101-overhaul>.playhead{
  position:relative!important;top:auto!important;flex:0 0 auto!important;
@@ -121,6 +123,13 @@ html[data-tag-view] #playOverlay.v101-overhaul[data-v9-mode="fast"] .playbody,
 html[data-tag-view] #playOverlay.v101-overhaul[data-v9-mode="truth"] .playbody,
 html[data-tag-view] #playOverlay.v101-overhaul[data-v9-mode="sort"] .playbody{
  justify-content:center!important
+}
+/* A transformed body must remain paint-visible beyond its unscaled box.
+ * Otherwise flex clips puzzles even though the scaled design fits on screen. */
+html[data-tag-view] #playOverlay.v101-overhaul[data-tag-fit="tight"] .playbody,
+html[data-tag-view] #playOverlay.v101-overhaul[data-tag-fit="tight"].v6-game.v7-game .playbody,
+html[data-tag-view] #playOverlay.v101-overhaul[data-tag-fit="tight"].v9-stage .playbody{
+ overflow:visible!important;justify-content:flex-start!important
 }
 html[data-tag-view] #playOverlay.v101-overhaul[data-tag-fit="tight"] .playbody,
 html[data-tag-view] #playOverlay.v101-overhaul[data-tag-fit="tight"].v6-game.v7-game .playbody{
