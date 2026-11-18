@@ -21,7 +21,7 @@ class CompactLayoutTests(unittest.TestCase):
   for page in PAGES:
    html=(ROOT/page).read_text(encoding='utf-8')
    with self.subTest(page=page):
-    self.assertIn('tag-lab-visual-v1.css?v=1.3.0',html)
+    self.assertIn('tag-lab-visual-v1.css?v=1.3.1',html)
     self.assertIn('tag-lab-visual-v1.js?v=1.3.0',html)
 
  def test_compact_layout_uses_real_dimensions_not_browser_zoom(self):
