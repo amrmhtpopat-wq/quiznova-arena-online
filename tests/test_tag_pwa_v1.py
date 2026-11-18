@@ -58,7 +58,7 @@ class PWASafeInstallContract(unittest.TestCase):
                 status,headers,png=get(item['src'])
                 self.assertEqual(status,200)
                 self.assertIn('image/png',headers['Content-Type'])
-                self.assertEqual(png[:8],b'\\x89PNG\\r\\n\\x1a\\n')
+                self.assertEqual(png[:8],bytes([137,80,78,71,13,10,26,10]))
                 self.assertEqual(png[12:16],b'IHDR')
                 width,height=struct.unpack('>II',png[16:24])
                 expected=int(item['sizes'].split('x')[0])
