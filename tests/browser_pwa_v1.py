@@ -76,7 +76,7 @@ with sync_playwright() as pw:
       return result;
    }""")
    assert stored,stored
-   assert all((url=='/pwa-offline.html'||url.startswith('/assets/pwa/')) for url in stored),stored
+   assert all((url=='/pwa-offline.html' or url.startswith('/assets/pwa/')) for url in stored),stored
    assert not any('/api/' in url or '/student.html' in url or '/index.html' in url for url in stored),stored
    page.wait_for_function("navigator.serviceWorker.controller!==null",timeout=10000)
    ctx.set_offline(True)
