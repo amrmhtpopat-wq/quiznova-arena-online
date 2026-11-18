@@ -5,6 +5,9 @@
  const currentPath=location.pathname||'/';
  const student=currentPath==='/tag-lab-student.html'||currentPath==='/tag-lab-live-student.html';
  const display=currentPath==='/tag-lab-live-display.html';
+ // Desktop teacher dashboards follow the 80%-reference proportions at 100%
+ // browser zoom. Student/projector layouts keep their readable original sizes.
+ if(!student&&!display)h.classList.add('tagv-compact-root');
  const navData=student?[
   ['/tag-lab-student.html','🎮','ألعابي'],
   ['/tag-lab-live-student.html','📡','التحدي المباشر'],
@@ -91,8 +94,8 @@
  // Assistant is only mounted in teacher pages. No student or projector prompts.
  if(!student&&!display){
   const aiStyle=d.createElement('link');aiStyle.rel='stylesheet';
-  aiStyle.href='/tag-ai-assistant-v1.css?v=1.2.0';d.head.append(aiStyle);
-  const aiScript=d.createElement('script');aiScript.src='/tag-ai-assistant-v1.js?v=1.2.0';
+  aiStyle.href='/tag-ai-assistant-v1.css?v=1.4.0';d.head.append(aiStyle);
+  const aiScript=d.createElement('script');aiScript.src='/tag-ai-assistant-v1.js?v=1.4.0';
   aiScript.async=true;d.body.append(aiScript);
  }
  if(currentPath==='/tag-lab-home.html'){
