@@ -78,6 +78,28 @@ def qr_svg(text):
     svg=f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {size} {size}" width="300" height="300" shape-rendering="crispEdges"><rect width="{size}" height="{size}" fill="white"/><g fill="#082548">'+''.join(rects)+'</g></svg>'
     return svg.encode('utf-8')
 
+def round_speed_champion(room, idx, player_id):
+    """After the round closes, recognize the uniquely fastest correct answer
+    among >=2 students who received the same question. The server, not the
+    player's browser, records elapsedMs. Never reveal this during a round.
+    """
+    player=room.get('players',{}).get(player_id)
+    answer=player and player.get('answers',{}).get(str(idx))
+    if not answer or answer.get('correct') is not True:
+        return False
+    question_index=answer.get('questionIndex')
+    peers=[]
+    for pid, other in room.get('players',{}).items():
+        record=other.get('answers',{}).get(str(idx))
+        if (record and record.get('correct') is True
+                and record.get('questionIndex')==question_index):
+            peers.append((int(record.get('elapsedMs', 0)), pid))
+    if len(peers)<2:
+        return False
+    peers.sort()
+    # A tied server-clock millisecond is not a defensible speed crown.
+    return peers[0][1]==player_id and peers[0][0]<peers[1][0]
+
 def now_ms(): return int(time.time()*1000)
 def rid(n=18): return ''.join(random.choice(string.ascii_letters+string.digits) for _ in range(n))
 def code6():
@@ -571,6 +593,7 @@ class Handler(SimpleHTTPRequestHandler):
                         'teamMembers':([{'name':other['name'],'avatar':other.get('avatar','b01')} for other in room['players'].values() if other.get('team')==p.get('team')] if room['playType']=='teams' and p.get('team') else []),
                         'teamScore':(sum(int(other.get('score',0)) for other in room['players'].values() if other.get('team')==p.get('team')) if room['playType']=='teams' and p.get('team') and not room.get('examMode') else 0),
                         'powerups':p.get('powerups',{}),'leaders':(leaders if not room.get('examMode') or room['status']=='finished' else []),'examMode':bool(room.get('examMode')),'level':p.get('level',1),'xp':p.get('xp',0),'xpGain':p.get('xpGain',0),'xpBreakdown':p.get('xpBreakdown',{}),'levelUp':bool(p.get('levelUp',False)),'progress':platform_store.xp_progress(p.get('xp',0)),'quizTitle':room['quiz'].get('title',''),
+                        'speedChampion':(bool(room['status']=='results' and room.get('showFeedback',True) and not room.get('examMode') and round_speed_champion(room,idx,player))),
                         'showFeedback':(room['showFeedback'] and not room.get('examMode')),'powerupsEnabled':(room['powerupsEnabled'] and not room.get('examMode')),'background':room.get('background','cartoon'),'cooperative':bool(room.get('cooperative')),'roundDurationMs':room.get('roundDurationMs',20000),'avatar':p.get('avatar','01')
                     }})
                 is_host = bool(host) and host == room.get('hostToken')
