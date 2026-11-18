@@ -7,7 +7,8 @@
  --tagv-border:#E2E1FA;--tagv-side:#fff;--tagv-accent:#EFEBFF;
  --tagv-shadow:0 12px 30px rgba(73,52,154,.095);
  --tagv-purple-gradient:linear-gradient(115deg,#9458FE,#603AEF);
- --tagv-radius:20px;--tagv-sidebar-width:255px;
+ --tagv-radius:17px;--tagv-sidebar-width:228px;
+ --tagv-content-max:1260px;
  font-family:Tahoma,"Segoe UI",Arial,sans-serif;color-scheme:light;
 }
 html[data-tag-theme="dark"]{
@@ -349,3 +350,144 @@ html[data-tag-view="games"] body.tagv-enabled .tag-v32-art[data-art="boxes"]>*{d
  body.tagv-enabled .tagv-answers{grid-template-columns:1fr!important}
  body.tagv-enabled .tagv-answer{min-height:70px!important}
 }
+
+
+/* TAG LAB COMPACT UI V1 — consistent dimensions, NOT browser zoom or transforms.
+   Keep student questions large and preserve the approved TAG LAB identity. */
+@media(min-width:901px){
+ body.tagv-enabled{padding-top:69px!important}
+ .tagv-topbar{height:69px!important;padding:8px clamp(12px,1.8vw,24px)!important}
+ .tagv-sidebar{padding:12px 10px 15px!important;gap:9px!important}
+ .tagv-brand{padding:4px 3px 11px!important}
+ .tagv-brand img{width:min(185px,100%)!important;height:61px!important}
+ .tagv-links{gap:3px!important}
+ .tagv-links a,.tagv-sidebar-footer a{
+  min-height:42px!important;padding:8px 12px!important;
+  gap:10px!important;font-size:.83rem!important;border-radius:11px!important
+ }
+ .tagv-links a .tagv-icon{font-size:1.14rem!important;min-width:22px!important}
+ .tagv-sidebar-footer{padding-top:9px!important}
+ .tagv-topbar .tagv-search{width:min(455px,46vw)!important;padding:8px 13px!important}
+ .tagv-theme button{width:36px!important;min-height:33px!important}
+ .tagv-user{font-size:.78rem!important}
+}
+body.tagv-enabled main:not(.tagv-room-display),
+body.tagv-enabled .main{
+ max-width:var(--tagv-content-max)!important;
+ margin-inline:auto!important;
+}
+body.tagv-enabled main.wrap{
+ max-width:var(--tagv-content-max)!important;
+ padding:18px clamp(12px,2vw,29px) 34px!important
+}
+html[data-tag-view] body.tagv-enabled .main{
+ max-width:var(--tagv-content-max)!important;
+ padding:17px clamp(12px,2vw,27px) 38px!important
+}
+body.tagv-enabled .tagv-room-display{
+ max-width:var(--tagv-content-max)!important
+}
+body.tagv-enabled .hero,
+html[data-tag-view] body.tagv-enabled .tag-simple-intro{
+ border-radius:21px!important;
+ padding:clamp(17px,2.25vw,29px)!important
+}
+body.tagv-enabled h1{font-size:clamp(1.52rem,2.55vw,2.25rem)!important}
+body.tagv-enabled .hero h1{font-size:clamp(1.7rem,2.65vw,2.3rem)!important}
+body.tagv-enabled h2{font-size:clamp(1.1rem,1.7vw,1.5rem)}
+body.tagv-enabled .hero p{font-size:clamp(.87rem,1.1vw,1rem)!important}
+body.tagv-enabled .hero .visual img{max-height:215px!important}
+body.tagv-enabled .hero{min-height:0!important}
+body.tagv-enabled .summary,body.tagv-enabled .activities,
+body.tagv-enabled .shortcuts,body.tagv-enabled .cards{
+ gap:11px!important
+}
+body.tagv-enabled .activity-card{padding:14px!important;border-radius:17px!important;gap:9px!important}
+body.tagv-enabled .activity-art{height:121px!important;font-size:3.5rem!important}
+body.tagv-enabled .shortcut{padding:13px!important;border-radius:14px!important}
+body.tagv-enabled .tagv-stat{padding:11px 13px!important;border-radius:14px!important}
+body.tagv-enabled .summary .tagv-stat strong{font-size:1.7rem!important}
+body.tagv-enabled .sectionline{margin:19px 0 12px!important}
+body.tagv-enabled .card,
+body.tagv-enabled .panel,
+html[data-tag-view] body.tagv-enabled .block{
+ border-radius:17px!important
+}
+html[data-tag-view] body.tagv-enabled .tag-v32-game,
+html[data-tag-view] body.tagv-enabled .tag-v33-card,
+html[data-tag-view] body.tagv-enabled .tag-v33-editor{
+ border-radius:17px!important
+}
+html[data-tag-view] body.tagv-enabled .tag-v32-list,
+html[data-tag-view] body.tagv-enabled .tag-v33-list{gap:12px!important}
+html[data-tag-view] body.tagv-enabled .tag-v32-body{padding:13px!important}
+html[data-tag-view] body.tagv-enabled .tag-v32-art{min-height:160px!important}
+html[data-tag-view="games"] body.tagv-enabled .tag-v32-art[data-art]{min-height:165px!important}
+html[data-tag-view="games"] body.tagv-enabled .tag-v32-buttons{gap:8px!important}
+html[data-tag-view="games"] body.tagv-enabled .tag-v32-buttons button{min-height:44px!important}
+html[data-tag-view] body.tagv-enabled .tag-v32-game h3{
+ font-size:clamp(1.02rem,1.5vw,1.2rem)!important
+}
+html[data-tag-view] body.tagv-enabled .tag-v33-card{padding:16px!important}
+html[data-tag-view] body.tagv-enabled .tag-v33-card textarea{
+ min-height:112px!important;line-height:1.8!important
+}
+/* Classroom controls compact slightly, while answers and question text stay big. */
+body.tagv-enabled .tagv-live-layout{
+ grid-template-columns:minmax(0,1fr) minmax(245px,290px);
+ gap:14px!important
+}
+body.tagv-enabled .tagv-live-panel{
+ padding:17px!important;border-radius:18px!important
+}
+body.tagv-enabled .tagv-live-hero{
+ padding:12px 3px 18px!important;gap:12px!important
+}
+body.tagv-enabled .tagv-live-hero img{
+ width:120px!important;max-height:105px!important
+}
+body.tagv-enabled .tagv-live-kpis{gap:10px!important;margin:11px 0!important}
+body.tagv-enabled .tagv-score-row{gap:8px!important;margin:10px 0 13px!important}
+body.tagv-enabled .tagv-score-row span{padding:8px 11px!important}
+body.tagv-enabled .tagv-actions{gap:9px!important;margin-top:14px!important}
+body.tagv-enabled .tagv-leader td,body.tagv-enabled .tagv-leader th{
+ padding:10px!important
+}
+@media(max-width:1050px){
+ body.tagv-enabled .tagv-live-layout{grid-template-columns:1fr!important}
+}
+@media(max-width:900px){
+ body.tagv-enabled{padding-top:62px!important}
+ .tagv-topbar{height:62px!important;padding:7px 12px!important;gap:9px!important}
+ .tagv-topbar .tagv-search{width:min(210px,34vw)!important}
+ .tagv-user{display:none!important}
+ body.tagv-enabled main.wrap,html[data-tag-view] body.tagv-enabled .main{
+  padding:15px 12px 30px!important
+ }
+ body.tagv-enabled .tagv-live-hero{padding:10px 1px 14px!important}
+}
+@media(max-width:700px){
+ .tagv-topbar{gap:7px!important;padding-inline:9px!important}
+ .tagv-topbar .tagv-search{
+  width:min(128px,29vw)!important;min-width:0!important;
+  padding:7px 9px!important
+ }
+ .tagv-header-actions{gap:4px!important}
+ .tagv-theme{padding:3px!important;gap:1px!important}
+ .tagv-theme button{width:32px!important;min-height:31px!important;font-size:1.06rem!important}
+ body.tagv-enabled .hero,
+ html[data-tag-view] body.tagv-enabled .tag-simple-intro{
+  padding:15px!important
+ }
+ body.tagv-enabled .tagv-live-panel{padding:14px!important}
+ body.tagv-enabled .tagv-live-hero img{width:80px!important}
+ body.tagv-enabled h1{font-size:clamp(1.42rem,5vw,1.9rem)!important}
+ body.tagv-enabled .tagv-question{
+  font-size:clamp(1.22rem,5vw,1.85rem)!important;
+  line-height:1.55!important
+ }
+ body.tagv-enabled .tagv-answer{font-size:clamp(.98rem,3.8vw,1.3rem)!important}
+}
+/* Keep minimum accessible touch targets on the student challenge. */
+body.tagv-enabled .tagv-answer{min-height:85px!important}
+@media(max-width:379px){body.tagv-enabled .tagv-answer{min-height:68px!important}}
