@@ -100,13 +100,9 @@
  actions.append(hint,transfer);results.append(actions);
  main.append(results);shell.append(main);overlay.append(shell);
  d.body.append(fab,overlay);
- // A fixed floating mascot used to overlap bottom buttons. Keep it visible
- // inside the shared topbar instead, retaining exactly the same animated SVG.
- const headerDock=d.querySelector('.tagv-topbar .tagv-header-actions');
- if(headerDock){
-  headerDock.append(fab);
-  fab.classList.add('tagai-header-dock');
- }
+ // Restore the mascot to the original lower-left corner. The main
+ // desktop content is inset, leaving a free gutter for this small control.
+ // Retain identical motion SVG, click handler, and reduced-motion fallback.
  function notify(message,isError=false){status.textContent=message;status.dataset.error=String(isError)}
  function open(){
   s.lastFocus=d.activeElement;overlay.hidden=false;d.body.classList.add('tagai-modal-open');
