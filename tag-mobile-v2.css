@@ -13,6 +13,14 @@
  :where(.pane-head,.panel-head,.section-head,.page-head,.top-actions,.head-actions,.filters,.filters-wrap){
     min-width:0;gap:10px;flex-wrap:wrap
  }
+ /* Respect iPhone notch/dynamic-island and bottom home-indicator in standalone. */
+ body:has(> .page > .top) > .page{
+   padding-top:max(15px,env(safe-area-inset-top));
+   padding-bottom:max(30px,env(safe-area-inset-bottom));
+ }
+ body.v105-student .student-shell{
+   padding-bottom:max(12px,env(safe-area-inset-bottom));
+ }
  body.v105-portal .main,body.v105-studio .main{max-width:100%;min-width:0}
  body.v105-portal :is(.pane,.panel-view,.hero,.page-hero,.metric,.bo-folder-toolbar){max-width:100%;min-width:0}
  body.v105-portal :is(.pane-head,.bo-folder-toolbar,.row-actions){flex-wrap:wrap}
