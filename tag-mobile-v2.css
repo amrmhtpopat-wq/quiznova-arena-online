@@ -150,3 +150,112 @@
  body.v105-portal #workspace>.sidebar>nav{gap:6px!important}
  body.v105-portal #workspace>.sidebar>nav>.nav{font-size:11.5px!important;padding:9px 7px!important}
 }
+
+/* TAG V4 — compact, accessible teacher dropdown on phones only. */
+.tag-teacher-mobile-toggle,.tag-teacher-nav-label{display:none!important}
+@media screen and (max-width:650px){
+ body.v105-portal #workspace:not(.hidden)>aside.sidebar{
+   display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;
+   align-items:center!important;gap:0 10px!important;
+   padding:10px 12px!important;border-radius:0 0 16px 16px!important;
+   min-height:72px!important;
+ }
+ body.v105-portal #workspace>.sidebar>.sidebar-brand{
+   grid-column:1!important;width:100%!important;max-width:100%!important;
+   min-height:0!important;min-width:0!important;margin:0!important;
+   padding:0!important;display:flex!important;justify-content:flex-start!important;
+   align-items:center!important;overflow:hidden!important
+ }
+ body.v105-portal #workspace>.sidebar>.sidebar-brand img{
+   width:min(164px,45vw)!important;max-width:100%!important;
+   height:52px!important;max-height:52px!important;
+   object-fit:contain!important;object-position:right center!important;
+   box-shadow:none!important;margin:0!important
+ }
+ body.v105-portal #workspace>.sidebar>.workspace-tag{display:none!important}
+ body.v105-portal #workspace>.sidebar>.tag-teacher-mobile-toggle{
+   display:inline-flex!important;grid-column:2!important;align-items:center!important;
+   justify-content:center!important;gap:9px!important;white-space:nowrap!important;
+   min-width:119px!important;min-height:46px!important;padding:9px 12px!important;
+   background:#124b72!important;color:#f2fcff!important;
+   border:1px solid #76d9e0!important;border-radius:12px!important;
+   box-shadow:0 3px 10px #02132445!important;
+   font:800 14px/1.4 Tahoma,Arial,sans-serif!important;cursor:pointer
+ }
+ body.v105-portal #workspace>.sidebar>.tag-teacher-mobile-toggle[aria-expanded="true"]{
+   background:#1b806e!important;border-color:#a5f0bc!important
+ }
+ body.v105-portal .tag-teacher-mobile-hamburger{font-size:20px;line-height:1}
+ body.v105-portal .tag-teacher-mobile-chevron{font-size:13px;transition:transform .2s}
+ body.v105-portal .tag-teacher-menu-open .tag-teacher-mobile-chevron{transform:rotate(180deg)}
+ body.v105-portal #workspace>.sidebar>.tag-teacher-mobile-toggle:focus-visible{
+   outline:3px solid #b1ff8b!important;outline-offset:3px!important
+ }
+ body.v105-portal #workspace>.sidebar>nav,
+ body.v105-portal #workspace>.sidebar>.secondary.wide,
+ body.v105-portal #workspace>.sidebar>.sidebar-bottom{
+   display:none!important
+ }
+ body.v105-portal #workspace>.sidebar.tag-teacher-menu-open>nav{
+   display:grid!important;grid-column:1/-1!important;
+   grid-template-columns:minmax(0,1fr)!important;
+   width:100%!important;min-width:0!important;
+   padding:9px 0 7px!important;margin-top:9px!important;
+   gap:3px!important;max-height:min(50dvh,420px)!important;
+   overflow-x:hidden!important;overflow-y:auto!important;
+   -webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;
+   border-top:1px solid #ffffff37!important;
+   scrollbar-width:thin!important;scroll-snap-type:none!important
+ }
+ body.v105-portal #workspace>.sidebar.tag-teacher-menu-open>nav>.nav{
+   display:flex!important;align-items:center!important;justify-content:flex-start!important;
+   grid-column:1!important;width:100%!important;min-height:45px!important;
+   font-size:14px!important;font-weight:700!important;line-height:1.5!important;
+   padding:8px 12px!important;gap:10px!important;margin:0!important;
+   flex:none!important;white-space:normal!important;text-align:right!important;
+   background:#0e3563a8!important;border:1px solid #649bc75c!important;
+   border-radius:10px!important;box-sizing:border-box!important;
+   color:#eaf6ff!important;overflow-wrap:anywhere!important
+ }
+ body.v105-portal #workspace>.sidebar.tag-teacher-menu-open>nav>.nav span{
+   font-size:18px!important;flex:none!important
+ }
+ body.v105-portal #workspace>.sidebar.tag-teacher-menu-open>nav>.nav.active{
+   background:#147c6d!important;border-color:#89ebc6!important;color:#fff!important
+ }
+ body.v105-portal #workspace>.sidebar.tag-teacher-menu-open>nav>.tag-teacher-nav-label{
+   display:block!important;grid-column:1!important;
+   font-size:11px!important;font-weight:900!important;color:#8ddfe9!important;
+   padding:10px 8px 3px!important;line-height:1.3!important
+ }
+ body.v105-portal #workspace>.sidebar.tag-teacher-menu-open>.secondary.wide{
+   display:flex!important;grid-column:1/-1!important;justify-content:center!important;
+   width:100%!important;min-height:43px!important;margin:7px 0 4px!important;
+   padding:8px 12px!important;font-size:13px!important;border-radius:10px!important
+ }
+ body.v105-portal #workspace>.sidebar.tag-teacher-menu-open>.sidebar-bottom{
+   display:flex!important;grid-column:1/-1!important;
+   flex-wrap:nowrap!important;align-items:center!important;
+   gap:8px!important;width:100%!important;margin:5px 0 0!important;
+   border-top:1px solid #ffffff27!important;padding-top:9px!important
+ }
+ body.v105-portal #workspace>.sidebar.tag-teacher-menu-open>.sidebar-bottom .teacher-card{
+   flex:1 1 auto!important;min-width:0!important;padding:7px 10px!important;
+   margin:0!important;overflow:hidden!important
+ }
+ body.v105-portal #workspace>.sidebar.tag-teacher-menu-open>.sidebar-bottom .teacher-card :is(b,small){
+   display:block!important;overflow:hidden!important;
+   white-space:nowrap!important;text-overflow:ellipsis!important
+ }
+ body.v105-portal #workspace>.sidebar.tag-teacher-menu-open>.sidebar-bottom .teacher-card b{
+   font-size:12px!important
+ }
+ body.v105-portal #workspace>.sidebar.tag-teacher-menu-open>.sidebar-bottom .logout{
+   display:inline-flex!important;justify-content:center!important;align-items:center!important;
+   flex:0 0 auto!important;width:auto!important;min-width:92px!important;
+   min-height:42px!important;margin:0!important;padding:8px 10px!important;
+   border-radius:10px!important;border:1px solid #b48cbe!important;
+   background:#243e67!important;color:#ffeaff!important;
+   font-size:12px!important;font-weight:700!important;box-shadow:none!important
+ }
+}
