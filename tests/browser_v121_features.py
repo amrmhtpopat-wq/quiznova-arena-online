@@ -57,6 +57,9 @@ with sync_playwright() as p:
   page.locator('#password').fill('TeacherPasswordV121!')
   page.locator('#authSubmit').click()
   page.locator('#workspace').wait_for(state='visible',timeout=15000)
+  if mobile:
+   page.locator('#tagTeacherMobileToggle').wait_for(state='visible',timeout=8000)
+   page.locator('#tagTeacherMobileToggle').click()
   page.locator('button.nav[data-panel="students"]').click()
   page.locator('#studentsBoard .bo-class-folder').first.wait_for(timeout=15000)
   assert page.locator('#studentsBoard .bo-class-folder').count()==(1 if mobile else 2)
