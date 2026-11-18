@@ -121,15 +121,18 @@ function showResult(res,q,showFeedback=true,examMode=false){
  session.streak=res?.streak||0;
  const poll=q?.type==='poll';
  const reveal=!!showFeedback&&!examMode&&!poll;
+ const cheers=['🌟 أحسنت!','👏 إجابة رائعة!','💎 نجم التحدي!','🚀 مبدع يا بطل!','✨ إجابة متقنة!'];
+ const cheer=cheers[Math.abs(Number(session.lastIndex)||0)%cheers.length];
  const title=examMode?'🛡️ تم حفظ إجابتك بسرية':poll?'📊 تم تسجيل رأيك':
-   reveal?(res?.correct===true?'✅ إجابة صحيحة':res?.correct===false?'❌ إجابة غير صحيحة':'✅ تم تسجيل الإجابة'):'✅ تم تسجيل إجابتك';
+   reveal?(res?.correct===true?cheer:res?.correct===false?'💡 محاولة جيدة، القادم أجمل!':'✅ تم تسجيل الإجابة'):'✅ تم تسجيل إجابتك';
  const earned=!examMode&&!poll?Math.max(0,Number(res?.earned)||0):0;
  if(reveal){if(res?.correct===true){beep(true);confetti()}else if(res?.correct===false)beep(false)}
  if($('#qnAnswerWait'))return;
  clearInterval(session.timer);
- $('#gameView').innerHTML=`<div class="qn-answer-wait" id="qnAnswerWait" role="status" aria-live="polite">
- <div class="qn-wait-glow">⚡</div><span class="eyebrow">الإجابة أُرسلت بنجاح</span>
+ $('#gameView').innerHTML=`<div class="qn-answer-wait ${reveal&&res?.correct===true?'tag-answer-celebrate':''}" id="qnAnswerWait" role="status" aria-live="polite">
+ <div class="qn-wait-glow">${reveal&&res?.correct===true?'🌟':'⚡'}</div><span class="eyebrow">الإجابة أُرسلت بنجاح</span>
  <h1>${title}</h1>
+ ${reveal&&res?.correct===true?'<p class="tag-answer-praise">إجابة صحيحة — اختيار موفق! استمر بهذا التألق.</p>':''}
  ${examMode?'<p>ستظهر نتائج الامتحان في النهاية.</p>':!reveal?'<p>سيُعلن الرصيد بعد انتهاء السؤال؛ استعد للجولة التالية.</p>':`<div class="qn-points-live"><span>رصيد الجولة</span><strong id="qnLiveScore">${Number(session.score)||0}</strong> نقطة</div>
  ${earned?'<div class="qn-earned">+'+earned+' نقطة من هذه الإجابة</div>':''}`}
  <div class="qn-wait-ring" aria-hidden="true"></div><p>استعد للسؤال التالي، انتهى دورك في هذا السؤال.</p>
@@ -146,7 +149,7 @@ function showRoundLeaderboard(r){
   const leaders=r.leaders||[],meIndex=leaders.findIndex(x=>x.name===session.name||x.name===session.team),myPlace=meIndex>=0?meIndex+1:null;
   const review=r.showFeedback?r.review:null;
   const top=leaders.slice(0,8).map((p,i)=>`<div class="leader ${i<3?'top-'+(i+1):''}"><div class="rank">${i+1}</div><div><b>${esc(p.name)}</b><small>${esc(p.team||'')}${p.correct!=null?` • ${p.correct} صحيحة`:''}</small></div><b>${p.score}</b></div>`).join('');
-  $('#gameView').innerHTML=`<div class="round-screen"><div class="round-trophy">🏆</div><span class="eyebrow">نتائج الجولة ${r.index+1}</span><h1>${myPlace?`ترتيبك الآن #${myPlace}`:'الترتيب الحالي'}</h1>${session.model?`<div class="model-hero">نموذج ${esc(session.model)}</div>`:''}<div class="round-score">${r.playerScore||0}<small>نقطة</small></div><div class="leaderboard">${top}</div>${teamRosterHtml(r)}${review?`<div class="round-review" style="padding:15px;border:1px solid #6bdcfb99;border-radius:17px;background:#043e78b5;margin:18px auto;max-width:650px;text-align:right"><b>💡 شرح السؤال</b><p>${esc(review.explanation||review.correctAnswer||'')}</p>${review.image?`<img src="${esc(review.image)}" style="max-height:120px;width:auto;max-width:100%;border-radius:10px" alt="شرح">`:''}</div>`:''}<p class="waiting-next">بانتظار الأستاذ لبدء السؤال التالي...</p></div>`;
+  $('#gameView').innerHTML=`<div class="round-screen"><div class="round-trophy">🏆</div><span class="eyebrow">نتائج الجولة ${r.index+1}</span><h1>${myPlace?`ترتيبك الآن #${myPlace}`:'الترتيب الحالي'}</h1>${r.speedChampion&&r.showFeedback?'<div class="tag-speed-champion" role="status">👑 ملك السرعة <small>أسرع إجابة صحيحة في الجولة!</small></div>':''}${session.model?`<div class="model-hero">نموذج ${esc(session.model)}</div>`:''}<div class="round-score">${r.playerScore||0}<small>نقطة</small></div><div class="leaderboard">${top}</div>${teamRosterHtml(r)}${review?`<div class="round-review" style="padding:15px;border:1px solid #6bdcfb99;border-radius:17px;background:#043e78b5;margin:18px auto;max-width:650px;text-align:right"><b>💡 شرح السؤال</b><p>${esc(review.explanation||review.correctAnswer||'')}</p>${review.image?`<img src="${esc(review.image)}" style="max-height:120px;width:auto;max-width:100%;border-radius:10px" alt="شرح">`:''}</div>`:''}<p class="waiting-next">بانتظار الأستاذ لبدء السؤال التالي...</p></div>`;
   if(myPlace&&myPlace<=3)confetti();
 }
 function showFinish(r){clearInterval(session.timer);clearInterval(session.poll);confetti();const leaders=r.leaders||[];const place=leaders.findIndex(x=>x.name===session.name||x.name===session.team);const medal=place===0?'🥇':place===1?'🥈':place===2?'🥉':'🏅';$('#gameView').innerHTML=`<div class="finish-card"><span class="eyebrow">🏆 ليلة الأبطال</span><div class="v104-student-medal">${medal}</div><h1>أحسنت ${esc(session.name)} 👏</h1>${place>=0?`<p>مركزك في التحدي: ${place+1}</p>`:''}${session.team?`<div class="team-hero">${esc(session.team)}</div>`:''}${teamRosterHtml(r)}<div class="final-score">${r.playerScore||0}</div><p>نقطة في هذا الاختبار</p><div class="qn-xp-final"><strong>⭐ +${Number(r.xpGain)||0} XP</strong><span>إجمالي الخبرة: ${Number(r.xp)||0} XP</span><b>المستوى ${r.level||1} • ${esc(r.progress?.title||'مبتدئ')}</b>${r.levelUp?'<strong class="qn-level-up">🎉 ارتفع مستواك!</strong>':''}<div class="qn-xp-progress" role="progressbar" aria-valuenow="${Number(r.progress?.percent)||0}" aria-valuemin="0" aria-valuemax="100"><i style="width:${Math.max(0,Math.min(100,Number(r.progress?.percent)||0))}%"></i></div><span>تبقى ${Number(r.progress?.xpToNext)||0} XP للوصول للمستوى التالي</span>${r.xpBreakdown?.total?'<small>الصحيحة +'+r.xpBreakdown.correct+' • السرعة +'+r.xpBreakdown.fastest+' • الإكمال +'+r.xpBreakdown.completion+' • المركز الأول +'+r.xpBreakdown.firstPlace+'</small>':''}</div><div class="leaderboard">${leaders.slice(0,10).map((p,i)=>`<div class="leader"><div class="rank">${i+1}</div><div><b>${esc(p.name)}</b><small>${esc(p.team||'')}</small></div><b>${p.score}</b></div>`).join('')}</div></div>`}

@@ -136,7 +136,10 @@ async function submit(value){
  try{
   const d=await api('answer',{token:current.token,index:current.state.index,answer:value});
   current.state=d.state;
-  el('soloPlayArea').innerHTML='<div class="bo-solo-feedback"><h2>'+(d.correct===true?'✅ إجابة صحيحة':d.correct===null?'✅ تم تسجيل مشاركتك':'💡 لا بأس، أكمل التحدي!')+'</h2><p>+'+Number(d.earned||0)+' نقطة</p></div>';
+  const cheers=['🌟 أحسنت!','👏 إجابة رائعة!','💎 نجم التحدي!','🚀 مبدع يا بطل!','✨ إجابة متقنة!'];
+  const phrase=d.correct===true?cheers[Math.max(0,Number(current.state.index)-1)%cheers.length]:
+    d.correct===null?'✅ تم تسجيل مشاركتك':'💡 محاولة جميلة، القادم أفضل!';
+  el('soloPlayArea').innerHTML='<div class="bo-solo-feedback'+(d.correct===true?' tag-solo-celebrate':'')+'" role="status"><span class="tag-solo-feedback-icon">'+(d.correct===true?'🌟':d.correct===null?'📊':'💪')+'</span><h2>'+phrase+'</h2><p>+'+Number(d.earned||0)+' نقطة</p></div>';
   setTimeout(()=>render(d.state),1000);
  }catch(e){
   if(e.message==='question_changed'&&e.payload?.state)render(e.payload.state);

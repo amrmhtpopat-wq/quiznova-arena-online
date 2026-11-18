@@ -44,6 +44,9 @@ jobs:
           node --check tag-pwa-v1.js
           node --check tag-app-bridge-v2.js
           node --check tag-home-mobile-v5.js
+          node --check tag-question-image-zoom-v1.js
+          node --check student.js
+          node --check solo-student-v120.js
           node --check sw.js
           node --check curriculum_bank.js
           node --check curriculum_plus.js
@@ -52,6 +55,8 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_tag_mobile_v2.py' -v
       - name: TAG Home Mobile V5 scoped changes contract
         run: python -m unittest discover -s tests -p 'test_tag_home_mobile_v5.py' -v
+      - name: TAG image-question feedback and server speed crown QA
+        run: python -m unittest discover -s tests -p 'test_tag_student_feedback_v1.py' -v
       - name: TAG PWA manifest, PNG install icons and no-cached-student-data tests
         run: python -m unittest discover -s tests -p 'test_tag_pwa_v1.py' -v
       - name: TAG Student Verify isolated HTTP/PIN/concurrency tests
