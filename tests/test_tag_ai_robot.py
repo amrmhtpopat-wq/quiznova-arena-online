@@ -32,10 +32,11 @@ class TagAIRobotTests(unittest.TestCase):
         self.assertIn('background:transparent!important',style)
         self.assertIn('tagai-robot-art',style)
         self.assertIn('if(!student&&!display)',shell)
-        self.assertIn('/tag-ai-assistant-v1.js?v=1.2.0',shell)
-        self.assertIn("headerDock.append(fab)",script)
-        self.assertIn("fab.classList.add('tagai-header-dock')",script)
-        self.assertIn("position:static;inset:auto",style)
+        self.assertIn('/tag-ai-assistant-v1.js?v=1.4.0',shell)
+        self.assertNotIn("headerDock.append(fab)",script)
+        self.assertIn("d.body.append(fab,overlay)",script)
+        self.assertIn('width:49px;height:58px',style)
+        self.assertIn('position:fixed;left:14px',style)
         self.assertNotIn('position:fixed;bottom:13px;left:19px',style)
 
 if __name__ == '__main__':
