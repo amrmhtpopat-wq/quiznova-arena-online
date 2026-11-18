@@ -132,7 +132,7 @@ function showResult(res,q,showFeedback=true,examMode=false){
  $('#gameView').innerHTML=`<div class="qn-answer-wait ${reveal&&res?.correct===true?'tag-answer-celebrate':''}" id="qnAnswerWait" role="status" aria-live="polite">
  <div class="qn-wait-glow">${reveal&&res?.correct===true?'🌟':'⚡'}</div><span class="eyebrow">الإجابة أُرسلت بنجاح</span>
  <h1>${title}</h1>
- ${reveal&&res?.correct===true?'<p class="tag-answer-praise">اختيار موفق! استمر بهذا التألق.</p>':''}
+ ${reveal&&res?.correct===true?'<p class="tag-answer-praise">إجابة صحيحة — اختيار موفق! استمر بهذا التألق.</p>':''}
  ${examMode?'<p>ستظهر نتائج الامتحان في النهاية.</p>':!reveal?'<p>سيُعلن الرصيد بعد انتهاء السؤال؛ استعد للجولة التالية.</p>':`<div class="qn-points-live"><span>رصيد الجولة</span><strong id="qnLiveScore">${Number(session.score)||0}</strong> نقطة</div>
  ${earned?'<div class="qn-earned">+'+earned+' نقطة من هذه الإجابة</div>':''}`}
  <div class="qn-wait-ring" aria-hidden="true"></div><p>استعد للسؤال التالي، انتهى دورك في هذا السؤال.</p>
