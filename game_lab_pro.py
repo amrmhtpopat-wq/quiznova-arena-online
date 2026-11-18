@@ -415,6 +415,76 @@ def offline_generate(tid,data):
                        'أُنشئت '+str(len(rows))+' أسئلة مباشرة ومتنوعة من التعريفات والأهداف والأمثلة والمعلومات الواضحة. راجع الإجابات وصفحات المصدر قبل اعتمادها.')}
 
 
+def _google_generate_with_fallback(request_body, key, models):
+    """Retry temporary Google failures, then try another free-tier model.
+    Do not log API keys or book content, and never enable billing.
+    """
+    last_error='ai_provider_unavailable'
+    had_overload=False
+    for model_index,model in enumerate(models):
+        for attempt in range(2):
+            request=urllib.request.Request(
+                'https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent',
+                data=request_body,
+                headers={'x-goog-api-key':key,'Content-Type':'application/json'},method='POST')
+            try:
+                with urllib.request.urlopen(request,timeout=32) as response:
+                    return json.load(response)
+            except urllib.error.HTTPError as exc:
+                status=int(exc.code)
+                try:
+                    provider=json.loads(exc.read(5000)).get('error',{})
+                    if not isinstance(provider,dict):provider={}
+                except (ValueError,TypeError):
+                    provider={}
+                kind=str(provider.get('status') or '').upper()
+                msg=str(provider.get('message') or '').lower()
+                print('TAG LAB Gemini HTTP '+str(status)+', status '+
+                      re.sub('[^A-Z_]','',kind)[:40]+', model '+model,flush=True)
+                if status==404:
+                    last_error='ai_model_unavailable'
+                    break
+                if status==429:
+                    last_error='ai_rate_limited'
+                    break
+                if status in (408,500,502,503,504):
+                    had_overload=True
+                    last_error='ai_provider_overloaded'
+                    if attempt==0:
+                        time.sleep(1.0+model_index+secrets.randbelow(650)/1000.0)
+                        continue
+                    break
+                if status==400 and (kind=='FAILED_PRECONDITION' or
+                                   'free tier is not available' in msg):
+                    raise ValueError('ai_free_tier_unavailable') from exc
+                if status in (401,403):
+                    if any(x in msg for x in
+                           ('api key not valid','invalid api key','api_key_invalid')):
+                        raise ValueError('ai_invalid_key') from exc
+                    raise ValueError('ai_access_denied') from exc
+                if status==400:
+                    raise ValueError('ai_provider_configuration') from exc
+                raise ValueError('ai_provider_unavailable') from exc
+            except (TimeoutError,urllib.error.URLError) as exc:
+                print('TAG LAB Gemini connection issue: '+type(exc).__name__+
+                      ', model '+model,flush=True)
+                had_overload=True
+                last_error='ai_network_error'
+                if attempt==0:
+                    time.sleep(1.0+model_index+secrets.randbelow(650)/1000.0)
+                    continue
+                break
+            except (ValueError,TypeError) as exc:
+                raise ValueError('ai_invalid_response') from exc
+            except Exception as exc:
+                print('TAG LAB Gemini unexpected failure: '+
+                      type(exc).__name__,flush=True)
+                raise ValueError('ai_provider_unavailable') from exc
+    if had_overload and last_error=='ai_model_unavailable':
+        last_error='ai_provider_overloaded'
+    raise ValueError(last_error)
+
+
 def ai_generate(tid,data):
     book=require_book(tid,data.get('bookId'))
     # Free-only provider: a Gemini API key created in a no-billing AI Studio project.
@@ -483,52 +553,20 @@ def ai_generate(tid,data):
             global_count=con.execute(db.sql('SELECT COUNT(*) FROM game_lab_ai_usage '
                        'WHERE created_at>?'),(now()-86400,)).fetchone()[0]
             if int(global_count)>=80:raise ValueError('ai_global_daily_limit')
+            usage_id=uuid.uuid4().hex
             con.execute(db.sql('INSERT INTO game_lab_ai_usage(id,teacher_id,created_at) VALUES(?,?,?)'),
-                        (uuid.uuid4().hex,tid,now()))
-    # Distinguish invalid keys, unavailable free tiers, retired models,
-    # quotas and network issues. No original provider message or API key is logged.
-    obj=None
+                        (usage_id,tid,now()))
+    # Reserve a daily slot during the call, refund it on provider failures.
     request_body=json.dumps(payload,ensure_ascii=False).encode('utf8')
-    for index,model in enumerate(models):
-        request=urllib.request.Request(
-            'https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent',
-            data=request_body,
-            headers={'x-goog-api-key':key,'Content-Type':'application/json'},method='POST')
+    try:
+        obj=_google_generate_with_fallback(request_body,key,models)
+    except Exception:
         try:
-            with urllib.request.urlopen(request,timeout=38) as response:
-                obj=json.load(response)
-            break
-        except urllib.error.HTTPError as exc:
-            status=int(exc.code)
-            try:
-                provider=json.loads(exc.read(5000)).get('error',{})
-                if not isinstance(provider,dict):provider={}
-            except (ValueError,TypeError):
-                provider={}
-            kind=str(provider.get('status') or '').upper()
-            msg=str(provider.get('message') or '').lower()
-            print('TAG LAB Gemini error: HTTP '+str(status)+', status '+re.sub('[^A-Z_]','',kind)[:40]+', model '+model,flush=True)
-            if status==404:
-                if index+1<len(models):continue
-                raise ValueError('ai_model_unavailable') from exc
-            if status==429:raise ValueError('ai_rate_limited') from exc
-            if status==400 and (kind=='FAILED_PRECONDITION' or 'free tier is not available' in msg):
-                raise ValueError('ai_free_tier_unavailable') from exc
-            if status in (401,403):
-                if 'api key not valid' in msg or 'invalid api key' in msg or 'api_key_invalid' in msg:
-                    raise ValueError('ai_invalid_key') from exc
-                raise ValueError('ai_access_denied') from exc
-            if status==400:raise ValueError('ai_provider_configuration') from exc
-            raise ValueError('ai_provider_unavailable') from exc
-        except (TimeoutError,):
-            raise ValueError('ai_timeout')
-        except urllib.error.URLError as exc:
-            print('TAG LAB Gemini network error: '+type(exc.reason).__name__,flush=True)
-            raise ValueError('ai_network_error') from exc
-        except Exception as exc:
-            print('TAG LAB Gemini unexpected failure: '+type(exc).__name__,flush=True)
-            raise ValueError('ai_provider_unavailable') from exc
-    if obj is None:raise ValueError('ai_model_unavailable')
+            db.exec_sql('DELETE FROM game_lab_ai_usage WHERE id=? AND teacher_id=?',
+                        (usage_id,tid))
+        except Exception:
+            print('TAG LAB: could not release unsuccessful AI usage slot',flush=True)
+        raise
     parts=[]
     for candidate in obj.get('candidates',[])[:1]:
         if not isinstance(candidate,dict):continue
