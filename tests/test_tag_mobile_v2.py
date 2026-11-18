@@ -59,7 +59,7 @@ class AllPagesMobileContract(unittest.TestCase):
   self.assertIn("a.target='_blank'",script)
   self.assertIn("a.rel='noopener noreferrer external'",script)
   self.assertIn('directEntryFallback',script)
-  self.assertIn("url.origin===location.origin",script)
+  self.assertIn("u.origin===location.origin",script)
   self.assertNotIn('localStorage.setItem',script)
   self.assertNotIn('sessionStorage.setItem',script)
 
