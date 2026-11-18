@@ -81,6 +81,38 @@ margin-top:28px;color:#a8c9db;border-top:1px solid #ffffff21;padding-top:18px;fo
  .install-btn,.outline-btn{width:100%;min-height:52px}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;scroll-behavior:auto!important}}
+
+/* TAG app V3: compact, touch-first landing screen */
+:root{font-family:"Segoe UI",Tahoma,Arial,sans-serif}
+.page{max-width:940px}
+.top{border-bottom:1px solid #ffffff1e;padding-bottom:14px}
+.hero{padding:36px 12px 28px}
+.hero h1{font-size:clamp(2.4rem,7vw,4.5rem);margin:12px 0 8px}
+.hero p{margin:0 auto 17px}
+.entries{grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.entry{min-height:142px;border-radius:23px;background:linear-gradient(150deg,#15518b9c,#082d54 80%);border-color:#7bb6e74d}
+.entry.student{background:linear-gradient(135deg,#1a6caf,#093961)}
+.entry.teacher{background:linear-gradient(135deg,#176b73,#0a3b57)}
+.entry.lab{background:linear-gradient(135deg,#356c54,#0b3e4e)}
+.entry .avatar{transform:none}
+.entry .desc{line-height:1.5}
+.tip{margin-top:18px;padding:0;overflow:hidden}
+.tip summary{cursor:pointer;padding:15px 18px;font-weight:800;list-style-position:inside}
+.tip .install-guide{padding:0 15px 15px}
+.footer{margin-top:18px}
+@media(max-width:690px){
+ .page{width:calc(100% - 28px)}
+ .hero{padding:29px 4px 22px}
+ .hero h1{font-size:clamp(2.1rem,10vw,3.15rem)}
+ .entries{grid-template-columns:1fr;gap:12px}
+ .entry{min-height:108px;padding:17px;gap:14px}
+ .entry .avatar{width:59px;height:59px;flex-basis:59px}
+ .entry strong{font-size:1.13rem}
+ .entry .desc{font-size:.84rem}
+ .install-row{gap:8px}
+ .install-btn,.outline-btn{width:auto;flex:1 1 42%;min-width:132px;padding:10px}
+}
+@media(max-width:360px){.install-row>*{flex-basis:100%}}
 </style>
 <script defer src="/tag-pwa-v1.js?v=1"></script>
 <link rel="stylesheet" href="/tag-mobile-v2.css?v=2">
@@ -93,12 +125,12 @@ margin-top:28px;color:#a8c9db;border-top:1px solid #ffffff21;padding-top:18px;fo
    <img src="/assets/pwa/tag-192.png" width="66" height="66" alt="أيقونة TAG">
    <div><span>TEACH AND GAME</span><small>تعلّم • العب • تفوّق</small></div>
   </a>
-  <a class="top-link" href="/about.html">عن منصة TAG</a>
+  <a class="top-link" href="/student.html">ابدأ اللعب <span aria-hidden="true">←</span></a>
  </header>
  <section class="hero" aria-labelledby="welcome-title">
-  <span class="chip">✦ تطبيق TAG التعليمي</span>
-  <h1 id="welcome-title">تعليم ممتع.<br><em>تنافس بلا حدود.</em></h1>
-  <p>منصة واحدة للطلاب والمعلمين؛ اختبارات مباشرة، ألعاب تعليمية، بطاقات ذكية وبطولات مدرسية — بنفس بيانات موقع TAG الأصلي.</p>
+  <span class="chip">TEACH AND GAME</span>
+  <h1 id="welcome-title">تعلّم. العب.<br><em>تفوّق.</em></h1>
+  <p>أهلاً بك في عالم TAG</p>
   <div class="install-row">
    <button type="button" class="install-btn" data-tag-install>📲 طريقة تثبيت TAG</button>
    <a class="outline-btn" href="/student.html">🎮 ابدأ اللعب الآن</a>
@@ -106,22 +138,14 @@ margin-top:28px;color:#a8c9db;border-top:1px solid #ffffff21;padding-top:18px;fo
   <p id="tagInstallStatus" role="status" aria-live="polite"></p>
  </section>
  <main>
-  <h2>اختر بوابتك</h2>
+  <h2>ابدأ الآن</h2>
   <div class="entries">
-   <a class="entry student" href="/student.html"><span class="avatar" aria-hidden="true">🪪</span><span class="copy"><strong>دخول الطالب</strong><span class="desc">مسح QR أو رمز البطاقة، اختبارات صفي وتحدياتي المباشرة</span></span><span class="arrow" aria-hidden="true">←</span></a>
-   <a class="entry teacher" href="/?teacher=1"><span class="avatar" aria-hidden="true">👨‍🏫</span><span class="copy"><strong>دخول المعلم</strong><span class="desc">إنشاء الاختبارات، متابعة النتائج والطلاب وإدارة الصفوف</span></span><span class="arrow" aria-hidden="true">←</span></a>
-   <a class="entry lab" href="/tag-lab-home.html?v=34" data-tag-lab-entry="external"><span class="avatar" aria-hidden="true">🎲</span><span class="copy"><strong>TAG LAB</strong><span class="desc">ألعاب وقوالب تعليمية تفاعلية وتجارب ممتعة</span></span><span class="arrow" aria-hidden="true">←</span></a>
-   <a class="entry tourney" href="/champion.html"><span class="avatar" aria-hidden="true">🏆</span><span class="copy"><strong>بطولات TAG</strong><span class="desc">تصفيات ومنافسات مباشرة بين الطلاب والشعب</span></span><span class="arrow" aria-hidden="true">←</span></a>
+   <a class="entry student" href="/student.html"><span class="avatar" aria-hidden="true">🪪</span><span class="copy"><strong>دخول الطالب</strong><span class="desc">بطاقتي • الاختبارات • التحديات</span></span><span class="arrow" aria-hidden="true">←</span></a>
+   <a class="entry teacher" href="/?teacher=1"><span class="avatar" aria-hidden="true">👨‍🏫</span><span class="copy"><strong>دخول المعلم</strong><span class="desc">الاختبارات • النتائج • البطولات</span></span><span class="arrow" aria-hidden="true">←</span></a>
+   <a class="entry lab" href="/tag-lab-home.html?v=34" target="_blank" rel="noopener noreferrer external" data-tag-lab-entry="external" data-tag-external-browser="true"><span class="avatar" aria-hidden="true">🎲</span><span class="copy"><strong>TAG LAB</strong><span class="desc">يفتح في المتصفح الخارجي</span></span><span class="arrow" aria-hidden="true">←</span></a>
   </div>
-  <section class="tip" id="tagInstallGuide" aria-labelledby="install-guide-title">
-   <h2 id="install-guide-title">📲 ثبّت TAG على شاشة هاتفك — مجانًا</h2>
-   <p>لا تحتاج متجر تطبيقات. التثبيت يضيف أيقونة TAG ويفتح المنصة كأنها تطبيق مستقل.</p>
-   <div class="install-guide">
-    <div><b> آيفون — Safari</b><small>افتح هذه الصفحة في Safari، واضغط مشاركة، ثم «إضافة إلى الشاشة الرئيسية» ثم «إضافة». إذا ظهر خيار «فتح كتطبيق ويب» ففعّله.</small></div>
-    <div><b>🤖 أندرويد — Chrome</b><small>اضغط زر تثبيت TAG أعلاه إذا ظهر، أو افتح قائمة ⋮ في Chrome واختر «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية».</small></div>
-   </div>
-  </section>
+  <details class="tip" id="tagInstallGuide"><summary>📲 تثبيت TAG على الهاتف</summary><div class="install-guide"><div><b>آيفون</b><small>افتح في Safari ← مشاركة ← إضافة إلى الشاشة الرئيسية.</small></div><div><b>أندرويد</b><small>افتح في Chrome ← القائمة ⋮ ← تثبيت التطبيق.</small></div></div></details>
  </main>
- <footer class="footer"><span>© TEACH AND GAME — TAG</span><span>تحتاج الاختبارات والتحديات إلى اتصال بالإنترنت. <a href="/">الموقع الأصلي</a></span></footer>
+ <footer class="footer"><span>© TEACH AND GAME — TAG</span><a href="/">الموقع الرسمي</a></footer>
 </div>
 </body></html>
