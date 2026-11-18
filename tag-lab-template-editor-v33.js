@@ -4,7 +4,8 @@
  */
 (()=>{
 'use strict';
-if(document.documentElement.dataset.tagView!=='create')return;
+const view=document.documentElement.dataset.tagView;
+if(view!=='create'&&view!=='games')return;
 const $=id=>document.getElementById(id),mk=(tag,cl,txt)=>{
  const e=document.createElement(tag);if(cl)e.className=cl;if(txt!==undefined)e.textContent=txt;return e
 };
@@ -42,13 +43,53 @@ const count=mk('span','tag-v33-count','0 سؤال');count.id='tagV33Count';
 top.append(headtext,count);editor.append(top);
 const info=mk('div','tag-v33-info','🔒 لكل قالب مسودة مستقلة. عند فتح قالب آخر لن تُنقل إليه هذه الأسئلة تلقائيًا.');
 editor.append(info);
+let metaControls=null;
+if(view==='games'){
+ const meta=mk('div','tag-v33-meta');
+ const titleWrap=mk('label','tag-v33-field');titleWrap.append(mk('span','','اسم اللعبة / النشاط'));
+ const gameTitle=mk('input','tag-v33-input');gameTitle.type='text';gameTitle.maxLength=90;gameTitle.placeholder='مثال: مراجعة درس الشبكات';
+ gameTitle.addEventListener('input',()=>{$('activityTitle').value=gameTitle.value;capture()});titleWrap.append(gameTitle);
+ const makeSelect=(target,label)=>{
+  const wrap=mk('label','tag-v33-field');wrap.append(mk('span','',label));
+  const select=$(target).cloneNode(true);select.removeAttribute('id');select.className='tag-v33-input';
+  select.addEventListener('change',()=>{$(target).value=select.value;capture()});wrap.append(select);meta.append(wrap);return select
+ };
+ meta.append(titleWrap);
+ const subject=makeSelect('subject','المبحث'),grade=makeSelect('grade','الصف'),time=makeSelect('roundTime','وقت السؤال');
+ metaControls={gameTitle,subject,grade,time};
+ editor.append(meta)
+}
+function syncMeta(){
+ if(!metaControls)return;
+ metaControls.gameTitle.value=$('activityTitle').value;
+ metaControls.subject.value=$('subject').value;
+ metaControls.grade.value=$('grade').value;
+ metaControls.time.value=$('roundTime').value;
+}
 const list=mk('div','tag-v33-list');list.id='tagV33List';editor.append(list);
 const actions=mk('div','tag-v33-actions');
 const add=mk('button','tag-v33-primary','＋ إضافة سؤال');add.type='button';add.id='tagV33Add';
 const preview=mk('button','tag-v33-secondary','▶ جرّب هذا القالب');preview.type='button';preview.id='tagV33Preview';
 const status=mk('p','tag-v33-status','ابدأ بالسؤال الأول؛ تحتاج إلى 4 أسئلة مختلفة على الأقل لحفظ اللعبة.');
 status.id='tagV33Message';status.setAttribute('role','status');
-actions.append(add,preview);editor.append(actions,status);
+actions.append(add,preview);
+if(view==='games'){
+ const save=mk('button','tag-v33-primary','💾 حفظ اللعبة في أنشطتي');save.type='button';save.id='tagV33Save';
+ save.onclick=()=>{
+  if(!check())return;
+  if($('cloudWorkspace')?.classList.contains('hide')){
+   notice('سجّل دخول المعلم أعلى الصفحة أولًا، ثم احفظ اللعبة في أنشطتي.',true);
+   document.querySelector('.tag-simple-auth')?.scrollIntoView({behavior:'smooth',block:'start'});return;
+  }
+  const native=$('cloudSave');if(native)native.click();else notice('زر حفظ الحساب غير متاح حاليًا.',true)
+ };
+ const library=mk('a','tag-v33-library','🗂️ افتح أنشطتي');library.href='/tag-lab-library.html';
+ actions.append(save,library);
+ document.addEventListener('taglab:activity-saved',e=>{
+  if(e.detail?.id)notice('✓ حُفظت لعبة '+schema(mode).label+' بنجاح في حسابك. افتح «أنشطتي» لمشاهدتها.')
+ });
+}
+editor.append(actions,status);
 const panel=parent.querySelector('.tag-v32-create-panel');
 if(panel)panel.after(editor);else parent.prepend(editor);
 let rows=[];
@@ -185,10 +226,10 @@ function activate(id,opts={}){
   window.BOOYAH_LAB_SOURCE_GROUP=b.sourceGroup||'';
  }else{
   rows=[{q:'',a:id==='truth'?'صح':'',g:'عام'}];
-  $('activityTitle').value='';$('subject').value='عام';$('grade').value='عام';$('roundTime').value='25';
+  $('activityTitle').value=view==='games'?'لعبة '+schema(id).label:'';$('subject').value='عام';$('grade').value='عام';$('roundTime').value='25';
   window.BOOYAH_LAB_BOOK_ID='';window.BOOYAH_LAB_IMAGE_ID='';window.BOOYAH_LAB_SOURCE_GROUP='';
  }
- paint();
+ paint();syncMeta();
  if(!opts.silent)notice(b?'↩ تم فتح مسودة '+schema(id).label+' الخاصة، دون تغيير أي قالب آخر.':'ابدأ بكتابة الأسئلة الخاصة بقالب '+schema(id).label+'.');
 }
 function importRows(modeId,data,owned){
