@@ -85,6 +85,8 @@ jobs:
           python -m pip install -r requirements.txt
           python -m pip install playwright
           python -m playwright install chromium
+      - name: TAG PWA install, mobile responsiveness and offline browser QA
+        run: python tests/browser_pwa_v1.py
       - name: TAG Verify security browser QA on desktop/mobile (local test DB only)
         run: python tests/browser_student_verify_v1.py
       - name: Legacy student/teacher browser compatibility
