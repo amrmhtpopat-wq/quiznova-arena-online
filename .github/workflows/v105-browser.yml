@@ -39,6 +39,9 @@ on:
       - tests/browser_student_entry_v120.py
       - student.js
       - student.html
+      - tag-student-question-fit-v1.css
+      - tag-question-image-zoom-v1.js
+      - tests/browser_tag_student_photo_v1.py
       - app.js
       - studio.html
       - portal.js
@@ -92,6 +95,8 @@ jobs:
         run: python tests/browser_tag_mobile_v2.py
       - name: TAG Home Mobile V5 phone-only visual and desktop regression
         run: python tests/browser_tag_home_mobile_v5.py
+      - name: TAG student picture questions live and solo viewport test
+        run: python tests/browser_tag_student_photo_v1.py
       - name: TAG PWA install, mobile responsiveness and offline browser QA
         run: python tests/browser_pwa_v1.py
       - name: TAG Verify security browser QA on desktop/mobile (local test DB only)
