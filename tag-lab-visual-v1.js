@@ -88,6 +88,13 @@
     const label=d.getElementById('tagvUser')?.querySelector('b');if(label)label.textContent=data.teacher.name
    }}).catch(()=>{});
  }
+ // Assistant is only mounted in teacher pages. No student or projector prompts.
+ if(!student&&!display){
+  const aiStyle=d.createElement('link');aiStyle.rel='stylesheet';
+  aiStyle.href='/tag-ai-assistant-v1.css?v=1.0.0';d.head.append(aiStyle);
+  const aiScript=d.createElement('script');aiScript.src='/tag-ai-assistant-v1.js?v=1.0.0';
+  aiScript.async=true;d.body.append(aiScript);
+ }
  if(currentPath==='/tag-lab-home.html'){
   const hero=d.querySelector('section.hero');
   const art=hero?.querySelector('.visual');if(art)art.replaceChildren();
