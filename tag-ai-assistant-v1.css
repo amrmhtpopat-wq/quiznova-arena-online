@@ -1,18 +1,14 @@
 /* TAG AI Assistant V1 — independently scoped light and dark UI. */
 .tagai-fab{
- /* The assistant docks inside the fixed header. It never covers page controls. */
- position:static;inset:auto;z-index:auto;
- display:grid;place-items:center;flex:none;
+ /* Original lower-left position, with the current compact 49x58px mascot.
+    The 80%-style desktop layout leaves a left gutter clear of controls. */
+ position:fixed;left:14px;bottom:max(15px,env(safe-area-inset-bottom,0px));
+ z-index:1290;display:grid;place-items:center;flex:none;
  width:49px;height:58px;padding:0;margin:0;
  border:0;outline-offset:2px;cursor:pointer;overflow:visible;
  background:transparent!important;color:inherit;box-shadow:none!important;
  border-radius:12px;font:inherit;direction:rtl;
  -webkit-tap-highlight-color:transparent
-}
-/* Fallback for a standalone page without the common TAG LAB header. */
-body > .tagai-fab:not(.tagai-header-dock){
- position:fixed;bottom:max(15px,env(safe-area-inset-bottom,0px));
- left:10px;width:58px;height:76px;z-index:1280;
 }
 .tagai-fab:focus-visible,.tagai-shell button:focus-visible,.tagai-shell textarea:focus-visible,
 .tagai-shell input:focus-visible,.tagai-shell select:focus-visible{
@@ -95,8 +91,8 @@ body.tagv-enabled button.tagai-fab,html[data-tag-view] body.tagv-enabled button.
  border-top:1px solid var(--tagv-border,#ddd);padding:13px 0 0;margin-top:20px}
 body.tagai-modal-open{overflow:hidden}
 @media(max-width:700px){
- .tagai-fab.tagai-header-dock{width:39px;height:47px;padding:0!important}
- body > .tagai-fab:not(.tagai-header-dock){width:51px;height:68px;left:8px;bottom:max(12px,env(safe-area-inset-bottom,0px))}
+ .tagai-fab{width:49px;height:58px;left:9px;
+  bottom:max(65px,calc(env(safe-area-inset-bottom,0px) + 65px));padding:0!important}
  .tagai-overlay{padding:8px}
  .tagai-shell{width:100%;max-height:96dvh;border-radius:18px}
  .tagai-top{padding:13px}.tagai-body{padding:13px}
