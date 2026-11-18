@@ -50,7 +50,12 @@ function choose(id,go=false){
  document.querySelectorAll('[data-v32-current]').forEach(e=>e.textContent=byId.get(id).icon+' '+byId.get(id).name);
  document.querySelectorAll('[data-v32-subtitle]').forEach(e=>e.textContent=byId.get(id).desc);
  document.dispatchEvent(new CustomEvent('taglab:template-selected',{detail:{from:previous,to:id}}));
- if(go)location.href='/tag-lab-create.html';
+ if(go){
+   if(view==='games'){
+    const builder=$('builder');if(builder){builder.classList.add('tag-visible-section');document.body.classList.add('tag-v32-editing');}
+    requestAnimationFrame(()=>{($('tagV33Editor')||builder)?.scrollIntoView({behavior:'smooth',block:'start'});});
+   }else location.href='/tag-lab-create.html';
+  }
 }
 function demo(id,forceDemo){
  // A preview is not a commitment: only the Choose button changes the selected game.
@@ -80,7 +85,7 @@ function gameCard(p){
  const tags=make('div','tag-v32-tags');tags.append(make('span','goodfit',p.tag));body.append(tags);
  const buttons=make('div','tag-v32-buttons');
  const preview=make('button','','جرّب');preview.type='button';preview.setAttribute('aria-label','معاينة لعبة '+p.name+' بأسئلة تجريبية');preview.onclick=()=>demo(p.id,true);
- const pick=make('button','pick','اختر القالب');pick.type='button';pick.onclick=()=>choose(p.id,true);
+ const pick=make('button','pick','✏️ خصّص اللعبة هنا');pick.type='button';pick.onclick=()=>choose(p.id,true);
  buttons.append(preview,pick);body.append(buttons);card.append(body);return card
 }
 function option(p,chooser=()=>choose(p.id,false)){
@@ -105,7 +110,7 @@ function modal(){
  inner.append(all);
  const actions=make('div','tag-v32-dialog-actions');
  const preview=make('button','alt','▶ معاينة القالب');preview.type='button';preview.onclick=()=>{dlg.close();demo(pending,view==='games')};
- const pick=make('button','','✏️ تحرير أسئلة القالب المختار');pick.id='tagV32ModalPick';pick.type='button';pick.onclick=()=>{dlg.close();choose(pending,view==='games')};
+ const pick=make('button','','✏️ تخصيص أسئلة القالب هنا');pick.id='tagV32ModalPick';pick.type='button';pick.onclick=()=>{dlg.close();choose(pending,view==='games')};
  actions.append(preview,pick);inner.append(actions);
  dlg.append(inner);document.body.append(dlg);
  dlg.addEventListener('close',()=>{pending=choice;all.querySelectorAll('.tag-v32-option').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.mode===choice)))});
