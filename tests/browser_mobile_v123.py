@@ -88,9 +88,12 @@ with sync_playwright() as playwright:
         inside(page,'.workspace .main',f'workspace {width}')
         check(page.locator('#logout').is_visible(),'logout hidden on teacher portal')
         check(page.locator('.sidebar nav .nav').count()>=6,'teacher tabs missing')
-        if width<=768:
+        if width<=650:
+            check(page.locator('.sidebar nav').evaluate("el=>getComputedStyle(el).display")=='grid',
+                  'teacher navigation should form accessible touch tiles on phones')
+        elif width<=1024:
             check(page.locator('.sidebar nav').evaluate("el=>getComputedStyle(el).overflowX")=='auto',
-                  'teacher tabs should be horizontally scrollable on phone')
+                  'teacher tabs should be horizontally scrollable on tablets')
         page.locator('button.nav[data-panel="students"]').click()
         page.locator('#studentsBoard .bo-class-folder').first.wait_for(timeout=13000)
         no_body_overflow(page,f'student cards {width}')
