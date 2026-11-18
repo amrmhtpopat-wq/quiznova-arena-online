@@ -69,6 +69,20 @@ class AllPagesMobileContract(unittest.TestCase):
   self.assertIn('تعلّم. تحدَّ.',app)
   self.assertIn('تعلّم • تحدَّ • تفوّق',landing)
 
+ def test_teacher_phone_dropdown_has_accessible_toggle_and_keeps_desktop_nav(self):
+  _,portal=fetch('/')
+  self.assertIn('id="tagTeacherMobileToggle"',portal)
+  self.assertIn('aria-controls="tagTeacherSections"',portal)
+  self.assertIn('aria-expanded="false"',portal)
+  self.assertIn('id="tagTeacherSections"',portal)
+  self.assertIn('tag-teacher-mobile-menu-v4.js',portal)
+  _,script=fetch('/tag-teacher-mobile-menu-v4.js')
+  self.assertIn('setOpen(false)',script)
+  self.assertIn('event.key === "Escape"',script)
+  _,css=fetch('/tag-mobile-v2.css')
+  self.assertIn('tag-teacher-menu-open>nav',css)
+  self.assertIn('display:none!important',css)
+
  def test_browser_externalization_only_when_standalone(self):
   _,script=fetch('/tag-app-bridge-v2.js?v=2')
   self.assertIn("if(!standalone())return",script)
