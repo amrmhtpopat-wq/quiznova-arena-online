@@ -53,6 +53,7 @@ with sync_playwright() as pw:
   assert not js_errors,(name,js_errors)
   if name=='iphone':
    assert 'Safari' in page.locator('#tagInstallStatus').inner_text()
+   page.locator('#tagInstallGuide summary').click()
    assert 'إضافة إلى الشاشة الرئيسية' in page.locator('#tagInstallGuide').inner_text()
   if name=='android':
    assert 'Chrome' in page.locator('#tagInstallStatus').inner_text()
