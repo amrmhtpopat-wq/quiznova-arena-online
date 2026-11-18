@@ -485,6 +485,15 @@ def _google_generate_with_fallback(request_body, key, models):
     raise ValueError(last_error)
 
 
+def _refund_ai_usage(tid,usage_id):
+    """Release the reserved attempt only for the authenticated teacher."""
+    try:
+        db.exec_sql('DELETE FROM game_lab_ai_usage WHERE id=? AND teacher_id=?',
+                    (usage_id,tid))
+    except Exception:
+        print('TAG LAB: could not release unsuccessful AI usage slot',flush=True)
+
+
 def ai_generate(tid,data):
     book=require_book(tid,data.get('bookId'))
     # Free-only provider: a Gemini API key created in a no-billing AI Studio project.
@@ -551,55 +560,60 @@ def ai_generate(tid,data):
             cur=con.execute(db.sql('SELECT COUNT(*) FROM game_lab_ai_usage '
                                    'WHERE teacher_id=? AND created_at>?'),
                             (tid,now()-86400))
-            if int(cur.fetchone()[0])>=10:raise ValueError('ai_daily_limit')
+            if int(cur.fetchone()[0])>=15:raise ValueError('ai_daily_limit')
             global_count=con.execute(db.sql('SELECT COUNT(*) FROM game_lab_ai_usage '
                        'WHERE created_at>?'),(now()-86400,)).fetchone()[0]
             if int(global_count)>=80:raise ValueError('ai_global_daily_limit')
             usage_id=uuid.uuid4().hex
             con.execute(db.sql('INSERT INTO game_lab_ai_usage(id,teacher_id,created_at) VALUES(?,?,?)'),
                         (usage_id,tid,now()))
-    # Reserve a daily slot during the call, refund it on provider failures.
+    # Reserve one slot while the network call is active; refund failed or
+    # unpublishable generations without altering the global safety quota.
     request_body=json.dumps(payload,ensure_ascii=False).encode('utf8')
     try:
         obj=_google_generate_with_fallback(request_body,key,models)
     except Exception:
-        try:
-            db.exec_sql('DELETE FROM game_lab_ai_usage WHERE id=? AND teacher_id=?',
-                        (usage_id,tid))
-        except Exception:
-            print('TAG LAB: could not release unsuccessful AI usage slot',flush=True)
+        _refund_ai_usage(tid,usage_id)
         raise
-    parts=[]
-    for candidate in obj.get('candidates',[])[:1]:
-        if not isinstance(candidate,dict):continue
-        for part in candidate.get('content',{}).get('parts',[]):
-            if isinstance(part,dict) and isinstance(part.get('text'),str):parts.append(part['text'])
-    if not parts:raise ValueError('ai_empty_response')
     try:
-        parsed=json.loads('\n'.join(parts))
-        generated=parsed.get('rows',[]) if isinstance(parsed,dict) else []
-        if not isinstance(generated,list):raise ValueError('ai_invalid_response')
-    except (ValueError,TypeError):raise ValueError('ai_invalid_response')
-    result,quality=verify_ai_rows(generated,selected_pages,maximum,include_stats=True)
-    rejected=quality['missing_quote']+quality['invalid_fields']+quality['duplicate']+quality['invalid_true_false']
-    print('TAG LAB AI verification: proposed='+str(len(generated))+
-          ', accepted='+str(len(result))+', missing_source='+str(quality['missing_quote'])+
-          ', invalid='+str(quality['invalid_fields'])+
-          ', duplicates='+str(quality['duplicate'])+
-          ', repaired_choices='+str(quality['repaired_choices'])+
-          ', corrected_page='+str(quality['corrected_page']),flush=True)
-    summary=('تم اعتماد '+str(len(result))+' من '+str(maximum)+' أسئلة مطلوبة. '
-             'أُصلح رقم الصفحة في '+str(quality['corrected_page'])+
-             ' أسئلة وتنسيق الاقتباس في '+str(quality['corrected_quote'])+
-             ' أسئلة، والخيارات في '+str(quality['repaired_choices'])+' أسئلة. '
-             'استُبعد '+str(rejected)+' مقترحات لعدم كفاية دليل المصدر أو تكرار المحتوى أو خطأ الحقول. '
-             'راجع الأسئلة قبل حفظها أو نشرها.')
-    return {'book':metadata(book),'mode':'ai','rows':result,'count':len(result),
-            'requestedCount':maximum,'generatedCount':len(generated),'verifiedCount':len(result),
-            'sourcePages':len(selected_pages),'verification':quality,
-            'warning':('لم ينتج TAG AI أسئلة موثقة كافية من الصفحات المحددة. وسّع النطاق أو اختر صفحات نصية أوضح.'
-                       if not result else summary)}
+        parts=[]
+        for candidate in obj.get('candidates',[])[:1]:
+            if not isinstance(candidate,dict):continue
+            for part in candidate.get('content',{}).get('parts',[]):
+                if isinstance(part,dict) and isinstance(part.get('text'),str):parts.append(part['text'])
+        if not parts:raise ValueError('ai_empty_response')
+        try:
+            parsed=json.loads('\n'.join(parts))
+            generated=parsed.get('rows',[]) if isinstance(parsed,dict) else []
+            if not isinstance(generated,list):raise ValueError('ai_invalid_response')
+        except (ValueError,TypeError):raise ValueError('ai_invalid_response')
+        result,quality=verify_ai_rows(generated,selected_pages,maximum,include_stats=True)
+        if len(result)<4:
+            # The activity cannot be saved with fewer than four questions.
+            # Let the teacher review these proposals without charging a daily slot.
+            _refund_ai_usage(tid,usage_id)
+        rejected=quality['missing_quote']+quality['invalid_fields']+quality['duplicate']+quality['invalid_true_false']
+        print('TAG LAB AI verification: proposed='+str(len(generated))+
+              ', accepted='+str(len(result))+', missing_source='+str(quality['missing_quote'])+
+              ', invalid='+str(quality['invalid_fields'])+
+              ', duplicates='+str(quality['duplicate'])+
+              ', repaired_choices='+str(quality['repaired_choices'])+
+              ', corrected_page='+str(quality['corrected_page']),flush=True)
+        summary=('تم اعتماد '+str(len(result))+' من '+str(maximum)+' أسئلة مطلوبة. '
+                 'أُصلح رقم الصفحة في '+str(quality['corrected_page'])+
+                 ' أسئلة وتنسيق الاقتباس في '+str(quality['corrected_quote'])+
+                 ' أسئلة، والخيارات في '+str(quality['repaired_choices'])+' أسئلة. '
+                 'استُبعد '+str(rejected)+' مقترحات لعدم كفاية دليل المصدر أو تكرار المحتوى أو خطأ الحقول. '
+                 'راجع الأسئلة قبل حفظها أو نشرها.')
+        return {'book':metadata(book),'mode':'ai','rows':result,'count':len(result),
+                'requestedCount':maximum,'generatedCount':len(generated),'verifiedCount':len(result),
+                'sourcePages':len(selected_pages),'verification':quality,
+                'warning':('لم ينتج TAG AI أسئلة موثقة كافية من الصفحات المحددة. وسّع النطاق أو اختر صفحات نصية أوضح.'
+                           if not result else summary)}
 
+    except Exception:
+        _refund_ai_usage(tid,usage_id)
+        raise
 
 def books(tid):
     return [metadata(b) for b in db.query(
