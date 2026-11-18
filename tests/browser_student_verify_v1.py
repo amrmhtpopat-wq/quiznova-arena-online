@@ -96,9 +96,16 @@ with sync_playwright() as playwright:
         timeout=10000)
     check(not teacher_page.locator('#verifyReveal').is_visible(),
           'An already-issued secret was incorrectly exposed a second time')
-    # Explicitly double-confirm rotating both students, with a local private download.
-    with teacher_page.expect_download(timeout=25000) as recovered_file:
-        teacher_page.locator('#verifyReissueAll').click()
+    # Explicitly double-confirm the two-student recovery. The page must
+    # open in the same tab even if browser auto-downloads/popups are blocked.
+    teacher_page.locator('#verifyReissueAll').click()
+    teacher_page.locator('#tagPinReceipt').wait_for(state='visible',timeout=25000)
+    check('صفحة رموز PIN للطلاب' in teacher_page.locator('#tagPinReceipt').inner_text(),
+          'PIN receipt full-page interface failed to open')
+    check(card in teacher_page.locator('#tagPinReceipt').inner_text(),
+          'PIN receipt did not include the student access code')
+    with teacher_page.expect_download(timeout=12000) as recovered_file:
+        teacher_page.locator('#verifyReceiptDownload').click()
     exported=recovered_file.value
     recovered_path=Path(dbdir.name)/'reissued-pins-private.csv'
     exported.save_as(str(recovered_path))
@@ -115,7 +122,14 @@ with sync_playwright() as playwright:
     second_pin=newsecond
     check(not teacher_page.locator('#verifyToggle').is_enabled(),
           'Bulk PIN recovery accidentally enabled PIN verification')
-    take(teacher_page,'tag-verify-teacher-issuance-QA.png')
+    take(teacher_page,'tag-verify-teacher-receipt-page-QA.png')
+    teacher_page.locator('#verifyReceiptClose').click()
+    check(not teacher_page.locator('#tagPinReceipt').count(),
+          'Closing receipt page did not remove confidential overlay')
+    teacher_page.locator('#verifyReceiptPage').click()
+    check(teacher_page.locator('#tagPinReceipt').is_visible(),
+          'Teacher cannot reopen the receipt in the same PIN issuance session')
+    teacher_page.locator('#verifyReceiptClose').click()
 
     # Secret is absent from card QR and public student directory.
     check(pin not in teacher_page.locator('#studentsBoard').inner_text(),
