@@ -110,3 +110,43 @@
 @media print{
  /* Printing student QR cards/results must remain unchanged. */
 }
+/* TAG Mobile V3 — teacher navigation as real touch-sized tiles, no clipped dropdown/strip */
+@media screen and (max-width:650px){
+ body.v105-portal #workspace:not(.hidden)>.sidebar{
+   padding:14px 12px!important;border-radius:0 0 20px 20px!important;
+ }
+ body.v105-portal #workspace>.sidebar .workspace-tag{display:none!important}
+ body.v105-portal #workspace>.sidebar>nav{
+   display:grid!important;
+   grid-template-columns:repeat(2,minmax(0,1fr))!important;
+   gap:9px!important;overflow:visible!important;max-height:none!important;
+   padding:8px 0!important;scroll-snap-type:none!important;
+ }
+ body.v105-portal #workspace>.sidebar>nav>.nav{
+   display:flex!important;align-items:center!important;justify-content:flex-start!important;
+   gap:7px!important;white-space:normal!important;
+   min-height:52px!important;width:100%!important;min-width:0!important;
+   padding:10px 9px!important;text-align:right!important;
+   line-height:1.45!important;font-size:12.5px!important;
+   border:1px solid #76d5e870!important;border-radius:13px!important;
+   overflow-wrap:anywhere;box-sizing:border-box;
+ }
+ body.v105-portal #workspace>.sidebar>nav>.nav span{flex:none}
+ body.v105-portal #workspace>.sidebar>nav>.nav.active{
+   background:#1b8067!important;color:#fff!important;border-color:#95edb0!important
+ }
+ body.v105-portal #workspace>.sidebar>.secondary.wide{
+   justify-content:center!important;margin-top:3px!important;
+   border-radius:12px!important
+ }
+ body.v105-portal #workspace .main :is(select,input,textarea){
+   width:100%;min-width:0;max-width:100%;border-radius:11px
+ }
+ body.v105-portal #workspace .main select{min-height:46px}
+ body.v105-portal #workspace .main :is(.pane,.metric,.panel-view){overflow-wrap:anywhere}
+ body.v105-portal #workspace .main :is(.pane-head,.topbar-actions){min-width:0}
+}
+@media screen and (max-width:365px){
+ body.v105-portal #workspace>.sidebar>nav{gap:6px!important}
+ body.v105-portal #workspace>.sidebar>nav>.nav{font-size:11.5px!important;padding:9px 7px!important}
+}
