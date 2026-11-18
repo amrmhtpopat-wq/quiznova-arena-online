@@ -90,6 +90,7 @@
 <meta name="twitter:image" content="https://quiznova-arena-online.onrender.com/assets/brand/tag-logo-v15.png">
 <script defer src="/tag-clean-links-v18.js?v=18"></script>
 <link rel="stylesheet" href="/tag-mobile-v2.css?v=4">
+<link rel="stylesheet" href="/tag-home-mobile-v5.css?v=5">
 <script defer src="/tag-app-bridge-v2.js?v=2"></script>
 </head>
 <body class="v105-portal">
@@ -182,10 +183,30 @@
  <main class="main">
    <header class="topbar"><div><span class="kicker">مساحة معلم TEACH AND GAME</span><h1 id="pageTitle">لوحة القيادة</h1><p id="pageDesc">نظرة شاملة على فصولك وتقدم طلابك</p></div><div class="topbar-actions"><span class="status" id="storageStatus">◉ جاري الاتصال...</span><button type="button" id="downloadBackup" class="minibtn" title="تنزيل نسخة احتياطية خاصة بحسابك">⬇ نسخة بياناتي</button><button type="button" id="refresh" class="icon" title="تحديث البيانات">↻</button><a href="/studio.html" class="primary">＋ اختبار جديد</a></div></header>
    <section id="panel-home" class="panel-view active">
-     <div class="hero"><div><div class="kicker">LEVEL UP EDUCATION</div><h2>مرحبًا في عالم<br><em>TEACH AND GAME Arena</em></h2><p id="welcome">لوحة القيادة لجميع موادك وشعبك.</p><div class="hero-buttons"><a class="primary" href="/studio.html#live">▶ ابدأ تحديًا مباشرًا</a><a class="ghost" href="/studio.html#generator">✦ أنشئ أسئلة</a><a class="ghost" href="/champion.html">🏆 بطولات التصفيات</a></div></div><div class="hero-illustration"><img class="v107-educational-hero" src="/assets/backgrounds/quiznova-learning.webp" alt="طلاب يتعاونون في منافسة رقمية تعليمية" loading="lazy"><div class="trophy">🏆</div><div class="float f1">✧ MULTI-TEACHER</div><div class="float f2">🎮 LIVE ARENA</div><div class="float f3">⚡ XP & LEVELS</div></div></div>
+     <div class="hero"><div><div class="kicker">LEVEL UP EDUCATION</div><h2>مرحبًا في عالم<br><em>TEACH AND GAME Arena</em></h2><h3 class="tag-v5-only tag-v5-greeting">مساحة التحدي الخاصة بك <span aria-hidden="true">✦</span></h3><p id="welcome">لوحة القيادة لجميع موادك وشعبك.</p><div class="hero-buttons"><a class="tag-v5-only tag-v5-start" href="/studio.html">＋ اختبار جديد</a><a class="primary" href="/studio.html#live">▶ ابدأ تحديًا مباشرًا</a><a class="ghost" href="/studio.html#generator">✦ أنشئ أسئلة</a><a class="ghost" href="/champion.html">🏆 بطولات التصفيات</a></div></div><div class="hero-illustration"><img class="v107-educational-hero" src="/assets/backgrounds/quiznova-learning.webp" alt="طلاب يتعاونون في منافسة رقمية تعليمية" loading="lazy"><div class="trophy">🏆</div><div class="float f1">✧ MULTI-TEACHER</div><div class="float f2">🎮 LIVE ARENA</div><div class="float f3">⚡ XP & LEVELS</div></div></div>
+     <div class="tag-v5-only tag-v5-shortcuts" aria-label="اختصارات المعلم السريعة">
+       <h3>اختصارات سريعة</h3>
+       <div class="tag-v5-quick-grid">
+         <button type="button" data-jump="students"><span aria-hidden="true">🪪</span><b>الطلاب والبطاقات</b></button>
+         <button type="button" data-jump="history"><span aria-hidden="true">▤</span><b>سجل النتائج</b></button>
+         <button type="button" data-jump="mastery"><span aria-hidden="true">◈</span><b>خريطة المهارات</b></button>
+         <a href="/studio.html"><span aria-hidden="true">✏️</span><b>استوديو الاختبارات</b></a>
+       </div>
+     </div>
+     <h3 class="tag-v5-only tag-v5-metrics-heading">نشاط فصولك</h3>
      <div class="metric-grid"><div class="metric"><span>🎯</span><small>جلسات مكتملة</small><strong id="metSessions">0</strong></div><div class="metric"><span>👥</span><small>الطلاب المسجلون</small><strong id="metStudents">0</strong></div><div class="metric"><span>📈</span><small>متوسط الدقة</small><strong id="metAverage">0%</strong></div><div class="metric"><span>📝</span><small>محاولات الطلاب</small><strong id="metAttempts">0</strong></div></div>
      <div class="grid-two"><div class="pane"><div class="pane-head"><h3>🏆 ترتيب الشعب</h3><button class="minibtn" type="button" data-jump="classes">كل الشعب</button><button type="button" class="bo-reset-view" data-reset-view="classes" title="تصفير العرض فقط مع الاحتفاظ بسجلات الطلاب">🧹 تصفير العرض</button><button type="button" class="bo-restore-view" data-restore-view="classes" title="استرجاع العناصر القديمة من السجل">↶ استعادة</button></div><div id="homeClasses"></div></div><div class="pane"><div class="pane-head"><h3>💡 المهارات التي تحتاج دعمًا</h3><button class="minibtn" type="button" data-jump="mastery">الخريطة الكاملة</button><button type="button" class="bo-reset-view" data-reset-view="support" title="تصفير العرض فقط مع الاحتفاظ بسجلات الطلاب">🧹 تصفير العرض</button><button type="button" class="bo-restore-view" data-restore-view="support" title="استرجاع العناصر القديمة من السجل">↶ استعادة</button></div><div id="homeMastery"></div></div></div>
      <div class="pane"><div class="pane-head"><h3>🕘 أحدث الجلسات</h3><button class="minibtn" type="button" data-jump="history">السجل الكامل</button><button type="button" class="bo-reset-view" data-reset-view="recent" title="تصفير العرض فقط مع الاحتفاظ بسجلات الطلاب">🧹 تصفير العرض</button><button type="button" class="bo-restore-view" data-restore-view="recent" title="استرجاع العناصر القديمة من السجل">↶ استعادة</button></div><div id="homeHistory"></div></div>
+     <details class="tag-v5-only tag-v5-extra">
+       <summary>⚙️ إجراءات إضافية <span aria-hidden="true">⌄</span></summary>
+       <div class="tag-v5-extra-grid">
+         <button type="button" data-tag-v5-action="refresh">↻ تحديث البيانات</button>
+         <button type="button" data-tag-v5-action="backup">⬇ نسخة بياناتي</button>
+         <a href="/tag-lab-home.html?v=34" target="_blank" rel="noopener noreferrer external">🎮 TAG LAB</a>
+         <button type="button" data-jump="school">⚙ إعدادات المدرسة</button>
+       </div>
+     </details>
+     <a class="tag-v5-only tag-v5-champion" href="/champion.html">🏆 بطولات TAG <span>عرض التصفيات</span></a>
    </section>
    <section id="panel-classes" class="panel-view"><div class="page-hero"><span class="kicker">CLASS WARS</span><h2>⚔️ حرب الشعب</h2><p>قارن أداء الشعب في مادّتك بعد انتهاء الجلسات؛ يحصل كل صف على تقييم عادل من 100.</p></div><div class="pane"><div class="pane-head"><h3>تصنيف الشعب</h3><button type="button" class="bo-reset-view" data-reset-view="classes" title="تصفير العرض فقط مع الاحتفاظ بسجلات الطلاب">🧹 تصفير العرض</button><button type="button" class="bo-restore-view" data-restore-view="classes" title="استرجاع العناصر القديمة من السجل">↶ استعادة</button></div><div id="classesBoard"></div></div></section>
    <section id="panel-mastery" class="panel-view"><div class="page-hero"><span class="kicker">MASTERY MAP</span><h2>◈ خريطة إتقان المهارات</h2><p>اكتشف أي مهارة أتقنها الطلاب وأين تحتاج إلى إعادة الشرح.</p></div><div class="pane"><div class="pane-head"><h3>إتقان نتاجات التعلم</h3><button type="button" class="bo-reset-view" data-reset-view="mastery" title="تصفير العرض فقط مع الاحتفاظ بسجلات الطلاب">🧹 تصفير العرض</button><button type="button" class="bo-restore-view" data-restore-view="mastery" title="استرجاع العناصر القديمة من السجل">↶ استعادة</button></div><div id="masteryBoard"></div></div></section>
@@ -230,5 +251,6 @@
 <script src="/student-verify-teacher-v1.js?v=verify-2" defer></script>
 <script src="/portal-security.js?v=10.4" defer></script>
 <script src="/tag-teacher-mobile-menu-v4.js?v=4" defer></script>
+<script src="/tag-home-mobile-v5.js?v=5" defer></script>
 </body>
 </html>
