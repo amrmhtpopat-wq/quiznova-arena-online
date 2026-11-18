@@ -1,0 +1,35 @@
+"""TAG Home Mobile V5: scoped style and preserved desktop/portal contract."""
+import unittest
+from pathlib import Path
+ROOT=Path(__file__).resolve().parents[1]
+class HomeMobileV5(unittest.TestCase):
+ def test_only_mobile_changes_and_original_dashboard_intact(self):
+  html=(ROOT/'index.html').read_text(encoding='utf-8')
+  css=(ROOT/'tag-home-mobile-v5.css').read_text(encoding='utf-8')
+  script=(ROOT/'tag-home-mobile-v5.js').read_text(encoding='utf-8')
+  self.assertIn('tag-home-mobile-v5.css?v=5',html)
+  self.assertIn('tag-home-mobile-v5.js?v=5',html)
+  self.assertIn('@media screen and (max-width:650px)',css)
+  self.assertTrue(css.startswith('/* TAG Home Mobile V5:'))
+  self.assertIn('.tag-v5-only{display:none!important}',css)
+  self.assertIn('#panel-home.active',css)
+  self.assertIn('id="tagTeacherMobileToggle"',html)
+  self.assertIn('id="metStudents"',html)
+  self.assertIn('id="metSessions"',html)
+  self.assertIn('id="homeHistory"',html)
+  self.assertIn('id="welcome"',html)
+  self.assertIn('TEACH AND GAME Arena</em></h2>',html)
+  self.assertIn('href="/champion.html"',html)
+  self.assertIn('data-jump="students"',html)
+  self.assertIn('data-jump="history"',html)
+  self.assertIn('data-jump="mastery"',html)
+  self.assertIn('href="/studio.html#live"',html)
+  self.assertIn('data-tag-v5-action="backup"',html)
+  self.assertIn('data-tag-v5-action="refresh"',html)
+  self.assertIn('document.getElementById("downloadBackup")',script)
+  self.assertIn('document.getElementById("refresh")',script)
+  self.assertIn('window.matchMedia("(max-width:650px)").matches',script)
+  self.assertNotIn('fetch(',script)
+  self.assertNotIn('localStorage',script)
+  self.assertNotIn('sessionStorage',script)
+if __name__=='__main__':unittest.main()

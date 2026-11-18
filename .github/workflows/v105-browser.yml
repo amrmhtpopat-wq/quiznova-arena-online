@@ -57,6 +57,9 @@ on:
       - tests/browser_studio_routing_v112.py
       - portal.js
       - index.html
+      - tag-home-mobile-v5.css
+      - tag-home-mobile-v5.js
+      - tests/browser_tag_home_mobile_v5.py
       - for-teachers.html
       - for-teachers-v127.css
       - about.html
@@ -87,6 +90,8 @@ jobs:
           python -m playwright install chromium
       - name: TAG Mobile V2 complete 23-page viewport and LAB browser-handoff QA
         run: python tests/browser_tag_mobile_v2.py
+      - name: TAG Home Mobile V5 phone-only visual and desktop regression
+        run: python tests/browser_tag_home_mobile_v5.py
       - name: TAG PWA install, mobile responsiveness and offline browser QA
         run: python tests/browser_pwa_v1.py
       - name: TAG Verify security browser QA on desktop/mobile (local test DB only)
