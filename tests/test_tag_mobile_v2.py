@@ -41,7 +41,7 @@ class AllPagesMobileContract(unittest.TestCase):
    with self.subTest(path=path):
     status,text=fetch('/'+path)
     self.assertEqual(status,200)
-    self.assertIn('tag-mobile-v2.css?v=2',text)
+    self.assertIn('tag-mobile-v2.css?v=',text)
     self.assertIn('tag-app-bridge-v2.js?v=2',text)
     self.assertIn('name="viewport"',text)
 
@@ -51,7 +51,23 @@ class AllPagesMobileContract(unittest.TestCase):
   self.assertIn('href="/tag-lab-home.html?v=34"',page)
   self.assertIn('href="/student.html"',page)
   self.assertIn('href="/?teacher=1"',page)
-  self.assertIn('href="/champion.html"',page)
+  self.assertNotIn('href="/champion.html"',page)
+  _,portal=fetch('/')
+  self.assertIn('href="/champion.html"',portal)
+
+ def test_one_public_url_and_teacher_templates_shortcut_removed(self):
+  landing=(ROOT/'short-link'/'index.html').read_text(encoding='utf-8')
+  _,portal=fetch('/')
+  _,app=fetch('/app.html')
+  self.assertIn('rel="canonical" href="https://teachgame.onrender.com/"',landing)
+  self.assertIn('📲 تثبيت تطبيق TAG',landing)
+  self.assertIn('https://quiznova-arena-online.onrender.com/app.html',landing)
+  self.assertNotIn('href="/champion/"',landing)
+  self.assertNotIn('href="/links/"',landing)
+  self.assertNotIn('href="/tag-lab-games.html"',portal)
+  self.assertIn('href="/tag-lab-home.html',portal)
+  self.assertIn('تعلّم. تحدَّ.',app)
+  self.assertIn('تعلّم • تحدَّ • تفوّق',landing)
 
  def test_browser_externalization_only_when_standalone(self):
   _,script=fetch('/tag-app-bridge-v2.js?v=2')

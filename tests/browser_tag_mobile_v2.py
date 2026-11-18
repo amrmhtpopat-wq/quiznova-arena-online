@@ -96,15 +96,19 @@ with sync_playwright() as pw:
  assert 'المتصفح' in popup.locator('#tag-lab-browser-handoff h1').inner_text()
  popup.close();android.close()
 
- # Normal Chrome browser: TAG LAB still opens directly in the same tab.
+ # Normal Chrome browser: TAG LAB opens in a separate browser tab;
+ # normal pages are not blocked by the standalone-only handoff dialog.
  browserCtx=browser.new_context(viewport={'width':390,'height':844},
                                 is_mobile=True,has_touch=True,service_workers='block')
  chrome=browserCtx.new_page()
  chrome.goto(BASE+'/app.html',wait_until='domcontentloaded')
- assert not chrome.locator('a.entry.lab').get_attribute('target')
- chrome.locator('a.entry.lab').click()
- chrome.wait_for_url('**/tag-lab-home.html*',timeout=12000)
- assert not chrome.locator('#tag-lab-browser-handoff').count()
+ assert chrome.locator('a.entry.lab').get_attribute('target')=='_blank'
+ with browserCtx.expect_page(timeout=12000) as new_tab:
+  chrome.locator('a.entry.lab').click()
+ lab_tab=new_tab.value
+ lab_tab.wait_for_url('**/tag-lab-home.html*',timeout=12000)
+ assert not lab_tab.locator('#tag-lab-browser-handoff').count()
+ assert '/app.html' in chrome.url
  browserCtx.close()
  browser.close()
 
