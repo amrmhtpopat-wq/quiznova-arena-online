@@ -47,7 +47,9 @@ class PWASafeInstallContract(unittest.TestCase):
         self.assertEqual(m['display'],'standalone')
         self.assertFalse(m.get('prefer_related_applications',False))
         self.assertIn('ar',m['lang'])
-        self.assertEqual(len(m['shortcuts']),3)
+        self.assertEqual(len(m['shortcuts']),2)
+        self.assertEqual({shortcut['short_name'] for shortcut in m['shortcuts']},{'الطالب','المعلم'})
+        self.assertNotIn('TAG LAB',[shortcut['name'] for shortcut in m['shortcuts']])
 
     def test_real_pngs_are_square_not_svg_renamed(self):
         manifest=json.loads(get('/manifest.webmanifest')[2])
