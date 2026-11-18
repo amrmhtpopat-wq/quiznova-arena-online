@@ -21,13 +21,16 @@ class CompactLayoutTests(unittest.TestCase):
   for page in PAGES:
    html=(ROOT/page).read_text(encoding='utf-8')
    with self.subTest(page=page):
-    self.assertIn('tag-lab-visual-v1.css?v=1.3.1',html)
-    self.assertIn('tag-lab-visual-v1.js?v=1.3.0',html)
+    self.assertIn('tag-lab-visual-v1.css?v=1.4.0',html)
+    self.assertIn('tag-lab-visual-v1.js?v=1.4.0',html)
 
  def test_compact_layout_uses_real_dimensions_not_browser_zoom(self):
   css=(ROOT/'tag-lab-visual-v1.css').read_text(encoding='utf-8')
   self.assertIn('--tagv-sidebar-width:228px',css)
   self.assertIn('--tagv-content-max:1260px',css)
+  self.assertIn('--tagv-content-max:1090px',css)
+  self.assertIn('--tagv-sidebar-width:clamp(176px,13.55vw,185px)',css)
+  self.assertIn('TAG LAB REFERENCE SCALE V1',css)
   self.assertIn('TAG LAB COMPACT UI V1',css)
   self.assertNotRegex(css,r'(?i)(?:^|[;\\s])zoom\\s*:')
   self.assertNotIn('transform:scale(.94)',css)
@@ -38,16 +41,18 @@ class CompactLayoutTests(unittest.TestCase):
   robot=(ROOT/'tag-ai-assistant-v1.js').read_text(encoding='utf-8')
   css=(ROOT/'tag-ai-assistant-v1.css').read_text(encoding='utf-8')
   shell=(ROOT/'tag-lab-visual-v1.js').read_text(encoding='utf-8')
-  self.assertIn('headerDock.append(fab)',robot)
+  self.assertNotIn('headerDock.append(fab)',robot)
+  self.assertIn('d.body.append(fab,overlay)',robot)
   self.assertIn("fab.addEventListener('click',open)",robot)
   self.assertIn('tag-ai-robot-slow-v1.svg',robot)
   self.assertIn('tag-ai-robot-still-v1.svg',robot)
   self.assertIn('.tagai-fab{',css)
-  self.assertIn('position:static;inset:auto',css)
-  self.assertIn('body > .tagai-fab:not(.tagai-header-dock)',css)
+  self.assertIn('position:fixed;left:14px',css)
+  self.assertIn('width:49px;height:58px',css)
+  self.assertIn('tagv-compact-root',shell)
   self.assertIn("if(!student&&!display)",shell)
-  self.assertIn('/tag-ai-assistant-v1.css?v=1.2.0',shell)
-  self.assertIn('/tag-ai-assistant-v1.js?v=1.2.0',shell)
+  self.assertIn('/tag-ai-assistant-v1.css?v=1.4.0',shell)
+  self.assertIn('/tag-ai-assistant-v1.js?v=1.4.0',shell)
 
 if __name__=='__main__':
  unittest.main()
