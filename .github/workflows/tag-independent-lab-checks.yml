@@ -14,7 +14,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Compile standalone routing and card client
-        run: python -m py_compile tag_independent_mode.py tag_card_client.py tag_lab_cards.py game_lab_api.py game_lab_live.py server.py
+        run: python -m py_compile tag_independent_mode.py tag_card_client.py tag_lab_cards.py game_lab_api.py game_lab_live.py tag_ai_assistant.py server.py
       - name: Verify standalone route isolation
         run: python -m unittest discover -s tests -p 'test_tag_independent_mode.py' -v
       - name: Verify private card client
@@ -23,6 +23,10 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_tag_lab_cards.py' -v
       - name: Verify synthetic live classroom and no official student lookups
         run: python -m unittest discover -s tests -p 'test_tag_lab_live.py' -v
+      - name: Verify TAG AI Assistant request validation and key secrecy
+        run: python -m unittest discover -s tests -p 'test_tag_ai_assistant.py' -v
+      - name: Validate assistant JavaScript syntax
+        run: node --check tag-ai-assistant-v1.js
       - name: Verify separate LAB portal scripts
         run: |
           python - <<'PY'
