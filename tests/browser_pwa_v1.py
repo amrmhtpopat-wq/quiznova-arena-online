@@ -43,8 +43,9 @@ with sync_playwright() as pw:
   response=page.goto(BASE+'/app.html',wait_until='domcontentloaded',timeout=25000)
   assert response.status==200,(name,response.status)
   page.locator('.entry.student').wait_for(state='visible',timeout=15000)
-  for dest in ('/student.html','/?teacher=1','/tag-lab-home.html?v=34','/champion.html'):
+  for dest in ('/student.html','/?teacher=1','/tag-lab-home.html?v=34'):
    assert page.locator('a[href="'+dest+'"]').count()>=1,(name,dest)
+  assert not page.locator('a[href="/champion.html"]').count(),name+' should not expose public tournaments'
   assert page.locator('link[rel="manifest"]').get_attribute('href')=='/manifest.webmanifest'
   assert page.locator('link[rel="apple-touch-icon"]').count()==1
   assert page.locator('img[src="/assets/pwa/tag-192.png"]').first.evaluate('(img)=>img.complete&&img.naturalWidth===192'),name
