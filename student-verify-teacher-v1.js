@@ -34,6 +34,7 @@ function render(showSummary=false){
  if(showSummary&&!state.busy)notify('البطاقات: '+state.students+' • PIN صادر: '+state.issued+' • '+(state.enabled?'الحماية تعمل عند بدء كل اختبار.':'يجب إصدار وتسليم الرموز قبل التفعيل.'));
 }
 function hideSecrets(){
+ document.getElementById('tagPinReceipt')?.remove();
  state.rows=[];
  el('verifyPinList').textContent='';
  el('verifyReveal').hidden=true;
@@ -118,8 +119,8 @@ el('verifyReissueAll').onclick=()=>busy(async()=>{
  state.issued=Number(r.status.issued)||0;
  el('verifyDelivered').checked=false;
  reveal(r.pins);
- el('verifyExport').click();
- notify('تم استبدال '+count+' رمز PIN بنجاح. تم طلب تنزيل الكشف الخاص. إذا لم ينزل الملف، اضغط «تنزيل كشف خاص» قبل مغادرة الصفحة. الرموز القديمة لم تعد صالحة.');
+ openPinReceipt();
+ notify('تم استبدال '+count+' رمز PIN بنجاح. ظهرت صفحة الرموز كاملة؛ احفظ نسخة خاصة باستخدام زر تنزيل الكشف أو طباعة / حفظ PDF. الرموز القديمة لم تعد صالحة.');
 });
 el('verifyToggle').onclick=()=>busy(async()=>{
  const enable=!state.enabled;
@@ -175,6 +176,42 @@ el('verifyOne').onclick=async()=>{
  try{await navigator.clipboard.writeText(message);notify('تم نسخ رسالة '+row.name+' فقط. أرسلها إلى الطالب بصورة خاصة، لا إلى مجموعة الصف.')}
  catch{notify('تعذر نسخ الرسالة. استخدم القصاصات السرية أو الكشف الخاص.',true)}
 };
+
+function openPinReceipt(){
+ if(!state.rows.length){notify('لا توجد رموز PIN ظاهرة في هذه الجلسة. لا يمكن استرجاع الأرقام القديمة بعد إغلاق الصفحة.',true);return}
+ document.getElementById('tagPinReceipt')?.remove();
+ const sections=[...new Set(state.rows.map(s=>String(s.className||'غير محدد')))];
+ const tables=sections.map(section=>{
+  const students=state.rows.filter(s=>String(s.className||'غير محدد')===section)
+      .slice().sort((a,b)=>String(a.cardCode).localeCompare(String(b.cardCode)));
+  const rows=students.map((r,i)=>'<tr><td>'+String(i+1)+'</td><td>'+escapeSlip(r.name)+'</td><td dir="ltr">'+escapeSlip(r.cardCode)+'</td><td class="pin-value" dir="ltr">'+escapeSlip(r.pin)+'</td></tr>').join('');
+  return '<section class="tag-pin-sheet"><h3>الشعبة: '+escapeSlip(section)+' <small>('+students.length+' طالب)</small></h3>'+
+  '<table><thead><tr><th>م</th><th>اسم الطالب</th><th>رمز البطاقة</th><th>PIN الشخصي</th></tr></thead><tbody>'+rows+'</tbody></table></section>';
+ }).join('');
+ const modal=document.createElement('div');
+ modal.id='tagPinReceipt';modal.className='tag-pin-receipt';modal.setAttribute('role','dialog');
+ modal.setAttribute('aria-modal','true');modal.setAttribute('aria-label','صفحة رموز الطلاب السرية');
+ modal.innerHTML='<div class="tag-pin-receipt-inner">'+
+  '<header class="tag-pin-receipt-head"><div><h2>🔐 صفحة رموز PIN للطلاب</h2>'+
+  '<p>الكشف الخاص بالمعلم — '+state.rows.length+' رمزًا موزعًا على '+sections.length+' شعب. لا تشارك هذه الصفحة أو الملف في مجموعة الصف.</p></div>'+
+  '<nav class="tag-pin-receipt-controls" aria-label="إجراءات الكشف">'+
+  '<button type="button" id="verifyReceiptDownload">⬇️ تنزيل الكشف Excel / CSV</button>'+
+  '<button type="button" id="verifyReceiptPrint">🖨️ طباعة / حفظ PDF</button>'+
+  '<button type="button" id="verifyReceiptSlips">✉️ قصاصات لكل طالب</button>'+
+  '<button type="button" id="verifyReceiptClose">إغلاق الصفحة</button></nav></header>'+
+  '<main class="tag-pin-receipt-content">'+tables+'</main>'+
+  '<footer class="tag-pin-receipt-footer">⚠️ الرموز تظهر في هذه الجلسة فقط ولا يمكن استرجاعها من قاعدة البيانات بعد إغلاق الصفحة. احفظ نسخة خاصة.</footer>'+
+  '</div>';
+ document.body.appendChild(modal);
+ modal.querySelector('#verifyReceiptClose').onclick=()=>modal.remove();
+ modal.querySelector('#verifyReceiptDownload').onclick=()=>el('verifyExport').click();
+ modal.querySelector('#verifyReceiptSlips').onclick=()=>el('verifySlips').click();
+ modal.querySelector('#verifyReceiptPrint').onclick=()=>window.print();
+ modal.addEventListener('keydown',event=>{if(event.key==='Escape'){modal.remove();event.preventDefault()}});
+ modal.querySelector('#verifyReceiptDownload').focus();
+}
+
+el('verifyReceiptPage').onclick=openPinReceipt;
 el('verifySlips').onclick=()=>{
  if(!state.rows.length){notify('لا توجد رموز ظاهرة لإعداد القصاصات.',true);return}
  const pages=[];
