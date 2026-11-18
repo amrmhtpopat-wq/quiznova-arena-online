@@ -69,8 +69,25 @@ async function refresh(){if(!token){setLoggedOut();return}try{const [account,dat
 function setLoggedOut(){me=null;$('cloudLogin').classList.remove('hide');$('cloudWorkspace').classList.add('hide');$('cloudLoginLabel').textContent='يُرجى تسجيل دخول المعلم للاستفادة من الحفظ والنشر الحقيقي.'}
 function setLoggedIn(){$('cloudLogin').classList.add('hide');$('cloudWorkspace').classList.remove('hide');$('cloudTeacher').textContent='مرحبًا، '+(me.name||'المعلم');}
 async function signIn(){const email=$('cloudEmail').value.trim(),password=$('cloudPassword').value;if(!email||!password){note('أدخل البريد وكلمة المرور.',true);return}const btn=$('cloudSignIn');busy(btn,true);try{const d=await api('/api/auth/login',{email,password});token=d.token;localStorage.setItem(tokenKey,token);$('cloudPassword').value='';await refresh();note('✓ تم الدخول إلى مكتبتك الشخصية.') }catch(e){note(translations[e.message]||e.message,true)}finally{busy(btn,false)}}
-async function save(){const btn=$('cloudSave');busy(btn,true);try{const d=await api('/api/game-lab/teacher/save',{id:currentId||undefined,activity:current()});currentId=d.id;await refresh();note('✓ حُفظ نشاطك على قاعدة البيانات الخاصة بحسابك.');
- document.dispatchEvent(new CustomEvent('taglab:activity-saved',{detail:{id:d.id,mode:$('cloudMode').value}}));}catch(e){note(translations[e.message]||e.message,true)}finally{busy(btn,false)}}
+async function save(){
+ const btn=$('cloudSave');if(!token){note('سجّل الدخول إلى حساب TAG LAB أولًا لحفظ النشاط في أنشطتي.',true);return}
+ busy(btn,true);
+ try{
+  const activity=current();
+  if(!activity.title)throw Error('title_required');
+  const d=await api('/api/game-lab/teacher/save',{id:currentId||undefined,activity});
+  currentId=d.id;
+  try{sessionStorage.setItem('tag_lab_recent_saved_id',d.id)}catch(_){}
+  await refresh();
+  if(!items.some(x=>x.id===d.id)){
+   note('استجاب الخادم بالحفظ، لكن تعذّر التأكد من ظهور النشاط في القائمة. افتح «أنشطتي» واضغط تحديث.',true);
+   return
+  }
+  note('✓ حُفظ نشاط «'+activity.title+'» في حسابك وظهر في قائمة أنشطتي. افتح «أنشطتي» لمراجعته ونشره.');
+  document.dispatchEvent(new CustomEvent('taglab:activity-saved',{detail:{id:d.id,mode:activity.mode,title:activity.title}}))
+ }catch(e){note(translations[e.message]||e.message,true)}
+ finally{busy(btn,false)}
+}
 async function generateAll(){
  const btn=$('cloudGenerateAll');btn.disabled=true;
  try{
