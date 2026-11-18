@@ -23,6 +23,8 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_tag_lab_cards.py' -v
       - name: Verify synthetic live classroom and no official student lookups
         run: python -m unittest discover -s tests -p 'test_tag_lab_live.py' -v
+      - name: Verify compact responsive layout and 14 page cache consistency
+        run: python -m unittest discover -s tests -p 'test_tag_compact_ui.py' -v
       - name: Verify TAG AI animated robot and accessible fallback
         run: python -m unittest discover -s tests -p 'test_tag_ai_robot.py' -v
       - name: Verify TAG AI Assistant request validation and key secrecy
