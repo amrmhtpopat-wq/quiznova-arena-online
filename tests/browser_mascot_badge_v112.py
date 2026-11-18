@@ -41,6 +41,9 @@ with sync_playwright() as playwright:
     errors=[]
     page.on('pageerror',lambda e:errors.append(str(e)))
     page.goto(base+'/?teacher=1',wait_until='domcontentloaded',timeout=30000)
+    if mobile:
+      page.locator('#tagTeacherMobileToggle').wait_for(state='visible',timeout=15000)
+      page.locator('#tagTeacherMobileToggle').click()
     page.locator('button.nav[data-panel="students"]').wait_for(state='visible',timeout=15000)
     page.locator('button.nav[data-panel="students"]').click()
     page.locator('.bo-student-id').first.wait_for(state='visible',timeout=12000)
@@ -70,6 +73,9 @@ with sync_playwright() as playwright:
     assert page.locator('.bo-student-id').count()==9
     page.screenshot(path=str(dest/('badj-cards-mobile.png' if mobile else 'badj-cards-desktop.png')),full_page=True)
 
+    if mobile:
+      assert page.locator('#tagTeacherMobileToggle').get_attribute('aria-expanded')=='false'
+      page.locator('#tagTeacherMobileToggle').click()
     page.locator('button.nav[data-panel="school"]').click()
     gallery=page.locator('#schoolAvatarGallery .bo-mascot-option')
     gallery.first.wait_for(state='visible',timeout=8000)
