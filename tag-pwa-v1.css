@@ -1,0 +1,10 @@
+/* TAG PWA V1: modest install entry; does not change quizzes, forms or card sizes. */
+.tag-pwa-shortcut{display:inline-flex;align-items:center;justify-content:center;gap:6px;
+ padding:9px 13px;margin:9px 0 0;border:1px solid #48d893;border-radius:12px;
+ background:linear-gradient(110deg,#086783,#0a4475);color:#f3fff8!important;
+ font-family:Tahoma,"Segoe UI",Arial,sans-serif;font-size:13px;font-weight:850;
+ text-decoration:none!important;line-height:1.5;box-shadow:0 6px 16px #06293b2d}
+.tag-pwa-shortcut:focus-visible{outline:3px solid #baff7c;outline-offset:2px}
+.student-brand .tag-pwa-student-link{margin:0;padding:7px 9px;font-size:11px;
+ border-radius:10px;white-space:nowrap;background:#135d75b8;min-height:34px}
+@media(max-width:420px){.student-brand .tag-pwa-student-link{font-size:10px;padding:5px 7px}}
