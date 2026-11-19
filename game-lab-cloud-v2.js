@@ -53,7 +53,7 @@ function editSavedInCreator(item){
  location.href='/tag-lab-create.html?edit='+encodeURIComponent(id);
 }
 function resetSelection(){window.TG_QUESTION_BANK_ROWS=null;window.TG_CREATOR_PREVIEW_ROWS=null;window.BOOYAH_LAB_BOOK_ID='';window.BOOYAH_LAB_IMAGE_ID='';window.BOOYAH_LAB_SOURCE_GROUP='';currentId=null;$('cloudMaxAttempts').value='1';note('نشاط جديد: اختر القالب، عدّل محتوى الدرس، ثم احفظه على حسابك.')}
-function buildLink(item){return location.origin+'/game-lab-play.html?game='+encodeURIComponent(item.publicCode||'')}
+function buildLink(item){return location.origin+'/tag-lab-play.html?game='+encodeURIComponent(item.publicCode||'')}
 function element(tag,cls,content){const e=document.createElement(tag);if(cls)e.className=cls;if(content!==undefined)e.textContent=String(content);return e}
 function button(text,act,cls='button alt small'){const e=element('button',cls,text);e.type='button';e.onclick=act;return e}
 async function refresh(){if(!token){setLoggedOut();return}try{const [account,data]=await Promise.all([api('/api/auth/me'),api('/api/game-lab/teacher/list')]);me=account.teacher;items=data.activities||[];setLoggedIn();renderItems();document.dispatchEvent(new CustomEvent('gamelab:library',{detail:{items}}));
