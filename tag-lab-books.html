@@ -58,12 +58,12 @@
 
   <button class="nav" data-jump="roadmap"><span>🚀</span>ميزات قادمة</button>
  <div class="navlabel">أدوات TAG</div>
- <a class="nav" href="/studio.html"><span>🏆</span>الاستوديو والاختبارات</a>
- <a class="nav" href="/teacher-hub-preview.html"><span>🎓</span>مركز أدوات المعلم</a>
+ <a class="nav" href="/tag-lab-create.html"><span>✍️</span>صانع الأنشطة TAG LAB</a>
+ <a class="nav" href="/tag-lab-library.html"><span>🎓</span>أدوات المعلم في TAG LAB</a>
 </aside>
 <main class="main">
  <div class="bar"><div class="crumb"><b>TAG</b> / مختبر الأنشطة / <strong>جميع الألعاب</strong></div>
- <div id="v4Toolbar"><span class="pill">✨ 24 قالبًا تعليميًا</span><button id="v4ThemeToggle" type="button" aria-pressed="false">◐ وضع العرض عالي التباين</button><a class="button alt small" href="/studio.html">استوديو المعلم</a></div></div>
+ <div id="v4Toolbar"><span class="pill">✨ 24 قالبًا تعليميًا</span><button id="v4ThemeToggle" type="button" aria-pressed="false">◐ وضع العرض عالي التباين</button><a class="button alt small" href="/tag-lab-create.html">صانع الأنشطة</a></div></div>
  <section class="mast" aria-labelledby="v4Title"><div>
  <h2 id="v4Title">درسك أجمل عندما<br>يتحوّل إلى لعبة!</h2>
  <p>اختر قالبًا من الألعاب، أضف الأسئلة أو ارفع كتابك، ثم العب مباشرة على شاشة الصف أو انشر النشاط لطلابك. كل شيء واضح وفي مكانه.</p>
@@ -143,7 +143,7 @@
 <h3>📚 تحويل اختبار محفوظ إلى ألعاب</h3><div class="row2"><div class="field"><label for="cloudImportQuiz">اختر من بنك اختبارات المعلم</label><select id="cloudImportQuiz"><option value="">اضغط تحميل بنك الاختبارات أولًا</option></select></div><div class="field"><label>الإجراء</label><div class="buttons"><button id="cloudLoadQuizzes" class="button alt small">↻ تحميل بنك الاختبارات</button><button id="cloudUseQuiz" class="button gold small">🪄 تحويل إلى ألعاب</button></div></div></div><p class="hint">يحوّل الأسئلة ذات الإجابة المحددة إلى محتوى قابل لاستخدامه في القوالب التعليمية. يبقى الاختبار الأصلي دون تعديل.</p>
 </div>
 <div class="block"><h3>📚 أنشطتي المحفوظة على الخادم <span class="pill" id="cloudCount">0</span></h3><div class="row2" style="margin:10px 0"><div class="field"><label for="cloudLibrarySearch">البحث في مكتبتي</label><input id="cloudLibrarySearch" type="search" placeholder="عنوان النشاط أو المبحث أو الصف"></div><div class="field"><label for="cloudLibraryFilter">حالة النشاط</label><select id="cloudLibraryFilter"><option value="all">جميع الأنشطة</option><option value="draft">مسودات خاصة</option><option value="published">المنشورة فقط</option></select></div></div><div id="cloudList" class="list"><div class="empty">جارٍ تحميل المكتبة...</div></div></div>
-<div id="cloudShare" class="block hide" style="margin-top:14px"><h3>🔗 رابط مشاركة النشاط <span id="cloudShareTitle"></span></h3><div class="field"><label for="cloudLink">رابط خاص بهذا النشاط</label><input id="cloudLink" readonly dir="ltr" style="direction:ltr;text-align:left"></div><div class="buttons"><button class="button" id="cloudCopy">📋 نسخ الرابط</button><a class="button alt" href="/game-lab-play.html" target="_blank" rel="noopener noreferrer">معاينة صفحة الطالب</a></div><img id="cloudQR" alt="رمز النشاط" style="background:white;display:block;width:min(210px,80vw);padding:8px;margin:15px auto;border-radius:14px"><p class="hint">يمكن للطالب مسح QR أو فتح الرابط، ثم الدخول بالبطاقة أو كضيف دون XP.</p></div>
+<div id="cloudShare" class="block hide" style="margin-top:14px"><h3>🔗 رابط مشاركة النشاط <span id="cloudShareTitle"></span></h3><div class="field"><label for="cloudLink">رابط خاص بهذا النشاط</label><input id="cloudLink" readonly dir="ltr" style="direction:ltr;text-align:left"></div><div class="buttons"><button class="button" id="cloudCopy">📋 نسخ الرابط</button><a class="button alt" href="/tag-lab-play.html" target="_blank" rel="noopener noreferrer">معاينة صفحة الطالب</a></div><img id="cloudQR" alt="رمز النشاط" style="background:white;display:block;width:min(210px,80vw);padding:8px;margin:15px auto;border-radius:14px"><p class="hint">يمكن للطالب مسح QR أو فتح الرابط، ثم الدخول بالبطاقة أو كضيف دون XP.</p></div>
 <div id="cloudReport" class="block hide" style="margin-top:14px"><div class="buttons" style="justify-content:space-between"><h3 id="cloudReportTitle">نتائج النشاط</h3><div class="buttons"><button class="button alt small" id="cloudExportCSV">⬇️ تصدير CSV</button><button class="button transparent small" id="cloudReportClose">✕ إغلاق</button></div></div><div id="cloudResults" class="lab-table-scroll"></div></div>
 </div><p class="hint">بيئة الاختبار منفصلة عن الموقع الرسمي.</p>
 <div id="cloudMessage" role="status" aria-live="polite" class="good">يرجى فتح حسابك لتفعيل الحفظ والنشر.</div>
@@ -155,7 +155,7 @@
 <div id="labAssignTargets" class="lab-target-choices"><p class="hint">لجميع الطلاب: احفظ الإسناد مباشرة.</p></div>
 <div class="buttons"><button class="button" id="labAssignSave">🪪 إضافة الألعاب إلى البطاقات</button><button class="button alt" id="labAssignRefresh">↻ تحديث الشعب والطلاب</button></div></div>
 <div class="block"><h3>👨‍🎓 ماذا سيظهر للطالب؟</h3><p>عند إدخال رمز بطاقته يرى الألعاب التي نشرها المعلم لشعبته أو باسمه فقط، وعدد المحاولات المتبقية. لا يستطيع زيادة XP عبر تكرار الاختبار بعد استنفاد المحاولات.</p>
-<div class="buttons"><a class="button gold" href="/game-lab-card.html">🎮 معاينة ألعاب بطاقة الطالب</a><a class="button alt" href="/student.html">بوابة الطالب</a></div>
+<div class="buttons"><a class="button gold" href="/tag-lab-card.html">🎮 معاينة ألعاب بطاقة الطالب</a><a class="button alt" href="/tag-lab-student.html">بوابة الطالب</a></div>
 <div class="good" role="status" id="labAssignStatus" style="margin-top:14px">سجّل الدخول واختَر النشاط المنشور.</div>
 <div class="list" id="labAssignedPreview" style="margin-top:12px"></div></div></div></section>
 <section id="liveLab"><div class="section-head"><div><h2>📡 المنافسة المتزامنة بين الأجهزة</h2><p>افتح غرفة مباشرة، وأرسل PIN إلى الطلاب؛ يظهر سؤال واحد للجميع وتتحدث النتائج دون إعادة تحميل.</p></div><span class="pill">مزامنة الخادم · مباريات فردية وفرق</span></div>
@@ -479,7 +479,7 @@ $('countAll').textContent=catalog.length;$('countLive').textContent=catalog.filt
 renderCatalog();refreshSaved();report('ابدأ بإدخال أسئلتك أو اضغط استعادة المثال لتجربة طريقة اللعب.');
 })();
 </script>
-<script src="/game-lab-cloud-v2.js?v=35.0" defer></script>
+<script src="/game-lab-cloud-v2.js?v=39.0" defer></script>
 <script defer src="/game-lab-pro-v3.js?v=37.0"></script><script src="/game-lab-extra-v2.js?v=2.0"></script>
 <script defer src="/game-lab-grade7-pilot.js?v=1.0"></script>
 <button id="v4BackToTop" type="button" aria-label="العودة إلى أعلى الصفحة">↑ للأعلى</button>
@@ -494,5 +494,5 @@ renderCatalog();refreshSaved();report('ابدأ بإدخال أسئلتك أو �
 <script defer src="/tag-lab-v11.js?v=12.1"></script>
 <script defer src="/tag-lab-simple.js?v=31.3"></script>
 <script defer src="/tag-lab-viewport-fit-v38.js?v=38.1"></script>
-<script src="/tag-lab-visual-v1.js?v=1.4.0" defer></script>
+<script src="/tag-lab-visual-v1.js?v=39.0" defer></script>
 </body></html>
