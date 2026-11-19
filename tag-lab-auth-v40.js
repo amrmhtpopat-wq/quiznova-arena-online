@@ -24,7 +24,7 @@ function target(){
  try{
   const url=new URL(raw,location.origin);
   if(url.origin!==location.origin)return '/tag-lab-home.html';
-  if(!/^\/tag-lab-(home|games|books|create|library|mixer|assign|account|results|live-teacher)\.html$/.test(url.pathname))
+  if(!/^\/tag-lab-(home|games|books|create|library|mixer|assign|account|results|live-teacher|preview)\.html$/.test(url.pathname))
    return '/tag-lab-home.html';
   return url.pathname+url.search+url.hash
  }catch(_){return '/tag-lab-home.html'}
