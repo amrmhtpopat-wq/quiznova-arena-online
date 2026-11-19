@@ -1,9 +1,9 @@
 /* TAG LAB V40 — teacher-page navigation guard; student/play links stay public. */
 (()=>{'use strict';
 if(!document.documentElement.dataset.tagView&&
- !/^\/tag-lab-(home|account|assign|results|live-teacher)\.html$/.test(location.pathname))return;
+ !/^\/tag-lab-(home|account|assign|results|live-teacher|preview)\.html$/.test(location.pathname))return;
 const key='qn9_teacher_token';
-const restricted=/^\/tag-lab-(home|games|books|create|library|mixer|assign|account|results|live-teacher)\.html$/;
+const restricted=/^\/tag-lab-(home|games|books|create|library|mixer|assign|account|results|live-teacher|preview)\.html$/;
 if(!restricted.test(location.pathname))return;
 const dest='/tag-lab-login.html?next='+encodeURIComponent(location.pathname+location.search+location.hash);
 const token=localStorage.getItem(key)||'';
