@@ -42,7 +42,7 @@
  const links=el('nav','tagv-links');
  for(const [url,icon,name] of navData){
   const a=el('a');a.href=url;
-  if(currentPath===url||(currentPath==='/game-lab-preview.html'&&url==='/tag-lab-games.html'))a.setAttribute('aria-current','page');
+  if(currentPath===url||(currentPath==='/tag-lab-preview.html'&&url==='/tag-lab-games.html'))a.setAttribute('aria-current','page');
   const i=el('span','tagv-icon',icon);i.setAttribute('aria-hidden','true');a.append(i,d.createTextNode(name));links.append(a)
  }
  nav.append(links);
