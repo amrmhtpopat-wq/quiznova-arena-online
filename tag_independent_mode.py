@@ -5,9 +5,36 @@ TAG_LAB_ONLY_MODE=1 is explicitly configured on a new service.
 The only future external dependency is the student-card identity bridge.
 """
 import os
-from urllib.parse import urlparse
+from urllib.parse import urlparse, parse_qsl, urlencode
 
 _ENABLED = {"1", "true", "yes", "on"}
+
+# Public TAG LAB page URLs. Legacy URLs continue to redirect so existing
+# student QR codes and saved teacher links are not broken.
+LEGACY_PAGE_REDIRECTS = {
+    "/index.html": "/tag-lab-home.html",
+    "/studio.html": "/tag-lab-create.html",
+    "/teacher-hub-preview.html": "/tag-lab-library.html",
+    "/student.html": "/tag-lab-student.html",
+    "/game-lab-play.html": "/tag-lab-play.html",
+    "/game-lab-card.html": "/tag-lab-card.html",
+    "/game-lab-preview.html": "/tag-lab-preview.html",
+}
+# Use the original engine files on this branch without duplicating their
+# logic. The visible address bar always shows the TAG LAB canonical route.
+CANONICAL_STATIC_ALIASES = {
+    "/tag-lab-play.html": "/game-lab-play.html",
+    "/tag-lab-card.html": "/game-lab-card.html",
+    "/tag-lab-preview.html": "/game-lab-preview.html",
+}
+
+
+def static_alias(path):
+    """Resolve TAG LAB canonical filenames to existing static pages."""
+    if not enabled():
+        return path
+    return CANONICAL_STATIC_ALIASES.get(path, path)
+
 _AUTH_GET_PATHS = {"/api/auth/me", "/api/auth/reset-status"}
 _AUTH_POST_PATHS = {
     "/api/auth/register", "/api/auth/login", "/api/auth/logout",
@@ -59,7 +86,17 @@ def reject(handler, method, path):
     """Return True after handling a request forbidden in standalone LAB mode."""
     if not enabled():
         return False
-    p = urlparse(path).path
+    parsed = urlparse(path)
+    p = parsed.path
+    if method.upper() in ("GET", "HEAD") and p in LEGACY_PAGE_REDIRECTS:
+        canonical = LEGACY_PAGE_REDIRECTS[p]
+        # Never reflect arbitrary raw input in a response header.
+        query = urlencode(parse_qsl(parsed.query, keep_blank_values=True))
+        handler.send_response(302)
+        handler.send_header("Location", canonical + ("?" + query if query else ""))
+        handler.send_header("Cache-Control", "no-store")
+        handler.end_headers()
+        return True
     if method.upper() in ("GET", "HEAD") and p in ("", "/"):
         handler.send_response(302)
         handler.send_header("Location", "/tag-lab-home.html")
