@@ -1,77 +1,61 @@
-<!doctype html><html lang="ar" dir="rtl"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex,nofollow,noarchive">
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="theme-color" content="#F8F9FF">
 <script src="/tag-lab-auth-guard-v40.js?v=40.0"></script>
-<title>TAG LAB | حساب المعلم</title><link rel="icon" href="/assets/brand/tag-icon.svg" type="image/svg+xml">
+<title>TAG LAB | حساب المعلم</title>
+<link rel="icon" type="image/svg+xml" href="/assets/brand/tag-icon.svg">
+<link rel="stylesheet" href="/tag-lab-visual-v1.css?v=1.4.0">
 <style>
-*{box-sizing:border-box}body{font-family:Tahoma,"Segoe UI",Arial,sans-serif;margin:0;min-height:100vh;background:linear-gradient(145deg,#eaf3f8,#f6fafc);color:#193d52;line-height:1.7}
-header{background:#fff;border-bottom:1px solid #dae7ec;padding:13px 24px;display:flex;align-items:center;gap:15px;flex-wrap:wrap}
-header img{width:72px;max-height:53px;object-fit:contain}a{color:#087f8b;text-decoration:none;font-weight:700}main{max-width:900px;margin:32px auto;padding:0 17px}
-h1{font-size:1.7rem;margin:0}p.sub{color:#5e7988;margin:4px 0 22px}
-.wrapper{display:grid;grid-template-columns:1fr 1fr;gap:18px}#forms[hidden]{display:none}
-section{background:#fff;padding:24px;border-radius:18px;border:1px solid #d6e5eb;box-shadow:0 12px 28px #2339490a}
-h2{font-size:1.2rem;margin:0 0 16px}
-label{font-size:.86rem;font-weight:700;display:block;margin:12px 0 6px}
-input{display:block;width:100%;min-height:45px;border-radius:10px;border:1px solid #b7cdda;background:#fff;padding:10px 12px;font:inherit}
-button{border:0;border-radius:10px;background:#08888a;color:#fff;font:700 .93rem Tahoma,Arial;cursor:pointer;min-height:44px;padding:10px 17px;margin-top:16px}
-button.alt{background:#e6f4f5;color:#0f6873}.status{min-height:28px;font-size:.85rem;color:#156d69}.status.error{color:#b02f3b}#signedIn{background:#fff;border-radius:15px;border:1px solid #c9e1e7;padding:22px;margin:20px 0}#signedIn[hidden]{display:none}
-@media(max-width:670px){.wrapper{grid-template-columns:1fr}}
-</style><link rel="stylesheet" href="/tag-lab-visual-v1.css?v=1.4.0">
-</head><body>
-<header><a href="/tag-lab-home.html"><img src="/assets/brand/tag-logo-dark-v21.png" alt="TAG LAB"></a><a href="/tag-lab-home.html">الرئيسية</a><a href="/tag-lab-library.html">مكتبتي</a><a href="/tag-lab-assign.html">إسناد الألعاب</a></header>
-<main><h1>حساب المعلم في TAG LAB</h1><p class="sub">حساب مستقل لمكتبة ألعابك وكتبك ونتائجك داخل المختبر.</p>
-<div id="signedIn" hidden><b id="who"></b><p>أنت مسجل الدخول إلى حساب TAG LAB.</p>
-<a href="/tag-lab-library.html">فتح مكتبتي</a> · <a href="/tag-lab-assign.html">إسناد الألعاب</a>
-<div><button id="logout" class="alt">تسجيل الخروج</button></div></div>
-<div class="wrapper" id="forms">
-<section><h2>تسجيل الدخول</h2><form id="login">
-<label for="email">البريد الإلكتروني</label><input id="email" type="email" autocomplete="username" required>
-<label for="password">كلمة المرور</label><input id="password" type="password" autocomplete="current-password" required>
-<button type="submit" id="signIn">دخول</button><p id="loginStatus" class="status" role="status"></p>
-</form></section>
-<section><h2>إنشاء حساب جديد</h2><form id="register">
-<label for="name">اسم المعلم</label><input id="name" required maxlength="120" minlength="2">
-<label for="school">المدرسة</label><input id="school" required maxlength="180">
-<label for="newEmail">البريد الإلكتروني</label><input id="newEmail" required type="email" autocomplete="email" maxlength="160">
-<label for="newPassword">كلمة المرور (10 أحرف على الأقل)</label><input id="newPassword" required type="password" autocomplete="new-password" minlength="10" maxlength="160">
-<label for="subject">المبحث</label><input id="subject" maxlength="100" value="المهارات الرقمية">
-<button type="submit" id="signUp">إنشاء حساب TAG LAB</button><p id="registerStatus" class="status" role="status"></p>
-</form></section></div>
-</main><script>
-(()=>{'use strict';
-const $=id=>document.getElementById(id),key='qn9_teacher_token';
-const token=()=>localStorage.getItem(key)||'';
-function msg(id,message,bad=false){$(id).textContent=message;$(id).className='status'+(bad?' error':'')}
-const errors={email_taken:'هذا البريد مسجل مسبقًا.',weak_password:'كلمة المرور قصيرة.',invalid_email:'البريد الإلكتروني غير صالح.',wrong_credentials:'بيانات الدخول غير صحيحة.',name_required:'أدخل اسم المعلم.',rate_limited:'محاولات كثيرة؛ حاول لاحقًا.',login_required:'يرجى تسجيل الدخول.'};
-async function api(url,data,useToken=false){
- const headers={'Content-Type':'application/json'};
- if(useToken)headers.Authorization='Bearer '+token();
- const r=await fetch(url,{method:'POST',headers,body:JSON.stringify(data||{}),cache:'no-store'});
- const result=await r.json().catch(()=>({}));if(!r.ok||result.ok===false)throw Error(result.error||'server_error');return result;
-}
-function signed(name){$('who').textContent=name||'حساب المعلم';$('signedIn').hidden=false;$('forms').hidden=true}
-function save(result){localStorage.setItem(key,result.token);signed(result.teacher?.name)}
-$('login').onsubmit=async e=>{
- e.preventDefault();const b=$('signIn');b.disabled=true;
- try{const d=await api('/api/auth/login',{email:$('email').value.trim(),password:$('password').value});save(d);msg('loginStatus','تم الدخول بنجاح.')}
- catch(e){msg('loginStatus',errors[e.message]||e.message,true)}finally{b.disabled=false}
-};
-$('register').onsubmit=async e=>{
- e.preventDefault();const b=$('signUp');b.disabled=true;
- try{const d=await api('/api/auth/register',{name:$('name').value.trim(),school:$('school').value.trim(),email:$('newEmail').value.trim(),password:$('newPassword').value,subject:$('subject').value.trim()||'عام'});save(d);msg('registerStatus','تم إنشاء الحساب.')}
- catch(e){msg('registerStatus',errors[e.message]||e.message,true)}finally{b.disabled=false}
-};
+*{box-sizing:border-box}body{font-family:Tahoma,"Segoe UI",Arial,sans-serif;background:#edf6fb;color:#153c5d;margin:0;line-height:1.7}
+main.account-main{width:min(100%,1000px);padding:30px 19px;margin:0 auto}
+.account-hero{background:linear-gradient(120deg,#073c78,#0786ac);border-radius:22px;color:#fff;padding:25px 30px;margin-bottom:22px}
+.account-hero h1{margin:0;font-size:clamp(1.4rem,3vw,2rem);color:#fff}
+.account-hero p{color:#e5f7ff;margin:6px 0 0}
+.account-card{border:1px solid #d4e4ef;background:#fff;border-radius:20px;padding:26px;box-shadow:0 8px 30px #1b43651b}
+.account-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin:18px 0 24px}
+.account-field{background:#f2f8fc;border:1px solid #dae9f4;border-radius:12px;padding:12px 15px;min-width:0}
+.account-field small{display:block;color:#5d7691;font-size:.8rem;font-weight:850}
+.account-field b{display:block;color:#143d63;overflow-wrap:anywhere;font-size:.97rem}
+.account-actions{display:flex;flex-wrap:wrap;gap:11px}
+.account-actions a,.account-actions button{display:inline-flex;justify-content:center;align-items:center;min-height:44px;gap:8px;padding:9px 16px;border:0;border-radius:11px;font:800 .86rem Tahoma,Arial,sans-serif;cursor:pointer;text-decoration:none;background:#086ba8;color:#fff}
+.account-actions button{background:#e6f2fa;color:#115579;border:1px solid #c2d9e9}
+#accountStatus{font-weight:750;color:#376a7a}
+@media(max-width:650px){main.account-main{padding:15px 12px}.account-grid{grid-template-columns:1fr}.account-card{padding:17px}.account-hero{padding:19px}}
+</style></head><body>
+<main class="account-main"><section class="account-hero"><h1>👤 حسابي في TAG LAB</h1><p>بيانات حساب المعلم ومكتبته في المختبر المستقل.</p></section>
+<section class="account-card" aria-label="معلومات حساب المعلم">
+<h2>معلومات الحساب</h2><p id="accountStatus" role="status" aria-live="polite">جارٍ تحميل معلومات حسابك...</p>
+<div class="account-grid" id="accountDetails" hidden>
+ <div class="account-field"><small>اسم المعلم</small><b id="teacherName">—</b></div>
+ <div class="account-field"><small>البريد الإلكتروني</small><b id="teacherEmail" dir="ltr">—</b></div>
+ <div class="account-field"><small>المدرسة</small><b id="teacherSchool">—</b></div>
+ <div class="account-field"><small>المبحث</small><b id="teacherSubject">—</b></div>
+</div>
+<div class="account-actions">
+ <a href="/tag-lab-home.html">🏠 لوحة TAG LAB</a>
+ <a href="/tag-lab-library.html">🗂️ مكتبتي</a>
+ <button type="button" id="logout">تسجيل الخروج</button>
+</div>
+</section>
+</main>
+<script>
+(()=>{'use strict';const key='qn9_teacher_token',$=id=>document.getElementById(id);
+const token=localStorage.getItem(key)||'';
+if(!token)return;
+fetch('/api/auth/me',{headers:{Authorization:'Bearer '+token},cache:'no-store'}).then(async response=>{
+ if(!response.ok)throw Error('login_required');
+ const data=await response.json();if(!data.ok||!data.teacher)throw Error('login_required');
+ const teacher=data.teacher;
+ for(const [key,value] of Object.entries({teacherName:teacher.name,teacherEmail:teacher.email,teacherSchool:teacher.school,teacherSubject:teacher.subject})){
+  $(key).textContent=value||'غير محدد'
+ }
+ $('accountDetails').hidden=false;$('accountStatus').textContent='✓ حسابك متصل بمكتبتك الخاصة.'
+}).catch(()=>{$('accountStatus').textContent='تعذر تحميل معلومات الحساب. يمكنك إعادة فتح الصفحة أو تسجيل الدخول.'});
 $('logout').onclick=async()=>{
- try{await api('/api/auth/logout',{},true)}catch(_){}
- localStorage.removeItem(key);$('signedIn').hidden=true;$('forms').hidden=false;$('password').value='';$('newPassword').value='';
+ $('logout').disabled=true;
+ try{await fetch('/api/auth/logout',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:'{}',cache:'no-store'})}catch(_){}
+ localStorage.removeItem(key);location.replace('/tag-lab-login.html')
 };
-async function restore(){
- if(!token())return;
- try{const r=await fetch('/api/auth/me',{headers:{Authorization:'Bearer '+token()},cache:'no-store'});
- const data=await r.json();if(r.ok&&data.ok)signed(data.teacher?.name);else localStorage.removeItem(key)}
- catch(_){}
-}
-restore();
 })();
-</script><script src="/tag-lab-visual-v1.js?v=1.4.0" defer></script>
-</body></html>
+</script>
+<script src="/tag-lab-visual-v1.js?v=1.4.0" defer></script></body></html>
