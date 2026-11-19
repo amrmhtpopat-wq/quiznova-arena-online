@@ -508,7 +508,7 @@ async function createRoom(){
    teamNames:names,showFeedback:$('labLiveFeedback').checked});
   const code=response.code;$('labLiveCode').textContent=code;
   const hostUrl=location.origin+response.teacherUrl;
-  const playerUrl=location.origin+response.studentUrl;
+  const playerUrl='https://tag-lab.onrender.com/?next='+encodeURIComponent(response.studentUrl);
   $('labLiveTeacherLink').href=hostUrl;$('labLiveStudentLink').href=playerUrl;
   $('labLiveUrl').value=playerUrl;
   $('labLiveQR').src='/api/qr?format=svg&text='+encodeURIComponent(playerUrl);
