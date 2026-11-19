@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#091d3f">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>TAG LAB | جاري تجهيز المختبر</title>
+<meta name="description" content="الرابط الموحد لمختبر TAG LAB. الدخول إلى التحديات والأنشطة التعليمية.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230c3565'/%3E%3Ctext x='32' y='44' font-size='29' font-family='Arial' fill='white' text-anchor='middle'%3ETG%3C/text%3E%3C/svg%3E">
+<style>
+:root{color-scheme:dark;--bg:#071731;--bg2:#0a3564;--sea:#66dce8;--mint:#9ee9b8;--text:#f3fbff;--sub:#c1d9eb}
+*{box-sizing:border-box}
+html,body{min-height:100%;margin:0}
+body{min-height:100dvh;font-family:Tahoma,"Segoe UI",Arial,sans-serif;color:var(--text);background:radial-gradient(ellipse at 12% 5%,#174c8399,transparent 34%),radial-gradient(ellipse at 88% 88%,#08798855,transparent 35%),linear-gradient(145deg,var(--bg),var(--bg2) 65%,#05192f);display:flex;flex-direction:column;align-items:center;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(80deg,transparent,transparent 100px,#ffffff06 101px,#ffffff06 102px);mask-image:linear-gradient(to bottom,transparent,black)}
+header{width:min(1090px,100%);display:flex;align-items:center;justify-content:space-between;gap:13px;padding:20px clamp(16px,4vw,35px)}
+.brand{display:flex;align-items:center;gap:11px;font-weight:900;letter-spacing:.045em;font-size:clamp(20px,3vw,27px)}
+.brandmark{width:49px;height:49px;border:1px solid #88e9f788;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,#196cb0,#0b3a69);color:#d0fff4;box-shadow:0 8px 22px #031b3c66}
+header span:last-child{color:var(--sub);font-size:12px;letter-spacing:0}
+main{width:min(800px,calc(100% - 28px));text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:10px 0 44px}
+.visual{width:clamp(170px,34vw,250px);height:clamp(170px,34vw,250px);position:relative;display:grid;place-items:center;margin:0 auto 12px}
+.orbit{position:absolute;inset:8px;border:2px solid #69ddf060;border-radius:50%;box-shadow:0 0 0 15px #19d7d00b,0 0 0 36px #5ab2f50a;animation:orbit 8s linear infinite}
+.orbit:before,.orbit:after{content:"";position:absolute;width:13px;height:13px;border-radius:50%;background:#91f4c7;box-shadow:0 0 20px #87ecb7;top:12%;left:13%}
+.orbit:after{background:#83d0ff;top:auto;left:auto;bottom:11%;right:12%}
+.core{width:67%;height:67%;border-radius:33%;display:grid;place-items:center;transform:rotate(-8deg);background:linear-gradient(150deg,#286ca8,#0e2457);border:2px solid #a2faff9e;box-shadow:inset 0 5px 20px #84f7fc23,0 20px 40px #020c243d;animation:float 3.4s ease-in-out infinite}
+.core span{font-size:clamp(37px,7vw,56px);font-weight:1000;letter-spacing:-.075em;color:#ddfff8;text-shadow:0 3px 14px #50e6d893;transform:rotate(8deg)}
+.stars{position:absolute;width:100%;height:100%;pointer-events:none}
+.stars i{display:block;position:absolute;width:6px;height:6px;border-radius:50%;background:#90e9e5;box-shadow:0 0 13px #a9fcfb}
+.stars i:nth-child(1){top:5%;right:17%}.stars i:nth-child(2){top:80%;left:8%}.stars i:nth-child(3){bottom:13%;right:13%}
+h1{margin:7px 0 10px;font-size:clamp(1.65rem,4.8vw,2.75rem);line-height:1.4;font-weight:900}
+p{margin:0;color:var(--sub);font-size:clamp(.9rem,2.1vw,1.06rem);max-width:590px;line-height:1.85}
+.panel{width:min(570px,100%);margin:25px 0 0;padding:19px;border:1px solid #86daee50;border-radius:19px;background:#ffffff0d;backdrop-filter:blur(8px);box-shadow:0 15px 42px #04132944}
+.status{display:flex;justify-content:center;align-items:center;gap:11px;font-weight:900;color:#e6fcff}
+.pulse{display:flex;gap:5px;flex-direction:row-reverse}
+.pulse i{width:8px;height:8px;background:var(--mint);border-radius:50%;animation:bounce 1.3s infinite}
+.pulse i:nth-child(2){animation-delay:.18s}.pulse i:nth-child(3){animation-delay:.36s}
+.bar{height:7px;overflow:hidden;background:#ffffff1c;border-radius:99px;margin:17px auto 13px}
+.bar:before{content:"";height:100%;width:32%;display:block;border-radius:99px;background:linear-gradient(90deg,#68e2eb,#a1efbf);animation:loading 2.2s ease-in-out infinite}
+#detail{font-size:13px;min-height:25px;color:#b6d9e7}
+.actions{display:flex;flex-wrap:wrap;justify-content:center;gap:9px;margin-top:18px}
+.actions a,.actions button{display:inline-flex;align-items:center;justify-content:center;border:1px solid #a5eff366;border-radius:12px;min-height:42px;padding:9px 15px;background:#174475;color:#effdff;font:700 13px Tahoma,Arial,sans-serif;text-decoration:none;cursor:pointer}
+.actions a.active,.actions button:hover{border-color:transparent;background:linear-gradient(120deg,#6ee8e6,#9debc1);color:#07334b}
+footer{text-align:center;font-size:12px;color:#abcfe0;padding:0 16px 25px}
+@keyframes orbit{to{transform:rotate(360deg)}}
+@keyframes float{50%{transform:translateY(-8px) rotate(-8deg)}}
+@keyframes bounce{0%,65%,100%{transform:translateY(0);opacity:.65}30%{transform:translateY(-6px);opacity:1}}
+@keyframes loading{0%{transform:translateX(-120%)}50%{transform:translateX(150%)}100%{transform:translateX(-120%)}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important}}
+@media(max-width:600px){header{padding:13px 17px}.brandmark{width:41px;height:41px}main{padding-bottom:22px}.panel{padding:15px}.actions a,.actions button{font-size:12px;min-height:40px;padding:8px 11px}.visual{margin-bottom:0}}
+</style>
+</head>
+<body>
+<header><div class="brand"><span class="brandmark">TG</span><div>TAG LAB<div><span>مختبر التحديات التعليمية</span></div></div></div><span>تعلّم • تحدَّ • تفوّق</span></header>
+<main><div class="visual" aria-hidden="true"><div class="orbit"></div><div class="core"><span>TAG</span></div><div class="stars"><i></i><i></i><i></i></div></div>
+<h1>نجهّز لك تجربة TAG LAB ✨</h1>
+<p>يجري تشغيل المختبر وربط أنشطتك التعليمية. ستنتقل إلى وجهتك تلقائيًا فور جهوز الموقع دون الحاجة إلى تحديث الصفحة.</p>
+<section class="panel" aria-label="حالة تشغيل الموقع">
+<div class="status" role="status" aria-live="polite"><span id="message">جارٍ الاتصال بمختبر TAG LAB</span><div class="pulse" aria-hidden="true"><i></i><i></i><i></i></div></div>
+<div class="bar" aria-hidden="true"></div>
+<p id="detail">يجري إعداد بيئة العمل...</p>
+<div class="actions">
+<a id="loginLink" href="./?next=%2Ftag-lab-login.html" class="active">👨‍🏫 دخول المعلم</a>
+<a id="registerLink" href="./?next=%2Ftag-lab-register.html">✍️ حساب جديد</a>
+<a id="studentLink" href="./?next=%2Ftag-lab-student.html">🎓 دخول الطالب</a>
+<button id="retry" type="button">↻ إعادة المحاولة</button>
+</div></section></main>
+<footer>TAG LAB • TEACH AND GAME — مختبر مستقل يعمل برابط ثابت لا يدخل في وضع السكون</footer>
+<script>
+(function(){
+'use strict';
+const BACKEND='https://tag-lab-independent-v1.onrender.com';
+const qs=new URLSearchParams(location.search);
+const requested=qs.get('next')||((qs.has('student'))?'/tag-lab-student.html':'/tag-lab-login.html');
+let destination;
+try{
+  const u=new URL(requested,BACKEND);
+  if(u.origin!==BACKEND||!/^\/tag-lab-[a-z0-9-]+\.html$/.test(u.pathname))throw Error('unsafe_destination');
+  destination=u;
+}catch(_){destination=new URL('/tag-lab-login.html',BACKEND)}
+const m=document.getElementById('message'),d=document.getElementById('detail');
+const start=Date.now();
+let attempt=0,working=false,ready=false,nextTimer=0;
+const session=qs.get('next')||'/tag-lab-login.html';
+document.getElementById('loginLink').classList.toggle('active',destination.pathname==='/tag-lab-login.html');
+document.getElementById('registerLink').classList.toggle('active',destination.pathname==='/tag-lab-register.html');
+document.getElementById('studentLink').classList.toggle('active',destination.pathname==='/tag-lab-student.html');
+function check(){
+ if(ready||working)return;
+ working=true;attempt++;
+ if(attempt>=7){m.textContent='ما زلنا نجهّز المختبر';d.textContent='الخدمة قيد التشغيل. سيستمر الفحص تلقائيًا، أو اضغط إعادة المحاولة.'}
+ else{m.textContent='جارٍ تجهيز مختبر TAG LAB';d.textContent='التحقق من جاهزية الخدمة بشكل آمن...'}
+ const image=new Image();
+ let completed=false;
+ const timer=setTimeout(()=>finish(false),12500);
+ function finish(ok){
+   if(completed)return;completed=true;clearTimeout(timer);
+   image.onload=null;image.onerror=null;working=false;
+   if(ok){
+    ready=true;m.textContent='✅ المختبر جاهز!';d.textContent='جارٍ فتح الصفحة المطلوبة...';
+    location.replace(destination.href);return
+   }
+   nextTimer=setTimeout(check,Math.min(4500,1100+attempt*350))
+ }
+ // Render may return an HTML loading splash even for an image request.
+ // It cannot decode as an image. Only a real TAG LAB image marks readiness.
+ image.onload=()=>{if(image.naturalWidth>0)finish(true);else finish(false)};
+ image.onerror=()=>finish(false);
+ image.referrerPolicy='no-referrer';
+ image.src=BACKEND+'/assets/brand/tag-logo-dark-v21.png?taglab_wakeup='+
+    Date.now().toString(36)+'-'+attempt;
+}
+document.getElementById('retry').onclick=()=>{clearTimeout(nextTimer);attempt=0;working=false;check()};
+check();
+})();
+</script>
+</body></html>
