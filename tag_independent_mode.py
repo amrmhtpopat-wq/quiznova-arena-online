@@ -12,7 +12,7 @@ _ENABLED = {"1", "true", "yes", "on"}
 # Public TAG LAB page URLs. Legacy URLs continue to redirect so existing
 # student QR codes and saved teacher links are not broken.
 LEGACY_PAGE_REDIRECTS = {
-    "/index.html": "/tag-lab-home.html",
+    "/index.html": "/tag-lab-login.html",
     "/studio.html": "/tag-lab-create.html",
     "/teacher-hub-preview.html": "/tag-lab-library.html",
     "/student.html": "/tag-lab-student.html",
@@ -99,7 +99,7 @@ def reject(handler, method, path):
         return True
     if method.upper() in ("GET", "HEAD") and p in ("", "/"):
         handler.send_response(302)
-        handler.send_header("Location", "/tag-lab-home.html")
+        handler.send_header("Location", "/tag-lab-login.html")
         handler.send_header("Cache-Control", "no-store")
         handler.end_headers()
         return True
