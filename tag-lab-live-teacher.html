@@ -138,7 +138,7 @@ async function loadRecent(){
 }
 async function switchRoom(code){
  roomCode=code;history.replaceState(null,'','?host='+encodeURIComponent(code));
- $('room').hidden=false;$('setup').hidden=true;$('joinLink').href=location.origin+'/tag-lab-live-student.html?code='+code;
+ $('room').hidden=false;$('setup').hidden=true;$('joinLink').href='https://tag-lab.onrender.com/?next='+encodeURIComponent('/tag-lab-live-student.html?code='+code);
  $('joinLink').textContent=$('joinLink').href;$('codeText').textContent=code;
  await updateRoom();loadRecent()
 }
