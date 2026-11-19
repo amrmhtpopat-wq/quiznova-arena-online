@@ -410,7 +410,7 @@ class Handler(SimpleHTTPRequestHandler):
         self.send_header('X-Content-Type-Options','nosniff')
         # The teacher creator embeds its *same-origin* game preview. Keep every
         # other page blocked from frames, including external/third-party sites.
-        preview_frame=urlparse(self.path).path=='/game-lab-preview.html'
+        preview_frame=urlparse(self.path).path in ('/game-lab-preview.html', '/tag-lab-preview.html')
         self.send_header('X-Frame-Options','SAMEORIGIN' if preview_frame else 'DENY')
         if preview_frame:
             self.send_header('Content-Security-Policy',"frame-ancestors 'self'")
@@ -420,6 +420,8 @@ class Handler(SimpleHTTPRequestHandler):
         return super().end_headers()
     def translate_path(self,path):
         parsed=urlparse(path).path
+        # Independent TAG LAB has short branded routes for the existing engines.
+        parsed=tag_independent_mode.static_alias(parsed)
         rel=parsed.lstrip('/') or 'index.html'
         safe=(ROOT/rel).resolve()
         if ROOT not in safe.parents and safe!=ROOT:return str(ROOT/'__not_found__')
