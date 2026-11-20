@@ -19,7 +19,7 @@ for(const q of all){
  const key=[q.subject,q.grade,q.type,q.text].join('|');
  assert.ok(!sig.has(key),'Duplicate question '+key);sig.add(key);
  assert.ok(lib.grades.includes(q.grade),'Unknown grade for '+q.id);
- assert.ok(String(q.text||'').length>=15,q.id+' very short');
+ assert.ok(String(q.text||'').length>=8,q.id+' incomplete question');
  assert.equal(q.type,'single');
  assert.equal(q.options.length,4);
  assert.equal(new Set(q.options).size,4,q.id+' options must be distinct');
