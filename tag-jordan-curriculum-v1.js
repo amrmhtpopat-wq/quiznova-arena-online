@@ -112,6 +112,30 @@ for(let g=1;g<=12;g++){
   }
  }
 }
+// Financial reasoning and numeracy: 2 original scenarios per parameter set.
+for(let g=7;g<=10;g++){
+ const grade=grades[g-1];
+ for(let i=0;i<120;i++){
+  const amount=100+(i%30)*10,spent=10+Math.floor(i/30)*15+(i%7);
+  numeric("financial",grade,"الميزانية الشخصية",
+   `يمتلك طالب ${amount} دينارًا، وأنفق ${spent} دينارًا على احتياجاته. كم دينارًا تبقى له؟`,
+   amount-spent,i,"medium");
+  const savings=2+(i%26),weeks=2+Math.floor(i/26);
+  numeric("financial",grade,"الادخار والتخطيط",
+   `يوفر طالب ${savings} دنانير كل أسبوع لمدة ${weeks} أسابيع. ما مجموع ما ادخره؟`,
+   savings*weeks,i+1,"medium");
+ }
+}
+// Extra applied science numeracy for upper basic grades (general practice).
+for(let g=7;g<=10;g++){
+ const grade=grades[g-1];
+ for(let i=0;i<72;i++){
+  const speed=2+(i%24),hours=1+Math.floor(i/24);
+  numeric("science",grade,"المسافة والسرعة",
+   `جسم يتحرك بسرعة ثابتة ${speed} كم/ساعة لمدة ${hours} ساعات. ما المسافة التي يقطعها بالكيلومترات؟`,
+   speed*hours,i,"medium");
+ }
+}
 // Original general knowledge questions. All are marked supplementary, not official textbook excerpts.
 const facts=[
  ["science","الخلايا","ما الوحدة الأساسية لبناء أجسام الكائنات الحية؟","الخلية",["الضوء","الصوت","الهواء"]],
@@ -173,6 +197,9 @@ for(let g=1;g<=10;g++){
   const distractors=[1,3,7].map(n=>words[(i+n)%words.length][1]);
   const opts=[arabic,...distractors],shift=(g+i)%4,ordered=opts.slice(shift).concat(opts.slice(0,shift));
   add("english",grade,"Vocabulary","single",`Choose the Arabic meaning of: ${english}`,ordered,[ordered.indexOf(arabic)],g<=3?"easy":"medium");
+  const otherWords=[1,3,7].map(n=>words[(i+n)%words.length][0]),enOpts=[english,...otherWords],nshift=(g+i+2)%4;
+  const enAnswers=enOpts.slice(nshift).concat(enOpts.slice(0,nshift));
+  add("english",grade,"Vocabulary","single",`Choose the English word for: ${arabic}`,enAnswers,[enAnswers.indexOf(english)],g<=3?"easy":"medium");
  });
 }
 const ARABIC_NOUNS=["مدرسة","كتاب","حديقة","معلم","نافذة","طالب","مدينة","قلم","صديق","جبل","نهر","طريق","شجرة","منزل","علم","طائرة","زهرة","حقيبة","كرة","حاسوب"];
