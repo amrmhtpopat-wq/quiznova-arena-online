@@ -64,7 +64,8 @@ with sync_playwright() as pw:
   assert page.locator('#tagBookResults').bounding_box()['width']<=width+2
   page.locator('#tagBookToggleAll').click()
   assert page.locator('#tagBookQuestions .tag-book-pick:checked').count()==4
-  assert page.evaluate('DB.quizzes.length')==0,'Suggestions must not save themselves'
+  saved_before=page.evaluate('DB.quizzes.length')
+  assert saved_before==(0 if width==390 else 1),'Existing saved quizzes must remain unchanged'
   page.locator('#tagBookApply').click()
   page.locator('#view-builder.active').wait_for(state='visible',timeout=10000)
   assert page.evaluate('builderQuestions.length')==4
@@ -74,7 +75,7 @@ with sync_playwright() as pw:
   assert source.is_visible()
   assert 'صفحة 1' in source.inner_text()
   assert page.evaluate('builderQuestions.every(q=>q.reviewStatus==="teacher_review_required" && q.sourcePage===1)')
-  assert page.evaluate('DB.quizzes.length')==0
+  assert page.evaluate('DB.quizzes.length')==saved_before,'Import must not automatically save or publish'
   if width==390:
    page.locator('#saveQuiz').click()
    page.locator('#view-library.active').wait_for(state='visible',timeout=18000)
