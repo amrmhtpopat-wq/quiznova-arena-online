@@ -3,9 +3,19 @@
 These tests never use external Gemini calls, real students or production data.
 """
 import os
+import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
+
+# The existing platform security module requires initialized teacher tables.
+# Isolate this contract test from production and initialize the local schema.
+_test_db=tempfile.TemporaryDirectory()
+os.environ.pop('DATABASE_URL',None)
+os.environ['QUIZNOVA_SQLITE_PATH']=str(Path(_test_db.name)/'ai-v2.sqlite')
+os.environ['QUIZNOVA_CLOUD']='1'
+os.environ['QUIZNOVA_ALLOW_EPHEMERAL']='yes'
+import platform_store as store
 from game_lab_ai_v2 import (
  page_segments,plan_batches,is_near_duplicate,review_verified_rows,
  distribute_by_pages,choose_repair_pages,report_coverage
