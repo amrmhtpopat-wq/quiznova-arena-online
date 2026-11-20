@@ -27,7 +27,7 @@ const aliases={
  earth:["علوم الأرض والبيئة","علوم الارض","الأرض والبيئة"],
  arts:["التربية الفنية","الفنون","فنون"]
 };
-const standardize=v=>String(v||"").toLowerCase().trim().replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي").replace(/[ًٌٍَُِّْ]/g,"").replace(/\\s+/g," ");
+const standardize=v=>String(v||"").toLowerCase().trim().replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي").replace(/[ًٌٍَُِّْ]/g,"").replace(/\s+/g," ");
 function subjectKey(raw){
  const value=standardize(raw);
  for(const [key,items] of Object.entries(aliases)){
@@ -57,7 +57,7 @@ function add(key,grade,topic,type,text,options,correct,difficulty="medium"){
 function numeric(key,grade,topic,text,answer,index,difficulty="medium"){
  if(!Number.isSafeInteger(answer))return;
  let distractors=[answer+1,answer-1,answer+2,answer-2,answer+10,answer-10,answer+3]
-   .filter(v=>v>=0&&Number.isSafeInteger(v)&&v!==answer);
+   .filter(v=>(answer<0||v>=0)&&Number.isSafeInteger(v)&&v!==answer);
  const distinct=[answer,...new Set(distractors)].slice(0,4);
  while(distinct.length<4)distinct.push(answer+distinct.length+7);
  const shift=index%4;
@@ -87,7 +87,7 @@ for(let g=1;g<=12;g++){
    numeric("math",grade,"مساحة المستطيل",`مستطيل طوله ${x} سم وعرضه ${y} سم؛ ما مساحته بالسم المربع؟`,x*y,i+1);
   }else if(g===5){
    const x=10+(i%75),y=2+(Math.floor(i/11)%15);
-   numeric("math",grade,"الكسور العشرية",`ما ناتج ${x/10} + ${y/10} بالأعشار؟`,x+y,i,"medium");
+   numeric("math",grade,"الأعشار",`إذا جمعنا ${x} عشرًا و${y} عشرًا، فكم عشرًا نحصل؟`,x+y,i,"medium");
    numeric("math",grade,"العمليات الحسابية",`احسب ${x} × ${y}.`,x*y,i+1);
   }else if(g===6){
    const x=12+(i%65),y=2+(Math.floor(i/10)%14);
