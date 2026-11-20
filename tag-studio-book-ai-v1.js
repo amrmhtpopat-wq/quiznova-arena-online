@@ -293,14 +293,16 @@ async function retryQuestion(index){
 }
 async function generate(mode){
  if(working)return;
- let args;
- try{args=inputSettings(mode)}catch(error){return notice(message(error.message),true)}
+ // Always explain unavailable provider before validating the book selection;
+ // teachers may click AI while the library is still loading.
  if(mode==='ai'&&!aiEnabled){
-  notice('تم حفظ كتابك، لكن TAG AI لا يستطيع توليد أسئلة حتى يضيف مسؤول المنصة GEMINI_API_KEY في إعدادات Render ثم يعيد فحص حالة التفعيل. جرّب الاستخراج المباشر دون AI الآن.',true);
+  notice('تم حفظ كتبك إن كانت مرفوعة، لكن TAG AI لا يستطيع توليد أسئلة حتى يضيف مسؤول المنصة GEMINI_API_KEY في إعدادات Render ثم يعيد فحص حالة التفعيل. جرّب الاستخراج المباشر دون AI الآن.',true);
   el('tagBookAiProvider').hidden=false;
   el('tagBookAiProvider').scrollIntoView({behavior:'smooth',block:'nearest'});
   return;
  }
+ let args;
+ try{args=inputSettings(mode)}catch(error){return notice(message(error.message),true)}
  setBusy(true);clearResults();
  try{
   notice(mode==='ai'?'يحلل TAG AI مقاطع الدرس، ويولّد أسئلة متنوعة، ثم يدقق الاقتباسات والتكرار ويحاول إصلاح النواقص ضمن الحصة المتاحة...':'جارٍ استخراج الأسئلة والأجوبة المكتوبة صراحة في الكتاب...');
