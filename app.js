@@ -94,6 +94,56 @@ function sampleBank(){
   return [...main,...extra].map((q,i)=>({...clone(q),skill:q.skill||q.topic||q.unit,explanation:q.explanation||((q.type==='single'&&q.options&&q.correct)?'الإجابة الصحيحة: '+q.options[q.correct[0]]+'، راجع درس '+(q.topic||q.unit)+'.':'راجع درس '+(q.topic||q.unit)+'.'),image:q.image||`/assets/questions/${String(i%99+1).padStart(2,'0')}.svg`,id:q.id||`qnseed_${i+1}`,subject:q.subject||'المهارات الرقمية'}));
 }
 
+// TAG Jordan Library V1: shared, read-only enrichment — never sync its thousands
+// of questions into a teacher snapshot. Only explicitly saved quizzes are persisted.
+const jordanCurriculum=window.TAG_JORDAN_CURRICULUM_V1||null;
+const teacherSubjectValue=()=>jordanCurriculum?.canonicalSubject(window.QN9_TEACHER?.subject||'')||window.QN9_TEACHER?.subject||'عام';
+const subjectMatchesTeacher=q=>{
+ const teacher=window.QN9_TEACHER?.subject||'عام';
+ const key=jordanCurriculum?.subjectKey(teacher);
+ return key?jordanCurriculum.subjectKey(q.subject)===key:normalize(q.subject||'')===normalize(teacher);
+};
+const semesterOf=q=>{
+ const v=String(q.semester||'');
+ if(v==='1'||v==='2')return v;
+ const source=String(q.source||'');
+ if(/الفصل (الدراسي )?الأول/.test(source))return '1';
+ if(/الفصل (الدراسي )?الثاني/.test(source))return '2';
+ return 'عام';
+};
+const lessonOf=q=>String(q.lesson||q.topic||q.skill||q.unit||'عام');
+const isJordanShared=q=>String(q?.id||'').startsWith('jo26_');
+function allAvailableBank(){
+ const own=DB.bank||[],extra=jordanCurriculum?.questionsForTeacher(window.QN9_TEACHER?.subject||'')||[];
+ const seen=new Set(own.map(qSignature));
+ return own.concat(extra.filter(q=>{const signature=qSignature(q);if(seen.has(signature))return false;seen.add(signature);return true}));
+}
+let bankVisibleLimit=72;
+function renderJordanLibrary(){
+ const root=$('#jordanLibrary');if(!root)return;
+ const subject=teacherSubjectValue();
+ const available=allAvailableBank().filter(subjectMatchesTeacher);
+ const grades=jordanCurriculum?.grades||['الأول','الثاني','الثالث','الرابع','الخامس','السادس','السابع','الثامن','التاسع','العاشر','الحادي عشر','الثاني عشر'];
+ $('#jordanLibrarySubject').textContent='المادة: '+subject;
+ $('#jordanLibraryCount').textContent=available.length+' سؤال متاح للمراجعة';
+ root.innerHTML=grades.map(grade=>{
+  const count=available.filter(q=>q.grade===grade).length;
+  return `<article class="jordan-grade-card ${count?'has-questions':'pending'}"><span class="jordan-grade-icon" aria-hidden="true">${count?'📘':'📂'}</span><h4>الصف ${escapeHtml(grade)}</h4><p>${count?count+' سؤال تدريبي متاح':'حزمة الأسئلة تحتاج إعدادًا ومراجعة'}</p><button type="button" ${count?'':"disabled"} onclick="openJordanGrade('${escapeHtml(grade)}')">${count?'إنشاء اختبار للصف':'غير متاح بعد'}</button></article>`;
+ }).join('');
+}
+window.openJordanGrade=grade=>{
+ const count=allAvailableBank().filter(q=>subjectMatchesTeacher(q)&&q.grade===grade).length;
+ if(!count)return toast('لا توجد حزمة أسئلة مراجَعة لهذا الصف بعد');
+ go('generator');
+ const sub=$('#genSubject'),name=teacherSubjectValue();
+ if([...sub.options].some(o=>o.value===name))sub.value=name;
+ $('#genGrade').value=grade;
+ $('#genSemester').value='all';
+ renderGeneratorUnits();updateGeneratorPool();
+ $('#genTitle').value='تحدي '+name+' — الصف '+grade;
+ $('#genCount').value=Math.min(20,count);
+ updateGeneratorPool();
+};
 function demoQuizForGrade(grade){
   const all=sampleBank().filter(q=>q.grade===grade), titles={السابع:'تحدي السابع – أنظمة الحوسبة والشبكات',الثامن:'تحدي الثامن – الأعطال والبرمجة',التاسع:'تحدي التاسع – أثر الحوسبة والبرمجة'};
   return {id:uid(),title:titles[grade]||`تحدي ${grade}`,subject:'المهارات الرقمية',grade,section:'',createdAt:Date.now(),settings:{randomQuestions:false,randomOptions:true,showFeedback:true,speedBonus:true,bossEnabled:true},questions:shuffle(all).slice(0,10).map(q=>({...q,id:uid()}))};
@@ -119,16 +169,42 @@ function renderDashboard(){
 }
 
 // ---------- Generator ----------
-function bankSubjects(){ return [...new Set(DB.bank.map(q=>q.subject||'عام'))].sort() }
-function renderGenerator(){
-  const current=$('#genSubject').value; $('#genSubject').innerHTML='<option value="all">كل المواد</option>'+bankSubjects().map(s=>`<option ${s===current?'selected':''}>${escapeHtml(s)}</option>`).join('');
-  renderGeneratorUnits(); updateGeneratorPool();
+function bankSubjects(){
+ const names=new Set(allAvailableBank().map(q=>q.subject||'عام'));
+ names.add(teacherSubjectValue());
+ return [...names].sort((a,b)=>a.localeCompare(b,'ar'));
 }
-function renderGeneratorUnits(){ const s=$('#genSubject').value,g=$('#genGrade').value; const units=[...new Set(DB.bank.filter(q=>(s==='all'||q.subject===s)&&(g==='all'||q.grade===g)).map(q=>q.unit||'عام'))].sort(); const cur=$('#genUnit').value; $('#genUnit').innerHTML='<option value="all">كل الوحدات والموضوعات</option>'+units.map(u=>`<option ${u===cur?'selected':''}>${escapeHtml(u)}</option>`).join('') }
-function selectedGenTypes(){ return $$('#genTypes input:checked').map(x=>x.value) }
-function generatorPool(){ const s=$('#genSubject').value,g=$('#genGrade').value,u=$('#genUnit').value,d=$('#genDifficulty').value,types=selectedGenTypes(); return DB.bank.filter(q=>(s==='all'||q.subject===s)&&(g==='all'||q.grade===g)&&(u==='all'||q.unit===u)&&(d==='mixed'||q.difficulty===d)&&types.includes(q.type)) }
+function renderGenerator(){
+ const current=$('#genSubject').value,preferred=teacherSubjectValue();
+ const options=bankSubjects();
+ $('#genSubject').innerHTML='<option value="all">كل المواد</option>'+options.map(s=>`<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
+ $('#genSubject').value=options.includes(current)&&current!=='all'?current:options.includes(preferred)?preferred:'all';
+ renderGeneratorUnits();updateGeneratorPool();
+}
+function generatorBase(){
+ const s=$('#genSubject').value,g=$('#genGrade').value,sem=$('#genSemester').value;
+ return allAvailableBank().filter(q=>(s==='all'||q.subject===s)&&(g==='all'||q.grade===g)&&(sem==='all'||semesterOf(q)===sem));
+}
+function renderGeneratorUnits(){
+ const possible=generatorBase(),cur=$('#genUnit').value;
+ const units=[...new Set(possible.map(q=>q.unit||'عام'))].sort((a,b)=>a.localeCompare(b,'ar'));
+ $('#genUnit').innerHTML='<option value="all">كل الوحدات والموضوعات</option>'+units.map(u=>`<option value="${escapeHtml(u)}">${escapeHtml(u)}</option>`).join('');
+ if(units.includes(cur))$('#genUnit').value=cur;
+ renderGeneratorLessons();
+}
+function renderGeneratorLessons(){
+ const u=$('#genUnit').value,cur=$('#genLesson').value;
+ const lessons=[...new Set(generatorBase().filter(q=>u==='all'||q.unit===u).map(lessonOf))].sort((a,b)=>a.localeCompare(b,'ar'));
+ $('#genLesson').innerHTML='<option value="all">كل الدروس والمهارات</option>'+lessons.map(t=>`<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
+ if(lessons.includes(cur))$('#genLesson').value=cur;
+}
+function selectedGenTypes(){return $('#genTypes input:checked').map(x=>x.value)}
+function generatorPool(){
+ const u=$('#genUnit').value,l=$('#genLesson').value,d=$('#genDifficulty').value,types=selectedGenTypes();
+ return generatorBase().filter(q=>(u==='all'||q.unit===u)&&(l==='all'||lessonOf(q)===l)&&(d==='mixed'||q.difficulty===d)&&types.includes(q.type));
+}
 function updateGeneratorPool(){ const pool=generatorPool(); $('#poolCount').textContent=pool.length; const count=Math.max(1,+$('#genCount').value||10),d=$('#genDifficulty').value; let html=''; if(d==='mixed'){ const e=Math.round(count*.3),m=Math.round(count*.45),h=Math.max(0,count-e-m); html=`<span class="plan-chip">🟢 سهل ≈ ${e}</span><span class="plan-chip">🟡 متوسط ≈ ${m}</span><span class="plan-chip">🔴 صعب ≈ ${h}</span>` } else html=`<span class="plan-chip">المستوى: ${difficultyName(d)}</span>`; html+=`<span class="plan-chip">الأنواع المحددة: ${selectedGenTypes().length}</span>`; $('#difficultyPlan').innerHTML=html }
-['genSubject','genGrade','genUnit','genDifficulty','genCount'].forEach(id=>$('#'+id).addEventListener('change',()=>{ if(id==='genSubject'||id==='genGrade')renderGeneratorUnits(); updateGeneratorPool() }));
+['genSubject','genGrade','genSemester','genUnit','genLesson','genDifficulty','genCount'].forEach(id=>$('#'+id).addEventListener('change',()=>{if(['genSubject','genGrade','genSemester'].includes(id))renderGeneratorUnits();if(id==='genUnit')renderGeneratorLessons();updateGeneratorPool()}));
 $('#genCount').addEventListener('input',updateGeneratorPool);
 $('#genMinus').onclick=()=>{ $('#genCount').value=Math.max(1,(+$('#genCount').value||10)-1);updateGeneratorPool() };
 $('#genPlus').onclick=()=>{ $('#genCount').value=Math.min(120,(+$('#genCount').value||10)+1);updateGeneratorPool() };
@@ -141,6 +217,8 @@ function balancedPick(pool,count){
   return result;
 }
 function generateFromBank(){
+  if($('#genGrade').value==='all')return toast('اختر الصف أولًا حتى لا تختلط أسئلة الصفوف');
+  if($('#genSubject').value==='all')return toast('اختر المادة أولًا');
   let pool=generatorPool(),count=Math.max(1,Math.min(120,+$('#genCount').value||10)); if(!pool.length)return toast('لا توجد أسئلة مطابقة لهذه الفلاتر');
   let chosen=[]; const d=$('#genDifficulty').value;
   if(d==='mixed'){
@@ -150,7 +228,7 @@ function generateFromBank(){
   } else chosen=balancedPick(pool,count);
   chosen=shuffle(chosen).slice(0,count); if(chosen.length<count)toast(`المتاح ${chosen.length} سؤال فقط من أصل ${count} مطلوب`);
   resetBuilder(); const subject=$('#genSubject').value==='all'?(chosen[0]?.subject||'عام'):$('#genSubject').value; const grade=$('#genGrade').value==='all'?(chosen[0]?.grade||'السابع'):$('#genGrade').value;
-  $('#quizTitle').value=$('#genTitle').value.trim()||`اختبار ذكي - ${subject}`; $('#quizSubject').value=subject; $('#quizGrade').value=grade; builderQuestions=chosen.map(q=>({...clone(q),id:uid()})); boActiveQuestionId=builderQuestions[0]?.id||null; renderQuestions(); go('builder'); toast(`تم إنشاء اختبار من ${builderQuestions.length} سؤال متنوع`);
+  $('#quizTitle').value=$('#genTitle').value.trim()||`تحدي ${subject} — الصف ${grade}`; $('#quizSubject').value=subject; $('#quizGrade').value=grade; builderQuestions=chosen.map(q=>({...clone(q),id:uid()})); boActiveQuestionId=builderQuestions[0]?.id||null; renderQuestions(); go('builder'); toast(`تم إنشاء اختبار من ${builderQuestions.length} سؤال متنوع`);
 }
 $('#generateQuiz').onclick=generateFromBank;
 $('#previewPool').onclick=()=>{ const p=generatorPool(); openModal(`<div class="overline">PREVIEW</div><h3>الأسئلة المتاحة (${p.length})</h3><div class="modal-list">${p.slice(0,80).map(q=>`<div class="modal-item"><div><b>${typeIcon(q.type)} ${escapeHtml(q.text)}</b><small style="display:block;color:#7b8397">${difficultyName(q.difficulty)} • ${escapeHtml(q.unit||'عام')}</small></div></div>`).join('')||'<p>لا توجد أسئلة.</p>'}</div>`) };
