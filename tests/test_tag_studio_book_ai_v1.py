@@ -14,7 +14,7 @@ class BookToQuizContract(unittest.TestCase):
   for name in ('tagBookFile','tagBookSelect','tagBookGrade','tagBookStart','tagBookEnd',
                'tagBookAi','tagBookExtract','tagBookAiConsent','tagBookResults','tagBookApply'):
    self.assertIn('id="'+name+'"',page,name)
-  self.assertIn("'/tag-studio-book-ai-v1.js?v=2'",auth)
+  self.assertIn("'/tag-studio-book-ai-v1.js?v=3'",auth)
   self.assertIn("script.src='/app.js?v=19.1'",auth)
   self.assertIn('window.TAG_ACCEPT_BOOK_ROWS=',builder)
   self.assertIn("q.reviewStatus='teacher_review_required'",builder)
