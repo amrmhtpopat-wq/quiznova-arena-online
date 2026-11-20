@@ -204,3 +204,30 @@ body.v105-studio .tag-book-editor-source p{margin:7px 0!important}
 @media(prefers-reduced-motion:reduce){
  body.v105-studio .tag-book-ai *{scroll-behavior:auto!important}
 }
+/* Book Engine V2 — precise status; not a claim that AI is an approved examiner. */
+body.v105-studio .tag-book-engine-stats{
+  font:750 12px/1.8 Cairo,Tahoma,Arial,sans-serif!important;
+  color:#1d5c69!important;-webkit-text-fill-color:#1d5c69!important;
+  padding:9px 11px!important;margin:6px 0 10px!important;
+  background:#e8f7f4!important;border:1px solid #7bc7c0!important;
+  border-radius:10px!important;overflow-wrap:anywhere!important
+}
+body.v105-studio .tag-book-question .tag-book-retry{
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  align-self:flex-start!important;min-height:40px!important;min-width:0!important;
+  width:auto!important;margin-top:4px!important;padding:8px 12px!important;
+  background:#15496d!important;color:#f3faff!important;
+  border:1px solid #7dbbd3!important;border-radius:10px!important;
+  font:800 12px/1.6 Cairo,Tahoma,Arial,sans-serif!important;
+  cursor:pointer!important;box-shadow:none!important
+}
+body.v105-studio .tag-book-question .tag-book-retry:focus-visible{
+  outline:3px solid #32ae9c!important;outline-offset:3px!important
+}
+body.v105-studio .tag-book-question .tag-book-retry:disabled{
+  opacity:.5!important;cursor:not-allowed!important
+}
+@media(max-width:600px){
+ body.v105-studio .tag-book-engine-stats{font-size:11px!important;line-height:1.7!important}
+ body.v105-studio .tag-book-question .tag-book-retry{width:100%!important}
+}
