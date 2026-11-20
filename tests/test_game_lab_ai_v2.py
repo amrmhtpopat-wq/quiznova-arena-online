@@ -80,7 +80,7 @@ class BookEngineV2Test(unittest.TestCase):
   self.assertLessEqual(result['count'],12)
   self.assertTrue(all(row['reviewStatus']=='teacher_review_required' for row in result['rows']))
   self.assertEqual(result['generationStats']['providerCalls'],2)
-  self.assertEqual(result['generationStats']['sections'],5)
+  self.assertEqual(result['generationStats']['sections'],6)
   self.assertTrue(result['generationStats']['coverage']['coveredPages']>=1)
  def test_one_question_retry_is_bound_to_source_and_excludes_previous(self):
   seen=[]
