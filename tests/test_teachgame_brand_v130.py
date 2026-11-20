@@ -96,7 +96,7 @@ class TeachGameBrandChecks(unittest.TestCase):
     def test_updated_assets_and_cache_control(self):
         refs={
           'index.html':['portal.js?v=24.2','booyah-badge-v112.css?v=13.1'],
-          'studio.html':['media_library.js?v=13.1','studio-auth.js?v=13.4','booyah-countdown-v121.js?v=13.1'],
+          'studio.html':['media_library.js?v=13.1','studio-auth.js?v=13.5','booyah-countdown-v121.js?v=13.1'],
           'student.html':['booyah-countdown-v121.js?v=13.1'],
           'stage.html':['booyah-countdown-v121.js?v=13.1']
         }
