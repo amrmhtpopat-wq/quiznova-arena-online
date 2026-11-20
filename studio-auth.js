@@ -113,7 +113,7 @@
       return originalFetch(input,init);
     };
     document.documentElement.style.visibility='visible';
-    let script=document.createElement('script');script.src='/app.js?v=19.1';script.onload=()=>{const view=location.hash.slice(1);if(view&&window.go)window.go(['dashboard','generator','builder','bank','media','library','live','play','results','settings'].includes(view)?view:'dashboard');const bookFeature=document.createElement('script');bookFeature.src='/tag-studio-book-ai-v1.js?v=3';bookFeature.defer=true;document.body.appendChild(bookFeature)};document.body.appendChild(script);
+    let script=document.createElement('script');script.src='/app.js?v=19.1';script.onload=()=>{const view=location.hash.slice(1);if(view&&window.go)window.go(['dashboard','generator','builder','bank','media','library','live','play','results','settings'].includes(view)?view:'dashboard');const bookFeature=document.createElement('script');bookFeature.src='/tag-studio-book-ai-v1.js?v=3';bookFeature.defer=true;document.body.appendChild(bookFeature);const studioNavigation=document.createElement('script');studioNavigation.src='/tag-studio-navigation-v6.js?v=6';document.body.appendChild(studioNavigation)};document.body.appendChild(script);
   }catch(e){
     if(e.message==='login_required'){
       localStorage.removeItem('qn9_teacher_token');
