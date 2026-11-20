@@ -16,6 +16,7 @@ os.environ['QUIZNOVA_SQLITE_PATH']=str(Path(_test_db.name)/'ai-v2.sqlite')
 os.environ['QUIZNOVA_CLOUD']='1'
 os.environ['QUIZNOVA_ALLOW_EPHEMERAL']='yes'
 import platform_store as store
+store.init()
 from game_lab_ai_v2 import (
  page_segments,plan_batches,is_near_duplicate,review_verified_rows,
  distribute_by_pages,choose_repair_pages,report_coverage
