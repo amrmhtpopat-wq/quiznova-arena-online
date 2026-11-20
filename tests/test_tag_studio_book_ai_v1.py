@@ -26,7 +26,7 @@ class BookToQuizContract(unittest.TestCase):
   self.assertNotIn('/api/game-lab/teacher/publish',client)
   self.assertIn("'ai_consent_required'",client)
   self.assertIn("aiEnabled=!!data.aiEnabled",client)
-  self.assertIn("max=25",page)
+  self.assertIn('max="25"',page)
   self.assertIn("40_000_000",client)
   self.assertIn("upload/chunk",client)
   self.assertIn("role=\"status\"",page)
