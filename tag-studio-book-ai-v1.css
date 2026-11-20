@@ -231,3 +231,45 @@ body.v105-studio .tag-book-question .tag-book-retry:disabled{
  body.v105-studio .tag-book-engine-stats{font-size:11px!important;line-height:1.7!important}
  body.v105-studio .tag-book-question .tag-book-retry{width:100%!important}
 }
+/* TAG AI provider activation: visible reason and recheck without hiding books. */
+body.v105-studio #tagBookAiProvider[hidden]{display:none!important}
+body.v105-studio .tag-book-provider{
+ margin:11px 0!important;padding:14px!important;border-radius:14px!important;
+ background:linear-gradient(135deg,#fff8e9,#fff0cd)!important;
+ border:1px solid #d5a344!important;box-shadow:0 4px 14px #532c0c16!important;
+ color:#553b0f!important;min-width:0!important
+}
+body.v105-studio .tag-book-provider-head{
+ display:flex;gap:8px;justify-content:space-between;align-items:center;flex-wrap:wrap;
+ margin:0 0 6px
+}
+body.v105-studio .tag-book-provider-head strong{
+ font:900 14px/1.5 Cairo,Tahoma,Arial,sans-serif!important;
+ color:#56360f!important;-webkit-text-fill-color:#56360f!important
+}
+body.v105-studio #tagBookAiProviderStatus{
+ display:inline-flex;background:#f7dfac!important;color:#6b410c!important;
+ padding:5px 9px;border-radius:999px;border:1px solid #d4a251;
+ font:850 11px/1.5 Cairo,Tahoma,Arial,sans-serif!important
+}
+body.v105-studio #tagBookAiProviderMessage{
+ font:700 12px/1.8 Cairo,Tahoma,Arial,sans-serif!important;
+ color:#4e3a1c!important;-webkit-text-fill-color:#4e3a1c!important;
+ margin:7px 0 10px!important;overflow-wrap:anywhere!important
+}
+body.v105-studio .tag-book-provider-actions{
+ display:flex;flex-wrap:wrap;gap:9px;align-items:center
+}
+body.v105-studio .tag-book-provider-actions button{
+ min-height:40px!important;padding:7px 12px!important;
+ background:#155d72!important;color:#fff!important;border:1px solid #247a91!important;
+ border-radius:10px!important;font:850 12px Cairo,Tahoma,Arial,sans-serif!important
+}
+body.v105-studio .tag-book-provider-actions span{
+ font:650 11px/1.6 Cairo,Tahoma,Arial,sans-serif!important;
+ color:#5c4828!important
+}
+@media(max-width:600px){
+ body.v105-studio .tag-book-provider{padding:12px!important}
+ body.v105-studio .tag-book-provider-actions button{width:100%!important}
+}
