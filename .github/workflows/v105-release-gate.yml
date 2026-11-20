@@ -51,6 +51,7 @@ jobs:
           node --check curriculum_bank.js
           node --check curriculum_plus.js
           node --check tag-jordan-curriculum-v1.js
+          node --check tag-studio-book-ai-v1.js
           node --check media_library.js
       - name: TAG Mobile V2 all-page layout/link and safety contract tests
         run: python -m unittest discover -s tests -p 'test_tag_mobile_v2.py' -v
@@ -58,6 +59,8 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_tag_home_mobile_v5.py' -v
       - name: TAG image-question feedback and server speed crown QA
         run: python -m unittest discover -s tests -p 'test_tag_student_feedback_v1.py' -v
+      - name: TAG studio book-to-quiz integration safety contract
+        run: python -m unittest discover -s tests -p 'test_tag_studio_book_ai_v1.py' -v
       - name: Jordan curriculum pack correctness and teacher subject separation
         run: node tests/test_tag_jordan_bank_v1.cjs
       - name: TAG PWA manifest, PNG install icons and no-cached-student-data tests

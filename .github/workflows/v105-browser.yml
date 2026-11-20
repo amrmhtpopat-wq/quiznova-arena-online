@@ -44,6 +44,9 @@ on:
       - tests/browser_tag_student_photo_v1.py
       - app.js
       - studio.html
+      - tag-studio-book-ai-v1.css
+      - tag-studio-book-ai-v1.js
+      - tests/browser_tag_studio_book_ai_v1.py
       - tag-jordan-curriculum-v1.js
       - tag-jordan-library-v1.css
       - tests/browser_tag_jordan_library_v1.py
@@ -96,6 +99,8 @@ jobs:
           python -m playwright install chromium
       - name: TAG Mobile V2 complete 23-page viewport and LAB browser-handoff QA
         run: python tests/browser_tag_mobile_v2.py
+      - name: TAG book upload and source-grounded question draft browser QA
+        run: python tests/browser_tag_studio_book_ai_v1.py
       - name: Jordan curriculum library subject-scoped browser QA
         run: python tests/browser_tag_jordan_library_v1.py
       - name: TAG Home Mobile V5 phone-only visual and desktop regression

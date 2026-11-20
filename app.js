@@ -237,6 +237,57 @@ $('#previewPool').onclick=()=>{ const p=generatorPool(); openModal(`<div class="
 function openNewQuiz(){resetBuilder();go('builder')}
 window.openNewQuiz=openNewQuiz;
 function resetBuilder(){ editingQuizId=null; $('#quizTitle').value=''; $('#quizSubject').value=window.QN9_TEACHER?.subject||'عام'; $('#quizGrade').value='السابع'; $('#quizSection').value=''; $('#randomQuestions').checked=true; $('#randomOptions').checked=true; $('#showFeedback').checked=true; $('#speedBonus').checked=true; $('#bossEnabled').checked=false; $('#soloPublish').checked=false; $('#soloMaxAttempts').value='1'; builderQuestions=[blankQuestion('single')]; boActiveQuestionId=builderQuestions[0].id; renderQuestions() }
+// Source-grounded book suggestions enter the normal TAG editor as an UNSAVED draft.
+// No question is published, synchronized or added to a live room by this function.
+window.TAG_ACCEPT_BOOK_ROWS=(rows,book,grade,topic,mode)=>{
+ if(!Array.isArray(rows)||!rows.length||rows.length>25)return {ok:false,error:'invalid_rows'};
+ const subject=window.QN9_TEACHER?.subject||'عام';
+ const allowed=[...$('#quizGrade').options].map(o=>o.value);
+ if(!allowed.includes(grade))return {ok:false,error:'invalid_grade'};
+ const seen=new Set(),converted=[];
+ for(const row of rows){
+   if(!row||typeof row!=='object')continue;
+   const text=String(row.q||'').trim().slice(0,200);
+   const answer=String(row.a||'').trim().slice(0,100);
+   const key=normalize(text);
+   if(!text||!answer||seen.has(key))continue;
+   const type=row.questionType==='mcq'?'single':row.questionType==='true_false'?'tf':'short';
+   if(type==='tf'&&!['صح','خطأ'].includes(answer))continue;
+   const q=blankQuestion(type);
+   if(type==='single'){
+     if(!Array.isArray(row.choices)||row.choices.length!==4)continue;
+     const choices=row.choices.map(v=>String(v||'').trim().slice(0,100));
+     const idx=choices.findIndex(v=>v===answer);
+     if(idx<0||new Set(choices).size!==4||choices.some(v=>!v))continue;
+     q.options=choices;q.correct=[idx];
+   }else if(type==='tf'){q.correct=answer==='صح'}
+   else q.answers=[answer];
+   seen.add(key);
+   q.id=uid();q.text=text;q.subject=subject;q.grade=grade;
+   q.unit=String(topic||row.g||'من الكتاب').trim().slice(0,90);
+   q.lesson=String(row.g||'').trim().slice(0,90);
+   q.source=String(book?.name||'كتاب مرفوع').slice(0,130);
+   q.sourcePage=Number(row.sourcePage)||undefined;
+   q.sourceQuote=String(row.sourceQuote||'').slice(0,240);
+   q.reviewStatus='teacher_review_required';
+   q.origin=mode==='ai'?'tag_ai_book':'book_explicit_extraction';
+   q.explanation=String(row.explanation||'').trim().slice(0,240);
+   q.skill=q.lesson||q.unit;
+   q.difficulty=['easy','medium','hard'].includes(row.difficulty)?row.difficulty:'medium';
+   q.tags=['كتاب المعلم','تحتاج مراجعة'];
+   converted.push(q);
+ }
+ if(!converted.length)return {ok:false,error:'no_valid_rows'};
+ resetBuilder();
+ const bookName=String(book?.name||'الكتاب').replace(/\.(pdf|docx|txt)$/i,'');
+ $('#quizTitle').value='تحدي '+bookName.slice(0,65)+' — '+grade;
+ $('#quizSubject').value=subject;
+ $('#quizGrade').value=grade;
+ builderQuestions=converted;
+ boActiveQuestionId=converted[0].id;
+ renderQuestions();go('builder');
+ return {ok:true,count:converted.length};
+};
 function addQuestion(type='single'){ const q=blankQuestion(type); q.subject=$('#quizSubject').value||window.QN9_TEACHER?.subject||'عام';q.grade=$('#quizGrade').value;builderQuestions.push(q);boActiveQuestionId=q.id;renderQuestions() }
 $('#addQuestion').onclick=()=>addQuestion('single'); $('#boRailAddQuestion').onclick=()=>addQuestion('single'); $$('#quickTypes [data-addtype]').forEach(b=>b.onclick=()=>addQuestion(b.dataset.addtype)); $('#resetBuilder').onclick=resetBuilder;
 const ideaPlans={
@@ -374,6 +425,7 @@ function questionEditor(q,i){
         ${q.image?`<button type="button" class="btn btn-danger-soft" onclick="removeImage('${q.id}')">حذف الصورة</button>`:''}
       </div>
     </div>
+    ${q.sourcePage&&q.sourceQuote?`<div class="tag-book-editor-source"><strong>📘 من ${escapeHtml(q.source||'الكتاب')} — صفحة ${Number(q.sourcePage)}</strong><p>${escapeHtml(q.sourceQuote)}</p><small>اقتراح يحتاج مراجعة المعلم قبل حفظ الاختبار ونشره.</small></div>`:''}
     <div class="bo-answers-heading"><div><strong>${hasOptions?'الإجابات':'إجابة السؤال'}</strong><small>${hint}</small></div><span>${q.type==='single'?'4 خيارات افتراضيًا':''}</span></div>
     ${typeEditor(q)}
     <details class="bo-question-extra">
