@@ -50,7 +50,7 @@ function notice(text,isError){
 function setBusy(value){
  working=value;
  ['tagBookUpload','tagBookExtract','tagBookArchive','tagBookSelect','tagBookFile','tagBookAi','tagBookApply'].forEach(id=>{
-  const item=el(id);if(item)item.disabled=value||(id==='tagBookAi'&&!aiEnabled)||(id==='tagBookApply'&&!resultRows.length);
+  const item=el(id);if(item)item.disabled=value||(id==='tagBookApply'&&!resultRows.length);
  });
 }
 async function request(path,body){
@@ -82,17 +82,40 @@ function clearResults(){
  el('tagBookResults').hidden=true;
  setBusy(working);
 }
+function updateAiState(data){
+ aiEnabled=!!data.aiEnabled;
+ const panel=el('tagBookAiProvider'),status=el('tagBookAiProviderStatus'),messageBox=el('tagBookAiProviderMessage');
+ panel.hidden=aiEnabled;
+ const button=el('tagBookAi');
+ // Keep clickable even when not configured: a click now explains the problem.
+ // A real provider request is NEVER attempted until the backend says configured.
+ button.disabled=working;
+ button.title=aiEnabled?'TAG AI مهيأ؛ عدد الطلبات يعتمد على الحصة اليومية':'لم يتم تفعيل مزود Gemini على خدمة Render الرسمية. اضغط لعرض السبب.';
+ button.setAttribute('aria-describedby',aiEnabled?'tagBookDetails':'tagBookAiProviderMessage');
+ if(!aiEnabled){
+  status.textContent='بانتظار تفعيل Gemini';
+  messageBox.textContent='الكتاب محفوظ وجاهز، لكن خادم TAG لا يحتوي على مفتاح Gemini مهيأ. لإتاحة توليد الأسئلة بالذكاء الاصطناعي، يضيف مسؤول المنصة متغير GEMINI_API_KEY في Render ← quiznova-arena-online ← Environment. بعد الحفظ أعد فحص التفعيل هنا. لا تضع المفتاح في حقول الموقع أو ترسله في المحادثة.';
+ }
+}
+async function recheckAI(){
+ if(working)return;
+ const control=el('tagBookCheckAI');control.disabled=true;
+ try{
+  const data=await request('/api/game-lab/pro/books');
+  updateAiState(data);
+  notice(aiEnabled?'تم رصد تفعيل Gemini على الخادم. اختر صفحات الكتاب وابدأ توليد الأسئلة.':'لم يتم رصد تفعيل GEMINI_API_KEY على الخادم بعد. كتابك محفوظ ولا يحتاج إلى رفع جديد.',!aiEnabled);
+ }catch(error){notice('تعذر إعادة فحص AI: '+message(error.message),true)}
+ finally{control.disabled=false}
+}
 async function refreshBooks(preferred){
  const data=await request('/api/game-lab/pro/books');
- aiEnabled=!!data.aiEnabled;
+ updateAiState(data);
  books=Array.isArray(data.books)?data.books:[];
  const select=el('tagBookSelect'),previous=preferred||select.value;
  select.replaceChildren(makeOption('','اختر كتابًا من مكتبتك'));
  books.forEach(b=>select.append(makeOption(b.id,b.name+' — '+b.pageCount+' صفحة')));
  const found=books.find(b=>b.id===previous)||books[0]||null;
  select.value=found?found.id:'';
- el('tagBookAi').title=aiEnabled?'يستخدم TAG AI نص الصفحات المحددة فقط':'يحتاج تفعيل مفتاح Gemini على الخادم';
- el('tagBookAi').disabled=working||!aiEnabled;
  el('tagBookDetails').textContent=books.length
   ?'لديك '+books.length+' من 12 كتابًا محفوظًا. '+(aiEnabled?'TAG AI متاح وفق حصة الاستخدام.':'TAG AI غير متاح حاليًا؛ استخراج الأسئلة المباشر متاح دون مزود خارجي.')
   :'لم ترفع أي كتاب بعد. اختر كتابًا ثم اضغط رفع الكتاب. '+(aiEnabled?'':'الاستخراج المباشر متاح مجانًا.');
@@ -164,7 +187,7 @@ async function uploadFile(){
   uploadId='';
   await refreshBooks(done.book?.id);
   el('tagBookFile').value='';
-  notice('تم حفظ الكتاب في مكتبتك: '+done.book.name+' • '+done.book.pageCount+' صفحة. يمكنك اختيار الصفحات الآن.');
+  notice('تم حفظ الكتاب في مكتبتك: '+done.book.name+' • '+done.book.pageCount+' صفحة. '+(aiEnabled?'يمكنك توليد الأسئلة الآن.':'اكتمل حفظ الكتاب، لكن TAG AI يحتاج إعداد GEMINI_API_KEY من مسؤول المنصة. يمكنك استخراج أسئلة مباشرة دون AI.'),!aiEnabled);
  }catch(error){
   notice(message(error.message),true);
   if(uploadId){try{await request('/api/game-lab/pro/books/upload/cancel',{uploadId})}catch(_){}}
@@ -270,9 +293,16 @@ async function retryQuestion(index){
 }
 async function generate(mode){
  if(working)return;
+ // Always explain unavailable provider before validating the book selection;
+ // teachers may click AI while the library is still loading.
+ if(mode==='ai'&&!aiEnabled){
+  notice('تم حفظ كتبك إن كانت مرفوعة، لكن TAG AI لا يستطيع توليد أسئلة حتى يضيف مسؤول المنصة GEMINI_API_KEY في إعدادات Render ثم يعيد فحص حالة التفعيل. جرّب الاستخراج المباشر دون AI الآن.',true);
+  el('tagBookAiProvider').hidden=false;
+  el('tagBookAiProvider').scrollIntoView({behavior:'smooth',block:'nearest'});
+  return;
+ }
  let args;
  try{args=inputSettings(mode)}catch(error){return notice(message(error.message),true)}
- if(mode==='ai'&&!aiEnabled)return notice(message('ai_not_configured'),true);
  setBusy(true);clearResults();
  try{
   notice(mode==='ai'?'يحلل TAG AI مقاطع الدرس، ويولّد أسئلة متنوعة، ثم يدقق الاقتباسات والتكرار ويحاول إصلاح النواقص ضمن الحصة المتاحة...':'جارٍ استخراج الأسئلة والأجوبة المكتوبة صراحة في الكتاب...');
@@ -305,6 +335,7 @@ async function archiveSelected(){
 }
 el('tagBookUpload').addEventListener('click',()=>void uploadFile());
 el('tagBookAi').addEventListener('click',()=>void generate('ai'));
+el('tagBookCheckAI').addEventListener('click',()=>void recheckAI());
 el('tagBookExtract').addEventListener('click',()=>void generate('extract'));
 el('tagBookArchive').addEventListener('click',()=>void archiveSelected());
 el('tagBookSelect').addEventListener('change',()=>{void chooseBook(el('tagBookSelect').value).catch(e=>notice(message(e.message),true))});

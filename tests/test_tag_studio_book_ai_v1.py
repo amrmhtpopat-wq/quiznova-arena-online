@@ -14,7 +14,7 @@ class BookToQuizContract(unittest.TestCase):
   for name in ('tagBookFile','tagBookSelect','tagBookGrade','tagBookStart','tagBookEnd',
                'tagBookAi','tagBookExtract','tagBookAiConsent','tagBookResults','tagBookApply'):
    self.assertIn('id="'+name+'"',page,name)
-  self.assertIn("'/tag-studio-book-ai-v1.js?v=2'",auth)
+  self.assertIn("'/tag-studio-book-ai-v1.js?v=3'",auth)
   self.assertIn("script.src='/app.js?v=19.1'",auth)
   self.assertIn('window.TAG_ACCEPT_BOOK_ROWS=',builder)
   self.assertIn("q.reviewStatus='teacher_review_required'",builder)
@@ -28,6 +28,12 @@ class BookToQuizContract(unittest.TestCase):
   self.assertIn("aiEnabled=!!data.aiEnabled",client)
   self.assertIn('max="25"',page)
   self.assertIn("40_000_000",client)
+  self.assertIn('tagBookAiProvider',page)
+  self.assertIn('tagBookCheckAI',page)
+  self.assertIn('function recheckAI()',client)
+  self.assertIn('function updateAiState(data)',client)
+  self.assertIn("'gemini_key_missing'",read('game_lab_pro.py'))
+  self.assertNotIn("GEMINI_API_KEY' : key",read('game_lab_pro.py'))
   self.assertIn("upload/chunk",client)
   self.assertIn("role=\"status\"",page)
  def test_no_unverified_ai_citations_can_reach_ui(self):

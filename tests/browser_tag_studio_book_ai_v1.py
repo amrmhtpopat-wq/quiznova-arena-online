@@ -41,7 +41,18 @@ with sync_playwright() as pw:
   page.goto(BASE+'/studio.html#generator',wait_until='domcontentloaded',timeout=30000)
   page.wait_for_function("typeof window.TAG_ACCEPT_BOOK_ROWS==='function' && !!document.getElementById('tagBookAi')",timeout=22000)
   assert page.locator('#tagBookMaker').is_visible(),width
-  assert page.locator('#tagBookAi').is_disabled(),'AI provider unavailable locally; never simulate AI'
+  assert page.locator('#tagBookAi').is_enabled(),'Unconfigured AI button should explain activation steps when clicked'
+  assert page.locator('#tagBookAiProvider').is_visible()
+  assert 'GEMINI_API_KEY' in page.locator('#tagBookAiProviderMessage').inner_text()
+  page.locator('#tagBookAi').click()
+  assert 'GEMINI_API_KEY' in page.locator('#tagBookStatus').inner_text()
+  page.locator('#tagBookStart').fill('1')
+  page.locator('#tagBookEnd').fill('1')
+  page.locator('#tagBookCheckAI').click()
+  page.wait_for_function("!document.getElementById('tagBookCheckAI').disabled")
+  assert page.locator('#tagBookStart').input_value()=='1'
+  assert page.locator('#tagBookEnd').input_value()=='1'
+  assert page.locator('#tagBookAiProvider').is_visible()
   assert page.locator('#tagBookExtract').is_enabled()
   assert page.locator('#tagBookGrade option').count()==12
   if width==390:

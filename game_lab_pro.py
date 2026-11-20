@@ -819,8 +819,13 @@ def handle_get(h,u):
     tid=t['id']
     try:
         params=parse_qs(u.query)
-        if u.path.endswith('/books'):out={'books':books(tid),'aiEnabled':bool(os.environ.get('GEMINI_API_KEY')),
-            'aiProvider':'TAG AI (Google Free Tier)' if os.environ.get('GEMINI_API_KEY') else None}
+        if u.path.endswith('/books'):
+            configured=bool(os.environ.get('GEMINI_API_KEY','').strip())
+            # Never return the token or any part of it. Availability here means
+            # configured, not that the external provider's quota is guaranteed.
+            out={'books':books(tid),'aiEnabled':configured,
+                 'aiStatus':'configured' if configured else 'gemini_key_missing',
+                 'aiProvider':'TAG AI (Google)' if configured else None}
         elif u.path.endswith('/books/pages'):
             book=require_book(tid,(params.get('id') or [''])[0])
             out={'book':metadata(book),'pages':[{'p':x['p'],'preview':x['text'][:650]}
