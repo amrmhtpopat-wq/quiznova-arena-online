@@ -150,6 +150,14 @@
           <div class="tag-book-field"><label for="tagBookQuestionMix">أنواع الأسئلة</label><select id="tagBookQuestionMix"><option value="mixed">اختيار متعدد + صح وخطأ + قصيرة</option><option value="mcq">اختيار من متعدد فقط</option><option value="objective">اختيار من متعدد + صح وخطأ</option></select></div>
         </div>
         <p id="tagBookDetails" class="tag-book-details" role="status" aria-live="polite">يمكنك استخدام الكتب المرفوعة سابقًا في TAG LAB من حساب المعلم نفسه.</p>
+        <section id="tagBookAiProvider" class="tag-book-provider" role="status" aria-live="polite" hidden>
+          <div class="tag-book-provider-head"><strong>⚠️ TAG AI يحتاج تفعيلًا على خادم المنصة</strong><span id="tagBookAiProviderStatus">غير مهيأ</span></div>
+          <p id="tagBookAiProviderMessage">تم حفظ كتبك بنجاح. التوليد الذكي يتطلب إضافة GEMINI_API_KEY إلى إعدادات Environment في خدمة Render الرسمية. لا تضع مفتاح API في الكتاب أو حقول الموقع.</p>
+          <div class="tag-book-provider-actions">
+            <button type="button" id="tagBookCheckAI" class="btn btn-soft">↻ إعادة فحص تفعيل TAG AI</button>
+            <span>يمكنك استخدام «استخراج أسئلة مباشرة دون AI» الآن.</span>
+          </div>
+        </section>
         <details class="tag-book-pages" id="tagBookPagesInfo"><summary>معاينة الصفحات المستخرجة قبل توليد الأسئلة</summary><div id="tagBookPagesPreview"></div></details>
         <label class="tag-book-consent"><input type="checkbox" id="tagBookAiConsent"><span>أوافق على إرسال نص الصفحات المحددة فقط إلى مزود الذكاء الاصطناعي عند الضغط على «توليد بـ TAG AI». قد يستخدم TAG AI عدة طلبات محدودة لتغطية الدرس وإصلاح الأسئلة غير الموثوقة، وكل طلب يحتسب من الحصة اليومية. لا تُرسل معلومات الطلاب أو بطاقاتهم.</span></label>
         <div class="tag-book-actions">
@@ -339,7 +347,7 @@
 <script src="media_library.js?v=13.1"></script>
 <script src="/booyah-countdown-v121.js?v=13.1"></script>
 <link rel="stylesheet" href="/tag-jordan-library-v1.css?v=1">
-<link rel="stylesheet" href="/tag-studio-book-ai-v1.css?v=2">
-<script src="studio-auth.js?v=13.4"></script>
+<link rel="stylesheet" href="/tag-studio-book-ai-v1.css?v=3">
+<script src="studio-auth.js?v=13.5"></script>
 </body>
 </html>
