@@ -1,0 +1,114 @@
+/* TAG Jordan curriculum library V1: only studio library and bank controls. */
+body.v105-studio .jordan-curriculum-library{
+ background:linear-gradient(150deg,#0a2d57,#10365e 58%,#153c5f)!important;
+ border:1px solid #397da2!important;border-radius:20px!important;
+ box-shadow:0 9px 27px #00152b36!important;
+ color:#eaf8ff!important
+}
+body.v105-studio .jordan-curriculum-library .panel-head{margin-bottom:12px!important}
+body.v105-studio .jordan-curriculum-library .panel-head :is(h3,p){
+ color:#effdff!important;-webkit-text-fill-color:#effdff!important
+}
+body.v105-studio .jordan-curriculum-library .panel-head p{
+ color:#bde4f2!important;-webkit-text-fill-color:#bde4f2!important
+}
+body.v105-studio .jordan-library-meta{
+ display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:12px 0 15px
+}
+body.v105-studio .jordan-library-meta span{
+ padding:6px 11px;border:1px solid #65b7c588;border-radius:999px;
+ font:750 12px/1.5 Cairo,Tahoma,Arial,sans-serif;
+ background:#07537782;color:#eaffff
+}
+body.v105-studio .jordan-grade-grid{
+ display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:11px
+}
+body.v105-studio .jordan-grade-card{
+ display:flex;flex-direction:column;gap:8px;min-width:0;
+ padding:14px;border-radius:15px;background:#0a2c4e;
+ border:1px solid #4f9ab080;box-shadow:0 5px 15px #001c2726;
+}
+body.v105-studio .jordan-grade-card.has-questions{
+ border-color:#79c7bd99;background:linear-gradient(145deg,#0a4566,#0b2d50)
+}
+body.v105-studio .jordan-grade-icon{font-size:22px;line-height:1}
+body.v105-studio .jordan-grade-card h4{
+ font:900 16px/1.5 Cairo,Tahoma,sans-serif!important;
+ color:#f0fbff!important;-webkit-text-fill-color:#f0fbff!important;margin:0!important
+}
+body.v105-studio .jordan-grade-card p{
+ font:650 12px/1.6 Cairo,Tahoma,sans-serif!important;color:#b9dbed!important;
+ margin:0 0 4px!important;min-height:35px
+}
+body.v105-studio .jordan-grade-card button{
+ display:flex;justify-content:center;align-items:center;
+ min-height:42px;min-width:0;width:100%;margin:auto 0 0;padding:8px 10px;
+ background:#197562;color:#fff;border:1px solid #80d6bc;
+ border-radius:10px;font:800 12px Cairo,Tahoma,sans-serif;cursor:pointer
+}
+body.v105-studio .jordan-grade-card button:disabled{
+ cursor:default;color:#a1b8c8;background:#24425b;border-color:#567080
+}
+body.v105-studio .jordan-source-header{
+ display:flex;align-items:center;flex-wrap:wrap;gap:8px 13px;
+ margin:0 0 8px;padding:12px 15px;background:#0d3b5b;
+ border:1px solid #53a5b6aa;border-radius:13px;
+ font:750 12px/1.7 Cairo,Tahoma,sans-serif;color:#dcf4fa
+}
+body.v105-studio .jordan-source-header strong{font-size:15px;color:#aff0de}
+body.v105-studio .jordan-source-header a{
+ margin-inline-start:auto;color:#d3eeff;text-decoration:underline;
+ text-underline-offset:3px
+}
+body.v105-studio .jordan-review-note{
+ color:#365572!important;-webkit-text-fill-color:#365572!important;
+ font-size:12px!important;line-height:1.75!important;
+ border-inline-start:3px solid #b99736;padding:6px 11px;
+ background:#fff4d8!important;border-radius:6px
+}
+body.v105-studio #view-bank .bank-toolbar{
+ display:grid!important;
+ grid-template-columns:repeat(auto-fit,minmax(min(100%,170px),1fr))!important;
+ gap:9px!important
+}
+body.v105-studio #view-bank .bank-toolbar :is(input,select){
+ min-width:0;width:100%;min-height:42px;box-sizing:border-box;
+ color:#153c59!important;background:#f3faff!important;
+ border:1px solid #a0c0d4!important;border-radius:10px;
+ font:700 12px/1.5 Cairo,Tahoma,sans-serif!important
+}
+body.v105-studio .jordan-bank-item{
+ display:flex;flex-direction:column;min-width:0;gap:8px;
+}
+body.v105-studio .jordan-bank-item h4{
+ margin:4px 0!important;line-height:1.6!important;overflow-wrap:anywhere
+}
+body.v105-studio .jordan-bank-item p{margin:0!important;line-height:1.5}
+body.v105-studio .jordan-bank-item .card-actions{margin-top:auto!important}
+body.v105-studio .jordan-needs-review{
+ display:inline-flex;align-items:center;border-radius:999px;
+ background:#fff0d4;border:1px solid #e1b96a;
+ color:#774b14;padding:4px 7px;font:800 10px Cairo,Tahoma,sans-serif;
+}
+body.v105-studio .jordan-source-label{
+ display:block;color:#42657d!important;font-size:11px;line-height:1.6;
+ overflow-wrap:anywhere
+}
+body.v105-studio .jordan-more{
+ display:block;margin:16px auto 4px!important;max-width:340px;width:100%;
+ min-height:43px;border-radius:10px
+}
+body.v105-studio .jordan-more[hidden]{display:none!important}
+body.v105-studio .jordan-no-questions{
+ padding:15px;border:1px dashed #abc6da;border-radius:12px;
+ background:#eff8fe;color:#214a68
+}
+@media (max-width:650px){
+ body.v105-studio .jordan-grade-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px}
+ body.v105-studio .jordan-grade-card{padding:11px;gap:6px}
+ body.v105-studio .jordan-grade-card h4{font-size:14px!important}
+ body.v105-studio .jordan-grade-card p{font-size:11px!important}
+ body.v105-studio .jordan-source-header a{margin-inline-start:0}
+ body.v105-studio #view-bank .bank-toolbar{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important}
+ body.v105-studio #view-bank .bank-toolbar #bankSearch{grid-column:1/-1}
+}
