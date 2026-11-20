@@ -28,6 +28,12 @@ class BookToQuizContract(unittest.TestCase):
   self.assertIn("aiEnabled=!!data.aiEnabled",client)
   self.assertIn('max="25"',page)
   self.assertIn("40_000_000",client)
+  self.assertIn('tagBookAiProvider',page)
+  self.assertIn('tagBookCheckAI',page)
+  self.assertIn('function recheckAI()',client)
+  self.assertIn('function updateAiState(data)',client)
+  self.assertIn("'gemini_key_missing'",read('game_lab_pro.py'))
+  self.assertNotIn("GEMINI_API_KEY' : key",read('game_lab_pro.py'))
   self.assertIn("upload/chunk",client)
   self.assertIn("role=\"status\"",page)
  def test_no_unverified_ai_citations_can_reach_ui(self):
