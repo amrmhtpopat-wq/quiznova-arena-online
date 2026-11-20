@@ -447,6 +447,11 @@ def ai_generate(tid,data):
        'recall':'تذكر المعلومات والتعريفات والأمثلة',
        'understanding':'تفسير المفاهيم والأسباب والمقارنة',
        'application':'تطبيق ما ورد في الدرس على مواقف دون إضافة حقائق جديدة'}[focus]
+    question_mix=ident(data.get('questionMix') or 'mixed')
+    if question_mix not in ('mixed','mcq','objective'):question_mix='mixed'
+    types_label={'mixed':'نحو 50% اختيار من متعدد و25% صح وخطأ و25% قصيرة',
+       'mcq':'جميع الأسئلة اختيار من متعدد mcq فقط',
+       'objective':'اختيار من متعدد mcq وصح وخطأ true_false فقط'}[question_mix]
     grade=ident(data.get('grade'))[:50]
     subject=ident(data.get('subject'))[:60]
     # Pin an officially free-tier-eligible model; do not allow paid model override.
@@ -487,7 +492,8 @@ def ai_generate(tid,data):
     exclusions=('\nلا تكرر أو تعيد صياغة الأسئلة الآتية: '+json.dumps(excluded,ensure_ascii=False)
                 if excluded else '')
     user_prompt=('المبحث: '+subject+'، الصف: '+grade+'؛ المستوى: '+difficulty_label+'؛ التركيز: '+focus_label+
-        '؛ أنشئ حتى '+str(maximum)+' سؤالًا. نوّع أنواع الأسئلة والصعوبة، ووازن بين مقاطع الدرس: '+section_guide+
+        '؛ أنشئ حتى '+str(maximum)+' سؤالًا. أنواع الأسئلة المطلوبة: '+types_label+
+        '؛ نوّع الصعوبة، ووازن بين مقاطع الدرس: '+section_guide+
         '. استخرج الأسئلة من كل مقطع بقدر ما يدعمه النص، لا من أول صفحة فقط. '
         'احرص على 4 خيارات دقيقة ومختلفة لكل اختيار من متعدد. '
         'يجب أن يكون sourceQuote اقتباسًا حرفيًا متصلًا من نفس الصفحة المذكورة، لا إعادة صياغة؛ '
