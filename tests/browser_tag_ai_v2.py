@@ -88,6 +88,7 @@ with sync_playwright() as play:
   assert 'يجب الموافقة' in page.locator('#tagBookStatus').inner_text()
   assert not any(x.get('kind')=='generate' for x in received if isinstance(x,dict))
   page.locator('#tagBookAiConsent').check()
+  saved_before=page.evaluate('DB.quizzes.length')
   page.locator('#tagBookAi').click()
   page.locator('.tag-book-question').first.wait_for(state='visible',timeout=7000)
   assert page.locator('.tag-book-question').count()==3
@@ -95,7 +96,7 @@ with sync_playwright() as play:
   stats=page.locator('#tagBookEngineStats').inner_text()
   for expected in ('المطلوب 4','المقبول 3','المستبعد 3','صفحات مغطاة 3 من 4','طلبات AI المستخدمة 2'):
    assert expected in stats,(width,expected,stats)
-  assert page.evaluate('DB.quizzes.length')==0,'Preview must not auto-publish'
+  assert page.evaluate('DB.quizzes.length')==saved_before,'Preview must not auto-publish'
   page.locator('.tag-book-retry').first.click()
   page.wait_for_function("document.querySelector('.tag-book-question strong').textContent.includes('قواعد الخصوصية')",timeout=7000)
   retries=[x for x in received if isinstance(x,dict) and x.get('kind')=='retry']
@@ -104,7 +105,7 @@ with sync_playwright() as play:
   assert sent['retryPage']==2 and sent['retryQuestion']==rows[0]['q']
   assert rows[1]['q'] in sent['excludeQuestions']
   assert page.locator('.tag-book-question').count()==3,'Retry must not discard the other questions'
-  assert page.evaluate('DB.quizzes.length')==0
+  assert page.evaluate('DB.quizzes.length')==saved_before
   assert page.locator('#tagBookResults').is_visible()
   ctx.close()
  browser.close()
