@@ -46,6 +46,11 @@ on:
       - studio.html
       - tag-studio-book-ai-v1.css
       - tag-studio-book-ai-v1.js
+      - game_lab_pro.py
+      - game_lab_ai_quality.py
+      - game_lab_ai_v2.py
+      - tests/test_game_lab_ai_v2.py
+      - tests/browser_tag_ai_v2.py
       - tests/browser_tag_studio_book_ai_v1.py
       - tag-jordan-curriculum-v1.js
       - tag-jordan-library-v1.css
@@ -99,6 +104,8 @@ jobs:
           python -m playwright install chromium
       - name: TAG Mobile V2 complete 23-page viewport and LAB browser-handoff QA
         run: python tests/browser_tag_mobile_v2.py
+      - name: TAG AI Book Engine V2 regeneration and coverage browser QA
+        run: python tests/browser_tag_ai_v2.py
       - name: TAG book upload and source-grounded question draft browser QA
         run: python tests/browser_tag_studio_book_ai_v1.py
       - name: Jordan curriculum library subject-scoped browser QA

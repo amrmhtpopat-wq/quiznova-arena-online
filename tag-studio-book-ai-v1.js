@@ -182,6 +182,7 @@ function inputSettings(mode){
   bookId:book.id,startPage:start,endPage:end,count,
   grade:el('tagBookGrade').value,subject:window.QN9_TEACHER?.subject||'عام',
   difficulty:el('tagBookDifficulty').value,focus:el('tagBookFocus').value,
+  questionMix:el('tagBookQuestionMix').value,
   consent:mode==='ai'
  };
 }
@@ -217,13 +218,55 @@ function renderQuestions(payload,mode){
   const quote=element('blockquote','','«'+String(q.sourceQuote||'')+'»');
   details.append(summary,quote);card.append(details);
   const note=element('small','',q.questionType==='mcq'?'اختيار من متعدد':q.questionType==='true_false'?'صح أو خطأ':'إجابة قصيرة');
-  card.append(note);root.append(card);
+  card.append(note);
+  if(mode==='ai'&&aiEnabled){
+   const retry=element('button','tag-book-retry','↻ إعادة توليد هذا السؤال');
+   retry.type='button';retry.setAttribute('aria-label','إعادة توليد سؤال '+(i+1)+' من صفحة المصدر');
+   retry.addEventListener('click',()=>void retryQuestion(i));
+   card.append(retry);
+  }
+  root.append(card);
  });
  el('tagBookResults').hidden=!resultRows.length;
  const hint=el('tagBookResultHint');
  hint.textContent=payload.warning||'هذه مسودات مرتبطة بصفحات المصدر؛ راجع الصياغة والإجابة قبل الاعتماد.';
+ const stats=payload.generationStats,statsBox=el('tagBookEngineStats');
+ if(stats){
+  const coverage=stats.coverage||{};
+  statsBox.textContent='TAG AI V2 • المطلوب '+stats.requested+' • المقبول '+resultRows.length+
+    ' • المستبعد '+(stats.rejected||0)+' • مقاطع الدرس '+(stats.sections||1)+
+    ' • صفحات مغطاة '+(coverage.coveredPages||0)+' من '+(coverage.extractablePages||payload.sourcePages)+
+    ' • طلبات AI المستخدمة '+(stats.providerCalls||1)+
+    '. مطابقة المقتطف لا تغني عن مراجعة صحة السؤال والإجابة.';
+ }else statsBox.textContent='مصادر مستخرجة من الكتاب. راجع الإجابة وكل سؤال قبل الاعتماد.';
  if(resultRows.length)notice('ظهرت '+resultRows.length+' أسئلة من '+payload.sourcePages+' صفحات. حدد المناسب ثم أضفه إلى محرر الاختبار.');
  else notice(payload.warning||'لم يُعثر على أسئلة موثقة. جرّب نطاق صفحات أكثر وضوحًا.',true);
+}
+async function retryQuestion(index){
+ if(working||!aiEnabled||!selectedBook)return;
+ const target=resultRows[index];
+ if(!target||!target.sourcePage)return;
+ let args;
+ try{args=inputSettings('ai')}catch(error){return notice(message(error.message),true)}
+ args.retryQuestion=String(target.q||'');
+ args.retryPage=Number(target.sourcePage);
+ args.excludeQuestions=resultRows.map(q=>String(q.q||'')).filter(Boolean).slice(0,25);
+ setBusy(true);
+ try{
+  notice('جارٍ إعادة صياغة السؤال من الصفحة '+args.retryPage+' والتحقق من الاقتباس...');
+  const result=await request('/api/game-lab/pro/books/ai/retry',args);
+  if(!Array.isArray(result.rows)||!result.rows.length){
+   return notice(result.warning||'لم يُعثر على بديل موثق؛ بقي السؤال القديم كما هو.',true);
+  }
+  const checked=Array.from(panel.querySelectorAll('.tag-book-pick:checked'),n=>Number(n.value));
+  const newRows=resultRows.slice();
+  newRows[index]=result.rows[0];
+  renderQuestions({rows:newRows,warning:result.warning,sourcePages:result.sourcePages,
+                   generationStats:result.generationStats},'ai');
+  checked.forEach(i=>{const input=panel.querySelector('.tag-book-pick[value="'+i+'"]');if(input)input.checked=true;});
+  notice('تم استبدال السؤال '+(index+1)+' بسؤال موثق المصدر. راجع الإجابة والخيارات.');
+ }catch(error){notice(message(error.message),true)}
+ finally{setBusy(false)}
 }
 async function generate(mode){
  if(working)return;
@@ -232,7 +275,7 @@ async function generate(mode){
  if(mode==='ai'&&!aiEnabled)return notice(message('ai_not_configured'),true);
  setBusy(true);clearResults();
  try{
-  notice(mode==='ai'?'يقترح TAG AI أسئلة من صفحات الكتاب المختارة مع توثيق المقتطفات...':'جارٍ استخراج الأسئلة والأجوبة المكتوبة صراحة في الكتاب...');
+  notice(mode==='ai'?'يحلل TAG AI مقاطع الدرس، ويولّد أسئلة متنوعة، ثم يدقق الاقتباسات والتكرار ويحاول إصلاح النواقص ضمن الحصة المتاحة...':'جارٍ استخراج الأسئلة والأجوبة المكتوبة صراحة في الكتاب...');
   const result=await request('/api/game-lab/pro/books/'+(mode==='ai'?'ai':'draft'),args);
   renderQuestions(result,mode);
  }catch(error){notice(message(error.message),true)}

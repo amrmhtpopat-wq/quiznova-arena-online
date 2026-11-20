@@ -147,10 +147,11 @@
           <div class="tag-book-field"><label for="tagBookCount">عدد الأسئلة</label><input id="tagBookCount" type="number" min="4" max="25" value="12"></div>
           <div class="tag-book-field"><label for="tagBookDifficulty">المستوى</label><select id="tagBookDifficulty"><option value="balanced">متنوع</option><option value="easy">سهل</option><option value="advanced">متقدم</option></select></div>
           <div class="tag-book-field"><label for="tagBookFocus">التركيز</label><select id="tagBookFocus"><option value="mixed">متنوع</option><option value="recall">تذكر المصطلحات</option><option value="understanding">الفهم والتفسير</option><option value="application">التطبيق</option></select></div>
+          <div class="tag-book-field"><label for="tagBookQuestionMix">أنواع الأسئلة</label><select id="tagBookQuestionMix"><option value="mixed">اختيار متعدد + صح وخطأ + قصيرة</option><option value="mcq">اختيار من متعدد فقط</option><option value="objective">اختيار من متعدد + صح وخطأ</option></select></div>
         </div>
         <p id="tagBookDetails" class="tag-book-details" role="status" aria-live="polite">يمكنك استخدام الكتب المرفوعة سابقًا في TAG LAB من حساب المعلم نفسه.</p>
         <details class="tag-book-pages" id="tagBookPagesInfo"><summary>معاينة الصفحات المستخرجة قبل توليد الأسئلة</summary><div id="tagBookPagesPreview"></div></details>
-        <label class="tag-book-consent"><input type="checkbox" id="tagBookAiConsent"><span>أوافق على إرسال نص الصفحات المحددة فقط إلى مزود الذكاء الاصطناعي عند الضغط على «توليد بـ TAG AI». لا تُرسل معلومات الطلاب أو بطاقاتهم.</span></label>
+        <label class="tag-book-consent"><input type="checkbox" id="tagBookAiConsent"><span>أوافق على إرسال نص الصفحات المحددة فقط إلى مزود الذكاء الاصطناعي عند الضغط على «توليد بـ TAG AI». قد يستخدم TAG AI عدة طلبات محدودة لتغطية الدرس وإصلاح الأسئلة غير الموثوقة، وكل طلب يحتسب من الحصة اليومية. لا تُرسل معلومات الطلاب أو بطاقاتهم.</span></label>
         <div class="tag-book-actions">
           <button type="button" id="tagBookUpload" class="btn btn-secondary">⬆ رفع الكتاب</button>
           <button type="button" id="tagBookAi" class="btn btn-primary">✦ توليد الأسئلة بـ TAG AI</button>
@@ -159,7 +160,7 @@
         </div>
         <div id="tagBookStatus" class="tag-book-status" role="status" aria-live="polite"></div>
         <section class="tag-book-results" id="tagBookResults" hidden aria-label="الأسئلة المقترحة من الكتاب">
-          <div class="tag-book-result-head"><div><h4>أسئلة الكتاب المقترحة</h4><p id="tagBookResultHint">راجع الإجابات ومقتطفات الكتاب قبل الاعتماد.</p></div>
+          <div class="tag-book-result-head"><div><h4>أسئلة الكتاب المقترحة</h4><p id="tagBookResultHint">راجع الإجابات ومقتطفات الكتاب قبل الاعتماد.</p><p id="tagBookEngineStats" class="tag-book-engine-stats" aria-live="polite"></p></div>
           <button type="button" id="tagBookToggleAll" class="btn btn-soft">تحديد الكل</button></div>
           <div id="tagBookQuestions"></div>
           <button type="button" class="btn btn-primary" id="tagBookApply">إضافة الأسئلة المحددة إلى محرر الاختبار ←</button>
@@ -338,7 +339,7 @@
 <script src="media_library.js?v=13.1"></script>
 <script src="/booyah-countdown-v121.js?v=13.1"></script>
 <link rel="stylesheet" href="/tag-jordan-library-v1.css?v=1">
-<link rel="stylesheet" href="/tag-studio-book-ai-v1.css?v=1">
-<script src="studio-auth.js?v=13.3"></script>
+<link rel="stylesheet" href="/tag-studio-book-ai-v1.css?v=2">
+<script src="studio-auth.js?v=13.4"></script>
 </body>
 </html>
