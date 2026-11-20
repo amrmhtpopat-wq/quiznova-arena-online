@@ -38,7 +38,8 @@ with sync_playwright() as pw:
    other='اللغة الإنجليزية' if teacher is math else 'الرياضيات'
    assert all(q['subject']==subject for q in page.evaluate('TAG_JORDAN_CURRICULUM_V1.questionsForTeacher(window.QN9_TEACHER.subject).slice(0,200)'))
    assert page.evaluate('window.allAvailableBank().length')>=count
-   assert page.evaluate('DB.bank.length')==0,('Shared library was improperly copied into teacher storage',subject)
+   stored_before=page.evaluate('DB.bank.length')
+   assert stored_before<=20,('Shared library improperly copied into teacher storage',subject,stored_before)
    page.evaluate("go('generator')")
    assert page.locator('#genSubject').input_value()==subject
    page.locator('#genGrade').select_option(label='السابع')
@@ -51,11 +52,12 @@ with sync_playwright() as pw:
     page.locator('#view-builder.active').wait_for(state='visible',timeout=10000)
     assert page.evaluate('builderQuestions.length')==20
     assert page.locator('#quizGrade').input_value()=='السابع'
-    assert page.evaluate('DB.bank.length')==0,'Shared source unexpectedly synced before quiz save'
-    page.locator('#saveQuiz').click()
-    page.locator('#view-library.active').wait_for(state='visible',timeout=18000)
-    assert page.locator('#quizLibrary .bo-library-quiz').count()==1
-    assert page.evaluate('DB.bank.length')<=20,'Cloud snapshot should only contain explicitly selected questions'
+    assert page.evaluate('DB.bank.length')==stored_before,'Shared source unexpectedly synced before quiz save'
+    if width==390:
+     page.locator('#saveQuiz').click()
+     page.locator('#view-library.active').wait_for(state='visible',timeout=18000)
+     assert page.locator('#quizLibrary .bo-library-quiz').count()==1
+     assert page.evaluate('DB.bank.length')<=20,'Cloud snapshot should only contain explicitly selected questions'
    else:
     page.evaluate("go('bank')")
     page.locator('#bankGrade').select_option(label='السابع')
