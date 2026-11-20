@@ -198,7 +198,7 @@ function renderGeneratorLessons(){
  $('#genLesson').innerHTML='<option value="all">كل الدروس والمهارات</option>'+lessons.map(t=>`<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
  if(lessons.includes(cur))$('#genLesson').value=cur;
 }
-function selectedGenTypes(){return $('#genTypes input:checked').map(x=>x.value)}
+function selectedGenTypes(){return Array.from(document.querySelectorAll('#genTypes input:checked'),x=>x.value)}
 function generatorPool(){
  const u=$('#genUnit').value,l=$('#genLesson').value,d=$('#genDifficulty').value,types=selectedGenTypes();
  return generatorBase().filter(q=>(u==='all'||q.unit===u)&&(l==='all'||lessonOf(q)===l)&&(d==='mixed'||q.difficulty===d)&&types.includes(q.type));
