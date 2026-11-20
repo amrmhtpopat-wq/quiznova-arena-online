@@ -84,9 +84,10 @@ with sync_playwright() as play:
   page.locator('#tagBookEnd').fill('4')
   page.locator('#tagBookCount').fill('4')
   page.locator('#tagBookQuestionMix').select_option('mcq')
+  previous_calls=len([x for x in received if isinstance(x,dict) and x.get('kind')=='generate'])
   page.locator('#tagBookAi').click()
   assert 'يجب الموافقة' in page.locator('#tagBookStatus').inner_text()
-  assert not any(x.get('kind')=='generate' for x in received if isinstance(x,dict))
+  assert len([x for x in received if isinstance(x,dict) and x.get('kind')=='generate'])==previous_calls
   page.locator('#tagBookAiConsent').check()
   saved_before=page.evaluate('DB.quizzes.length')
   page.locator('#tagBookAi').click()
