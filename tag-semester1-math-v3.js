@@ -28,16 +28,19 @@ function expr(l,n,stem,ans,wrong){return make(l,n,stem,ans,wrong)}
 function mode(l){
  var [_,g,u,k]=l.id.split("-").map((x,i)=>i?Number(x):x);
  var m={
- "0-2":"decimalplace,deccompare,percent,fraccompare,decprod,decprod,estimate,fracprod,fracdiv",
- "0-3":"coord,algebra,relation,equality,wordexpr,linear",
- "1-1":"rational,abs,decimal,fraccompare,fracsum,fracprod,reverse",
+ "0-1":"abs,intcompare,intsum,intsub,intprod",
+ "0-2":"fracsum,mixedsum,mixedprod,fracdiv,mixeddiv",
+ "0-3":"decprod,decdiv,measurement,smaller",
+ "0-4":"coord,translate,reflect,circleparts,construction,drawtriangle",
+ 
+ "1-1":"rational,decimal,fraccompare,fracsum,fracprod,reverse",
  "1-2":"exponent,order,algebra,addexpr,monomial,guess",
  "1-3":"linear,fracperiod,seq,linearfunc,linearfunc",
- "1-4":"angles,parallel,triangle,polygon,translate,rotate",
- "2-1":"real,properties,exponent,scientific,roots",
- "2-2":"seq,algebra,monomial,polyprod,factor,group",
- "2-3":"linearfunc,linearfunc,linearfunc,linearprops",
- "2-4":"mean,median,modevalue,statsrel,statschange",
+ "1-4":"angles,parallel,triangle,polygon,rotate",
+ "2-1":"roots,radicals,pythagoras,real,radicalexponent,radicalmul,scientific,percent",
+ "2-2":"specialproduct,factor,quadraticfactor,diffsquare,fracexpr",
+ "2-3":"standardline,linearprops,linereq,pointslop,perpendicular",
+ "2-4":"congruenceSSS,congruenceASA,isosceles",
  "3-1":"diffsquare,quadraticfactor,sumcubes,diffcubes,gcd,lcm,fracexpr,fraceq",
  "3-2":"interval,ineqprop,linearineq,compoundineq",
  "3-3":"quadgraph,graphroots,graphroots,quadraticfactor,completing,quadraticformula",
@@ -54,6 +57,32 @@ function question(l,n){
  var f=function(s,ans,wr){return make(l,n,s,ans,wr)},v=function(s,ans,step){return numeric(l,n,s,ans,step)};
  var v1=n+2,v2=3+n%8;
  switch(m){
+ case "intcompare":return f("قارن بين العددين الصحيحين −"+a+" و −"+(a+b)+"؛ أيهما أكبر؟","−"+a,["−"+(a+b),String(a),"−"+(a+1),String(a+b)]);
+ case "intsum":return v("احسب: (−"+a+") + "+b+" .",b-a);
+ case "intsub":return v("احسب: "+a+" − (−"+b+").",a+b);
+ case "intprod":return v("احسب: (−"+a+") × (−"+b+").",a*b,b);
+ case "mixedsum":return v("احسب: ("+a+" + 1/3) + ("+b+" + 2/3)؛ ما الناتج كعدد صحيح؟",a+b+1);
+ case "mixedprod":return v("اضرب العدد الكسري ("+a+" + 1/2) في 2؛ ما الناتج؟",2*a+1);
+ case "mixeddiv":return v("اقسم العدد الكسري ("+a+" + 1/2) على 1/2؛ ما الناتج؟",2*a+1);
+ case "decdiv":{var d=(a*b/100);return v("احسب: "+d.toFixed(2)+" ÷ "+(b/10).toFixed(1)+" .",a/10,0.1)}
+ case "measurement":return v("طول حبل "+(a/10).toFixed(1)+" متر؛ ما طوله بالسنتيمترات؟",10*a,10);
+ case "smaller":return v("قسّم "+(4*a)+" قطعة بالتساوي على "+a+" مجموعات؛ كم قطعة في كل مجموعة؟",4);
+ case "reflect":return f("انعكاس النقطة ("+a+"، "+b+") في محور y يعطي أي إحداثيين؟","(−"+a+"، "+b+")",["("+a+"، −"+b+")","(−"+b+"، "+a+")","("+a+"، "+b+")","("+b+"، −"+a+")"]);
+ case "circleparts":return v("دائرة نصف قطرها "+a+" سم. ما طول قطرها بالسنتيمتر؟",2*a,2);
+ case "construction":return v("عند إنشاء العمود المنصف لقطعة طولها "+(2*a)+" سم، ما طول كل نصف من القطعة؟",a);
+ case "drawtriangle":return v("ارسم مثلثًا أطوال أضلاعه "+a+" سم و "+(a+1)+" سم و "+(a+2)+" سم. ما محيطه؟",3*a+3,3);
+ case "radicals":return f("بسّط الجذر الصمّاء √("+(2*a*a)+").",a+"√2",[(a+1)+"√2",a+"√3",(2*a)+"√2",a+"√4"]);
+ case "pythagoras":return v("مثلث قائم ضلعاه القائمان "+(3*a)+" و "+(4*a)+" سم. ما طول الوتر؟",5*a,a);
+ case "radicalexponent":return v("إذا كان a موجبًا وقيمته "+a+"، ما قيمة (a²)^(1/2)؟",a);
+ case "radicalmul":return v("ما قيمة "+a+"^(1/2) × "+a+"^(1/2) للأعداد الموجبة؟",a);
+ case "specialproduct":return f("انشر مربع المقدار (x + "+a+")².","x² + "+2*a+"x + "+a*a,["x² + "+a+"x + "+a*a,"x² − "+2*a+"x + "+a*a,"x² + "+2*a+"x − "+a*a,"x² + "+a*a]);
+ case "standardline":return v("المستقيم "+a+"x + "+b+"y = "+(b*c)+". ما المقطع الصادي عندما x=0؟",c);
+ case "linereq":return f("ما معادلة مستقيم ميله "+a+" ومقطعه الصادي "+b+"؟","y = "+a+"x + "+b,["y = "+b+"x + "+a,"y = "+a+"x − "+b,"y = −"+a+"x + "+b,"x = "+a+"y + "+b]);
+ case "pointslop":return f("يمر مستقيم بالنقطة (0، "+b+") وميله "+a+". ما معادلته؟","y = "+a+"x + "+b,["y = "+b+"x + "+a,"y = "+a+"x − "+b,"y = "+(a+1)+"x + "+b,"y = −"+a+"x + "+b]);
+ case "perpendicular":return f("ما ميل مستقيم عمودي على مستقيم ميله "+a+"؟","−1/"+a,["1/"+a,"−"+a,String(a),"1/"+(a+1)]);
+ case "congruenceSSS":return f("مثلث أول أطوال أضلاعه "+a+" و "+(a+1)+" و "+(a+2)+" سم، ومثلث آخر له الأطوال نفسها. ما قاعدة التطابق المناسبة؟","SSS",["ASA","AAS","AA","لا يوجد تطابق"]);
+ case "congruenceASA":return f("تساوت زاويتان في مثلثين (إحداهما "+(30+n)+"°) والضلع المحصور بينهما. أي حالة تثبت التطابق؟","ASA",["SSS","AA","SSA","لا توجد حالة"]);
+ case "isosceles":return v("مثلث متطابق الضلعين زاوية رأسه "+(20+2*n)+"°. ما قياس كل زاوية من زاويتي القاعدة؟",80-n);
  case "decimalplace": {var d=1+n%9,t=String(n+12)+"."+String(1000+d);return f("في العدد العشري "+t+" ما قيمة رقم منزلة جزء من عشرة آلاف؟",frac(d,10000),[frac(d,1000),frac(d,100),frac(d,10),"1/10000"])}
  case "deccompare": {var t=(n+5)/100,h=(n+6+(n%2?4:-4))/100,ans=t>h?"العدد الأول أكبر":"العدد الثاني أكبر";return f("قارن: "+t.toFixed(2)+" و "+h.toFixed(2)+"؛ أي عبارة صحيحة؟",ans,["العدد الأول أكبر","العدد الثاني أكبر","العددان متساويان","المقارنة غير ممكنة"])}
  case "percent":return f("حوّل الكسر "+a+"/100 إلى نسبة مئوية.",a+"%",[(a+1)+"%",(a*10)+"%",(a/10)+"%"]);
