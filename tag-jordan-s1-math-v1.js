@@ -10,27 +10,27 @@ const FAMILIES={
 ['absolute','compare','add_signed','subtract_signed','multiply_signed'],
 ['fraction_add','fraction_mixed','fraction_multiply','fraction_divide','fraction_divide'],
 ['decimal_multiply','decimal_divide','decimal_context','word_arithmetic'],
-['coordinate','translate','reflect','circle_parts','angles','triangle_construction']],
+['coordinate','translate','reflect','circle_parts','geometric_construct','triangle_construction']],
 'math-7':[
 ['rational','rational_decimal','compare_fraction','fraction_add','fraction_multiply','word_arithmetic'],
 ['powers','order','algebra','algebra_add','distribute','word_arithmetic'],
 ['linear_solve','repeating','sequences','function','linear_graph'],
 ['angles','parallel_angles','triangle_angles','polygon_angles','rotate']],
 'math-8':[
-['sqrt','sqrt','pythagoras','real_numbers','powers','powers','scientific','percent'],
+['sqrt','sqrt_irrational','pythagoras','real_numbers','fractional_power','fractional_multiply','scientific','percent'],
 ['expand','common_factor','factor_trinomial','difference_squares','algebra_fraction'],
 ['linear_standard','slope','linear_graph','point_slope','parallel_lines'],
-['congruence','congruence','isosceles']],
+['congruence','congruence_angles','isosceles']],
 'math-9':[
 ['interval','compound_inequality','absolute_equation','graph_inequality'],
-['function','function','quadratic','quadratic_transform'],
-['quadratic','factor_trinomial','factor_trinomial','complete_square','quadratic_formula','quadratic'],
-['distance','point_to_line','coordinate']],
+['function','function_graph','quadratic','quadratic_transform'],
+['quadratic','quadratic_roots','quadratic_roots','complete_square','quadratic_formula','quadratic_roots'],
+['distance','point_to_line','coordinate_proof']],
 'math-10':[
 ['linear_quadratic_system','two_quadratic_system','powers','exponential'],
 ['circle_parts','arc','inscribed_angle','circle_equation','circle_tangent'],
 ['trig','trig','trig_graph','trig_equation'],
-['bearings','sine_rule','cosine_rule','triangle_area','pythagoras']]
+['bearings','sine_rule','cosine_rule','triangle_area','space_diagonal']]
 };
 function fmt(x){
  if(typeof x==='string')return x;
@@ -76,6 +76,7 @@ function generate(f,i,lesson){
  case 'reflect':tx='النقطة P('+x+', '+y+') انعكست حول المحور x. ما الإحداثي الصادي للصورة؟';ans=-y;break;
  case 'circle_parts':tx='دائرة نصف قطرها '+a+' سم. كم طول قطرها بالسنتيمتر؟';ans=2*a;break;
  case 'angles':tx='زاويتان متكاملتان، قياس الأولى '+(a*5)+'°. ما قياس الثانية؟';ans=180-a*5;break;
+ case 'geometric_construct':tx='إذا رُسم عمود منصف لقطعة مستقيمة طولها '+(2*a)+' سم، فما طول كل نصف؟';ans=a;break;
  case 'triangle_construction':tx='مثلث متساوي الساقين زاوية رأسه '+(20+a*3)+'°. كم قياس كل زاوية من زاويتي القاعدة؟';ans=(180-(20+a*3))/2;break;
  case 'rational':tx='ما العدد الصحيح المكافئ للكسر ('+(a*3)+'/3)؟';ans=a;break;
  case 'rational_decimal':tx='ما الصورة العشرية للكسر '+a+'/10؟';ans=a/10;break;
@@ -94,6 +95,9 @@ function generate(f,i,lesson){
  case 'triangle_angles':tx='في مثلث زاويتاه '+(a*4)+'° و '+(b*3)+'°. ما الزاوية الثالثة؟';ans=180-a*4-b*3;break;
  case 'polygon_angles':tx='مضلع منتظم عدد أضلاعه '+(a+3)+'. ما مجموع زواياه الداخلية بالدرجات؟';ans=(a+1)*180;break;
  case 'rotate':tx='دُوّرت النقطة P('+a+', '+b+') 180° حول الأصل. ما الإحداثي السيني للصورة؟';ans=-a;break;
+ case 'sqrt_irrational':tx='العدد الجذري √'+(a*a+1)+' يقع بين أي عددين صحيحين متتاليين؟ اختر العدد الأصغر.';ans=a;break;
+ case 'fractional_power':tx='What is ('+(a*a)+')^(1/2)?';ans=a;break;
+ case 'fractional_multiply':tx='Simplify ('+a+')^(1/2) × ('+a+')^(1/2).';ans=a;break;
  case 'sqrt':tx='ما الجذر التربيعي الموجب للعدد '+(a*a)+'؟';ans=a;break;
  case 'pythagoras':tx='مثلث قائم ضلعاه القائمان '+(3*p)+' و '+(4*p)+' سم. ما طول الوتر؟';ans=5*p;break;
  case 'real_numbers':tx='ما ناتج الجذر التربيعي الموجب لـ '+(a*a)+' مضروبًا في '+p+'؟';ans=a*p;break;
@@ -108,6 +112,7 @@ function generate(f,i,lesson){
  case 'slope':tx='يمر مستقيم بالنقطتين (1, '+b+') و (3, '+(b+2*p)+'). ما ميله؟';ans=p;break;
  case 'point_slope':tx='يمر مستقيم ميله '+p+' بالنقطة (0, '+b+'). ما y-intercept؟';ans=b;break;
  case 'parallel_lines':tx='The line y = '+p+'x + '+a+' is parallel to y = mx + '+b+'. Find m.';ans=p;break;
+ case 'congruence_angles':return item('في مثلثين، زاويتان متناظرتان قياسهما '+(a*2)+'° و '+(b*4)+'°، والضلع المحصور بينهما متساوٍ. ما معيار التطابق؟',['ASA','SSS','HL','SAS'],0,i);
  case 'congruence':return item('مثلثان لهما الأضلاع المتناظرة '+a+' سم و '+p+' سم و '+(a+p-1)+' سم نفسها. ما معيار التطابق المباشر؟',['SSS','SAS','ASA','AAS'],0,i);
  case 'isosceles':tx='في مثلث متساوي الساقين زاوية الرأس '+(2*a)+'°. ما زاوية القاعدة؟';ans=90-a;break;
  case 'interval':return item('إذا كانت x > '+a+'، أي وصف يمثل مجال الحل؟',['('+a+', ∞)','['+a+', ∞)','(−∞, '+a+')','(−∞, '+a+']'],0,i);
@@ -115,9 +120,12 @@ function generate(f,i,lesson){
  case 'absolute_equation':tx='حل |x| = '+a+'. ما قيمة الحل الموجب؟';ans=a;break;
  case 'graph_inequality':tx='For y > '+p+'x + '+b+', which y satisfies the inequality when x = 0?';ans=b+a;wrong=[b,b-a,b-1,b-2];break;
  case 'quadratic':tx='For the Quadratic Function f(x) = x² + '+p+'x + '+b+', find f('+a+').';ans=a*a+p*a+b;break;
+ case 'function_graph':tx='For a Linear Function whose graph passes through (0,'+b+') and (1,'+(b+p)+'), what is the slope?';ans=p;break;
  case 'quadratic_transform':tx='For g(x) = (x − '+a+')² + '+b+', what is the x-coordinate of the vertex?';ans=a;break;
+ case 'quadratic_roots':tx='Solve by factoring: x² − '+(a+b)+'x + '+(a*b)+' = 0. What is the larger root?';ans=Math.max(a,b);break;
  case 'complete_square':tx='What number completes the square of x² + '+(2*a)+'x + ... ?';ans=a*a;break;
- case 'quadratic_formula':tx='For x² − '+(a+b)+'x + '+a*b+' = 0, what is the sum of the two roots?';ans=a+b;break;
+ case 'quadratic_formula':tx='Using the Quadratic Formula for x² − '+(a+b)+'x + '+a*b+' = 0, find the larger root.';ans=Math.max(a,b);break;
+ case 'coordinate_proof':tx='For the quadrilateral A(0,0), B('+a+',0), C('+a+','+p+'), D(0,'+p+'), find AB to verify opposite sides match.';ans=a;break;
  case 'distance':tx='What is the distance between A(0,0) and B('+(3*p)+','+(4*p)+')?';ans=5*p;break;
  case 'point_to_line':tx='What is the distance from P('+a+','+b+') to the vertical line x = '+(a+p)+'?';ans=p;break;
  case 'linear_quadratic_system':tx='In the first quadrant, solve x² = '+(a*a)+' and y = x + '+b+'. What is y?';ans=a+b;break;
@@ -127,6 +135,7 @@ function generate(f,i,lesson){
  case 'inscribed_angle':tx='An inscribed angle intercepts an arc of '+(a*6)+'°. Find the angle measure.';ans=a*3;break;
  case 'circle_equation':tx='For the circle (x − '+a+')² + (y − '+b+')² = '+(p*p)+', find the radius.';ans=p;break;
  case 'circle_tangent':return item('لدائرة نصف قطرها '+a+' سم، ما زاوية تقاطع المماس مع نصف القطر عند نقطة التماس؟',['90°','45°','60°','180°'],0,i);
+ case 'space_diagonal':tx='A rectangular prism has edges '+(3*p)+', '+(4*p)+' and '+(12*p)+' cm. Find its space diagonal.';ans=13*p;break;
  case 'trig':return item('For a right triangle, what is sin(θ) when opposite = '+a+' and hypotenuse = '+(a+b)+'?', [a+'/'+(a+b),(a+b)+'/'+a,b+'/'+(a+b),a+'/'+b],0,i);
  case 'trig_graph':tx='For the Trigonometric Function f(x) = '+p+'sin(x), what is its amplitude?';ans=p;break;
  case 'trig_equation':return item('For 0° ≤ θ ≤ 90°, solve sin(θ) = sin('+(10+i*2)+'°). Find θ.',[(10+i*2)+'°',(9+i*2)+'°',(11+i*2)+'°',(12+i*2)+'°'],0,i);
