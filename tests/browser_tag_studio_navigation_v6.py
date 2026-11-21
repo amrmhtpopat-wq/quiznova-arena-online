@@ -47,6 +47,7 @@ with sync_playwright() as pw:
    assert page.locator('#menuBtn').get_attribute('aria-expanded')=='true'
    assert page.locator('#sidebar').is_visible()
    assert page.locator('#tagStudioNavBackdrop').is_visible()
+   page.wait_for_function("() => { const r=document.querySelector('#sidebar').getBoundingClientRect(); return r.left>=-2 && r.right<=innerWidth+2; }",timeout=6000)
    bbox=page.locator('#sidebar').bounding_box()
    assert bbox['x']>=-2 and bbox['x']+bbox['width']<=width+2,(width,'drawer overflow',bbox)
    assert bbox['height']<=height+2,(width,'drawer exceeds viewport',bbox)
