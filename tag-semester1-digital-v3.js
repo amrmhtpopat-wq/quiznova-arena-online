@@ -13,7 +13,7 @@ raw.trim().split("\n").forEach(function(line){
  if(cards.length!==5||cards.some(function(c){return c.length!==3||c.some(function(x){return !x.trim()})}))throw Error("Invalid concepts "+id);
  bank[id]=cards;
 });
-function make(l,n,stem,answer,alternatives){
+function make(l,n,stem,answer,alternatives,reason){
  var ans=String(answer),opts=[ans];
  for(var i=0;i<alternatives.length&&opts.length<4;i++)if(alternatives[i]!==ans&&!opts.includes(alternatives[i]))opts.push(alternatives[i]);
  if(opts.length!==4)throw Error("Invalid answer alternatives "+l.id+" "+n);
@@ -24,7 +24,7 @@ function make(l,n,stem,answer,alternatives){
  difficulty:n<10?"easy":n<22?"medium":"hard",time:n<22?30:40,points:n<22?1000:1200,
  image:"",tags:["الفصل الأول",l.lesson,"مراجعة المعلم"],skill:l.lesson,
  source:"أسئلة إثرائية أصلية مرتبطة بمفاهيم الدرس وتحتاج مراجعة المعلم مع طبعة الكتاب",
- reviewStatus:"teacher_review_required",explanation:"الإجابة الصحيحة: "+ans};
+ reviewStatus:"teacher_review_required",explanation:"الإجابة الصحيحة: "+ans+". "+String(reason||"")};
 }
 function forLesson(l){
  if(typeof l==="string")l=C.get(l);
@@ -32,16 +32,21 @@ function forLesson(l){
  var cards=bank[l.id],q=[];
  try{
  for(var i=0;i<30;i++){
-  var card=cards[Math.floor(i/6)],v=i%6,term=card[0],def=card[1],example=card[2];
+  // Five distinct core concepts, assessed across six cognitive tasks:
+  // recall -> understand -> apply -> interpret -> discriminate -> justify.
+  // Group by task, not by term, so the first third is foundational.
+  var concept=i%5,v=Math.floor(i/5);
+  var card=cards[concept],other=cards[(concept+1)%5];
+  var term=card[0],def=card[1],example=card[2],otherTerm=other[0];
   var wrongs=function(ix){return cards.filter(function(x){return x!==card}).map(function(x){return x[ix]})};
   var stem,answer,w;
-  if(v===0){stem="في درس «"+l.lesson+"»، ماذا يعني المصطلح «"+term+"»؟";answer=def;w=wrongs(1)}
-  if(v===1){stem="أي مفهوم يتوافق مع الوصف الآتي: «"+def+"»؟";answer=term;w=wrongs(0)}
-  if(v===2){stem="أي مثال عملي يوضح مفهوم «"+term+"»؟";answer=example;w=wrongs(2)}
-  if(v===3){stem="الموقف التالي «"+example+"» يعبّر عن أي مفهوم؟";answer=term;w=wrongs(0)}
-  if(v===4){stem="اختر العبارة الصحيحة عن «"+term+"» في سياق «"+l.lesson+"».";answer=def;w=wrongs(1)}
-  if(v===5){stem="عند تطبيق درس «"+l.lesson+"»، أي موقف يعبر بدقة عن «"+term+"»؟";answer=example;w=wrongs(2)}
-  q.push(make(l,i,stem,answer,w));
+  if(v===0){stem="في درس «"+l.lesson+"»، ما التعريف الأدق لمفهوم «"+term+"»؟";answer=def;w=wrongs(1)}
+  if(v===1){stem="أي مصطلح يناسب الوصف: «"+def+"»؟";answer=term;w=wrongs(0)}
+  if(v===2){stem="أمامك الموقف: «"+example+"». أي مفهوم يفسّر هذا الموقف؟";answer=term;w=wrongs(0)}
+  if(v===3){stem="إذا أراد الطالب تطبيق «"+term+"»، فأي موقف يعبّر عنه بشكل مباشر؟";answer=example;w=wrongs(2)}
+  if(v===4){stem="لتمييز «"+term+"» عن «"+otherTerm+"»، أي وصف يختص بالمفهوم الأول؟";answer=def;w=wrongs(1)}
+  if(v===5){stem="لماذا يُعدّ الموقف «"+example+"» تطبيقًا لمفهوم «"+term+"»؟";answer=def;w=wrongs(1)}
+  q.push(make(l,i,stem,answer,w,"«"+term+"» يعني "+def+"؛ ومن تطبيقاته: "+example));
  }
  }catch(e){return []}
  return base.validate(q)?q:[];
