@@ -11,7 +11,7 @@ const LINKS={
 'math-10':'https://www.nccd.gov.jo/EBV4.0/Root_Storage/AR/Math/2025/G10/MA%2010%20WB%201_WEB.pdf',
 'digital-7':SOURCE,'digital-8':SOURCE,'digital-9':SOURCE,
 'digital-10':'https://nccd.gov.jo/EBV4.0/Root_Storage/AR/%D8%A7%D9%84%D9%85%D9%87%D8%A7%D8%B1%D8%A7%D8%AA%20%D8%A7%D9%84%D8%B1%D9%82%D9%85%D9%8A%D8%A9/G10/1/Digital%20Skills%20S1%20G10%20.pdf',
-'digital-11':'https://www.nccd.gov.jo/EBV4.0/Root_Storage/AR/%D8%A7%D9%84%D9%85%D9%87%D8%A7%D8%B1%D8%A7%D8%AA%20%D8%A7%D9%84%D8%B1%D9%82%D9%85%D9%8A%D8%A9/G11/1/Digital%20Skills%20G11%20SB%20S1.pdf'
+'digital-11':'https://www.nccd.gov.jo/EBV4.0/Root_Storage/AR/%D8%A7%D9%84%D9%85%D9%87%D8%A7%D8%B1%D8%A7%D8%AA%20%D8%A7%D9%84%D8%B1%D9%82%D9%85%D9%8A%D8%A9/G11/1/G11%20Digital%20Skills%20S1%20SB%20.pdf'
 };
 const RAW={
 'math-6':[
@@ -52,7 +52,7 @@ const RAW={
 ['تحليل البيانات (Data Analysis)','البيانات والمعلومات (Information and Data)|أنواع البيانات وطرائق تنظيمها (Data Types)|التمثيل المرئي للبيانات (Data Visualization)|تحليل البيانات (Data Analysis)'],
 ['الخوارزميات والبرمجة (Algorithms & Programming)','مقدمة إلى المواقع الإلكترونية|إنشاء الصفحات الإلكترونية (HTML)|تنسيق النصوص (Text Formatting)|التعليقات والقوائم (Comments and Lists)|الصور (Images)|الوسائط المتعددة والارتباطات التشعبية|الجداول (Tables)']],
 'digital-11':[
-['الخوارزميات والبرمجة (Algorithms & Programming)','مقدمة في لغات البرمجة|أساسيات لغة Python|الجمل الشرطية في Python|الحلقات (Loops) في Python|القوائم (Lists) في Python|الدوال البرمجية (Functions) في Python|سلاسل الحروف (Strings) في Python'],
+['الخوارزميات والبرمجة (Algorithms & Programming)','مقدمة في لغات البرمجة|أساسيات لغة Python|الجمل الشرطية في Python|الحلقات (Loops) في Python|القوائم (Lists) في Python|الدوال البرمجية (Functions) في Python'],
 ['الحوسبة والحياة (Computing and Life)','الحوسبة الخضراء (Green Computing)|النفايات الإلكترونية (Electronic Waste)|تطبيقات الحاسوب في الحياة اليومية']]
 };
 function norm(x){return String(x||'').toLowerCase().trim().replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/\s+/g,' ')}
