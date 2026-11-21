@@ -144,8 +144,9 @@ window.TAG_LESSON_CREATE_V2=(entry,questions)=>{
  resetBuilder();
  $('#quizTitle').value='اختبار '+official.lesson+' — الصف '+official.grade+' — الفصل الأول';
  $('#quizSubject').value=official.subject;
- $('#quizGrade').value=official.grade;
- builderQuestions=expected.map(q=>({...clone(q),id:uid()}));
+ const platformGrade=official.grade==='الأول ثانوي'?'الحادي عشر':official.grade;
+ $('#quizGrade').value=platformGrade;
+ builderQuestions=expected.map(q=>({...clone(q),id:uid(),grade:platformGrade}));
  boActiveQuestionId=builderQuestions[0]?.id||null;
  renderQuestions();go('builder');
  toast('تم تجهيز 30 سؤالًا؛ راجعها ثم احفظ الاختبار أو انشره');
