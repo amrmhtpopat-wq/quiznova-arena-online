@@ -315,11 +315,43 @@
     </section>
 
     <section class="view" id="view-library">
+      <section class="panel tag-s1-panel" id="tagS1Panel" aria-labelledby="tagS1Title">
+        <div class="tag-s1-header">
+          <div class="tag-s1-header-main"><span class="tag-s1-overline">TAG • JORDAN CURRICULUM • SEMESTER 1</span>
+            <h3 id="tagS1Title">مكتبة اختبارات دروس الفصل الأول</h3>
+            <p>اختر الصف ثم الوحدة ثم الدرس. لكل درس اختبار من 30 سؤالًا أصليًا قابلًا للمراجعة والتعديل قبل الحفظ.</p>
+          </div>
+          <span class="tag-s1-semester">الفصل الدراسي الأول</span>
+        </div>
+        <div class="tag-s1-stats"><span id="tagS1TeacherSubject">المادة حسب تخصص المعلم</span><span id="tagS1CourseCount">—</span><span id="tagS1LessonTotal">—</span></div>
+        <div class="tag-s1-filters">
+          <label for="tagS1Grade">١. الصف الدراسي<select id="tagS1Grade"><option value="">اختر الصف</option></select></label>
+          <label for="tagS1Unit">٢. الوحدة الدراسية<select id="tagS1Unit" disabled><option value="">اختر الوحدة</option></select></label>
+          <label for="tagS1Lesson">٣. الدرس<select id="tagS1Lesson" disabled><option value="">اختر الدرس</option></select></label>
+        </div>
+        <div class="tag-s1-empty" id="tagS1Hint" role="status" aria-live="polite">اختر الصف الدراسي لعرض وحداته ودروسه المعتمدة في هذه المكتبة.</div>
+        <div id="tagS1Lessons" class="tag-s1-lesson-list" aria-label="دروس الوحدة" hidden></div>
+        <div id="tagS1ExamPreview" class="tag-s1-exam-preview" hidden>
+          <div class="tag-s1-preview-heading">
+            <div><span class="tag-s1-kicker">30-QUESTION LESSON TEST</span><h4 id="tagS1ExamTitle">اختبار الدرس</h4>
+            <p id="tagS1ExamMeta">30 سؤالًا • تدريبات أصلية تحتاج مراجعة المعلم</p></div>
+            <div class="tag-s1-preview-count"><strong id="tagS1ExamCount">30</strong><span>سؤالًا</span></div>
+          </div>
+          <div class="tag-s1-sample-list" id="tagS1ExamSamples"></div>
+          <div class="tag-s1-preview-footer"><span id="tagS1ExamReview">لا تُنشر الأسئلة تلقائيًا، بل تُفتح أولًا في محرر المعلم.</span>
+            <button type="button" class="btn btn-primary" id="tagS1OpenExam">✎ فتح اختبار الدرس وتعديله</button>
+          </div>
+        </div>
+        <div class="tag-s1-source-note">الأسئلة تدريبية أصلية وليست منسوخة من الكتاب أو معتمدة رسميًا. يُرجى تدقيق المحتوى والخيارات قبل نشر الاختبار للطلبة.
+          <a href="https://nccd.gov.jo/Ar/Pages/textbooks" target="_blank" rel="noopener noreferrer">الكتب المدرسية الأردنية الرسمية</a>
+        </div>
+      </section>
+      <details class="tag-s1-legacy"><summary>تدريبات إثرائية عامة إضافية (اختياري)</summary>
       <div class="panel jordan-curriculum-library">
         <div class="panel-head"><div><div class="overline">JORDAN CURRICULUM • إثرائي</div><h3>المكتبة الأردنية لاختبارات مادّتك</h3><p>اختر الصف، أو ارفع كتابك ليقترح TAG AI أسئلة مرتبطة بصفحاته مع إمكان المراجعة قبل الحفظ.</p></div><button type="button" id="tagBookFromLibrary" class="btn btn-secondary">📚 حوّل كتابًا إلى اختبار</button></div>
         <div class="jordan-library-meta"><span id="jordanLibrarySubject">مادة المعلم</span><span id="jordanLibraryCount">—</span></div>
         <div id="jordanLibrary" class="jordan-grade-grid"></div>
-      </div>
+      </div></details>
       <div class="panel"><div class="panel-head"><div><div class="overline">MY QUIZZES</div><h3>مكتبة الاختبارات</h3><p>اختباراتك المحفوظة في حساب المعلم. اختر اختبارًا لتشغيله مباشرة أو تعديله.</p></div><div class="inline-actions"><button class="btn btn-secondary" id="importQuiz">استيراد JSON</button><button class="btn btn-primary" data-jump="builder">+ جديد</button></div></div><input type="file" id="importFile" accept="application/json" hidden><div class="search-row"><input id="librarySearch" placeholder="ابحث باسم الاختبار أو المادة..."></div><div id="quizLibrary" class="quiz-cards"></div></div>
     </section>
 
@@ -375,12 +407,22 @@
 <script src="curriculum_bank.js"></script>
 <script src="curriculum_plus.js"></script>
 <script src="/tag-jordan-curriculum-v1.js?v=1"></script>
+<script src="/tag-jordan-s1-courses-v1.js?v=1"></script>
+<script src="/tag-jordan-s1-math-v1.js?v=1"></script>
+<script src="/tag-jordan-s1-digital-g7.js?v=1"></script>
+<script src="/tag-jordan-s1-digital-g8.js?v=1"></script>
+<script src="/tag-jordan-s1-digital-g9.js?v=1"></script>
+<script src="/tag-jordan-s1-digital-g10.js?v=1"></script>
+<script src="/tag-jordan-s1-digital-g11.js?v=1"></script>
+<script src="/tag-jordan-s1-digital-v1.js?v=1"></script>
+<script src="/tag-jordan-s1-tests-v1.js?v=1"></script>
 <script src="/avatar-names-v121.js?v=12.4"></script>
 <script src="media_library.js?v=13.1"></script>
 <script src="/booyah-countdown-v121.js?v=13.1"></script>
 <link rel="stylesheet" href="/tag-jordan-library-v1.css?v=1">
+<link rel="stylesheet" href="/tag-jordan-s1-ui-v1.css?v=1">
 <link rel="stylesheet" href="/tag-studio-book-ai-v1.css?v=3">
 <link rel="stylesheet" href="/tag-studio-navigation-v6.css?v=6">
-<script src="studio-auth.js?v=13.6"></script>
+<script src="studio-auth.js?v=13.7"></script>
 </body>
 </html>
