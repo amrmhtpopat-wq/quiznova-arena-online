@@ -59,6 +59,7 @@ with sync_playwright() as pw:
    page.locator('#tagStudioGroup-content button[data-view="library"]').click()
    page.locator('#view-library.active').wait_for(state='visible',timeout=13000)
    assert page.locator('#menuBtn').get_attribute('aria-expanded')=='false'
+   page.locator('#sidebar').wait_for(state='hidden',timeout=6000)
    assert page.locator('#sidebar').is_hidden()
    assert page.locator('#tagStudioNavBackdrop').is_hidden()
    assert not page.locator('body').evaluate("el=>el.classList.contains('tag-studio-nav-open')")
@@ -71,6 +72,7 @@ with sync_playwright() as pw:
    assert page.evaluate("document.activeElement?.id==='menuBtn'"),(width,'keyboard focus not returned')
    page.locator('#menuBtn').click()
    page.locator('#tagStudioNavBackdrop').click(position={'x':4,'y':4},force=True)
+   page.locator('#sidebar').wait_for(state='hidden',timeout=6000)
    assert page.locator('#sidebar').is_hidden()
   else:
    assert not page.locator('#menuBtn').is_visible(),(width,'desktop drawer button should be hidden')
