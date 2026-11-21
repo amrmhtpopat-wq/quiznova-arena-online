@@ -1,0 +1,197 @@
+/* TAG Semester One lesson-exam explorer: teacher-subject scoped and compact. */
+body.v105-studio #tagS1Panel{
+ padding:clamp(14px,2vw,24px)!important;margin:0 0 16px!important;
+ min-width:0!important;overflow:hidden!important;
+ color:#eaf9ff!important;background:linear-gradient(145deg,#092745,#123a65 65%,#152854)!important;
+ border:1px solid #51a0ba!important;border-radius:20px!important;
+ box-shadow:0 10px 27px #031b3550!important
+}
+body.v105-studio .tag-s1-header{
+ display:flex;align-items:flex-start;justify-content:space-between;
+ flex-wrap:wrap;gap:10px 18px;margin-bottom:13px;min-width:0;
+}
+body.v105-studio .tag-s1-header-main{min-width:0;max-width:750px}
+body.v105-studio .tag-s1-overline,
+body.v105-studio .tag-s1-kicker{
+ display:block;color:#77e6d4!important;-webkit-text-fill-color:#77e6d4!important;
+ font:900 11px/1.7 Cairo,Tahoma,Arial,sans-serif!important;letter-spacing:.8px
+}
+body.v105-studio #tagS1Title{
+ font:950 clamp(18px,2.3vw,25px)/1.5 Cairo,Tahoma,Arial,sans-serif!important;
+ color:#fff!important;-webkit-text-fill-color:#fff!important;margin:4px 0 6px!important
+}
+body.v105-studio .tag-s1-header-main>p{
+ color:#bddbec!important;-webkit-text-fill-color:#bddbec!important;
+ font:650 12px/1.8 Cairo,Tahoma,Arial,sans-serif!important;margin:0!important
+}
+body.v105-studio .tag-s1-semester{
+ display:inline-flex;padding:8px 12px;border:1px solid #59cbb595;
+ border-radius:999px;background:#135b677a;color:#a4f1de;
+ font:850 12px/1.4 Cairo,Tahoma,Arial,sans-serif;white-space:nowrap
+}
+body.v105-studio .tag-s1-stats{
+ display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:8px 0 16px!important
+}
+body.v105-studio .tag-s1-stats>span{
+ padding:6px 11px;background:#154c6b80;border:1px solid #66adb077;
+ border-radius:999px;color:#d7f7fc;font:750 11px/1.5 Cairo,Tahoma,Arial,sans-serif
+}
+body.v105-studio .tag-s1-filters{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;min-width:0
+}
+body.v105-studio .tag-s1-filters>label{
+ display:flex;flex-direction:column;gap:7px;min-width:0;
+ color:#e3f8ff!important;-webkit-text-fill-color:#e3f8ff!important;
+ font:850 12px/1.5 Cairo,Tahoma,Arial,sans-serif!important
+}
+body.v105-studio .tag-s1-filters select{
+ width:100%;box-sizing:border-box;min-width:0!important;
+ min-height:44px!important;padding:10px!important;
+ background:#f1f9ff!important;color:#153850!important;
+ -webkit-text-fill-color:#153850!important;
+ border:1px solid #a2cada!important;border-radius:11px!important;
+ font:750 12px/1.5 Cairo,Tahoma,Arial,sans-serif!important;
+ box-shadow:none!important;overflow:hidden;text-overflow:ellipsis
+}
+body.v105-studio .tag-s1-filters select:disabled{
+ background:#bdd6e2!important;color:#547082!important;opacity:.85
+}
+body.v105-studio .tag-s1-empty{
+ padding:11px 13px;margin:14px 0 0!important;
+ min-width:0;color:#d8edf7!important;-webkit-text-fill-color:#d8edf7!important;
+ background:#0d3b5d;border:1px dashed #63a9c277;border-radius:11px;
+ font:700 12px/1.7 Cairo,Tahoma,Arial,sans-serif!important;
+}
+body.v105-studio .tag-s1-lesson-list{
+ display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr));
+ gap:9px;margin:14px 0!important;min-width:0
+}
+body.v105-studio .tag-s1-lesson-list[hidden],
+body.v105-studio .tag-s1-exam-preview[hidden]{display:none!important}
+body.v105-studio .tag-s1-lesson-card{
+ display:flex;flex-direction:column;align-items:flex-start;
+ text-align:start;gap:8px;min-width:0!important;min-height:98px!important;
+ padding:12px 13px!important;border:1px solid #5b94b080!important;
+ background:#103252!important;border-radius:12px!important;
+ color:#eaf9ff!important;-webkit-text-fill-color:#eaf9ff!important;
+ cursor:pointer!important;box-shadow:none!important;
+ font-family:Cairo,Tahoma,Arial,sans-serif!important
+}
+body.v105-studio .tag-s1-lesson-card:hover,
+body.v105-studio .tag-s1-lesson-card:focus-visible{
+ border-color:#80ddc7!important;background:#195277!important;
+ outline-offset:2px!important
+}
+body.v105-studio .tag-s1-lesson-card.is-selected{
+ border-color:#90efc5!important;background:#155774!important;
+ box-shadow:inset 3px 0 #84f1cb!important
+}
+body.v105-studio .tag-s1-lesson-card>strong{
+ font:850 13px/1.65 Cairo,Tahoma,Arial,sans-serif!important;
+ color:#fff!important;-webkit-text-fill-color:#fff!important;overflow-wrap:anywhere
+}
+body.v105-studio .tag-s1-lesson-meta{
+ display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:auto
+}
+body.v105-studio .tag-s1-lesson-meta>span{
+ font:800 10px/1.5 Cairo,Tahoma,Arial,sans-serif!important;
+ padding:3px 7px;border-radius:999px;background:#0e685b;color:#d9fff3
+}
+body.v105-studio .tag-s1-lesson-meta>.is-pending{
+ background:#6c4a29!important;color:#fef3d1!important
+}
+body.v105-studio .tag-s1-exam-preview{
+ margin:14px 0 0!important;min-width:0;padding:13px!important;
+ border-radius:15px!important;border:1px solid #65b9cb!important;
+ background:#f4fbff!important;color:#163b55!important
+}
+body.v105-studio .tag-s1-preview-heading{
+ display:flex;align-items:center;justify-content:space-between;gap:12px;
+ flex-wrap:wrap;margin:0 0 12px
+}
+body.v105-studio .tag-s1-preview-heading h4{
+ color:#0c3554!important;-webkit-text-fill-color:#0c3554!important;
+ font:900 16px/1.5 Cairo,Tahoma,Arial,sans-serif!important;
+ margin:2px 0!important;overflow-wrap:anywhere
+}
+body.v105-studio .tag-s1-preview-heading p{
+ color:#4a6680!important;-webkit-text-fill-color:#4a6680!important;
+ font:700 11px/1.6 Cairo,Tahoma,Arial,sans-serif!important;margin:0!important
+}
+body.v105-studio .tag-s1-preview-heading .tag-s1-kicker{
+ color:#28778e!important;-webkit-text-fill-color:#28778e!important;font-size:10px!important
+}
+body.v105-studio .tag-s1-preview-count{
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ width:61px;height:61px;border-radius:14px;border:1px solid #5ab39f;
+ background:#e3f7ef;color:#126953
+}
+body.v105-studio .tag-s1-preview-count strong{font:950 24px/1.2 Cairo,Tahoma,sans-serif!important;color:#126953!important}
+body.v105-studio .tag-s1-preview-count span{font:850 11px Cairo,Tahoma,sans-serif!important}
+body.v105-studio .tag-s1-sample-list{
+ display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,245px),1fr));
+ gap:9px;margin:6px 0 12px
+}
+body.v105-studio .tag-s1-sample{
+ background:#fff;border:1px solid #c2dde8;border-radius:11px;
+ padding:11px 13px;min-width:0;color:#173c57;
+}
+body.v105-studio .tag-s1-sample strong{
+ display:block;color:#0d3754!important;-webkit-text-fill-color:#0d3754!important;
+ font:800 12px/1.7 Cairo,Tahoma,Arial,sans-serif!important;overflow-wrap:anywhere
+}
+body.v105-studio .tag-s1-sample small{
+ display:block;margin-top:8px;color:#24735c!important;-webkit-text-fill-color:#24735c!important;
+ font:750 11px/1.6 Cairo,Tahoma,Arial,sans-serif!important;overflow-wrap:anywhere
+}
+body.v105-studio .tag-s1-preview-footer{
+ display:flex;flex-wrap:wrap;justify-content:space-between;
+ align-items:center;gap:10px;margin-top:8px
+}
+body.v105-studio .tag-s1-preview-footer>span{
+ color:#4b6877!important;-webkit-text-fill-color:#4b6877!important;
+ font:700 11px/1.7 Cairo,Tahoma,Arial,sans-serif!important
+}
+body.v105-studio #tagS1OpenExam{
+ min-height:43px!important;min-width:0!important;
+ background:#176d70!important;border-color:#51c6b5!important;
+ color:#fff!important;-webkit-text-fill-color:#fff!important;
+ border-radius:11px!important;font:850 12px/1.6 Cairo,Tahoma,Arial,sans-serif!important
+}
+body.v105-studio #tagS1OpenExam:disabled{opacity:.5!important;cursor:not-allowed!important}
+body.v105-studio .tag-s1-source-note{
+ margin:16px 0 0;padding:10px 12px!important;
+ border:1px solid #63a3bd75;border-radius:10px;
+ background:#0b3553;color:#c7e3ed;
+ font:650 11px/1.8 Cairo,Tahoma,Arial,sans-serif!important
+}
+body.v105-studio .tag-s1-source-note a{
+ display:inline-block;margin-inline-start:7px;color:#92f1d5!important;
+ font-weight:850;text-decoration:underline
+}
+body.v105-studio details.tag-s1-legacy{
+ margin:12px 0 17px;border:1px solid #477e9d9c;
+ border-radius:12px;overflow:hidden;background:#0c3052
+}
+body.v105-studio details.tag-s1-legacy>summary{
+ display:flex;align-items:center;min-height:47px;padding:11px 14px;
+ color:#e0f3ff;font:800 12px/1.5 Cairo,Tahoma,sans-serif;
+ cursor:pointer
+}
+body.v105-studio details.tag-s1-legacy>.panel{margin:7px!important}
+@media(max-width:750px){
+ body.v105-studio #tagS1Panel{padding:13px!important;border-radius:16px!important}
+ body.v105-studio .tag-s1-filters{grid-template-columns:repeat(2,minmax(0,1fr))}
+ body.v105-studio .tag-s1-filters>label:nth-child(3){grid-column:1/-1}
+ body.v105-studio .tag-s1-lesson-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ body.v105-studio .tag-s1-lesson-card{padding:10px!important;min-height:89px!important}
+ body.v105-studio .tag-s1-preview-footer{flex-direction:column;align-items:stretch}
+ body.v105-studio #tagS1OpenExam{width:100%!important}
+}
+@media(max-width:400px){
+ body.v105-studio .tag-s1-filters{grid-template-columns:1fr}
+ body.v105-studio .tag-s1-filters>label:nth-child(3){grid-column:auto}
+ body.v105-studio .tag-s1-lesson-list{grid-template-columns:1fr}
+ body.v105-studio .tag-s1-lesson-card{min-height:65px!important}
+ body.v105-studio .tag-s1-header-main h3{font-size:18px!important}
+}

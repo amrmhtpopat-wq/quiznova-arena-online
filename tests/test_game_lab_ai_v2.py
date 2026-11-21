@@ -132,7 +132,7 @@ class BookEngineV2Test(unittest.TestCase):
   server=Path('game_lab_pro.py').read_text(encoding='utf-8')
   self.assertIn('id="tagBookQuestionMix"',html)
   self.assertIn('id="tagBookEngineStats"',html)
-  self.assertIn('studio-auth.js?v=13.6',html)
+  self.assertIn('studio-auth.js?v=13.7',html)
   self.assertIn('/api/game-lab/pro/books/ai/retry',server)
   self.assertIn('ai_generate_v2(tid,data)',server)
   self.assertIn('tag-book-retry',script)

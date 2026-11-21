@@ -46,6 +46,19 @@ on:
       - studio.html
       - tag-studio-navigation-v6.css
       - tag-studio-navigation-v6.js
+      - tag-jordan-s1-courses-v1.js
+      - tag-jordan-s1-math-v1.js
+      - tag-jordan-s1-digital-g7.js
+      - tag-jordan-s1-digital-g8.js
+      - tag-jordan-s1-digital-g9.js
+      - tag-jordan-s1-digital-g10.js
+      - tag-jordan-s1-digital-g11.js
+      - tag-jordan-s1-digital-v1.js
+      - tag-jordan-s1-tests-v1.js
+      - tag-jordan-s1-ui-v1.js
+      - tag-jordan-s1-ui-v1.css
+      - tests/test_tag_jordan_s1_lessons_v1.cjs
+      - tests/browser_tag_jordan_s1_lessons_v1.py
       - tests/browser_tag_studio_navigation_v6.py
       - tests/test_tag_studio_navigation_v6.py
       - tag-studio-book-ai-v1.css
@@ -110,6 +123,8 @@ jobs:
         run: python tests/browser_tag_mobile_v2.py
       - name: TAG AI Book Engine V2 regeneration and coverage browser QA
         run: python tests/browser_tag_ai_v2.py
+      - name: Jordan semester-one grade-unit-lesson library and 30-question quiz browser QA
+        run: python tests/browser_tag_jordan_s1_lessons_v1.py
       - name: TAG Studio Navigation V6 phone, tablet and desktop functional QA
         run: python tests/browser_tag_studio_navigation_v6.py
       - name: TAG book upload and source-grounded question draft browser QA
