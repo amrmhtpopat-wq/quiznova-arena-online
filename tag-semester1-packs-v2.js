@@ -30,6 +30,8 @@ function math(l){
  "m-0-1-1":function(n){var a=3+2*n,b=2+(7*n%31),k=n%3;return num(l,n,k===0?"احسب: "+a+" + "+b:k===1?"احسب: (−"+a+") + "+b:"احسب: (−"+a+") + (−"+b+")",k===0?a+b:k===1?-a+b:-a-b)},
  "m-0-1-2":function(n){var a=10+n,b=3+(7*n%24),k=n%3;return num(l,n,k===0?"احسب: "+a+" − (−"+b+")":k===1?"احسب: (−"+a+") − "+b:"احسب: "+a+" − "+b,k===0?a+b:k===1?-a-b:a-b)},
  "m-0-1-3":function(n){var a=2+n%11,b=3+Math.floor(n/11)*4+n%7,k=n%3;return num(l,n,k===0?"(−"+a+") × "+b+" = ؟":k===1?"(−"+a*b+") ÷ "+a+" = ؟":"(−"+a+") × (−"+b+") = ؟",k===0?-a*b:k===1?-b:a*b)},
+ "m-0-1-4":function(n){var primes=[2,3,5,7,11,13,17,19,23,29],p=primes[n%10],q=primes[(Math.floor(n/10)+n%10+1)%10],v=p*q;return make(l,n,"حلّل العدد "+v+" إلى عاملين أوليين؛ أي زوج صحيح؟",p+" × "+q,[p+" × "+(q+1),(p+1)+" × "+q,p+" × "+(q+2),p+" × "+(q+3)])},
+ "m-0-2-4":function(n){var a=2+n,b=3+n%7,d=2+n%5,first=a+"/"+d,second=b+"/"+d,ans=a===b?"=":a>b?">":"<";return make(l,n,"قارن بين الكسرين "+first+" و "+second+"؛ ما الرمز الصحيح؟",ans,["≥","≤","≠","≈"].filter(function(x){return x!==ans}).slice(0,3))},
  "m-0-1-5":function(n){var a=2+n%6,b=2+Math.floor(n/6)%5,z=a**b;return num(l,n,"ما قيمة "+a+"^"+b+"؟",z,Math.max(2,Math.floor(z/5)))},
  "m-0-1-6":function(n){var a=2+n;return num(l,n,"ما الجذر التربيعي الرئيسي للعدد "+a*a+"؟",a)},
  "m-0-1-7":function(n){var a=2+n;return num(l,n,"ما الجذر التكعيبي للعدد "+a*a*a+"؟",a)},
