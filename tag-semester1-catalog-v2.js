@@ -74,7 +74,7 @@ const bySubject=subject=>rows.filter(x=>x.subject===subject);
 function teacherSubject(value){
  const name=String(value||"").toLowerCase().trim().replace(/[أإآ]/g,"ا").replace(/ة/g,"ه");
  if(/رياضيات|math/.test(name))return "الرياضيات";
- if(/مهارات رقمية|مهارات رقميه|الحاسوب|حاسوب|digital|computing/.test(name))return "المهارات الرقمية";
+ if(/مهارات\s+(?:ال)?رقمي[هة]|الحاسوب|حاسوب|digital|computing/.test(name))return "المهارات الرقمية";
  return "";
 }
 function forTeacher(value){const subject=teacherSubject(value);return subject?bySubject(subject):[]}
