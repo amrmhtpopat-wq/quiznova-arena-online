@@ -117,7 +117,7 @@ function question(l,n){
  case "decimal":return f("حوّل العدد الكسري "+a+"/100 إلى عدد عشري.",(a/100).toFixed(2),[(a/10).toFixed(1),(a/1000).toFixed(3),(a+1)/100,(a/10).toFixed(2)]);
  case "fracsum":return f("احسب "+a+"/"+(b+4)+" + "+b+"/"+(b+4)+" في أبسط صورة.",frac(a+b,b+4),[frac(a-b,b+4),frac(a*b,b+4),frac(a+b,b+5),frac(a+b+1,b+4)]);
  case "reverse":return v("فكرت في عدد، ضاعفته ثم أضفت "+b+" فكان الناتج "+(2*a+b)+". ما العدد الأصلي؟",a);
- case "exponent":{var baseNum=2+n%5,pow=2+Math.floor(n/5)%5;return v("ما قيمة "+baseNum+"^"+pow+"؟",baseNum**pow,Math.max(2,baseNum))}
+ case "exponent":{var baseNum=2+n%5,pow=2+Math.floor(n/5);return v("ما قيمة "+baseNum+"^"+pow+"؟",baseNum**pow,Math.max(2,baseNum))}
  case "order":return v("احسب بحسب أولويات العمليات: "+a+" + "+b+" × "+c+" .",a+b*c,b);
  case "addexpr":{var p=a+c,q=b+x;return f("بسّط: ("+a+"x + "+b+") + ("+c+"x + "+x+").",p+"x + "+q,[p+"x − "+q,(a*c)+"x + "+q,q+"x + "+(p+1),p+"x + "+(q+2),p+"x − "+(q+1)])}
  case "monomial":return f("وزّع الحد "+a+"x على ("+b+"x + "+c+").",(a*b)+"x² + "+(a*c)+"x",[(a+b)+"x² + "+(a*c)+"x",(a*b)+"x² + "+c+"x",(a*b)+"x + "+(a*c),(a*b)+"x² − "+(a*c)+"x"]);
