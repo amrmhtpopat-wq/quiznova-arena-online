@@ -19,9 +19,18 @@ function get(x){
   l.subject==="المهارات الرقمية"?digital.forLesson(l):[];
  // Preserve richer existing hand-authored packs; enhance existing math hints without
  // touching teachers' saved quizzes or changing question identifiers.
- if(original.length===30&&pack===original&&l.subject==="الرياضيات"){
+ if(original.length===30&&pack===original){
+  var digitalTips={
+   "d-1-1-1":"ميز بين المدخلات والعمليات والمخرجات ووسائط التخزين بحسب دور كل مكون",
+   "d-2-1-2":"شخّص العطل تدريجيًا والتزم بإجراءات السلامة وحماية المكونات قبل الصيانة",
+   "d-3-1-3":"اختر التصرف الرقمي الآمن واعتمد التحقق من المصدر وحماية الخصوصية والإبلاغ المسؤول",
+   "d-4-1-1":"فرّق بين البيانات الخام والمعلومات الناتجة عن تنظيمها وتحليلها",
+   "d-5-1-2":"اقرأ تعليمات Python بدقة وميز بين أنواع البيانات والمعاملات والمخرجات"
+  };
+  var tip=l.subject==="الرياضيات"?math.teachingTip(l):
+   (digitalTips[l.id]||"اربط إجابة السؤال بالممارسة الرقمية الصحيحة المرتبطة بالدرس");
   pack=pack.map(function(q){return Object.assign({},q,{
-   explanation:math.teachingTip(l)+". "+q.explanation
+   explanation:tip+". "+q.explanation
   })});
  }
  if(!old.validate(pack)||pack.some(function(q){
