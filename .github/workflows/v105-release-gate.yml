@@ -52,6 +52,7 @@ jobs:
           node --check curriculum_plus.js
           node --check tag-jordan-curriculum-v1.js
           node --check tag-studio-book-ai-v1.js
+          node --check tag-studio-navigation-v6.js
           python -m py_compile game_lab_ai_quality.py game_lab_ai_v2.py game_lab_pro.py
           node --check media_library.js
       - name: TAG Mobile V2 all-page layout/link and safety contract tests
@@ -62,6 +63,8 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_tag_student_feedback_v1.py' -v
       - name: TAG AI Book Engine V2 planning, retry and quality tests
         run: python -m unittest discover -s tests -p 'test_game_lab_ai_v2.py' -v
+      - name: TAG Studio Navigation V6 responsive page-map and accessibility contract
+        run: python -m unittest discover -s tests -p 'test_tag_studio_navigation_v6.py' -v
       - name: TAG studio book-to-quiz integration safety contract
         run: python -m unittest discover -s tests -p 'test_tag_studio_book_ai_v1.py' -v
       - name: Jordan curriculum pack correctness and teacher subject separation

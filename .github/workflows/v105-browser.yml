@@ -44,6 +44,10 @@ on:
       - tests/browser_tag_student_photo_v1.py
       - app.js
       - studio.html
+      - tag-studio-navigation-v6.css
+      - tag-studio-navigation-v6.js
+      - tests/browser_tag_studio_navigation_v6.py
+      - tests/test_tag_studio_navigation_v6.py
       - tag-studio-book-ai-v1.css
       - tag-studio-book-ai-v1.js
       - game_lab_pro.py
@@ -106,6 +110,8 @@ jobs:
         run: python tests/browser_tag_mobile_v2.py
       - name: TAG AI Book Engine V2 regeneration and coverage browser QA
         run: python tests/browser_tag_ai_v2.py
+      - name: TAG Studio Navigation V6 phone, tablet and desktop functional QA
+        run: python tests/browser_tag_studio_navigation_v6.py
       - name: TAG book upload and source-grounded question draft browser QA
         run: python tests/browser_tag_studio_book_ai_v1.py
       - name: Jordan curriculum library subject-scoped browser QA
