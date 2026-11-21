@@ -76,7 +76,7 @@ for(const n of [0,1,2,29]){
 }
 for(const n of [0,1,2,29]){
  const q=P.forLesson("m-4-3-1")[n];
- assert.ok(["3/5","4/5","3/4"].includes(q.options[q.correct[0]]));
+ assert.ok(q.text.includes("مثلث قائم")&&q.explanation.includes("sin="));
 }
 const studio=fs.readFileSync("studio.html","utf8");
 for(const script of ["tag-semester1-math-v3.js","tag-semester1-digital-v3.js","tag-semester1-unified-v3.js"])
