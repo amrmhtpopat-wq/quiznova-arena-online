@@ -10,6 +10,7 @@ on:
       - 'app.js'
       - 'tests/test_tag_semester1_v2.cjs'
       - 'tests/test_tag_semester1_v3.cjs'
+      - 'tests/test_tag_semester1_pedagogy_v4.cjs'
       - '.github/workflows/tag-semester1-v2.yml'
   pull_request:
     paths:
@@ -20,6 +21,7 @@ on:
       - 'app.js'
       - 'tests/test_tag_semester1_v2.cjs'
       - 'tests/test_tag_semester1_v3.cjs'
+      - 'tests/test_tag_semester1_pedagogy_v4.cjs'
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -32,6 +34,8 @@ jobs:
         run: node tests/test_tag_semester1_v2.cjs
       - name: Complete 153-pack acceptance including answer checks
         run: node tests/test_tag_semester1_v3.cjs
+      - name: Pedagogical content and independent mathematics proof checks
+        run: node tests/test_tag_semester1_pedagogy_v4.cjs
       - name: JavaScript parse checks
         run: |
           node --check tag-semester1-catalog-v2.js
