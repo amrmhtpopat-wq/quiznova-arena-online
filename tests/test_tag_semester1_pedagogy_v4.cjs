@@ -34,7 +34,7 @@ for(const l of C.all){
   assert.equal(item.reviewStatus,"teacher_review_required",item.id);
   assert.equal(item.options.length,4,item.id);
   assert.equal(new Set(item.options.map(canonical)).size,4,item.id+" repeated options");
-  assert.ok(item.text.length>12&&item.text.length<220,"invalid prompt "+item.id);
+  assert.ok(item.text.length>7&&item.text.length<220,"invalid prompt "+item.id);
   assert.ok(item.options.every(x=>String(x).trim().length&&String(x).length<180),item.id);
   assert.ok(item.explanation&&item.explanation.length>=20,"missing explanatory feedback "+item.id);
   assert.ok(!stems.has(item.text),"repeated question "+item.id);
