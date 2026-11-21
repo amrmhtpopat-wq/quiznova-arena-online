@@ -82,8 +82,16 @@ function question(l,n){
  case "specialproduct":return f("انشر مربع المقدار (x + "+a+")².","x² + "+2*a+"x + "+a*a,["x² + "+a+"x + "+a*a,"x² − "+2*a+"x + "+a*a,"x² + "+2*a+"x − "+a*a,"x² + "+a*a]);
  case "standardline":return v("المستقيم "+a+"x + "+b+"y = "+(b*c)+". ما المقطع الصادي عندما x=0؟",c);
  case "linereq":return f("ما معادلة مستقيم ميله "+a+" ومقطعه الصادي "+b+"؟","y = "+a+"x + "+b,["y = "+b+"x + "+a,"y = "+a+"x − "+b,"y = −"+a+"x + "+b,"x = "+a+"y + "+b]);
- case "pointslop":return f("يمر مستقيم بالنقطة (0، "+b+") وميله "+a+". ما معادلته؟","y = "+a+"x + "+b,["y = "+b+"x + "+a,"y = "+a+"x − "+b,"y = "+(a+1)+"x + "+b,"y = −"+a+"x + "+b]);
- case "perpendicular":return f("ما ميل مستقيم عمودي على مستقيم ميله "+a+"؟","−1/"+a,["1/"+a,"−"+a,String(a),"1/"+(a+1)]);
+ case "pointslop":{
+ var px=1+n%8,py=2+n;
+ return f("مستقيم ميله "+a+" ويمر بالنقطة ("+px+"، "+py+"). أي معادلة بصيغة الميل ونقطة صحيحة؟",
+ "y − "+py+" = "+a+"(x − "+px+")",
+ ["y + "+py+" = "+a+"(x − "+px+")","y − "+py+" = "+a+"(x + "+px+")","y − "+py+" = "+(a+1)+"(x − "+px+")","y − "+py+" = "+(a-1)+"(x − "+px+")"]);
+}
+ case "perpendicular":{
+ if(n%2===0)return f("ما ميل مستقيم عمودي على مستقيم ميله "+a+"؟","−1/"+a,["1/"+a,"−"+a,String(a),"1/"+(a+1)]);
+ return v("ما ميل مستقيم موازٍ للمستقيم y = "+a+"x + "+b+"؟",a);
+}
  case "congruenceSSS":{
  var kind=n%3;
  if(kind===0)return f("مثلثان أطوال أضلاعهما المتناظرة "+a+" و "+(a+1)+" و "+(a+2)+" سم. ما مسوّغ التطابق؟","SSS",["SAS","ASA","AA","HL"]);
@@ -95,7 +103,11 @@ function question(l,n){
  if(n%3===1)return f("تساوت زاويتان متناظرتان قياس إحداهما "+(30+n)+"° وضلع متناظر غير محصور بينهما في مثلثين. ما حالة التطابق؟","AAS",["ASA","SSS","AA","SSA"]);
  return f("تساوت زاويتان متناظرتان فقط في مثلثين، إحداهما "+(30+n)+"°. ماذا يمكن الاستنتاج؟","التشابه لا التطابق بالضرورة",["التطابق حتمًا بقاعدة ASA","التطابق حتمًا بقاعدة SSS","التطابق حتمًا بقاعدة SAS","التطابق حتمًا بقاعدة HL"]);
 }
- case "isosceles":return v("مثلث متطابق الضلعين زاوية رأسه "+(20+2*n)+"°. ما قياس كل زاوية من زاويتي القاعدة؟",80-n);
+ case "isosceles":{
+ if(n%3===0)return v("مثلث متطابق الضلعين زاوية رأسه "+(20+2*n)+"°. ما قياس كل زاوية من زاويتي القاعدة؟",80-n);
+ if(n%3===1)return v("في مثلث متطابق الأضلاع، ما مجموع قياس زاويتين داخليتين بالدرجات؟",120+0*n);
+ return v("مثلث متطابق الضلعين، قياس كل زاوية قاعدة "+(40+n)+"°. ما زاوية الرأس؟",100-2*n);
+}
  case "decimalplace": {var d=1+n%9,t=String(n+12)+"."+String(1000+d);return f("في العدد العشري "+t+" ما قيمة رقم منزلة جزء من عشرة آلاف؟",frac(d,10000),[frac(d,1000),frac(d,100),frac(d,10),"1/10000"])}
  case "deccompare": {var t=(n+5)/100,h=(n+6+(n%2?4:-4))/100,ans=t>h?"العدد الأول أكبر":"العدد الثاني أكبر";return f("قارن: "+t.toFixed(2)+" و "+h.toFixed(2)+"؛ أي عبارة صحيحة؟",ans,["العدد الأول أكبر","العدد الثاني أكبر","العددان متساويان","المقارنة غير ممكنة"])}
  case "percent":return f("حوّل الكسر "+a+"/100 إلى نسبة مئوية.",a+"%",[(a+1)+"%",(a*10)+"%",(a/10)+"%"]);
@@ -117,7 +129,16 @@ function question(l,n){
  case "decimal":return f("حوّل العدد الكسري "+a+"/100 إلى عدد عشري.",(a/100).toFixed(2),[(a/10).toFixed(1),(a/1000).toFixed(3),(a+1)/100,(a/10).toFixed(2)]);
  case "fracsum":return f("احسب "+a+"/"+(b+4)+" + "+b+"/"+(b+4)+" في أبسط صورة.",frac(a+b,b+4),[frac(a-b,b+4),frac(a*b,b+4),frac(a+b,b+5),frac(a+b+1,b+4)]);
  case "reverse":return v("فكرت في عدد، ضاعفته ثم أضفت "+b+" فكان الناتج "+(2*a+b)+". ما العدد الأصلي؟",a);
- case "exponent":{var baseNum=2+n%5,pow=2+Math.floor(n/5);return v("ما قيمة "+baseNum+"^"+pow+"؟",baseNum**pow,Math.max(2,baseNum))}
+ case "exponent":{
+ var baseNum=2+n%5,pow=2+Math.floor(n/5);
+ if(n%3===0)return v("ما قيمة "+baseNum+"^"+pow+"؟",baseNum**pow,Math.max(2,baseNum));
+ if(n%3===1){
+  var left=1+n%4,right=2+Math.floor(n/3)%5;
+  return f("بسّط باستخدام قانون ضرب القوى المتشابهة: "+baseNum+"^"+left+" × "+baseNum+"^"+right+".",baseNum+"^"+(left+right),[baseNum+"^"+(left*right),baseNum+"^"+(left+right+1),baseNum+"^"+Math.abs(left-right),baseNum+"^"+(left+right-1)]);
+ }
+ var left=4+Math.floor(n/3)%5,right=1+n%3;
+ return f("بسّط باستخدام قانون قسمة القوى المتشابهة: "+baseNum+"^"+left+" ÷ "+baseNum+"^"+right+".",baseNum+"^"+(left-right),[baseNum+"^"+(left+right),baseNum+"^"+(left*right),baseNum+"^"+(left-right+1),baseNum+"^"+(left-right-1)]);
+}
  case "order":return v("احسب بحسب أولويات العمليات: "+a+" + "+b+" × "+c+" .",a+b*c,b);
  case "addexpr":{var p=a+c,q=b+x;return f("بسّط: ("+a+"x + "+b+") + ("+c+"x + "+x+").",p+"x + "+q,[p+"x − "+q,(a*c)+"x + "+q,q+"x + "+(p+1),p+"x + "+(q+2),p+"x − "+(q+1)])}
  case "monomial":return f("وزّع الحد "+a+"x على ("+b+"x + "+c+").",(a*b)+"x² + "+(a*c)+"x",[(a+b)+"x² + "+(a*c)+"x",(a*b)+"x² + "+c+"x",(a*b)+"x + "+(a*c),(a*b)+"x² − "+(a*c)+"x"]);
@@ -164,13 +185,19 @@ function question(l,n){
  case "event":return v("تحتوي مجموعة النتائج على الأعداد من 1 إلى "+(2*a)+". كم ناتجًا في حادث ظهور عدد زوجي؟",a);
  case "probability":return f("صندوق فيه "+a+" كرات حمراء و "+b+" زرقاء؛ ما احتمال سحب حمراء؟",frac(a,a+b),[frac(b,a+b),frac(a,a+b+1),frac(a+1,a+b),frac(b,a+b+1)]);
  case "linequad":{var xx=a,aa=b,bb=xx*xx-xx-aa;return v("نظام المعادلتين y=x+"+aa+" و y=x²"+(bb>=0?"+"+bb:bb)+". قيمة x="+xx+" تحقق المعادلتين؛ ما قيمة y؟",xx+aa)}
- case "twosquares":return v("في النظام x²="+a*a+" و y²="+b*b+"، ما قيمة x الموجبة؟",a);
- case "exponential":return v("حل المعادلة الأسية "+(2+n%4)+"^x = "+(2+n%4)**(n+2)+"؛ أوجد x.",n+2);
+ case "twosquares":{
+ var px=2+n,py=3+n%5,xx=px*px,yy=py*py;
+ return v("حلّ النظام x² = "+xx+" و y² = "+yy+". إذا كان x>0 و y>0، فما قيمة x + y؟",px+py);
+}
+ case "exponential":{var baseNum=2+n%4,pow=2+Math.floor(n/4);return v("حل المعادلة الأسية "+baseNum+"^x = "+baseNum**pow+"؛ أوجد x.",pow);}
  case "chord":return v("في دائرة نصف قطرها "+(5*a)+" سم، يبعد وتر عن المركز "+(3*a)+" سم. ما طول الوتر؟",8*a,2);
  case "sector":return f("قطاع دائري زاويته المركزية 90° ونصف قطر دائرته "+(2*a)+" سم. ما طول قوسه بدلالة π؟",a+"π سم",[(2*a)+"π سم",(a/2)+"π سم",4*a+"π سم",a+"π² سم"]);
  case "circleangles":return v("زاوية محيطية تقابل القوس نفسه الذي تقابله زاوية مركزية قياسها "+(40+2*n)+"°. ما قياس الزاوية المحيطية؟",20+n);
  case "circleeq":return v("دائرة نصف قطرها "+a+"؛ ما قيمة r² في معادلتها القياسية؟",a*a,a);
- case "tangentcircle":return v("دائرتان متماستان خارجيًا، نصفا قطريهما "+a+" سم و "+b+" سم. ما المسافة بين مركزيهما؟",a+b);
+ case "tangentcircle":{
+ if(n%2===0)return v("دائرتان متماستان خارجيًا، نصفا قطريهما "+a+" سم و "+b+" سم. ما المسافة بين مركزيهما؟",a+b);
+ return v("دائرتان متماستان داخليًا، نصف قطر الكبيرة "+(a+b)+" سم والصغيرة "+b+" سم. ما المسافة بين مركزيهما؟",a);
+}
  case "trig":{
  var triples=[[3,4,5],[5,12,13],[8,15,17],[7,24,25],[20,21,29],[9,40,41],[12,35,37],[11,60,61],[28,45,53],[33,56,65]];
  var t=triples[Math.floor(n/3)%triples.length],k=1+Math.floor(n/15),ratio=["sin θ","cos θ","tan θ"][n%3];
