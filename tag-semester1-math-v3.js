@@ -105,7 +105,7 @@ function question(l,n){
 }
  case "isosceles":{
  if(n%3===0)return v("مثلث متطابق الضلعين زاوية رأسه "+(20+2*n)+"°. ما قياس كل زاوية من زاويتي القاعدة؟",80-n);
- if(n%3===1)return v("في مثلث متطابق الأضلاع، ما مجموع قياس زاويتين داخليتين بالدرجات؟",120+0*n);
+ if(n%3===1)return v("في مثلث متطابق الأضلاع طول ضلعه "+a+" سم، ما محيطه بالسنتيمتر؟",3*a,a);
  return v("مثلث متطابق الضلعين، قياس كل زاوية قاعدة "+(40+n)+"°. ما زاوية الرأس؟",100-2*n);
 }
  case "decimalplace": {var d=1+n%9,t=String(n+12)+"."+String(1000+d);return f("في العدد العشري "+t+" ما قيمة رقم منزلة جزء من عشرة آلاف؟",frac(d,10000),[frac(d,1000),frac(d,100),frac(d,10),"1/10000"])}
@@ -136,7 +136,7 @@ function question(l,n){
   var left=1+n%4,right=2+Math.floor(n/3)%5;
   return f("بسّط باستخدام قانون ضرب القوى المتشابهة: "+baseNum+"^"+left+" × "+baseNum+"^"+right+".",baseNum+"^"+(left+right),[baseNum+"^"+(left*right),baseNum+"^"+(left+right+1),baseNum+"^"+Math.abs(left-right),baseNum+"^"+(left+right-1)]);
  }
- var left=4+Math.floor(n/3)%5,right=1+n%3;
+ var left=4+Math.floor(n/3),right=1+n%3;
  return f("بسّط باستخدام قانون قسمة القوى المتشابهة: "+baseNum+"^"+left+" ÷ "+baseNum+"^"+right+".",baseNum+"^"+(left-right),[baseNum+"^"+(left+right),baseNum+"^"+(left*right),baseNum+"^"+(left-right+1),baseNum+"^"+(left-right-1)]);
 }
  case "order":return v("احسب بحسب أولويات العمليات: "+a+" + "+b+" × "+c+" .",a+b*c,b);
