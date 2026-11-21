@@ -23,7 +23,11 @@ function make(l,n,stem,answer,wrong){
  source:"تدريبات إثرائية أصلية مستندة إلى موضوع الدرس، تحتاج مطابقة ومراجعة من معلم المادة",
  reviewStatus:"teacher_review_required",explanation:"الإجابة الصحيحة: "+a};
 }
-function numeric(l,n,stem,ans,step){step=step||1;return make(l,n,stem,ans,[ans+step,ans-step,ans+step*2,ans-step*2])}
+function numeric(l,n,stem,ans,step){
+ step=step||1;
+ var stable=function(x){return Number(Math.round((x+Number.EPSILON)*1e8)/1e8)};
+ return make(l,n,stem,stable(ans),[stable(ans+step),stable(ans-step),stable(ans+step*2),stable(ans-step*2)]);
+}
 function expr(l,n,stem,ans,wrong){return make(l,n,stem,ans,wrong)}
 function mode(l){
  var [_,g,u,k]=l.id.split("-").map((x,i)=>i?Number(x):x);
@@ -80,8 +84,17 @@ function question(l,n){
  case "linereq":return f("ما معادلة مستقيم ميله "+a+" ومقطعه الصادي "+b+"؟","y = "+a+"x + "+b,["y = "+b+"x + "+a,"y = "+a+"x − "+b,"y = −"+a+"x + "+b,"x = "+a+"y + "+b]);
  case "pointslop":return f("يمر مستقيم بالنقطة (0، "+b+") وميله "+a+". ما معادلته؟","y = "+a+"x + "+b,["y = "+b+"x + "+a,"y = "+a+"x − "+b,"y = "+(a+1)+"x + "+b,"y = −"+a+"x + "+b]);
  case "perpendicular":return f("ما ميل مستقيم عمودي على مستقيم ميله "+a+"؟","−1/"+a,["1/"+a,"−"+a,String(a),"1/"+(a+1)]);
- case "congruenceSSS":return f("مثلث أول أطوال أضلاعه "+a+" و "+(a+1)+" و "+(a+2)+" سم، ومثلث آخر له الأطوال نفسها. ما قاعدة التطابق المناسبة؟","SSS",["ASA","AAS","AA","لا يوجد تطابق"]);
- case "congruenceASA":return f("تساوت زاويتان في مثلثين (إحداهما "+(30+n)+"°) والضلع المحصور بينهما. أي حالة تثبت التطابق؟","ASA",["SSS","AA","SSA","لا توجد حالة"]);
+ case "congruenceSSS":{
+ var kind=n%3;
+ if(kind===0)return f("مثلثان أطوال أضلاعهما المتناظرة "+a+" و "+(a+1)+" و "+(a+2)+" سم. ما مسوّغ التطابق؟","SSS",["SAS","ASA","AA","HL"]);
+ if(kind===1)return f("في مثلثين تساوى ضلعان متناظران طولهما "+a+" سم و "+b+" سم، وتساوت الزاوية المحصورة بينهما. ما حالة التطابق؟","SAS",["SSS","ASA","AA","HL"]);
+ return f("مثلثان قائمان لهما وتران متساويان طولهما "+(5*a)+" سم وضلع قائم متناظر طوله "+(3*a)+" سم. ما حالة التطابق المناسبة؟","HL",["SSS","ASA","AA","SSA"]);
+}
+ case "congruenceASA":{
+ if(n%3===0)return f("تساوت زاويتان متناظرتان قياس إحداهما "+(30+n)+"° والضلع المحصور بينهما في مثلثين. ما حالة التطابق؟","ASA",["AAS","SSS","AA","SSA"]);
+ if(n%3===1)return f("تساوت زاويتان متناظرتان قياس إحداهما "+(30+n)+"° وضلع متناظر غير محصور بينهما في مثلثين. ما حالة التطابق؟","AAS",["ASA","SSS","AA","SSA"]);
+ return f("تساوت زاويتان متناظرتان فقط في مثلثين، إحداهما "+(30+n)+"°. ماذا يمكن الاستنتاج؟","التشابه لا التطابق بالضرورة",["التطابق حتمًا بقاعدة ASA","التطابق حتمًا بقاعدة SSS","التطابق حتمًا بقاعدة SAS","التطابق حتمًا بقاعدة HL"]);
+}
  case "isosceles":return v("مثلث متطابق الضلعين زاوية رأسه "+(20+2*n)+"°. ما قياس كل زاوية من زاويتي القاعدة؟",80-n);
  case "decimalplace": {var d=1+n%9,t=String(n+12)+"."+String(1000+d);return f("في العدد العشري "+t+" ما قيمة رقم منزلة جزء من عشرة آلاف؟",frac(d,10000),[frac(d,1000),frac(d,100),frac(d,10),"1/10000"])}
  case "deccompare": {var t=(n+5)/100,h=(n+6+(n%2?4:-4))/100,ans=t>h?"العدد الأول أكبر":"العدد الثاني أكبر";return f("قارن: "+t.toFixed(2)+" و "+h.toFixed(2)+"؛ أي عبارة صحيحة؟",ans,["العدد الأول أكبر","العدد الثاني أكبر","العددان متساويان","المقارنة غير ممكنة"])}
@@ -104,7 +117,7 @@ function question(l,n){
  case "decimal":return f("حوّل العدد الكسري "+a+"/100 إلى عدد عشري.",(a/100).toFixed(2),[(a/10).toFixed(1),(a/1000).toFixed(3),(a+1)/100,(a/10).toFixed(2)]);
  case "fracsum":return f("احسب "+a+"/"+(b+4)+" + "+b+"/"+(b+4)+" في أبسط صورة.",frac(a+b,b+4),[frac(a-b,b+4),frac(a*b,b+4),frac(a+b,b+5),frac(a+b+1,b+4)]);
  case "reverse":return v("فكرت في عدد، ضاعفته ثم أضفت "+b+" فكان الناتج "+(2*a+b)+". ما العدد الأصلي؟",a);
- case "exponent":return v("ما قيمة "+(2+n%5)+"^"+(2+Math.floor(n/5))+"؟",(2+n%5)**(2+Math.floor(n/5)%5),2);
+ case "exponent":{var baseNum=2+n%5,pow=2+Math.floor(n/5)%5;return v("ما قيمة "+baseNum+"^"+pow+"؟",baseNum**pow,Math.max(2,baseNum))}
  case "order":return v("احسب بحسب أولويات العمليات: "+a+" + "+b+" × "+c+" .",a+b*c,b);
  case "addexpr":{var p=a+c,q=b+x;return f("بسّط: ("+a+"x + "+b+") + ("+c+"x + "+x+").",p+"x + "+q,[p+"x − "+q,(a*c)+"x + "+q,q+"x + "+(p+1),p+"x + "+(q+2),p+"x − "+(q+1)])}
  case "monomial":return f("وزّع الحد "+a+"x على ("+b+"x + "+c+").",(a*b)+"x² + "+(a*c)+"x",[(a+b)+"x² + "+(a*c)+"x",(a*b)+"x² + "+c+"x",(a*b)+"x + "+(a*c),(a*b)+"x² − "+(a*c)+"x"]);
@@ -126,7 +139,7 @@ function question(l,n){
  case "group":return f("حلّل بالتجميع: "+a+"x + "+(a*b)+" + "+c+"x + "+(c*b)+".","("+(a+c)+")(x + "+b+")",["("+(a+c)+")(x − "+b+")","("+(a*b+c)+")(x + "+b+")",a+"(x + "+b+")",c+"(x + "+b+")"]);
  case "linearprops":return v("ما ميل Linear Function المعطى: f(x) = "+a+"x + "+b+"؟",a);
  case "mean":return v("ما المتوسط الحسابي للقيم "+a+"، "+(a+b)+"، "+(a+2*b)+"؟",a+b,b);
- case "median":return v("أوجد الوسيط للقيم المرتبة: "+a+"، "+(a+b)+"، "+(a+b+1)+"، "+(a+b+4)+"، "+(a+b+6)+".",a+b,b);
+ case "median":return v("أوجد الوسيط للقيم المرتبة: "+a+"، "+(a+b)+"، "+(a+b+1)+"، "+(a+b+4)+"، "+(a+b+6)+".",a+b+1,b);
  case "modevalue":return v("ما المنوال للبيانات "+a+"، "+b+"، "+a+"، "+(b+3)+"، "+a+"؟",a);
  case "statsrel":return v("في مجموعة البيانات "+a+"، "+(a+3*b)+"، "+(a+9*b)+"، ما مقدار زيادة المتوسط الحسابي على الوسيط؟",b);
  case "statschange":return v("كان متوسط ثلاثة أعداد "+a+". إذا زادت كل قيمة بمقدار "+b+"، فما المتوسط الجديد؟",a+b);
@@ -158,8 +171,19 @@ function question(l,n){
  case "circleangles":return v("زاوية محيطية تقابل القوس نفسه الذي تقابله زاوية مركزية قياسها "+(40+2*n)+"°. ما قياس الزاوية المحيطية؟",20+n);
  case "circleeq":return v("دائرة نصف قطرها "+a+"؛ ما قيمة r² في معادلتها القياسية؟",a*a,a);
  case "tangentcircle":return v("دائرتان متماستان خارجيًا، نصفا قطريهما "+a+" سم و "+b+" سم. ما المسافة بين مركزيهما؟",a+b);
- case "trig":{var k=1+n,ratio=n%3===0?"sin θ":n%3===1?"cos θ":"tan θ",ans=n%3===0?"3/5":n%3===1?"4/5":"3/4";return f("مثلث قائم: المقابل للزاوية θ طوله "+(3*k)+" سم والمجاور "+(4*k)+" سم والوتر "+(5*k)+" سم. ما قيمة "+ratio+"؟",ans,["3/5","4/5","3/4","4/3","5/3","5/4"])}
- case "trigcycle":{var kind=["sin","cos","sin","cos"][n%4],angle=[30,60,150,120][n%4]+360*n,answer=n%4===3?"−1/2":"1/2";return f("احسب "+kind+"("+angle+"°) باستخدام دورية الدوال المثلثية.",answer,["1/2","−1/2","√3/2","−√3/2","0"])}
+ case "trig":{
+ var triples=[[3,4,5],[5,12,13],[8,15,17],[7,24,25],[20,21,29],[9,40,41],[12,35,37],[11,60,61],[28,45,53],[33,56,65]];
+ var t=triples[Math.floor(n/3)%triples.length],k=1+Math.floor(n/15),ratio=["sin θ","cos θ","tan θ"][n%3];
+ var ans=n%3===0?frac(t[0],t[2]):n%3===1?frac(t[1],t[2]):frac(t[0],t[1]);
+ return f("في مثلث قائم، بالنسبة إلى الزاوية θ: المقابل "+(t[0]*k)+" سم والمجاور "+(t[1]*k)+" سم والوتر "+(t[2]*k)+" سم. احسب "+ratio+".",ans,[frac(t[1],t[2]),frac(t[0],t[2]),frac(t[1],t[0]),frac(t[2],t[1]),frac(t[0],t[1]),frac(t[2],t[0])]);
+}
+ case "trigcycle":{
+ var angles=[0,30,45,60,90,120,135,150,180,210,225,240,270,300,315];
+ var sin=["0","1/2","√2/2","√3/2","1","√3/2","√2/2","1/2","0","−1/2","−√2/2","−√3/2","−1","−√3/2","−√2/2"];
+ var cos=["1","√3/2","√2/2","1/2","0","−1/2","−√2/2","−√3/2","−1","−√3/2","−√2/2","−1/2","0","1/2","√2/2"];
+ var ind=n%15,fn=n<15?"sin":"cos",answer=(n<15?sin:cos)[ind];
+ return f("احسب "+fn+"("+(angles[ind]+(n<15?360:720))+"°) مستخدمًا دورية الدوال المثلثية.",answer,["0","1","−1","1/2","−1/2","√2/2","−√2/2","√3/2","−√3/2"]);
+}
  case "triggraph":{var k=2+n;return f("ما دورة Graphing Trigonometric Function: y=sin("+k+"x) بالدرجات؟",frac(360,k)+"°",[frac(360,k+1)+"°",frac(720,k)+"°",frac(180,k)+"°",frac(360,k+2)+"°"])}
  case "trigeq":return v("في الفترة من 0° إلى 180°، إذا كان sin(x)=sin("+(n+10)+"°)، ما الحل الآخر غير "+(n+10)+"°؟",170-n,2);
  case "bearing":return v("اتجاه حركة مركبة "+(10+n)+"° شرق الجنوب. ما زاوية الاتجاه من الشمال في اتجاه عقارب الساعة؟",170-n);
