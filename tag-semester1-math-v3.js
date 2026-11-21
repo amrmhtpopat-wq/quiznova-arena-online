@@ -75,7 +75,7 @@ function question(l,n){
  case "reverse":return v("فكرت في عدد، ضاعفته ثم أضفت "+b+" فكان الناتج "+(2*a+b)+". ما العدد الأصلي؟",a);
  case "exponent":return v("ما قيمة "+(2+n%5)+"^"+(2+Math.floor(n/5))+"؟",(2+n%5)**(2+Math.floor(n/5)%5),2);
  case "order":return v("احسب بحسب أولويات العمليات: "+a+" + "+b+" × "+c+" .",a+b*c,b);
- case "addexpr":{var p=a+c,q=b+x;return f("بسّط: ("+a+"x + "+b+") + ("+c+"x + "+x+").",p+"x + "+q,[p+"x − "+q,(a*c)+"x + "+q,q+"x + "+(p+1),p+"x + "+(q+1)])}
+ case "addexpr":{var p=a+c,q=b+x;return f("بسّط: ("+a+"x + "+b+") + ("+c+"x + "+x+").",p+"x + "+q,[p+"x − "+q,(a*c)+"x + "+q,q+"x + "+(p+1),p+"x + "+(q+2),p+"x − "+(q+1)])}
  case "monomial":return f("وزّع الحد "+a+"x على ("+b+"x + "+c+").",(a*b)+"x² + "+(a*c)+"x",[(a+b)+"x² + "+(a*c)+"x",(a*b)+"x² + "+c+"x",(a*b)+"x + "+(a*c),(a*b)+"x² − "+(a*c)+"x"]);
  case "guess":return v("باستخدام التخمين والتحقق: ما العدد الذي إذا ضُرب في "+b+" ثم أضيف "+c+" أصبح "+(a*b+c)+"؟",a);
  case "fracperiod":return f("ما الكتابة العشرية الدورية للكسر "+(3*n+1)+"/3 ؟",n+".333…",[n+".666…",n+".5",n+".25",(n+1)+".333…"]);
