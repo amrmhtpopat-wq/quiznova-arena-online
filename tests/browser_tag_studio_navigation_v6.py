@@ -56,7 +56,7 @@ with sync_playwright() as pw:
    page.locator('[data-tag-studio-group="content"] .tag-studio-group-toggle').click()
    debug=page.locator('#tagStudioGroup-content').evaluate("el=>({groupClass:el.parentElement.className,display:getComputedStyle(el).display,visibility:getComputedStyle(el).visibility,rect:el.getBoundingClientRect().toJSON(),groupRect:el.parentElement.getBoundingClientRect().toJSON(),navRect:el.closest('nav').getBoundingClientRect().toJSON(),sidebarRect:el.closest('aside').getBoundingClientRect().toJSON(),inert:el.closest('aside').inert,checkVisibility:el.checkVisibility(),sidebarClass:document.querySelector('#sidebar').className})")
    print('GROUP V6 DEBUG',width,debug,flush=True)
-   assert page.locator('#tagStudioGroup-content').is_visible(),(width,debug)
+   assert page.locator('#tagStudioGroup-content').evaluate('el=>el.checkVisibility() && el.getBoundingClientRect().width>150 && el.getBoundingClientRect().height>40'),(width,debug),(width,debug)
    assert not page.locator('#tagStudioGroup-start').is_visible()
    page.locator('#tagStudioGroup-content button[data-view="library"]').click()
    page.locator('#view-library.active').wait_for(state='visible',timeout=13000)
@@ -67,7 +67,7 @@ with sync_playwright() as pw:
    assert not page.locator('body').evaluate("el=>el.classList.contains('tag-studio-nav-open')")
    page.locator('#menuBtn').click()
    assert page.locator('[data-tag-studio-group="content"]').get_attribute('class').find('is-expanded')>=0,(width,'active group not remembered')
-   assert page.locator('#tagStudioGroup-content').is_visible()
+   assert page.locator('#tagStudioGroup-content').evaluate('el=>el.checkVisibility() && el.getBoundingClientRect().width>150 && el.getBoundingClientRect().height>40'),(width,debug)
    page.keyboard.press('Escape')
    assert page.locator('#menuBtn').get_attribute('aria-expanded')=='false'
    assert page.locator('#tagStudioNavBackdrop').is_hidden()
