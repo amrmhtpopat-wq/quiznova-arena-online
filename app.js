@@ -288,6 +288,33 @@ window.TAG_ACCEPT_BOOK_ROWS=(rows,book,grade,topic,mode)=>{
  renderQuestions();go('builder');
  return {ok:true,count:converted.length};
 };
+// TAG Jordan S1 30-question lesson examinations — an UNSAVED teacher draft.
+// The teacher's specialty must match the authenticated server profile.
+// The shared original practice pack is not imported into teacher bank/cloud.
+window.TAG_OPEN_S1_LESSON_EXAM=lessonId=>{
+ const syllabus=window.TAG_JORDAN_S1_COURSES_V1,exams=window.TAG_JORDAN_S1_TESTS_V1;
+ if(!syllabus||!exams)return {ok:false,error:'library_not_ready'};
+ const lesson=syllabus.lessonById(lessonId);
+ if(!lesson)return {ok:false,error:'lesson_not_found'};
+ const subject=window.QN9_TEACHER?.subject||'';
+ if(syllabus.keyOf(subject)!==syllabus.keyOf(lesson.subject))return {ok:false,error:'subject_restricted'};
+ const rows=exams.questionsFor(lessonId,subject);
+ if(rows.length!==30)return {ok:false,error:'lesson_needs_30_valid_questions'};
+ if(!rows.every(q=>q.type==='single'&&q.options?.length===4&&q.correct?.length===1))
+  return {ok:false,error:'question_integrity_failed'};
+ const allowed=[...$('#quizGrade').options].some(o=>o.value===lesson.grade);
+ if(!allowed)return {ok:false,error:'grade_not_available'};
+ resetBuilder();
+ $('#quizTitle').value='اختبار '+lesson.title+' — الصف '+lesson.grade+' — الفصل الأول';
+ $('#quizSubject').value=lesson.subject;
+ $('#quizGrade').value=lesson.grade;
+ // A fresh, uniquely ID'd unsaved copy: editing must not mutate shared packs.
+ builderQuestions=rows.map(q=>({...clone(q),id:uid(),tags:[...(q.tags||[])],
+    options:[...q.options],correct:[...q.correct]}));
+ boActiveQuestionId=builderQuestions[0].id;
+ renderQuestions();go('builder');
+ return {ok:true,count:builderQuestions.length,title:$('#quizTitle').value};
+};
 function addQuestion(type='single'){ const q=blankQuestion(type); q.subject=$('#quizSubject').value||window.QN9_TEACHER?.subject||'عام';q.grade=$('#quizGrade').value;builderQuestions.push(q);boActiveQuestionId=q.id;renderQuestions() }
 $('#addQuestion').onclick=()=>addQuestion('single'); $('#boRailAddQuestion').onclick=()=>addQuestion('single'); $$('#quickTypes [data-addtype]').forEach(b=>b.onclick=()=>addQuestion(b.dataset.addtype)); $('#resetBuilder').onclick=resetBuilder;
 const ideaPlans={
