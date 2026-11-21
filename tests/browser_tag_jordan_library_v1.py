@@ -32,7 +32,7 @@ with sync_playwright() as pw:
    assert page.evaluate('TAG_JORDAN_CURRICULUM_V1.grades.length')==12
    assert page.locator('#jordanLibrary .jordan-grade-card').count()==12
    subject='الرياضيات' if teacher is math else 'اللغة الإنجليزية'
-   assert subject in page.locator('#jordanLibrarySubject').inner_text()
+   assert subject in page.locator('#jordanLibrarySubject').text_content(), 'Optional collapsed enrichment area must retain teacher subject label'
    count=page.evaluate('TAG_JORDAN_CURRICULUM_V1.questionsForTeacher(window.QN9_TEACHER.subject).length')
    assert count>100,(subject,count)
    other='اللغة الإنجليزية' if teacher is math else 'الرياضيات'
