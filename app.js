@@ -131,6 +131,26 @@ function renderJordanLibrary(){
   return `<article class="jordan-grade-card ${count?'has-questions':'pending'}"><span class="jordan-grade-icon" aria-hidden="true">${count?'📘':'📂'}</span><h4>الصف ${escapeHtml(grade)}</h4><p>${count?count+' سؤال تدريبي متاح':'حزمة الأسئلة تحتاج إعدادًا ومراجعة'}</p><button type="button" ${count?'':"disabled"} onclick="openJordanGrade('${escapeHtml(grade)}')">${count?'إنشاء اختبار للصف':'غير متاح بعد'}</button></article>`;
  }).join('');
 }
+// TAG semester-one lesson quiz bridge: explicit teacher action; never bulk-save the public question bank.
+window.TAG_LESSON_CREATE_V2=(entry,questions)=>{
+ const catalog=window.TAG_SEMESTER1_CATALOG_V2,pack=window.TAG_SEMESTER1_PACKS_V2;
+ const official=catalog?.get(entry?.id);
+ const teacherSubject=catalog?.teacherSubject(window.QN9_TEACHER?.subject);
+ if(!official||!teacherSubject||official.subject!==teacherSubject||official.semester!=='1')return toast('لا يمكنك إنشاء اختبار خارج تخصص حسابك');
+ const expected=pack?.forLesson(official)||[];
+ if(expected.length!==30||!pack.validate(expected)||questions?.length!==30||
+    questions.some((q,i)=>q.text!==expected[i].text||q.subject!==teacherSubject||q.grade!==official.grade))
+   return toast('لا يمكن استخدام درس قبل اكتمال 30 سؤالًا والتحقق من سلامتها');
+ resetBuilder();
+ $('#quizTitle').value='اختبار '+official.lesson+' — الصف '+official.grade+' — الفصل الأول';
+ $('#quizSubject').value=official.subject;
+ $('#quizGrade').value=official.grade;
+ builderQuestions=expected.map(q=>({...clone(q),id:uid()}));
+ boActiveQuestionId=builderQuestions[0]?.id||null;
+ renderQuestions();go('builder');
+ toast('تم تجهيز 30 سؤالًا؛ راجعها ثم احفظ الاختبار أو انشره');
+};
+
 window.openJordanGrade=grade=>{
  const count=allAvailableBank().filter(q=>subjectMatchesTeacher(q)&&q.grade===grade).length;
  if(!count)return toast('لا توجد حزمة أسئلة مراجَعة لهذا الصف بعد');
