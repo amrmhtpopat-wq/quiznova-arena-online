@@ -17,6 +17,13 @@ function get(x){
  var pack=revisedMath?math.forLesson(l):original.length===30?original:
   l.subject==="الرياضيات"?math.forLesson(l):
   l.subject==="المهارات الرقمية"?digital.forLesson(l):[];
+ // Preserve richer existing hand-authored packs; enhance existing math hints without
+ // touching teachers' saved quizzes or changing question identifiers.
+ if(original.length===30&&pack===original&&l.subject==="الرياضيات"){
+  pack=pack.map(function(q){return Object.assign({},q,{
+   explanation:math.teachingTip(l)+". "+q.explanation
+  })});
+ }
  if(!old.validate(pack)||pack.some(function(q){
   return q.subject!==l.subject||q.grade!==l.grade||q.unit!==l.unit
   ||q.lesson!==l.lesson||q.semester!=="1"||q.reviewStatus!=="teacher_review_required"
