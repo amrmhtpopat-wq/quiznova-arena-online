@@ -43,6 +43,7 @@ with sync_playwright() as pw:
    assert not page.locator('#sidebar').is_visible(),(width,'closed drawer should not be visible')
    page.locator('#menuBtn').click()
    page.wait_for_function("document.querySelector('#sidebar').classList.contains('open')")
+   page.locator('#sidebar').wait_for(state='visible',timeout=7500)
    assert page.locator('#menuBtn').get_attribute('aria-expanded')=='true'
    assert page.locator('#sidebar').is_visible()
    assert page.locator('#tagStudioNavBackdrop').is_visible()
