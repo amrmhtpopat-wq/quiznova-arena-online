@@ -73,9 +73,9 @@ function question(l,n){
  case "decimal":return f("حوّل العدد الكسري "+a+"/100 إلى عدد عشري.",(a/100).toFixed(2),[(a/10).toFixed(1),(a/1000).toFixed(3),(a+1)/100,(a/10).toFixed(2)]);
  case "fracsum":return f("احسب "+a+"/"+(b+4)+" + "+b+"/"+(b+4)+" في أبسط صورة.",frac(a+b,b+4),[frac(a-b,b+4),frac(a*b,b+4),frac(a+b,b+5),frac(a+b+1,b+4)]);
  case "reverse":return v("فكرت في عدد، ضاعفته ثم أضفت "+b+" فكان الناتج "+(2*a+b)+". ما العدد الأصلي؟",a);
- case "exponent":return v("ما قيمة "+(2+n%5)+"^"+(2+Math.floor(n/5)%5)+"؟",(2+n%5)**(2+Math.floor(n/5)%5),2);
+ case "exponent":return v("ما قيمة "+(2+n%5)+"^"+(2+Math.floor(n/5))+"؟",(2+n%5)**(2+Math.floor(n/5)%5),2);
  case "order":return v("احسب بحسب أولويات العمليات: "+a+" + "+b+" × "+c+" .",a+b*c,b);
- case "addexpr":{var p=a+c,q=b+x;return f("بسّط: ("+a+"x + "+b+") + ("+c+"x + "+x+").",p+"x + "+q,[p+"x − "+q,(a*c)+"x + "+q,q+"x + "+p,p+"x + "+(q+1)])}
+ case "addexpr":{var p=a+c,q=b+x;return f("بسّط: ("+a+"x + "+b+") + ("+c+"x + "+x+").",p+"x + "+q,[p+"x − "+q,(a*c)+"x + "+q,q+"x + "+(p+1),p+"x + "+(q+1)])}
  case "monomial":return f("وزّع الحد "+a+"x على ("+b+"x + "+c+").",(a*b)+"x² + "+(a*c)+"x",[(a+b)+"x² + "+(a*c)+"x",(a*b)+"x² + "+c+"x",(a*b)+"x + "+(a*c),(a*b)+"x² − "+(a*c)+"x"]);
  case "guess":return v("باستخدام التخمين والتحقق: ما العدد الذي إذا ضُرب في "+b+" ثم أضيف "+c+" أصبح "+(a*b+c)+"؟",a);
  case "fracperiod":return f("ما الكتابة العشرية الدورية للكسر "+(3*n+1)+"/3 ؟",n+".333…",[n+".666…",n+".5",n+".25",(n+1)+".333…"]);
@@ -140,6 +140,6 @@ function question(l,n){
  return null;
 }
 var mathIdSet=C.bySubject("الرياضيات");
-function generateMath(l){if(!l||l.subject!=="الرياضيات"||!mode(l))return [];var q=[];try{for(var i=0;i<30;i++)q.push(question(l,i))}catch(e){return []}return base.validate(q)?q:[]}
+function generateMath(l){if(!l||l.subject!=="الرياضيات"||!mode(l))return [];var q=[];try{for(var i=0;i<30;i++)q.push(question(l,i))}catch(e){return []}return q.every(Boolean)&&base.validate(q)?q:[]}
 root.TAG_SEMESTER1_MATH_V3=Object.freeze({forLesson:generateMath,mode:mode});
 })(window);
