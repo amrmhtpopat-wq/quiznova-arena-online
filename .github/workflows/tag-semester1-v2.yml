@@ -1,0 +1,38 @@
+name: TAG Semester One Curriculum V2
+on:
+  push:
+    branches:
+      - feature/teachgame-semester1-catalog-20261121
+    paths:
+      - 'tag-semester1-*.js'
+      - 'tag-semester1-*.css'
+      - 'studio.html'
+      - 'studio-auth.js'
+      - 'app.js'
+      - 'tests/test_tag_semester1_v2.cjs'
+      - '.github/workflows/tag-semester1-v2.yml'
+  pull_request:
+    paths:
+      - 'tag-semester1-*.js'
+      - 'tag-semester1-*.css'
+      - 'studio.html'
+      - 'studio-auth.js'
+      - 'app.js'
+      - 'tests/test_tag_semester1_v2.cjs'
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate catalog and exact 30-question packs
+        run: node tests/test_tag_semester1_v2.cjs
+      - name: JavaScript parse checks
+        run: |
+          node --check tag-semester1-catalog-v2.js
+          node --check tag-semester1-packs-v2.js
+          node --check tag-semester1-library-v2.js
+          node --check app.js
+          node --check studio-auth.js

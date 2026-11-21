@@ -1,0 +1,39 @@
+/* Original TeachGame studio • Semester-one curriculum UI, responsive. */
+body.v105-studio .s1-panel{background:linear-gradient(140deg,#082743,#123c60 72%,#075969)!important;border:1px solid #4e9cb3!important;box-shadow:0 14px 38px #00162845;border-radius:23px;padding:clamp(15px,3vw,26px);margin:0 0 20px;color:#edfbff;direction:rtl}
+body.v105-studio .s1-head{display:flex;gap:13px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+body.v105-studio .s1-head h3{margin:5px 0 8px!important;color:#f6ffff!important;-webkit-text-fill-color:#f6ffff!important;font:900 clamp(21px,2.2vw,27px)/1.5 Cairo,Tahoma,Arial,sans-serif!important}
+body.v105-studio .s1-head p{color:#cbe7f5!important;-webkit-text-fill-color:#cbe7f5!important;font:600 13px/1.85 Cairo,Tahoma,Arial,sans-serif!important;max-width:680px}
+body.v105-studio .s1-eyebrow{font:800 11px Cairo,Tahoma,Arial;letter-spacing:.07em;color:#92eeda}
+body.v105-studio .s1-count{border-radius:999px;padding:9px 14px;color:#b2ffe8;border:1px solid #58c7b7;background:#12665f;white-space:nowrap;font-size:12px;font-weight:850}
+body.v105-studio .s1-path{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 13px}
+body.v105-studio .s1-path span{border:1px solid #497b92;border-radius:12px;background:#15354c;padding:7px 10px;font-size:12px;font-weight:750;color:#e9f8ff}
+body.v105-studio .s1-path b{font-weight:850;color:#8df5d2}
+body.v105-studio .s1-filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+body.v105-studio .s1-filters label{display:flex;flex-direction:column;gap:7px;min-width:0;color:#e9f8fc;font-size:13px;font-weight:750}
+body.v105-studio .s1-filters select{width:100%;min-height:49px;padding:10px 13px;border:1px solid #aacbd9;border-radius:12px;background:#f7fdff;color:#123751;font:750 14px Cairo,Tahoma,Arial,sans-serif!important;box-sizing:border-box}
+body.v105-studio .s1-filters select:focus-visible{outline:3px solid #89efd6;outline-offset:2px}
+body.v105-studio .s1-overview{margin:15px 0 10px}
+body.v105-studio .s1-selected{display:flex;justify-content:space-between;gap:15px;align-items:center;flex-wrap:wrap;padding:14px;border:1px solid #447b98;border-radius:15px;background:#092c4e}
+body.v105-studio .s1-selected small{color:#afd4e5;font-size:12px}
+body.v105-studio .s1-selected h4{font:900 17px/1.65 Cairo,Tahoma,Arial,sans-serif;color:#f2ffff!important;margin:5px 0!important;-webkit-text-fill-color:#f2ffff!important}
+body.v105-studio .s1-selected p{font:600 12px/1.7 Cairo,Tahoma,Arial,sans-serif;color:#d2e8f2!important;margin:0!important;-webkit-text-fill-color:#d2e8f2!important}
+body.v105-studio .s1-state{padding:7px 12px;font-size:12px;font-weight:850;border-radius:999px;white-space:nowrap}
+body.v105-studio .s1-state.ok{background:#0e594b;color:#b6ffde;border:1px solid #6ac9a7}
+body.v105-studio .s1-state.pending{background:#554a31;color:#ffeac9;border:1px solid #ae9e5b}
+body.v105-studio .s1-controls{display:flex;flex-wrap:wrap;gap:10px}
+body.v105-studio .s1-controls button{min-height:45px;padding:10px 16px;border:0;border-radius:12px;font:850 13px Cairo,Tahoma,Arial,sans-serif;cursor:pointer}
+body.v105-studio .s1-primary{background:linear-gradient(125deg,#69ded8,#9fedbf);color:#06314a}
+body.v105-studio .s1-secondary{background:#204e71;color:#fff;border:1px solid #83bccf!important}
+body.v105-studio .s1-controls button:disabled{opacity:.55;cursor:not-allowed;filter:grayscale(.55)}
+body.v105-studio .s1-preview{max-height:520px;overflow:auto;margin:14px 0;padding:8px;border:1px solid #6890a5;border-radius:14px;background:#f7fbff;color:#12354c}
+body.v105-studio .s1-preview[hidden]{display:none!important}
+body.v105-studio .s1-question{border-bottom:1px solid #d1e0e9;padding:10px}
+body.v105-studio .s1-question summary{color:#12354c;font-size:13px;line-height:1.7;font-weight:800;cursor:pointer}
+body.v105-studio .s1-answers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:9px 0}
+body.v105-studio .s1-answers span{padding:8px;border:1px solid #c7d7df;border-radius:8px;color:#21445c;background:#fff;font-size:12px}
+body.v105-studio .s1-answers .correct{border-color:#5da585;background:#e2f8ec;color:#10583d;font-weight:850}
+body.v105-studio .s1-trust{font-size:12px!important;line-height:1.8!important;margin:14px 0 0!important;color:#d0e8f2!important;-webkit-text-fill-color:#d0e8f2!important}
+body.v105-studio .s1-trust a{color:#acffe1;text-decoration:underline}
+body.v105-studio .s1-empty{padding:15px;border:1px dashed #8ca9b7;border-radius:12px;color:#e7f6ff;background:#0a3559}
+@media(max-width:760px){body.v105-studio .s1-filters{grid-template-columns:1fr!important}body.v105-studio .s1-path span{flex:1 1 auto}body.v105-studio .s1-head{align-items:flex-start}body.v105-studio .s1-count{white-space:normal}body.v105-studio .s1-controls button{flex:1 1 180px}body.v105-studio .s1-answers{grid-template-columns:1fr}}
+@media(max-width:390px){body.v105-studio .s1-panel{padding:13px!important;border-radius:15px!important}body.v105-studio .s1-filters select{font-size:13px!important}}
