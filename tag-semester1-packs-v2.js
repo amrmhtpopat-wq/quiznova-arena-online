@@ -46,8 +46,8 @@ function math(l){
  "m-2-3-3":function(n){var a=2+n%9,b=1+n;return num(l,n,"ما المقطع الصادي لرسم Linear Function: f(x) = "+a+"x + "+b+"؟",b)},
  "m-2-4-1":function(n){var a=5+n,s=3+n%8;return num(l,n,"ما المتوسط الحسابي للأعداد "+a+"، "+(a+s)+"، "+(a+2*s)+"؟",a+s,s)},
  "m-3-2-3":function(n){var k=4+n;return num(l,n,"ما أكبر عدد صحيح يحقق x < "+k+"؟",k-1)},
- "m-3-3-2":function(n){var p=2+n,q=3+n%7,sum=p+q;return num(l,n,"في Quadratic Function: f(x) = x² − "+sum+"x + "+p*q+"، ما مجموع أصفاره؟",sum)},
- "m-3-3-4":function(n){var p=2+n,q=3+n%7;return num(l,n,"ما مجموع جذري المعادلة x² − "+(p+q)+"x + "+p*q+" = 0 ؟",p+q)},
+ "m-3-3-2":function(n){var p=2+n,q=p+3+n%5,sum=p+q;return make(l,n,"في Quadratic Function: f(x) = x² − "+sum+"x + "+p*q+"، ما أصغر صفر للدالة؟",p,[q,p-1,p+1,p+2])},
+ "m-3-3-4":function(n){var p=2+n,q=p+3+n%5;return make(l,n,"ما التحليل الصحيح للمقدار x² − "+(p+q)+"x + "+p*q+"؟","(x − "+p+")(x − "+q+")",["(x + "+p+")(x + "+q+")","(x − "+p+")(x + "+q+")","(x + "+p+")(x − "+q+")"])},
  "m-3-4-4":function(n){var red=2+n,blue=3+n%9,total=red+blue;return make(l,n,"صندوق فيه "+red+" كرات حمراء و"+blue+" زرقاء. ما احتمال سحب كرة حمراء؟",fraction(red,total),[fraction(blue,total),fraction(red,total+1),fraction(red+1,total),fraction(blue,total+1)])},
  "m-4-1-4":function(n){var a=2+n%4,x=2+Math.floor(n/4)%8;return num(l,n,"حل المعادلة الأسية: "+a+"^x = "+a**x+" .",x)},
  "m-4-2-4":function(n){var a=1+n%8,b=2+Math.floor(n/8),r=2+n;return num(l,n,"دائرة مركزها ("+a+"، "+b+") ونصف قطرها "+r+"؛ ما r² في المعادلة القياسية؟",r*r,Math.max(2,Math.floor(r/3)))}
