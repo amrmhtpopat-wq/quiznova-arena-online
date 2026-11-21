@@ -16,15 +16,15 @@ const P=context.window.TAG_SEMESTER1_PACKS_V2;
 const M=context.window.TAG_SEMESTER1_MATH_V3;
 const D=context.window.TAG_SEMESTER1_DIGITAL_V3;
 assert.ok(C&&P&&M&&D,"missing curriculum components");
-assert.equal(C.all.length,153);
-assert.equal(C.bySubject("الرياضيات").length,106);
+assert.equal(C.all.length,150);
+assert.equal(C.bySubject("الرياضيات").length,103);
 assert.equal(C.bySubject("المهارات الرقمية").length,47);
 assert.equal(D.conceptCount,47);
-assert.equal(P.summary.total,153);
-assert.equal(P.summary.ready,153);
-assert.equal(P.summary.questions,4590);
-assert.equal(P.available.length,153);
-assert.equal(C.forTeacher("الرياضيات").length,106);
+assert.equal(P.summary.total,150);
+assert.equal(P.summary.ready,150);
+assert.equal(P.summary.questions,4500);
+assert.equal(P.available.length,150);
+assert.equal(C.forTeacher("الرياضيات").length,103);
 assert.equal(C.forTeacher("مهارات رقمية").length,47);
 assert.equal(C.forTeacher("التربية الإسلامية").length,0);
 const ids=new Set(),questionIds=new Set();
@@ -56,7 +56,7 @@ for(const lesson of C.all){
   count++;
  }
 }
-assert.equal(count,4590);
+assert.equal(count,4500);
 for(const l of C.bySubject("الرياضيات"))assert.equal(P.forLesson(l).length,30,"missing math "+l.id);
 for(const l of C.bySubject("المهارات الرقمية"))assert.equal(P.forLesson(l).length,30,"missing digital "+l.id);
 for(const l of C.all.filter(x=>x.lesson.includes("Function")||x.lesson.includes("اقتران"))){
@@ -64,7 +64,7 @@ for(const l of C.all.filter(x=>x.lesson.includes("Function")||x.lesson.includes(
  assert.ok(q.some(x=>/Function|f\(x\)|f\(/.test(x.text)),"math functions English "+l.id);
 }
 for(const n of [0,5,8,10,29]){
- const q=P.forLesson("m-2-1-4")[n],val=(n+2)*10000,correct=q.options[q.correct[0]];
+ const q=P.forLesson("m-2-1-7")[n],val=(n+2)*10000,correct=q.options[q.correct[0]];
  const match=correct.match(/^(\d+(?:\.\d+)?) × 10\^(\d+)$/);
  assert.ok(match,"invalid scientific notation "+correct);
  assert.ok(Number(match[1])>=1&&Number(match[1])<10);
