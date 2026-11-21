@@ -54,7 +54,7 @@ with sync_playwright() as pw:
    assert page.locator('#tagStudioGroup-start').is_visible()
    assert not page.locator('#tagStudioGroup-content').is_visible()
    page.locator('[data-tag-studio-group="content"] .tag-studio-group-toggle').click()
-   debug=page.locator('#tagStudioGroup-content').evaluate("el=>({groupClass:el.parentElement.className,display:getComputedStyle(el).display,visibility:getComputedStyle(el).visibility,height:el.getBoundingClientRect().height,sidebarClass:document.querySelector('#sidebar').className})")
+   debug=page.locator('#tagStudioGroup-content').evaluate("el=>({groupClass:el.parentElement.className,display:getComputedStyle(el).display,visibility:getComputedStyle(el).visibility,rect:el.getBoundingClientRect().toJSON(),groupRect:el.parentElement.getBoundingClientRect().toJSON(),navRect:el.closest('nav').getBoundingClientRect().toJSON(),sidebarRect:el.closest('aside').getBoundingClientRect().toJSON(),inert:el.closest('aside').inert,checkVisibility:el.checkVisibility(),sidebarClass:document.querySelector('#sidebar').className})")
    print('GROUP V6 DEBUG',width,debug,flush=True)
    assert page.locator('#tagStudioGroup-content').is_visible(),(width,debug)
    assert not page.locator('#tagStudioGroup-start').is_visible()
