@@ -52,14 +52,14 @@ function item(text,choices,correct,i){
 }
 const div=(n,d)=>Math.round(n/d*10000)/10000;
 function generate(f,i,lesson){
- const a=2+(i%19),b=2+(Math.floor(i/5)%13),c=1+(Math.floor(i/7)%8);
+ const a=2+i,b=2+(Math.floor(i/5)%11),c=1+(Math.floor(i/7)%8);
  const x=(i%2===0?-1:1)*a,y=(i%3===0?-1:1)*b;
- const p=2+(i%9),q=2+(Math.floor(i/3)%7);
+ const p=2+i,q=2+(Math.floor(i/3)%7);
  let tx='',ans=0,wrong=null,choices=null,correct=0;
  switch(f){
  case 'absolute':tx='ما القيمة المطلقة للعدد '+x+'؟';ans=Math.abs(x);break;
- case 'compare':return item('أي مقارنة صحيحة بين '+x+' و '+y+'؟',
- [x>y?x+' > '+y:y+' > '+x,x<y?x+' > '+y:x+' > '+y,x+' = '+y,x>y?x+' < '+y:y+' < '+x],0,i);
+ case 'compare':return item('ما علامة المقارنة الصحيحة بين '+x+' و '+y+'؟',
+ ['>','<','=','لا يمكن المقارنة'],x>y?0:x<y?1:2,i);
  case 'add_signed':tx='احسب ناتج '+x+' + ('+y+').';ans=x+y;break;
  case 'subtract_signed':tx='احسب ناتج '+x+' − ('+y+').';ans=x-y;break;
  case 'multiply_signed':tx='احسب ناتج ('+x+') × ('+y+').';ans=x*y;wrong=[-ans,ans+a,ans-a,ans+2];break;
@@ -86,7 +86,7 @@ function generate(f,i,lesson){
  case 'algebra_add':tx='ما معامل x في ( '+a+'x + '+b+' ) + ( '+p+'x + '+q+' ) ؟';ans=a+p;break;
  case 'distribute':tx='ما معامل x الناتج من توزيع '+a+' على ( '+p+'x + '+b+' )؟';ans=a*p;break;
  case 'linear_solve':tx='حل المعادلة x + '+a+' = '+(a+b)+'. ما قيمة x؟';ans=b;break;
- case 'repeating':tx='ما قيمة '+a+'/9 بصيغة عشرية حتى ثلاث منازل؟ (قرّب لأقرب ألف)';ans=div(a,9);wrong=[div(a,10),div(a,11),div(a+1,9),div(a-1,9)];break;
+ case 'repeating':tx='قرّب الكسر '+a+'/9 إلى أقرب جزء من ألف.';ans=Math.round(a/9*1000)/1000;wrong=[div(a,10),div(a,11),Math.round((a+1)/9*1000)/1000,Math.round((a-1)/9*1000)/1000];break;
  case 'sequences':tx='في المتتالية الحسابية '+a+'، '+(a+p)+'، '+(a+2*p)+'، ... ما الحد الرابع؟';ans=a+3*p;break;
  case 'function':tx='Given the function f(x) = '+p+'x + '+b+', find f('+a+').';ans=p*a+b;break;
  case 'linear_graph':tx='For the Linear Function f(x) = '+p+'x + '+b+', what is the y-intercept?';ans=b;break;
@@ -108,7 +108,7 @@ function generate(f,i,lesson){
  case 'slope':tx='يمر مستقيم بالنقطتين (1, '+b+') و (3, '+(b+2*p)+'). ما ميله؟';ans=p;break;
  case 'point_slope':tx='يمر مستقيم ميله '+p+' بالنقطة (0, '+b+'). ما y-intercept؟';ans=b;break;
  case 'parallel_lines':tx='The line y = '+p+'x + '+a+' is parallel to y = mx + '+b+'. Find m.';ans=p;break;
- case 'congruence':return item('في مثلثين، إذا تطابقت الأضلاع الثلاثة المقابلة، أي معيار يثبت التطابق؟ اختر الحالة '+(i+1)+'.',['SSS','SAS','ASA','AAS'],0,i);
+ case 'congruence':return item('مثلثان لهما الأضلاع المتناظرة '+a+' سم و '+p+' سم و '+(a+p-1)+' سم نفسها. ما معيار التطابق المباشر؟',['SSS','SAS','ASA','AAS'],0,i);
  case 'isosceles':tx='في مثلث متساوي الساقين زاوية الرأس '+(2*a)+'°. ما زاوية القاعدة؟';ans=90-a;break;
  case 'interval':return item('إذا كانت x > '+a+'، أي وصف يمثل مجال الحل؟',['('+a+', ∞)','['+a+', ∞)','(−∞, '+a+')','(−∞, '+a+']'],0,i);
  case 'compound_inequality':tx='إذا كانت '+a+' < x < '+(a+b)+'، فكم عدد القيم الصحيحة لـ x؟';ans=b-1;break;
@@ -126,10 +126,10 @@ function generate(f,i,lesson){
  case 'arc':tx='A central angle of '+(a*5)+'° subtends an arc in a circle. What is the arc measure in degrees?';ans=a*5;break;
  case 'inscribed_angle':tx='An inscribed angle intercepts an arc of '+(a*6)+'°. Find the angle measure.';ans=a*3;break;
  case 'circle_equation':tx='For the circle (x − '+a+')² + (y − '+b+')² = '+(p*p)+', find the radius.';ans=p;break;
- case 'circle_tangent':return item('ما قياس الزاوية بين نصف قطر دائرة والمماس عند نقطة التماس؟ دائرة رقم '+(i+1)+'.',['90°','45°','60°','180°'],0,i);
+ case 'circle_tangent':return item('لدائرة نصف قطرها '+a+' سم، ما زاوية تقاطع المماس مع نصف القطر عند نقطة التماس؟',['90°','45°','60°','180°'],0,i);
  case 'trig':return item('For a right triangle, what is sin(θ) when opposite = '+a+' and hypotenuse = '+(a+b)+'?', [a+'/'+(a+b),(a+b)+'/'+a,b+'/'+(a+b),a+'/'+b],0,i);
  case 'trig_graph':tx='For the Trigonometric Function f(x) = '+p+'sin(x), what is its amplitude?';ans=p;break;
- case 'trig_equation':return item('For 0° ≤ θ ≤ 90°, solve sin(θ) = 1/2. Choose case '+(i+1)+'.',['30°','45°','60°','90°'],0,i);
+ case 'trig_equation':return item('For 0° ≤ θ ≤ 90°, solve sin(θ) = sin('+(10+i*2)+'°). Find θ.',[(10+i*2)+'°',(9+i*2)+'°',(11+i*2)+'°',(12+i*2)+'°'],0,i);
  case 'bearings':tx='If a compass turns clockwise '+(a*10)+'° from North, what is its bearing in degrees?';ans=a*10;break;
  case 'sine_rule':return item('For the Sine Rule, if A = 30°, B = 90° and a = '+p+' cm, find b.',[fmt(2*p)+' cm',fmt(p/2)+' cm',fmt(p)+' cm',fmt(3*p)+' cm'],0,i);
  case 'cosine_rule':tx='Using the Cosine Rule with sides '+a+', '+b+' and included angle 90°, what is c²?';ans=a*a+b*b;break;
