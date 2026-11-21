@@ -13,7 +13,8 @@ function get(x){
  var l=typeof x==="string"?C.get(x):x;
  if(!l||!C.get(l.id))return [];
  if(Object.prototype.hasOwnProperty.call(cache,l.id))return cache[l.id];
- var original=old.forLesson(l),pack=original.length===30?original:
+ var original=old.forLesson(l),revisedMath=l.subject==="الرياضيات"&&/^(السادس|السابع|الثامن)$/.test(l.grade);
+ var pack=revisedMath?math.forLesson(l):original.length===30?original:
   l.subject==="الرياضيات"?math.forLesson(l):
   l.subject==="المهارات الرقمية"?digital.forLesson(l):[];
  if(!old.validate(pack)||pack.some(function(q){
