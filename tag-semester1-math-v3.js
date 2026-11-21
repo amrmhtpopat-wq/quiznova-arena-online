@@ -342,5 +342,5 @@ function question(l,n){
 }
 var mathIdSet=C.bySubject("الرياضيات");
 function generateMath(l){if(!l||l.subject!=="الرياضيات"||!mode(l))return [];var q=[];try{for(var i=0;i<30;i++)q.push(question(l,i))}catch(e){return []}return q.every(Boolean)&&base.validate(q)?q:[]}
-root.TAG_SEMESTER1_MATH_V3=Object.freeze({forLesson:generateMath,mode:mode});
+root.TAG_SEMESTER1_MATH_V3=Object.freeze({forLesson:generateMath,mode:mode,teachingTip:teachingTip});
 })(window);
