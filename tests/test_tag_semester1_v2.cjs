@@ -7,13 +7,13 @@ for(const file of ['tag-semester1-catalog-v2.js','tag-semester1-packs-v2.js']){
 }
 const c=ctx.window.TAG_SEMESTER1_CATALOG_V2,p=ctx.window.TAG_SEMESTER1_PACKS_V2;
 assert.ok(c&&p);
-assert.equal(c.all.length,153);
-assert.equal(c.bySubject('الرياضيات').length,106);
+assert.equal(c.all.length,150);
+assert.equal(c.bySubject('الرياضيات').length,103);
 assert.equal(c.bySubject('المهارات الرقمية').length,47);
 assert.deepEqual(Array.from(new Set(c.bySubject('الرياضيات').map(x=>x.grade))),['السادس','السابع','الثامن','التاسع','العاشر']);
 assert.deepEqual(Array.from(new Set(c.bySubject('المهارات الرقمية').map(x=>x.grade))),['السابع','الثامن','التاسع','العاشر','الأول ثانوي']);
-assert.equal(c.forTeacher('الرياضيات').length,106);
-assert.equal(c.forTeacher('رياضيات').length,106);
+assert.equal(c.forTeacher('الرياضيات').length,103);
+assert.equal(c.forTeacher('رياضيات').length,103);
 assert.equal(c.forTeacher('المهارات الرقمية').length,47);
 assert.equal(c.forTeacher('مهارات رقمية').length,47);
 assert.equal(c.forTeacher('التربية الإسلامية').length,0);
