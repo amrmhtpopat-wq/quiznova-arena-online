@@ -62,10 +62,26 @@ function question(l,n){
  var v1=n+2,v2=3+n%8;
  switch(m){
  case "intcompare":return f("قارن بين العددين الصحيحين −"+a+" و −"+(a+b)+"؛ أيهما أكبر؟","−"+a,["−"+(a+b),String(a),"−"+(a+1),String(a+b)]);
- case "intsum":return v("احسب: (−"+a+") + "+b+" .",b-a);
- case "intsub":return v("احسب: "+a+" − (−"+b+").",a+b);
- case "intprod":return v("احسب: (−"+a+") × (−"+b+").",a*b,b);
- case "mixedsum":return v("احسب: ("+a+" + 1/3) + ("+b+" + 2/3)؛ ما الناتج كعدد صحيح؟",a+b+1);
+ case "intsum":{
+ var t=5+(n*3%17)+Math.floor(n/5);
+ if(n%3===0)return v("احسب: (−"+a+") + "+t+" .",t-a);
+ if(n%3===1)return v("احسب: (−"+a+") + (−"+t+").",-a-t);
+ return v("احسب: "+a+" + (−"+t+").",a-t);
+}
+ case "intsub":{
+ if(n%3===0)return v("احسب: "+a+" − (−"+b+").",a+b);
+ if(n%3===1)return v("احسب: (−"+a+") − "+b+".",-a-b);
+ return v("احسب: (−"+a+") − (−"+b+").",b-a);
+}
+ case "intprod":{
+ if(n%3===0)return v("احسب: (−"+a+") × (−"+b+").",a*b,b);
+ if(n%3===1)return v("احسب: (−"+(a*b)+") ÷ "+a+".",-b);
+ return v("احسب: (−"+a+") × "+b+".",-a*b,b);
+}
+ case "mixedsum":{
+ if(n%2===0)return v("احسب: ("+a+" + 1/3) + ("+b+" + 2/3)؛ ما الناتج كعدد صحيح؟",a+b+1);
+ return v("احسب: ("+(a+b)+" + 2/3) − ("+a+" + 2/3)؛ ما الناتج؟",b);
+}
  case "mixedprod":return v("اضرب العدد الكسري ("+a+" + 1/2) في 2؛ ما الناتج؟",2*a+1);
  case "mixeddiv":return v("اقسم العدد الكسري ("+a+" + 1/2) على 1/2؛ ما الناتج؟",2*a+1);
  case "decdiv":{var d=(a*b/100);return v("احسب: "+d.toFixed(2)+" ÷ "+(b/10).toFixed(1)+" .",a/10,0.1)}
@@ -114,7 +130,12 @@ function question(l,n){
  case "fraccompare": {var first=n%2?a+4:a,second=n%2?a:a+4;return f("أي مقارنة صحيحة بين "+first+"/"+b+" و "+second+"/"+b+"؟",first>second?"الكسر الأول أكبر":"الكسر الثاني أكبر",["الكسر الأول أكبر","الكسر الثاني أكبر","الكسران متساويان","لا يمكن المقارنة"])}
  case "decprod": {var z=a*b/100;return v("احسب "+(a/10).toFixed(1)+" × "+(b/10).toFixed(1)+" = ؟",z,0.1)}
  case "estimate": {var r=10*a,t=10*b;return v("قدّر حاصل ضرب "+(r+2)+" × "+(t+3)+" بتقريب كل عامل لأقرب عشرة.",r*t,10)}
- case "fracprod":return f("احسب حاصل ضرب "+a+"/"+(b+2)+" × "+b+"/"+(a+3)+" في أبسط صورة.",frac(a*b,(b+2)*(a+3)),[frac(a+b,(b+2)*(a+3)),frac(a*b,(b+1)*(a+3)),frac(a*b+1,(b+2)*(a+3)),frac(a*b,(b+2)*(a+2))]);
+ case "fracprod":{
+ var divide=n%2===1;
+ var answer=divide?frac(a*(a+3),b*(b+2)):frac(a*b,(b+2)*(a+3));
+ return f("احسب "+a+"/"+(b+2)+(divide?" ÷ ":" × ")+b+"/"+(a+3)+" في أبسط صورة.",answer,
+ [frac(a+b,(b+2)*(a+3)),frac(a*b,(b+1)*(a+3)),frac(a*b+1,(b+2)*(a+3)),frac(a*(a+2),b*(b+2)),frac(a*b,(b+2)*(a+2))]);
+}
  case "fracdiv":return f("احسب "+a+"/"+(b+2)+" ÷ "+b+"/"+(a+3)+" في أبسط صورة.",frac(a*(a+3),b*(b+2)),[frac(a*b,(b+2)*(a+3)),frac(a*(a+3),b*(b+3)),frac(a*b+1,(b+2)*(a+3)),frac(a*(a+2),b*(b+2))]);
  case "coord":return v("نقطة إحداثياها ("+a+"، "+b+"). إذا انسحبت أفقيًا "+(n+1)+" وحدة نحو اليمين، فما إحداثي x الجديد؟",a+n+1);
  case "algebra":return v("إذا كان x="+x+"، فما قيمة التعبير "+a+"x + "+b+"؟",a*x+b,a);
@@ -125,9 +146,17 @@ function question(l,n){
  case "linearfunc":return v("إذا كان f(x) = "+a+"x + "+b+"، فأوجد f("+(n+3)+").",a*(n+3)+b,a);
  case "lineargraph":return v("رسم Linear Function: f(x) = "+a+"x + "+b+"؛ ما الإحداثي الصادي عند x="+(n+3)+"؟",a*(n+3)+b,a);
  case "rational":return f("أي كسر يمثل العدد النسبي "+a+" مقسومًا على "+b+"؟",a+"/"+b,[b+"/"+a,a+"/"+(b+1),(a+1)+"/"+b,(a+b)+"/"+b]);
- case "abs":return v("ما القيمة المطلقة للعدد −"+a+"؟",a);
+ case "abs":{
+ if(n<10)return v("ما القيمة المطلقة للعدد −"+a+"؟",a);
+ if(n<22)return v("أوجد قيمة |−"+a+"| + |−"+b+"|.",a+b);
+ return v("أوجد |−"+a+"| − |"+b+" − "+(2*a)+"|.",a-Math.abs(b-2*a));
+}
  case "decimal":return f("حوّل العدد الكسري "+a+"/100 إلى عدد عشري.",(a/100).toFixed(2),[(a/10).toFixed(1),(a/1000).toFixed(3),(a+1)/100,(a/10).toFixed(2)]);
- case "fracsum":return f("احسب "+a+"/"+(b+4)+" + "+b+"/"+(b+4)+" في أبسط صورة.",frac(a+b,b+4),[frac(a-b,b+4),frac(a*b,b+4),frac(a+b,b+5),frac(a+b+1,b+4)]);
+ case "fracsum":{
+ var d=b+4,plus=n%2===0,answer=frac(plus?a+b:a-b,d);
+ return f("احسب "+a+"/"+d+(plus?" + ":" − ")+b+"/"+d+" في أبسط صورة.",answer,
+  [frac(plus?a-b:a+b,d),frac(a*b,d),frac(plus?a+b:a-b,d+1),frac((plus?a+b:a-b)+1,d)]);
+}
  case "reverse":return v("فكرت في عدد، ضاعفته ثم أضفت "+b+" فكان الناتج "+(2*a+b)+". ما العدد الأصلي؟",a);
  case "exponent":{
  var baseNum=2+n%5,pow=2+Math.floor(n/5);
@@ -143,7 +172,11 @@ function question(l,n){
  case "addexpr":{var p=a+c,q=b+x;return f("بسّط: ("+a+"x + "+b+") + ("+c+"x + "+x+").",p+"x + "+q,[p+"x − "+q,(a*c)+"x + "+q,q+"x + "+(p+1),p+"x + "+(q+2),p+"x − "+(q+1)])}
  case "monomial":return f("وزّع الحد "+a+"x على ("+b+"x + "+c+").",(a*b)+"x² + "+(a*c)+"x",[(a+b)+"x² + "+(a*c)+"x",(a*b)+"x² + "+c+"x",(a*b)+"x + "+(a*c),(a*b)+"x² − "+(a*c)+"x"]);
  case "guess":return v("باستخدام التخمين والتحقق: ما العدد الذي إذا ضُرب في "+b+" ثم أضيف "+c+" أصبح "+(a*b+c)+"؟",a);
- case "fracperiod":return f("ما الكتابة العشرية الدورية للكسر "+(3*n+1)+"/3 ؟",n+".333…",[n+".666…",n+".5",n+".25",(n+1)+".333…"]);
+ case "fracperiod":{
+ var remainder=n%2===0?1:2,answer=n+(remainder===1?".333…":".666…");
+ return f("ما الكتابة العشرية الدورية للكسر "+(3*n+remainder)+"/3؟",answer,
+  [n+(remainder===1?".666…":".333…"),n+".5",n+".25",(n+1)+".333…"]);
+}
  case "seq":return v("المتتالية الحسابية: "+a+"، "+(a+b)+"، "+(a+2*b)+"... ما الحد الخامس؟",a+4*b,b);
  case "angles":return v("زاويتان متكاملتان، قياس الأولى "+(20+n)+"°. ما قياس الثانية بالدرجات؟",160-n);
  case "parallel":return v("قاطع لمستقيمين متوازيين كوّن زاوية "+(20+n)+"°. ما قياس الزاوية المتناظرة معها؟",20+n);
