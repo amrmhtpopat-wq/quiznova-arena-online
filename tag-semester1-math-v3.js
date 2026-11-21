@@ -35,7 +35,7 @@ function mode(l){
  
  "1-1":"rational,decimal,fraccompare,fracsum,fracprod,reverse",
  "1-2":"exponent,order,algebra,addexpr,monomial,guess",
- "1-3":"linear,fracperiod,seq,linearfunc,linearfunc",
+ "1-3":"linear,fracperiod,seq,linearfunc,lineargraph",
  "1-4":"angles,parallel,triangle,polygon,rotate",
  "2-1":"roots,radicals,pythagoras,real,radicalexponent,radicalmul,scientific,percent",
  "2-2":"specialproduct,factor,quadraticfactor,diffsquare,fracexpr",
@@ -66,7 +66,7 @@ function question(l,n){
  case "mixeddiv":return v("اقسم العدد الكسري ("+a+" + 1/2) على 1/2؛ ما الناتج؟",2*a+1);
  case "decdiv":{var d=(a*b/100);return v("احسب: "+d.toFixed(2)+" ÷ "+(b/10).toFixed(1)+" .",a/10,0.1)}
  case "measurement":return v("طول حبل "+(a/10).toFixed(1)+" متر؛ ما طوله بالسنتيمترات؟",10*a,10);
- case "smaller":return v("قسّم "+(4*a)+" قطعة بالتساوي على "+a+" مجموعات؛ كم قطعة في كل مجموعة؟",4);
+ case "smaller":return v("قسّم "+(a*b)+" قطعة بالتساوي على "+a+" مجموعات؛ كم قطعة في كل مجموعة؟",b);
  case "reflect":return f("انعكاس النقطة ("+a+"، "+b+") في محور y يعطي أي إحداثيين؟","(−"+a+"، "+b+")",["("+a+"، −"+b+")","(−"+b+"، "+a+")","("+a+"، "+b+")","("+b+"، −"+a+")"]);
  case "circleparts":return v("دائرة نصف قطرها "+a+" سم. ما طول قطرها بالسنتيمتر؟",2*a,2);
  case "construction":return v("عند إنشاء العمود المنصف لقطعة طولها "+(2*a)+" سم، ما طول كل نصف من القطعة؟",a);
@@ -97,6 +97,8 @@ function question(l,n){
  case "equality":return v("إذا كان x + "+a+" = "+(a+b)+"، فما قيمة x التي تحفظ المساواة؟",b);
  case "wordexpr":return f("ما التعبير الجبري لعبارة «"+a+" أمثال x مضاف إليها "+b+"»؟",a+"x + "+b,[a+"x − "+b,b+"x + "+a,a+" + "+b+"x",a+"x × "+b]);
  case "linear":return v("حل المعادلة "+a+"x + "+b+" = "+(a*x+b)+"؛ أوجد x.",x);
+ case "linearfunc":return v("إذا كان f(x) = "+a+"x + "+b+"، فأوجد f("+(n+3)+").",a*(n+3)+b,a);
+ case "lineargraph":return v("رسم Linear Function: f(x) = "+a+"x + "+b+"؛ ما الإحداثي الصادي عند x="+(n+3)+"؟",a*(n+3)+b,a);
  case "rational":return f("أي كسر يمثل العدد النسبي "+a+" مقسومًا على "+b+"؟",a+"/"+b,[b+"/"+a,a+"/"+(b+1),(a+1)+"/"+b,(a+b)+"/"+b]);
  case "abs":return v("ما القيمة المطلقة للعدد −"+a+"؟",a);
  case "decimal":return f("حوّل العدد الكسري "+a+"/100 إلى عدد عشري.",(a/100).toFixed(2),[(a/10).toFixed(1),(a/1000).toFixed(3),(a+1)/100,(a/10).toFixed(2)]);
