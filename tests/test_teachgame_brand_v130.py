@@ -57,7 +57,7 @@ class TeachGameBrandChecks(unittest.TestCase):
                 self.assertIn('location.replace(window.TAG_ENTRY_URL())',html)
                 self.assertIn(dest,html)
                 self.assertIn('TEACH AND GAME',html)
-                self.assertIn('wake-loader.js?v=18',html)
+                self.assertIn('wake-loader.js?v=25',html)
         sitemap=(ROOT/'sitemap.xml').read_text(encoding='utf-8')
         self.assertEqual(sitemap.count('<url>'),3)
         self.assertNotIn('teachgame.onrender.com',sitemap)

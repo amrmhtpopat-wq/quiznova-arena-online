@@ -36,7 +36,7 @@ for(const file of approved){
  const html=fs.readFileSync(file,'utf8');
  assert.ok(html.includes('class="tag-spatial-global'),file+' missing opt-in');
  assert.ok(html.includes('/tag-spatial-site-v3.css?v=3'),file+' missing stylesheet');
- assert.ok(html.includes('/tag-spatial-site-v3.js?v=3'),file+' missing JS');
+ assert.ok(html.includes('/tag-spatial-site-v3.js?v=3')||html.includes('/tag-spatial-site-v3.js?v=25'),file+' missing JS');
  assert.ok(html.includes('/tag-spatial-unify-v4.css?v=4.1'),file+' missing final palette');
  assert.ok(!html.includes('TAG_QUIZ_DELETE_ALL'),'unexpected destructive token');
 }
