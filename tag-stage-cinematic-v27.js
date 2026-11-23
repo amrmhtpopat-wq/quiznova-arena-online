@@ -3,7 +3,7 @@
  * positions, answers, student avatars and the winner.
  */
 (()=>{'use strict';
- const state={seq:0,timers:[],liveSig:'',lastLive:[],finishSig:'',resultsSig:''};
+ const state={seq:0,timers:[],liveSig:'',lastLive:[],finishSig:'',resultsSig:'',liveBusyUntil:0,pendingLive:null};
  const delay=(fn,ms)=>{const id=setTimeout(fn,ms);state.timers.push(id);return id};
  const clear=()=>{state.seq++;state.timers.forEach(clearTimeout);state.timers=[]};
  const reduced=()=>window.matchMedia?.('(prefers-reduced-motion: reduce)').matches===true;
@@ -56,17 +56,31 @@
   if(room.examMode||room.showFeedback===false){root.textContent='🛡️ الترتيب مخفي خلال التحدي';return}
   const list=top(room),sig=JSON.stringify(list.map(p=>[p.name,p.score]));
   if(sig===state.liveSig&&root.querySelector('.tag27-live-list'))return;
+  // Keep every reveal readable even when the server publishes score changes
+  // every 700ms. Coalesce incoming updates and animate the freshest standings
+  // after the current five names have been shown.
+  if(!reduced()&&Date.now()<state.liveBusyUntil){
+    state.pendingLive=room;
+    return;
+  }
   const before=state.lastLive;
   state.lastLive=list.map(p=>({name:p.name,score:p.score}));
   state.liveSig=sig;
   clear();
   root.innerHTML='<div class="tag27-live-head"><span>⚡ تحديث مباشر للمراكز الخمسة</span><small>النقاط والترتيب يتجددان بالتتابع</small></div><div class="tag27-live-list" aria-label="ترتيب الخمسة الأوائل"></div>';
   progress(list,root.querySelector('.tag27-live-list'),{before,spacing:500});
+  state.liveBusyUntil=Date.now()+(reduced()?0:Math.max(1,list.length)*500+800);
+  delay(()=>{
+    if(!state.pendingLive)return;
+    const latest=state.pendingLive;
+    state.pendingLive=null;state.liveBusyUntil=0;
+    updateLive(latest);
+  },reduced()?0:Math.max(1,list.length)*500+820);
  }
  function results(room,parts){
   const dest=document.getElementById('stage');if(!dest)return false;
   const list=top(room),stats=room.stats||{};
-  clear();state.liveSig='';
+  clear();state.liveSig='';state.liveBusyUntil=0;state.pendingLive=null;
   dest.innerHTML='<div class="stage-wrap tag27-round-wrap">'+parts.head+
    '<div class="round-stage tag27-results"><div class="tag27-intro"><span>TAG LIVE • ROUND '+(numeric(room.index)+1)+'</span>'+
    '<h1>⚡ لحظة تغيير الترتيب!</h1><p>تابعوا المراكز وهي تظهر واحدًا بعد الآخر…</p></div>'+
@@ -90,7 +104,7 @@
  }
  function finale(room,parts){
   const dest=document.getElementById('stage');if(!dest)return false;
-  clear();state.liveSig='';
+  clear();state.liveSig='';state.liveBusyUntil=0;state.pendingLive=null;
   const teams=room.playType==='teams',ranked=(teams?room.teams:room.report)||[],players=room.players||[];
   const winner=ranked[0];
   const podium=[2,1,0].filter(i=>ranked[i]).map(i=>{
@@ -131,7 +145,7 @@
   play();return true;
  }
  function reset(){
-  clear();state.liveSig='';state.lastLive=[];
+  clear();state.liveSig='';state.lastLive=[];state.liveBusyUntil=0;state.pendingLive=null;
  }
  window.TAGStageCinema={results,finale,updateLive,reset};
 })();
