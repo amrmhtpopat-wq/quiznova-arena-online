@@ -42,13 +42,14 @@ class PWASafeInstallContract(unittest.TestCase):
         m=json.loads(data)
         self.assertEqual(m['short_name'],'TAG')
         self.assertEqual(m['id'],'/app.html')
-        self.assertEqual(m['start_url'],'/app.html')
+        self.assertEqual(m['start_url'],'/app/')
         self.assertEqual(m['scope'],'/')
         self.assertEqual(m['display'],'standalone')
         self.assertFalse(m.get('prefer_related_applications',False))
         self.assertIn('ar',m['lang'])
         self.assertEqual(len(m['shortcuts']),2)
         self.assertEqual({shortcut['short_name'] for shortcut in m['shortcuts']},{'الطالب','المعلم'})
+        self.assertEqual({shortcut['url'] for shortcut in m['shortcuts']},{'/student/','/teacher/'})
         self.assertNotIn('TAG LAB',[shortcut['name'] for shortcut in m['shortcuts']])
 
     def test_real_pngs_are_square_not_svg_renamed(self):
