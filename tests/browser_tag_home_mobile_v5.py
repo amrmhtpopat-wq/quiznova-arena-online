@@ -1,4 +1,4 @@
-"""Phone-only TAG V5 dashboard: Chromium layout and desktop isolation checks."""
+"""TAG Spatial V4 regression: 3D first paint, no legacy flash, direct teacher tools, responsive geometry."""
 import os,sys,tempfile,threading
 from pathlib import Path
 from playwright.sync_api import sync_playwright
@@ -24,27 +24,31 @@ with sync_playwright() as pw:
   page.locator('#password').fill('TestV5Password123!')
   page.locator('#authSubmit').click()
   page.locator('#workspace').wait_for(state='visible',timeout=15000)
-  shortcuts=page.locator('#panel-home>.tag-v5-shortcuts')
-  assert shortcuts.is_visible()==phone,('shortcuts',width)
-  assert page.locator('#panel-home>.hero h2').is_visible()==(not phone),('desktop hero',width)
-  assert page.locator('#panel-home>.grid-two').is_visible()==(not phone),('desktop panels',width)
-  assert page.locator('.topbar-actions>a.primary').is_visible()==(not phone),('desktop toolbar',width)
-  dims=page.evaluate("""() => ({
-    width:innerWidth,scroll:document.documentElement.scrollWidth,
-    hero:document.querySelector('#panel-home>.hero').getBoundingClientRect().height,
-    metrics:getComputedStyle(document.querySelector('#panel-home>.metric-grid')).gridTemplateColumns.split(' ').length
-  })""")
+  # V4 replaces the former V5 dashboard with the approved full-width 3D workspace,
+  # while retaining the original markup/handlers for a safe failure fallback.
+  native=page.locator('#panel-home>.tag-spatial-native-host')
+  native.wait_for(state='visible',timeout=15000)
+  page.wait_for_function("""() => Boolean(document.querySelector(".tag-spatial-native-host")?.shadowRoot?.getElementById("tag-v3-tools"))""",timeout=10000)
+  assert native.locator('.tool[data-tool]').count()==9,(width,'missing teacher instruments')
+  assert not page.locator('#panel-home>.hero').is_visible(),(width,'old portal hero flashed')
+  assert not page.locator('#workspace>.sidebar').is_visible(),(width,'redundant sidebar on spatial landing')
+  assert not page.locator('#workspace>.main>.topbar').is_visible(),(width,'old portal topbar on landing')
+  dims=page.evaluate("""() => {
+    const host=document.querySelector('.tag-spatial-native-host'),
+      header=host.shadowRoot.querySelector('.header').getBoundingClientRect();
+    return {width:innerWidth,scroll:document.documentElement.scrollWidth,
+      headerY:header.y,headerW:header.width};
+  }""")
   assert dims['scroll']<=dims['width']+3,(width,dims)
+  assert dims['headerY']<150,(width,'excessive blank space',dims)
   if phone:
-   assert dims['hero']<240,(width,dims)
-   assert dims['metrics']==2,(width,dims)
-   assert page.locator('#panel-home>.hero .tag-v5-start').is_visible(),width
-   assert page.locator('#panel-home>.tag-v5-extra').is_visible(),width
-   shortcuts.locator('[data-jump=students]').click()
-   assert page.locator('#panel-students.active').is_visible(),width
+   native.locator('[data-tool="cards"]').first.click()
+   page.locator('#panel-students.active').wait_for(state='visible',timeout=8000)
   else:
-   assert not page.locator('#panel-home>.hero .tag-v5-start').is_visible(),width
+   native.locator('[data-tool="create"]').first.click()
+   page.wait_for_url('**/studio.html#builder',timeout=12000)
+   page.locator('#view-builder.active').wait_for(state='visible',timeout=12000)
   ctx.close()
  browser.close()
 http.shutdown();http.server_close()
-print('PASS TAG V5 compact phone dashboard and unchanged desktop/tablet.')
+print('PASS TAG Spatial V4: consistent native 3D landing, no old hero flash, direct cards and builder routes.')
