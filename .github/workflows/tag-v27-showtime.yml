@@ -1,0 +1,55 @@
+name: TAG V27 Live Show & Branded Startup Safety
+on:
+  push:
+    branches: [tag-v27-live-suspense-podium-wake, main]
+    paths:
+      - 'stage.js'
+      - 'stage.html'
+      - 'studio.html'
+      - 'studio-auth.js'
+      - 'app.js'
+      - 'tag-live-showtime-v27.*'
+      - 'short-link/index.html'
+      - 'tools/build_teachgame_unified.py'
+      - 'tests/test_tag_v27_showtime.py'
+      - 'tests/browser_tag_v27_showtime.py'
+      - '.github/workflows/tag-v27-showtime.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'stage.js'
+      - 'stage.html'
+      - 'studio.html'
+      - 'app.js'
+      - 'tag-live-showtime-v27.*'
+      - 'short-link/index.html'
+      - 'tools/build_teachgame_unified.py'
+      - 'tests/test_tag_v27_showtime.py'
+      - 'tests/browser_tag_v27_showtime.py'
+      - '.github/workflows/tag-v27-showtime.yml'
+permissions: {contents: read}
+jobs:
+  classroom:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: Syntax check all modified live scripts
+        run: |
+          node --check tag-live-showtime-v27.js
+          node --check stage.js
+          node --check app.js
+          node --check studio-auth.js
+      - name: Release safety and static gateway checks
+        run: |
+          python -m unittest discover -s tests -p 'test_tag_v27_showtime.py' -v
+          python -m unittest discover -s tests -p 'test_tag_unified_gateway_v26.py' -v
+          python -m unittest discover -s tests -p 'test_tag_original_school_qr.py' -v
+      - name: Install real browser
+        run: |
+          python -m pip install playwright
+          python -m playwright install chromium
+      - name: Real classroom stage animation and exam controls
+        run: python -u tests/browser_tag_v27_showtime.py
