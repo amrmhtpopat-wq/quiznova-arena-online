@@ -144,3 +144,6 @@
 }
 .calm-mode .tile-visual,.calm-mode .tile-visual *{animation:none!important;transition:none!important}
 
+
+/* Only the actual design content receives events; an empty host box never blocks older controls. */
+.tag-spatial-native-stage{position:relative;pointer-events:auto;}
