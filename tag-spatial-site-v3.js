@@ -63,7 +63,7 @@ function mountHub(){
     try{window.TAGSpatialNativeInit(shadow,host);loaded=true;
       host.classList.toggle('tag-spatial-v3-paused',!visible());
     }catch(err){host.remove();host=null;page.classList.remove('tag-spatial-native-active');throw err}
-   }).catch(err=>console.warn('[TAG Spatial] Safe legacy dashboard fallback:',err.message))
+   }).catch(err=>{page.classList.add('tag-spatial-v4-fallback');console.warn('[TAG Spatial] Safe legacy dashboard fallback:',err.message)})
     .finally(()=>{loading=false});
  }
  if(window.MutationObserver){
