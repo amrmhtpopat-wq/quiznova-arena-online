@@ -76,7 +76,7 @@ class TeachGameBrandChecks(unittest.TestCase):
             'booyah-countdown-v121.js':['TEACH AND GAME • استعد للانطلاق'],
             'media_library.js':['مكتبة TEACH AND GAME'],
             'portal.js':['tag-card-logo','reissueTeachGameCards',"const base=location.hostname==='quiznova-arena-online.onrender.com'?'https://teachgame.onrender.com/card/?card=':location.origin+'/student.html?card=';"],
-            'studio-auth.js':['TAG_unsynced_changes.json',"/app.js?v=19.1"],
+            'studio-auth.js':['TAG_unsynced_changes.json',"/app.js?v=27.0"],
             'platform_security.py':['TEACH AND GAME | تيتش آند جيم — إعادة تعيين كلمة المرور','حسابك في TEACH AND GAME'],
         }
         for name,phrases in targets.items():
@@ -97,7 +97,7 @@ class TeachGameBrandChecks(unittest.TestCase):
     def test_updated_assets_and_cache_control(self):
         refs={
           'index.html':['portal.js?v=24.2','booyah-badge-v112.css?v=13.1'],
-          'studio.html':['media_library.js?v=13.1','studio-auth.js?v=13.6','booyah-countdown-v121.js?v=13.1'],
+          'studio.html':['media_library.js?v=13.1','studio-auth.js?v=27.0','booyah-countdown-v121.js?v=13.1'],
           'student.html':['booyah-countdown-v121.js?v=13.1'],
           'stage.html':['booyah-countdown-v121.js?v=13.1']
         }
