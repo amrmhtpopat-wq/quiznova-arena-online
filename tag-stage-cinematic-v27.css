@@ -98,3 +98,39 @@ body.v105-stage .tag27-final-footer button:focus-visible{outline:3px solid #fff;
 body.v105-stage .tag27-podium,body.v105-stage .tag27-podium-card{pointer-events:none!important}
 body.v105-stage .tag27-final-footer{position:relative;z-index:20;margin-top:8px;flex-shrink:0}
 body.v105-stage #tag27Replay{position:relative;z-index:21;pointer-events:auto!important;touch-action:manipulation}
+
+/* V27 projection fit — make all five names legible within the single-screen
+   classroom stage; recover vertical room from the answer grid, not scroll. */
+body.v105-stage[data-stage-view="question"] .live-bottom{
+  height:min(25vh,198px)!important;max-height:min(25vh,198px)!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1.6fr)!important;
+}
+body.v105-stage[data-stage-view="question"] .answer-grid{max-height:min(27vh,245px)!important}
+body.v105-stage .tag27-live-list{min-height:0!important;gap:clamp(2px,.35vh,4px)!important}
+body.v105-stage .tag27-live-head{padding-bottom:3px;font-size:clamp(11px,1vw,14px);line-height:1.2}
+body.v105-stage .tag27-live-head small{font-size:10px}
+body.v105-stage .tag27-live-list .tag27-rank-row{
+  min-height:clamp(20px,2.8vh,28px)!important;
+  height:clamp(20px,2.8vh,28px)!important;
+  padding:1px 5px!important;gap:6px!important;border-radius:7px!important
+}
+body.v105-stage .tag27-live-list .tag27-position{
+  width:clamp(18px,2.6vh,25px)!important;height:clamp(18px,2.6vh,25px)!important;
+  flex-basis:clamp(18px,2.6vh,25px)!important;font-size:clamp(11px,1.4vh,15px)!important;
+  border-radius:6px!important
+}
+body.v105-stage .tag27-live-list .tag27-player b{
+  font-size:clamp(11px,1.25vw,15px)!important;line-height:1.1!important
+}
+body.v105-stage .tag27-live-list .tag27-score{flex-basis:68px!important}
+body.v105-stage .tag27-live-list .tag27-score strong{
+  font-size:clamp(12px,1.35vw,16px)!important;line-height:1.05
+}
+body.v105-stage .tag27-live-list .tag27-score span{font-size:9px;line-height:1}
+@media(max-height:700px){
+ body.v105-stage[data-stage-view="question"] .answer-grid{max-height:min(23vh,170px)!important}
+ body.v105-stage[data-stage-view="question"] .live-bottom{
+  height:min(26vh,170px)!important;max-height:min(26vh,170px)!important
+ }
+ body.v105-stage .tag27-live-head small{display:none}
+}
