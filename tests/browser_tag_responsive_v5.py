@@ -59,6 +59,14 @@ with sync_playwright() as pw:
     page.locator(".tag-back-nav").click()
     page.wait_for_url(BASE+"/",timeout=12000)
     checks+=1
+   # CHAMPION TAG requires an authenticated teacher; test branding only after
+   # entering through the normal sign-in route (never bypass protected pages).
+   page.goto(BASE+"/?teacher=1",wait_until="domcontentloaded")
+   page.locator("#authWall").wait_for(state="visible",timeout=12000)
+   page.locator("#email").fill("spatial-v5@example.org")
+   page.locator("#password").fill("StrongSpatialV5Pass123!")
+   page.locator("#authSubmit").click()
+   page.locator("#workspace").wait_for(state="visible",timeout=15000)
    page.goto(BASE+"/champion.html",wait_until="domcontentloaded")
    asset=asset_loaded(page,"header.top .brand-img","champion logo")
    assert "tag-spatial-identity-v3.webp" in asset["src"]
