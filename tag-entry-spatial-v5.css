@@ -1,0 +1,207 @@
+/* TAG V5 — Student/visitor first impression. Scoped: no game logic or inputs changed.
+   Uses the approved TAG Spatial identity; accessible responsive composition. */
+body.v105-portal.tag-spatial-global #studentWelcome.bo-entry {
+ --entry-ink:#f2fcf9;--entry-muted:#b4cdd6;--entry-teal:#8ae7dd;
+ color:var(--entry-ink)!important;box-sizing:border-box;
+ background:radial-gradient(ellipse 70% 68% at 108% 0%,#22616c70,transparent 75%),
+ radial-gradient(ellipse 50% 50% at -5% 55%,#16486070,transparent 75%),
+ linear-gradient(135deg,#071b2c,#0b2a40 60%,#082238)!important;
+ padding:clamp(15px,2.6vw,36px)!important;
+ min-height:100svh!important;overflow-x:clip;
+ font-family:"IBM Plex Sans Arabic",Tahoma,Arial,sans-serif!important;
+}
+body.v105-portal #studentWelcome.bo-entry::before{
+ content:"";position:absolute;inset:9px;z-index:-1;pointer-events:none;
+ background:linear-gradient(#7dd9db1c,#7dd9db1c) 50% 105px/ min(1180px,92%) 1px no-repeat;
+}
+body.v105-portal #studentWelcome .bo-entry-head{
+ max-width:1240px;display:grid;grid-template-columns:auto 1fr auto;
+ gap:clamp(10px,1.6vw,26px);align-items:center;min-width:0;
+ padding:0 0 clamp(16px,2vw,25px);margin-inline:auto;
+ border-bottom:1px solid #76bbcd30;
+}
+body.v105-portal #studentWelcome .bo-entry-logo{
+ grid-column:1;grid-row:1;max-width:190px;min-width:0;justify-content:flex-start;
+}
+body.v105-portal #studentWelcome .bo-entry-logo img{
+ display:block!important;width:clamp(72px,9.5vw,120px)!important;
+ height:clamp(64px,8vw,100px)!important;max-width:100%!important;
+ object-fit:contain!important;
+ filter:drop-shadow(0 10px 21px #30bcbd33);
+}
+body.v105-portal #studentWelcome .bo-entry-teacher{
+ display:inline-flex!important;align-items:center;justify-content:center;gap:8px;
+ background:#153a4e!important;color:#ebfaf5!important;
+ border:1px solid #5c95a58a!important;
+ border-radius:12px!important;min-height:44px;padding:10px 16px!important;
+ font-size:clamp(12px,1.15vw,14px);font-weight:750!important;box-shadow:inset 0 1px #ffffff0b;
+ white-space:normal;text-align:center;max-width:100%;transition:transform .24s ease,border-color .24s ease,background .24s ease;
+}
+body.v105-portal #studentWelcome .bo-entry-teacher:nth-of-type(1){grid-column:2;grid-row:1;justify-self:end}
+body.v105-portal #studentWelcome .bo-entry-teacher:nth-of-type(2){grid-column:3;grid-row:1;justify-self:end}
+body.v105-portal #studentWelcome .bo-entry-teacher:hover{
+ background:#1c5266!important;border-color:#85d9d1!important;transform:translateY(-2px);
+}
+body.v105-portal #studentWelcome .bo-entry-main{
+ width:100%!important;max-width:1240px!important;min-width:0;
+ padding:clamp(24px,3.5vw,44px) 0 clamp(18px,3vw,32px)!important;
+ display:grid!important;grid-template-columns:minmax(0,0.9fr) minmax(0,1.1fr)!important;
+ align-items:center!important;column-gap:clamp(24px,4vw,66px)!important;row-gap:28px!important;
+ margin:0 auto!important;
+}
+body.v105-portal #studentWelcome .bo-entry-intro{
+ min-width:0;align-self:center;text-align:right;
+ position:relative;padding-block:12px;
+}
+body.v105-portal #studentWelcome .bo-entry-intro::before{
+ content:"TAG / CHOOSE YOUR PATH";display:block;margin-bottom:12px;
+ font:700 11px/1.5 Outfit,Arial,sans-serif;letter-spacing:2px;color:#68d7d5;
+ direction:ltr;text-align:right;
+}
+body.v105-portal #studentWelcome .bo-entry-intro .bo-entry-kicker{
+ color:#8ce6dc!important;font-size:clamp(11px,1.25vw,14px)!important;
+ letter-spacing:.4px;font-weight:700!important;
+}
+body.v105-portal #studentWelcome .bo-entry-intro h1{
+ color:#f5fdf9!important;line-height:1.36!important;
+ font-size:clamp(37px,5vw,69px)!important;letter-spacing:-1px;
+ font-weight:850!important;margin:15px 0 18px!important;
+}
+body.v105-portal #studentWelcome .bo-entry-intro h1 span{
+ color:#89e8dc!important;text-shadow:none!important;display:block;
+}
+body.v105-portal #studentWelcome .bo-entry-intro p{
+ color:#bcd4da!important;font-weight:550!important;font-size:clamp(14px,1.45vw,17px)!important;
+ line-height:2!important;max-width:520px!important;
+}
+body.v105-portal #studentWelcome .bo-entry-mascots{
+ gap:13px;margin-top:24px!important;justify-content:flex-start;flex-wrap:wrap;
+}
+body.v105-portal #studentWelcome .bo-entry-mascots img{
+ width:clamp(67px,6.9vw,92px)!important;height:clamp(67px,6.9vw,92px)!important;
+ border-radius:17px!important;background:#12384a!important;
+ border:1px solid #45899b!important;
+ box-shadow:0 11px 26px #0005,inset 0 1px #bffff41b!important;
+ transition:transform .28s cubic-bezier(.2,.8,.2,1),box-shadow .28s;
+}
+@media(hover:hover) and (pointer:fine){
+ body.v105-portal #studentWelcome .bo-entry-mascots img:hover{
+  transform:translateY(-7px) rotate(-3deg);
+  box-shadow:0 20px 32px #0007,0 0 0 1px #8ce4dd!important;
+ }
+}
+body.v105-portal #studentWelcome .bo-entry-options{
+ min-width:0;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ gap:clamp(10px,1.35vw,17px)!important;align-self:center;
+}
+body.v105-portal #studentWelcome .bo-entry-option{
+ position:relative;isolation:isolate;overflow:hidden;
+ min-width:0!important;min-height:clamp(155px,15vw,195px)!important;
+ display:flex!important;flex-direction:column!important;align-items:flex-start;
+ gap:8px!important;padding:clamp(17px,2vw,25px)!important;
+ border-radius:19px!important;
+ background:linear-gradient(150deg,#153e52,#0c2b3f)!important;
+ color:#f0fdf9!important;border:1px solid #598f9c83!important;
+ box-shadow:0 9px 0 #0415238a,0 16px 35px #0003,inset 0 1px #d5fff30a!important;
+ transition:transform .26s cubic-bezier(.2,.9,.25,1),box-shadow .26s,border-color .26s!important;
+}
+body.v105-portal #studentWelcome .bo-entry-option::before{
+ content:"";position:absolute;z-index:-1;pointer-events:none;
+ width:115px;height:115px;border:1px solid #63aebb36;border-radius:24px;
+ top:-32px;left:-40px;transform:rotate(28deg);
+ box-shadow:0 0 0 20px #65c8c90a,0 0 0 42px #64bfc708;
+}
+body.v105-portal #studentWelcome .bo-entry-option:first-child{
+ grid-column:1/-1;min-height:clamp(150px,12vw,175px)!important;
+ background:linear-gradient(125deg,#1b5262,#0d3045 68%)!important;
+ border-color:#80d6d085!important;
+}
+body.v105-portal #studentWelcome .bo-entry-option:nth-child(2){
+ border-top:2px solid #6cd1d0!important;
+}
+body.v105-portal #studentWelcome .bo-entry-option:nth-child(3){
+ border-top:2px solid #dbbd79!important;
+}
+body.v105-portal #studentWelcome .bo-entry-option-icon{
+ font-size:clamp(27px,2.7vw,37px)!important;line-height:1.2;
+ filter:drop-shadow(0 3px 8px #0005);
+}
+body.v105-portal #studentWelcome .bo-entry-option strong{
+ font-size:clamp(18px,1.9vw,25px)!important;color:#f6fcfa!important;
+ -webkit-text-fill-color:#f6fcfa!important;font-weight:800!important;line-height:1.5;
+}
+body.v105-portal #studentWelcome .bo-entry-option small{
+ font-size:clamp(12px,1.15vw,14px)!important;line-height:1.85;
+ font-weight:550!important;color:#b8d4db!important;-webkit-text-fill-color:#b8d4db!important;
+ max-width:95%;text-wrap:pretty;
+}
+body.v105-portal #studentWelcome .bo-entry-cta{
+ margin-top:auto!important;color:#90e8df!important;-webkit-text-fill-color:#90e8df!important;
+ font-weight:700!important;font-size:12px!important;padding-top:3px!important;
+}
+@media(hover:hover) and (pointer:fine){
+ body.v105-portal #studentWelcome .bo-entry-option:hover{
+  transform:translateY(-5px)!important;border-color:#a1ece4!important;
+  box-shadow:0 15px 0 #0416237c,0 29px 47px #0005,0 0 22px #59c3c51b!important;
+ }
+}
+body.v105-portal #studentWelcome .bo-entry-foot{
+ color:#9fbfc7!important;font-size:11px!important;
+ padding:18px 5px 4px!important;max-width:1240px;margin:auto!important;
+ border-top:1px solid #588e9a31;line-height:2;
+}
+/* Tablets and all common phones: no fixed widths, no sideways page scroll. */
+@media(max-width:960px){
+ body.v105-portal #studentWelcome .bo-entry-main{
+  grid-template-columns:minmax(0,1fr)!important;
+  max-width:760px!important;padding-top:23px!important;
+ }
+ body.v105-portal #studentWelcome .bo-entry-intro{text-align:center;padding:0!important}
+ body.v105-portal #studentWelcome .bo-entry-intro::before{text-align:center}
+ body.v105-portal #studentWelcome .bo-entry-intro p{margin-inline:auto!important}
+ body.v105-portal #studentWelcome .bo-entry-mascots{justify-content:center}
+ body.v105-portal #studentWelcome .bo-entry-head{max-width:760px}
+}
+@media(max-width:620px){
+ body.v105-portal #studentWelcome.bo-entry{padding:12px 14px 18px!important}
+ body.v105-portal #studentWelcome .bo-entry-head{
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  row-gap:9px!important;column-gap:8px!important;
+  padding-bottom:14px!important;
+ }
+ body.v105-portal #studentWelcome .bo-entry-logo{
+  grid-column:1/-1!important;grid-row:1!important;justify-self:center!important;
+ }
+ body.v105-portal #studentWelcome .bo-entry-logo img{
+  width:85px!important;height:76px!important;
+ }
+ body.v105-portal #studentWelcome .bo-entry-teacher:nth-of-type(1){
+  grid-column:1!important;grid-row:2!important;justify-self:stretch!important;
+ }
+ body.v105-portal #studentWelcome .bo-entry-teacher:nth-of-type(2){
+  grid-column:2!important;grid-row:2!important;justify-self:stretch!important;
+ }
+ body.v105-portal #studentWelcome .bo-entry-teacher{
+  min-width:0!important;padding:9px 7px!important;font-size:11px!important;min-height:42px;
+ }
+ body.v105-portal #studentWelcome .bo-entry-main{gap:16px!important;padding:23px 0 18px!important}
+ body.v105-portal #studentWelcome .bo-entry-intro h1{
+  font-size:clamp(32px,10.2vw,46px)!important;margin:9px 0 11px!important;
+ }
+ body.v105-portal #studentWelcome .bo-entry-intro p{font-size:13px!important;line-height:1.9!important}
+ body.v105-portal #studentWelcome .bo-entry-mascots{margin-top:14px!important}
+ body.v105-portal #studentWelcome .bo-entry-mascots img{height:66px!important;width:66px!important}
+ body.v105-portal #studentWelcome .bo-entry-options{
+  grid-template-columns:minmax(0,1fr)!important;gap:11px!important;
+ }
+ body.v105-portal #studentWelcome .bo-entry-option{
+  grid-column:1!important;min-height:135px!important;
+  padding:16px 17px!important;border-radius:16px!important;
+ }
+ body.v105-portal #studentWelcome .bo-entry-option:first-child{min-height:145px!important}
+ body.v105-portal #studentWelcome .bo-entry-option strong{font-size:20px!important}
+ body.v105-portal #studentWelcome .bo-entry-option small{max-width:100%!important;font-size:12px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ body.v105-portal #studentWelcome *{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
