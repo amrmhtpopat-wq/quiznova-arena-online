@@ -225,7 +225,6 @@ body.tag-spatial-global .tag-spatial-host{width:100%;max-width:100%;min-height:8
 body.tag-spatial-global #panel-home.tag-spatial-embedded > :not(.tag-spatial-host){display:none!important}
 /* Studio dashboard keeps original functional quick actions and widgets below
    Spatial home so pre-existing navigation and teacher workflows stay accessible. */
-body.tag-spatial-global #view-dashboard.tag-spatial-embedded > :not(.tag-spatial-host){display:revert!important}
 body.tag-spatial-global #view-dashboard.tag-spatial-embedded .tag-studio-quickhub{
  margin-top:24px;
  background:linear-gradient(150deg,#15394d,#0c283a)!important;
