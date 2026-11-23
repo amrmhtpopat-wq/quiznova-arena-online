@@ -20,7 +20,9 @@ function updateBadgeLogos(root){
  if(!root||typeof root.querySelectorAll!=='function')return;
  root.querySelectorAll('.bo-student-id .tag-card-logo,.bo-student-id .bo-badge-brand img').forEach(img=>{
   if(img.dataset.tag23Updated)return;
-  img.dataset.tag23Updated='1';img.src=mark;img.alt='شعار TAG';
+  img.dataset.tag23Updated='1';
+  if(!img.getAttribute('src')?.includes('tag-spatial-identity-v3.webp'))img.src=mark;
+  img.alt='شعار TEACH AND GAME – TAG';
  });
 }
 function start(){
