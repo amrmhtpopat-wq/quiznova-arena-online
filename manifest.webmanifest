@@ -13,7 +13,7 @@
   ],
   "orientation": "any",
   "background_color": "#061b31",
-  "theme_color": "#073a80",
+  "theme_color": "#071b2c",
   "categories": [
     "education",
     "games"
@@ -39,9 +39,9 @@
       "purpose": "maskable"
     },
     {
-      "src": "/assets/brand/tag-icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "/assets/brand/tag-favicon-v24.png",
+      "sizes": "128x128",
+      "type": "image/png",
       "purpose": "any"
     }
   ],
