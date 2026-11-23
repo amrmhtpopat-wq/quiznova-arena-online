@@ -893,7 +893,9 @@ def handle_get(h,u):
         elif u.path.endswith('/media'):out={'images':media_list(tid)}
         else:out={'targets':assignments(tid,(params.get('id') or [''])[0])}
         h.send_json({'ok':True,**out})
-    except ValueError as e:return error(h,str(e),404)
+    except ValueError as e:
+        status=404 if str(e)=='book_not_found' else 400
+        return error(h,str(e),status)
     except Exception as e:
         h.log_message('Game Lab Pro GET error: %s',str(e))
         return error(h,'server_error',500)
@@ -924,7 +926,13 @@ def handle_post(h,u,data):
         elif u.path.endswith('/media/upload'):out={'image':upload_image(tid,data)}
         else:out=assign(tid,data)
         h.send_json({'ok':True,**out})
-    except ValueError as e:return error(h,str(e),503 if str(e).startswith('ai_') else 400)
+    except ValueError as e:
+        code=str(e)
+        status=(429 if code in ('ai_daily_limit','ai_global_daily_limit','ai_rate_limited')
+                else 503 if code in ('ai_provider_overloaded','ai_network_error',
+                                     'ai_provider_unavailable','ai_timeout')
+                else 400)
+        return error(h,code,status)
     except Exception as e:
         h.log_message('Game Lab Pro POST error: %s',str(e))
         return error(h,'server_error',500)
