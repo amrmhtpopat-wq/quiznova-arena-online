@@ -222,7 +222,7 @@ body.tag-spatial-global .brand-logo:has(.tag-spatial-identity){
 }
 /* Spatial home embedded only for authenticated teacher dashboard views. */
 body.tag-spatial-global .tag-spatial-host{width:100%;max-width:100%;min-height:850px;display:block;border:0;border-radius:0;background:transparent;color-scheme:dark}
-body.tag-spatial-global #panel-home.tag-spatial-embedded > :not(.tag-spatial-host){display:none!important}
+/* Keep existing responsive teacher shortcuts and metrics as a secondary workspace area. */
 /* Studio dashboard keeps original functional quick actions and widgets below
    Spatial home so pre-existing navigation and teacher workflows stay accessible. */
 body.tag-spatial-global #view-dashboard.tag-spatial-embedded .tag-studio-quickhub{
@@ -420,4 +420,26 @@ body.tag-spatial-global :where(.success,.success-message){
   print-color-adjust:exact;-webkit-print-color-adjust:exact
  }
  body.tag-spatial-global .tag-spatial-titleline{display:none!important}
+}
+
+body.tag-spatial-global #panel-home.tag-spatial-embedded>.hero,
+body.tag-spatial-global #panel-home.tag-spatial-embedded>.tag-v5-shortcuts,
+body.tag-spatial-global #panel-home.tag-spatial-embedded>.metric-grid,
+body.tag-spatial-global #panel-home.tag-spatial-embedded>.grid-two,
+body.tag-spatial-global #panel-home.tag-spatial-embedded>.pane{
+ margin-top:20px;
+}
+body.tag-spatial-global #panel-home.tag-spatial-embedded>.hero{
+ border-color:#6bc6c658!important;
+}
+body.tag-spatial-global #panel-home.tag-spatial-embedded>.tag-v5-shortcuts{
+ background:#102e42!important;border:1px solid #5284966b!important;
+ border-radius:18px;padding:15px;
+}
+body.tag-spatial-global #panel-home.tag-spatial-embedded>.tag-v5-shortcuts button{
+ background:#19465b!important;color:#e9f9f3!important;border:1px solid #5d929e88!important;
+ border-radius:13px;transition:transform .2s ease,background .2s ease;
+}
+body.tag-spatial-global #panel-home.tag-spatial-embedded>.tag-v5-shortcuts button:hover{
+ background:#245e6e!important;transform:translateY(-2px);
 }
