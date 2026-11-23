@@ -1,0 +1,21 @@
+# TAG V26 - production route proposal for the EXISTING Render static site.
+# Apply only after the team reviews the Blueprint adoption plan.
+# Official root / remains the SEO landing; dynamic pages and /api routes
+# are same-origin external REWRITES (not 301 redirects).
+services:
+  - type: static
+    name: teachgame
+    branch: main
+    autoDeployTrigger: commit
+    buildCommand: python tools/build_teachgame_unified.py
+    staticPublishPath: short-link-unified
+    routes:
+      - type: rewrite
+        source: /portal.html
+        destination: https://quiznova-arena-online.onrender.com/
+      - type: rewrite
+        source: /api/*
+        destination: https://quiznova-arena-online.onrender.com/api/*
+      - type: rewrite
+        source: /*
+        destination: https://quiznova-arena-online.onrender.com/*
