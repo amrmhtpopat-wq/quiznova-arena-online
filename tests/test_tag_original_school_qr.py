@@ -7,8 +7,9 @@ class SchoolQrImport(unittest.TestCase):
         portal=(ROOT/'portal.js').read_text(encoding='utf-8')
         self.assertIn("const schoolQrCode=String(student.cardCode||'').trim().toUpperCase()",portal)
         self.assertIn('const isSchoolId=/^G[789][ABC]-\\d{3}$/.test(schoolQrCode)',portal)
-        self.assertIn("encodeURIComponent(isSchoolId?schoolQrCode:link)",portal)
-        self.assertIn("const qrCaption=isSchoolId?'رمز الهوية المدرسية الأصلي':'امسح للانضمام'",portal)
+        self.assertIn("encodeURIComponent(isSchoolId?quizLink:link)",portal)
+        self.assertIn("const qrCaption=isSchoolId?'امسح لفتح اختباراتك':'امسح للانضمام'",portal)
+        self.assertIn("const quizLink=location.origin+'/student.html?mode=card&card='+encodeURIComponent(schoolQrCode)",portal)
         self.assertIn('const link=base+encodeURIComponent(student.card)',portal)
     def test_student_room_accepts_short_school_code_as_card(self):
         student=(ROOT/'student.js').read_text(encoding='utf-8')
