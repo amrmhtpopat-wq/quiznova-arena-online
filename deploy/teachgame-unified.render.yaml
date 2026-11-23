@@ -3,7 +3,8 @@
 # Official root / remains the SEO landing; dynamic pages and /api routes
 # are same-origin external REWRITES (not 301 redirects).
 services:
-  - type: static
+  - type: web
+    runtime: static
     name: teachgame
     branch: main
     autoDeployTrigger: commit
