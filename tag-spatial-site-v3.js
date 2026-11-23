@@ -26,34 +26,44 @@ function installIdentity(){
 }
 function mountHub(){
  const page=document.getElementById('panel-home')||document.getElementById('view-dashboard');
- if(!page||page.querySelector('iframe.tag-spatial-host'))return;
- const iframe=document.createElement('iframe');
- iframe.className='tag-spatial-host';
- iframe.title='مساحة عمل المعلم ثلاثية الأبعاد — TAG Spatial';
- iframe.loading='lazy';
- iframe.referrerPolicy='same-origin';
- iframe.setAttribute('allow','fullscreen');
- iframe.setAttribute('scrolling','no');
- iframe.dataset.src='/tag-spatial-home-v3.html';
- iframe.style.height='1250px';
- page.insertBefore(iframe,page.firstChild);
- page.classList.add('tag-spatial-embedded');
- let lastHeight=1250;
+ if(!page)return;
+ // Only construct a browsing context when the teacher actually opens the
+ // dashboard. Eager insertion creates transient about:blank frames and breaks
+ // storage-secure contexts (including real browser/teacher tests).
+ let iframe=null,lastHeight=1250;
+ const studio=page.id==='view-dashboard';
+ const workspace=page.closest('#workspace');
  function visible(){
-  const parent=iframe.closest('#workspace');
-  return (!parent||!parent.classList.contains('hidden'))&&page.classList.contains('active')
-    &&document.visibilityState==='visible';
+  if(!page.classList.contains('active')||document.visibilityState==='hidden')return false;
+  if(workspace&&workspace.classList.contains('hidden'))return false;
+  // The editor's HTML briefly marks dashboard active before deep-link routing.
+  if(studio&&location.hash&&location.hash!=='#dashboard'&&location.hash!=='#home')return false;
+  return true;
+ }
+ function sendVisibility(){
+  if(!iframe||!iframe.contentWindow||iframe.src==='about:blank')return;
+  iframe.contentWindow.postMessage({type:'tag-spatial-v3-visibility',visible:visible()},location.origin);
  }
  function sync(){
-  const isVisible=visible();
-  if(isVisible&&!iframe.src.includes('tag-spatial-home-v3.html'))iframe.src=iframe.dataset.src;
-  if(iframe.contentWindow&&iframe.src!=='about:blank'){
-   iframe.contentWindow.postMessage({type:'tag-spatial-v3-visibility',visible:isVisible},location.origin);
+  if(!visible()){sendVisibility();return;}
+  if(!iframe){
+   iframe=document.createElement('iframe');
+   iframe.className='tag-spatial-host';
+   iframe.title='مساحة عمل المعلم ثلاثية الأبعاد — TAG Spatial';
+   iframe.loading='lazy';
+   iframe.referrerPolicy='same-origin';
+   iframe.setAttribute('allow','fullscreen');
+   iframe.setAttribute('scrolling','no');
+   iframe.style.height=lastHeight+'px';
+   iframe.addEventListener('load',sendVisibility);
+   iframe.src='/tag-spatial-home-v3.html';
+   page.insertBefore(iframe,page.firstChild);
+   page.classList.add('tag-spatial-embedded');
   }
+  sendVisibility();
  }
- iframe.addEventListener('load',sync);
- const onSize=e=>{
-  if(e.origin!==location.origin||e.source!==iframe.contentWindow)return;
+ window.addEventListener('message',e=>{
+  if(!iframe||e.origin!==location.origin||e.source!==iframe.contentWindow)return;
   if(!e.data||e.data.type!=='tag-spatial-v3-size')return;
   const height=Number(e.data.height);
   if(!Number.isFinite(height)||height<400||height>9000)return;
@@ -61,17 +71,17 @@ function mountHub(){
   if(Math.abs(next-lastHeight)<4)return;
   lastHeight=next;
   iframe.style.height=next+'px';
- };
- window.addEventListener('message',onSize);
+ });
  if(window.MutationObserver){
   new MutationObserver(sync).observe(page,{attributes:true,attributeFilter:['class']});
-  const parent=iframe.closest('#workspace');
-  if(parent)new MutationObserver(sync).observe(parent,{attributes:true,attributeFilter:['class']});
+  if(workspace)new MutationObserver(sync).observe(workspace,{attributes:true,attributeFilter:['class']});
  }
  document.addEventListener('visibilitychange',sync);
- const navButtons=[...document.querySelectorAll('[data-view],[data-panel]')];
- navButtons.forEach(b=>b.addEventListener('click',()=>requestAnimationFrame(sync)));
- sync();
+ window.addEventListener('hashchange',sync);
+ document.querySelectorAll('[data-view],[data-panel]').forEach(b=>
+  b.addEventListener('click',()=>requestAnimationFrame(sync)));
+ // Initial check is intentionally postponed until the original app initialized its route.
+ requestAnimationFrame(sync);
 }
 function enrichSurface(){
  const targets=document.querySelectorAll('.panel,.pane,.metric,.stat-card,.insight-card,.quiz-card');
