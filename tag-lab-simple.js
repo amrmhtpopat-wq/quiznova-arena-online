@@ -91,7 +91,7 @@ function importStash(){
 }
 if(view==='books'){
  const area=$('bookLab');
- const after=make('div','tag-simple-savebar');after.id='tagBookNext';
+ const after=make('div','tag-simple-savebar');after.id='tagBookNext';after.hidden=true;
  const title=make('strong','', 'انتهيت من مراجعة الأسئلة؟');
  const actions=make('div','tag-simple-actions');
  const next=make('button','tag-simple-btn','التالي: صانع الألعاب ←');next.type='button';next.disabled=true;
@@ -99,7 +99,7 @@ if(view==='books'){
  const libraryLink=make('a','tag-simple-btn alt','مكتبتي الخاصة');libraryLink.href='/tag-lab-library.html';
  actions.append(next,libraryLink);after.append(title,actions);
  if(area)area.append(after);
- document.addEventListener('gamelab:book-bank-accepted',()=>{next.disabled=false;show('✓ الأسئلة المعتمدة جاهزة. اضغط «التالي: صانع الألعاب» لتكمل.');});
+ document.addEventListener('gamelab:book-bank-accepted',()=>{next.disabled=false;after.hidden=false;show('✓ الأسئلة المعتمدة جاهزة. اضغط «التالي: صانع الألعاب» لتكمل.');});
  const oldSave=$('labBookSaveCloud');if(oldSave)oldSave.style.display='none';
  after.prepend(toast)
 }else if(view==='create'){
