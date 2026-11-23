@@ -10,6 +10,7 @@ on:
       - 'tag-spatial-native-v3.*'
       - '*.html'
       - 'tests/browser_tag_responsive_v5.py'
+      - 'tests/test_tag_back_v5.cjs'
       - '.github/workflows/tag-responsive-v5.yml'
   pull_request:
     paths:
@@ -20,6 +21,7 @@ on:
       - 'tag-spatial-native-v3.*'
       - '*.html'
       - 'tests/browser_tag_responsive_v5.py'
+      - 'tests/test_tag_back_v5.cjs'
 jobs:
   responsive:
     runs-on: ubuntu-latest
@@ -31,5 +33,7 @@ jobs:
           python-version: '3.12'
       - run: pip install -r requirements.txt playwright
       - run: python -m playwright install --with-deps chromium
+      - name: Check back button coverage on every HTML page
+        run: node tests/test_tag_back_v5.cjs
       - name: Verify layouts and back buttons in real browser
         run: python -u tests/browser_tag_responsive_v5.py
