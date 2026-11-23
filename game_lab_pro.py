@@ -457,12 +457,12 @@ def offline_generate(tid,data):
             'warning':warning}
 
 
-# When both free Gemini models fail with transient overload, short-circuit
+# When all free Gemini models fail with transient overload, short-circuit
 # repeated requests for 90 seconds. Teachers still receive local drafts.
 _GOOGLE_OVERLOAD_UNTIL=0.0
 
 
-def _google_generate_with_fallback(request_body, key, models):
+def _google_generate_with_fallback(request_body, key, models, compact_body=None):
     """Retry temporary Google failures, then try another free-tier model.
     Do not log API keys or book content, and never enable billing.
     """
@@ -472,10 +472,16 @@ def _google_generate_with_fallback(request_body, key, models):
     last_error='ai_provider_unavailable'
     had_overload=False
     for model_index,model in enumerate(models):
-        for attempt in range(2):
+        # After failure of the primary free model, try independent free
+        # capacities with a substantially smaller request, not another
+        # 16k-token generation. Keep the total attempts bounded to four.
+        attempts=2 if model_index==0 else 1
+        for attempt in range(attempts):
+            body=(compact_body if model_index>0 and compact_body is not None
+                  else request_body)
             request=urllib.request.Request(
                 'https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent',
-                data=request_body,
+                data=body,
                 headers={'x-goog-api-key':key,'Content-Type':'application/json'},method='POST')
             try:
                 with urllib.request.urlopen(request,timeout=32) as response:
@@ -626,9 +632,10 @@ def ai_generate(tid,data):
     subject=ident(data.get('subject'))[:60]
     # Pin an officially free-tier-eligible model; do not allow paid model override.
     # Gemini 2.5 may return 404 to newly-created free-tier projects.
-    # Both models below have documented Free Tier access; never fall back to billing.
-    # Free Lite model first: lower latency and less contention than Flash.
-    models=('gemini-3.5-flash-lite','gemini-3.8-flash')
+    # Three distinct documented Free Tier model IDs; do not enable billing.
+    # Try the lighter models first and use a compact fallback request on
+    # independent capacity after two consecutive primary-model failures.
+    models=('gemini-3.5-flash-lite','gemini-3.1-flash-lite','gemini-3.8-flash')
     # The model returns JSON; every generated question is still grounded in the
     # exact original page quote before it reaches the teacher's review screen.
     schema={'type':'object','properties':{
@@ -681,8 +688,30 @@ def ai_generate(tid,data):
     # Reserve one slot while the network call is active; refund failed or
     # unpublishable generations without altering the global safety quota.
     request_body=json.dumps(payload,ensure_ascii=False).encode('utf8')
+    # Compact fallback keeps page coverage while making overloaded servers
+    # produce fewer candidates and shorter JSON responses.
+    compact_target=min(16,maximum+2)
+    per_page=max(260,9500//max(1,len(selected_pages)))
+    brief_parts=[]
+    for page in selected_pages:
+        piece=page['text'][:per_page]
+        if len(page['text'])>per_page and ' ' in piece:
+            piece=piece.rsplit(' ',1)[0]
+        brief_parts.append('[صفحة '+str(page['p'])+']\\n'+piece)
+    compact_source='\\n\\n'.join(brief_parts)[:10200]
+    compact_payload=json.loads(json.dumps(payload,ensure_ascii=False))
+    compact_payload['generationConfig']['maxOutputTokens']=8500
+    compact_payload['generationConfig']['temperature']=0.25
+    compact_payload['contents'][0]['parts'][0]['text']=(
+        'المبحث: '+subject+'؛ الصف: '+grade+topic_directive+
+        '؛ مستوى: '+difficulty_label+'؛ نوع الأسئلة: '+balance_label+
+        '؛ أعد حتى '+str(compact_target)+' سؤالًا عربيًا متنوعًا من النص فقط. '
+        'أخرج JSON وفق المخطط دون مقدمات. اجعل sourceQuote اقتباسًا '
+        'حرفيًا متصلًا من الصفحة المشار إليها ويثبت الإجابة. '
+        'إذا نقص المحتوى أعد عددًا أقل بدل التخمين. الصفحات:\\n'+compact_source)
+    compact_body=json.dumps(compact_payload,ensure_ascii=False).encode('utf8')
     try:
-        obj=_google_generate_with_fallback(request_body,key,models)
+        obj=_google_generate_with_fallback(request_body,key,models,compact_body)
     except ValueError as exc:
         _refund_ai_usage(tid,usage_id)
         if str(exc) in ('ai_provider_overloaded','ai_network_error',
