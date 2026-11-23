@@ -471,3 +471,14 @@ body.tag-spatial-global #panel-home.tag-spatial-native-active>.pane{
 
 /* Legacy mobile quick actions must remain above any decorative 3D glow. */
 body.tag-spatial-global #panel-home>.tag-v5-shortcuts{position:relative;z-index:2;}
+
+/* Paint 3D scene in its own stacking context; retain functional quick links above it. */
+body.tag-spatial-global #panel-home>.tag-spatial-native-host{
+ isolation:isolate!important;z-index:0!important;flex:0 0 auto!important;align-self:stretch!important;
+}
+body.tag-spatial-global #panel-home>.tag-spatial-native-host.tag-spatial-overlay-open{
+ z-index:100!important;
+}
+body.tag-spatial-global #panel-home>.tag-v5-shortcuts{
+ position:relative!important;z-index:3!important;
+}
