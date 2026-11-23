@@ -1,0 +1,6 @@
+html{--tag-beta-ink:#071b2c;--tag-beta-teal:#96dfd0;--tag-beta-edge:#426879}
+body .pane,body .authcard,body .bo-entry-option{border-radius:17px;border-color:#416674;box-shadow:0 5px 0 #06172633}
+body .nav-item.active{border-inline-start:3px solid #8ad9cd}
+body .tool{border-radius:15px}body .tool:hover{--lift:-4px}
+button:focus-visible,a:focus-visible{outline:3px solid #82cfc8;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){.tool,.tile{transition:none!important}}

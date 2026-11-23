@@ -1,4 +1,2 @@
 User-agent: *
-Disallow: /api/
-
-Sitemap: https://quiznova-arena-online.onrender.com/sitemap.xml
+Disallow: /
