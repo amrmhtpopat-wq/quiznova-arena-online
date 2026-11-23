@@ -74,6 +74,26 @@ function mountHub(){
  document.querySelectorAll('[data-panel]').forEach(btn=>btn.addEventListener('click',()=>requestAnimationFrame(sync)));
  requestAnimationFrame(sync);
 }
+function directPortalPanel(){
+ const panel=new URLSearchParams(location.search).get('panel');
+ if(!panel||!['students','classes','mastery','history','school'].includes(panel))return;
+ const portal=document.getElementById('workspace');
+ const nav=document.querySelector('button.nav[data-panel="'+panel+'"]');
+ if(!portal||!nav)return;
+ let applied=false;
+ const enter=()=>{
+  if(applied||portal.classList.contains('hidden'))return;
+  applied=true;nav.click();
+  // Clean one-time deep link without triggering a second navigation.
+  const url=new URL(location.href);url.searchParams.delete('panel');
+  history.replaceState(history.state,'',url.pathname+url.search+url.hash);
+ };
+ if(window.MutationObserver){
+  const observer=new MutationObserver(()=>{enter();if(applied)observer.disconnect()});
+  observer.observe(portal,{attributes:true,attributeFilter:['class']});
+ }
+ enter();
+}
 function enrichSurface(){
  const targets=document.querySelectorAll('.panel,.pane,.metric,.stat-card,.insight-card,.quiz-card');
  targets.forEach(el=>{
@@ -106,6 +126,7 @@ function spatialHeadings(){
 }
 function start(){
  installIdentity();
+ directPortalPanel();
  mountHub();
  enrichSurface();
  spatialHeadings();
