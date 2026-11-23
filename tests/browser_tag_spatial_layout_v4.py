@@ -49,8 +49,10 @@ with sync_playwright() as pw:
         print("PORTAL_GEOMETRY "+json.dumps({"width":width,"geo":dims},ensure_ascii=False),flush=True)
         assert dims["scrollWidth"]<=width+5,("portal_overflow",width,dims)
         assert dims["spatialHeader"]["w"]>100 and dims["spatialHeader"]["h"]>=40,("header_missing",width)
-        if width>=1025:
-            assert dims["spatialHeader"]["y"]<180,("EXCESSIVE_TOP_GAP",width,dims)
+        assert dims["spatialHeader"]["y"]<150,("EXCESSIVE_TOP_GAP",width,dims)
+        assert not page.locator("#panel-home>.hero").is_visible(),("OLD_HERO_FLASH",width,dims)
+        assert not page.locator("#workspace>.sidebar").is_visible(),("OLD_SIDEBAR_ON_HOME",width,dims)
+        assert dims["main"]["w"]>=width-3,("LANDING_NOT_FULL_WIDTH",width,dims)
         host=page.locator(".tag-spatial-native-host")
         host.locator('[data-tool="create"]').first.click()
         page.wait_for_url("**/studio.html#builder",timeout=14000)
@@ -69,6 +71,7 @@ with sync_playwright() as pw:
         assert len(studio["groupRects"])==4 and all(r[3]>20 for r in studio["groupRects"]),("sidebar_hidden",width,studio)
         if width>=1025:
             assert studio["sidebar"][2]>=240 and studio["nav"][2]>=210,("sidebar_clipped",width,studio)
+            assert studio["sidebar"][3]>=height*0.93,("SIDEBAR_ONLY_LOGO_VISIBLE",width,studio)
             assert all(r[0]>=studio["sidebar"][0]-2 and r[0]+r[2]<=studio["sidebar"][0]+studio["sidebar"][2]+2 for r in studio["groupRects"]),("menu_horizontal_clip",width,studio)
         ctx.close()
     browser.close()
