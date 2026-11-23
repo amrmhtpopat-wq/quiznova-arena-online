@@ -1,0 +1,40 @@
+name: TAG V23 Landing and Student Card Release Safety
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'short-link/**'
+      - 'tag-responsive-brand-v23.css'
+      - 'tag-responsive-brand-v23.js'
+      - 'index.html'
+      - 'portal.js'
+      - 'champion.html'
+      - 'student.html'
+      - 'tests/test_tag_v23_release.py'
+      - '.github/workflows/tag-v23-release.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'short-link/**'
+      - 'tag-responsive-brand-v23.css'
+      - 'tag-responsive-brand-v23.js'
+      - 'index.html'
+      - 'portal.js'
+      - 'tests/test_tag_v23_release.py'
+permissions:
+  contents: read
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Static landing, QR/PIN and responsive-brand invariants
+        run: python -m unittest discover -s tests -p 'test_tag_v23_release.py' -v
+      - name: SEO short-link compatibility
+        run: python -m unittest discover -s tests -p 'test_tag_static_seo_landing_v19.py' -v
+      - name: Original school QR contract
+        run: python -m unittest discover -s tests -p 'test_tag_original_school_qr.py' -v
