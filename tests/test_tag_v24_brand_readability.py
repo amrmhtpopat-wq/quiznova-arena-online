@@ -13,7 +13,7 @@ class TagV24BrandAndType(unittest.TestCase):
  def test_search_favicons_square_and_compatible(self):
   for path in ('assets/brand/tag-favicon-v24.png','short-link/assets/brand/tag-favicon-v24.png'):
    p=(ROOT/path).read_bytes()
-   self.assertEqual(p[:8],b'\\x89PNG\\r\\n\\x1a\\n',path)
+   self.assertEqual(p[:8],bytes([137,80,78,71,13,10,26,10]),path)
    self.assertEqual(struct.unpack('>II',p[16:24]),(128,128),path)
    self.assertGreater(len(p),2000,path)
   for path in ('assets/brand/tag-share-v24.png','short-link/assets/brand/tag-share-v24.png'):
