@@ -55,7 +55,7 @@ function mountHub(){
     stage.dir='rtl';stage.innerHTML=markup;shadow.appendChild(stage);
     function arrange(){
      const quick=page.querySelector(':scope > .tag-v5-shortcuts');
-     if(matchMedia('(max-width:650px)').matches&&quick) quick.after(host);
+     if(matchMedia('(max-width:650px)').matches) page.appendChild(host);
      else page.insertBefore(host,page.firstChild);
     }
     arrange();window.addEventListener('resize',arrange,{passive:true});
