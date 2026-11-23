@@ -103,7 +103,10 @@ def run():
                                 let wrap = document.querySelector('.stage-wrap');
                                 let elements = ['.stage-head'];
                                 if (document.body.dataset.stageView === 'question') elements.push('.question','.bo-stage-next-control','.live-bottom');
-                                if (document.body.dataset.stageView === 'results') elements.push('.tag27-intro','.tag27-rank-panel','.bo-stage-next-control');
+                                if (document.body.dataset.stageView === 'results') {
+                                    if (document.querySelector('.tag27-results')) elements.push('.tag27-intro','.tag27-rank-panel','.bo-stage-next-control');
+                                    else elements.push('.round-stage','.bo-stage-next-control');
+                                }
                                 let rects = elements.map(sel => {
                                     let el = document.querySelector(sel), rect=el?.getBoundingClientRect();
                                     return {sel, bottom:rect?.bottom ?? -1,top:rect?.top ?? -1};
