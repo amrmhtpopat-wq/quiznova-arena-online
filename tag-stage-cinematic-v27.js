@@ -9,7 +9,7 @@
  const reduced=()=>window.matchMedia?.('(prefers-reduced-motion: reduce)').matches===true;
  const safe=(v)=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const numeric=v=>Math.max(0,Math.round(Number(v)||0));
- const top=r=>(r.playType==='teams'?r.teams:r.leaders||[]).slice(0,5);
+ const top=r=>((r.playType==='teams'?r.teams:r.leaders)||[]).slice(0,5);
  const marker=i=>['🥇','🥈','🥉','4','5'][i]||String(i+1);
  function animateScore(node,next,previous,token,done){
   if(!node)return;
