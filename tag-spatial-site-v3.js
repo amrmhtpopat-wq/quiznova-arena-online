@@ -53,7 +53,13 @@ function mountHub(){
     sheet.href='/tag-spatial-native-v3.css?v=3';shadow.appendChild(sheet);
     const stage=document.createElement('div');stage.className='tag-spatial-native-stage';
     stage.dir='rtl';stage.innerHTML=markup;shadow.appendChild(stage);
-    page.insertBefore(host,page.firstChild);page.classList.add('tag-spatial-native-active');
+    function arrange(){
+     const quick=page.querySelector(':scope > .tag-v5-shortcuts');
+     if(matchMedia('(max-width:650px)').matches&&quick) quick.after(host);
+     else page.insertBefore(host,page.firstChild);
+    }
+    arrange();window.addEventListener('resize',arrange,{passive:true});
+    page.classList.add('tag-spatial-native-active');
     try{window.TAGSpatialNativeInit(shadow,host);loaded=true;
       host.classList.toggle('tag-spatial-v3-paused',!visible());
     }catch(err){host.remove();host=null;page.classList.remove('tag-spatial-native-active');throw err}
