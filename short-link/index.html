@@ -93,6 +93,14 @@ footer{border-top:1px solid #c4e8ee2c;padding-top:24px;margin-bottom:22px;text-a
 </script>
 <link rel="preload" href="/assets/brand/tag-spatial-identity-v3.webp" as="image" type="image/webp">
 <link rel="stylesheet" href="/tag-landing-v23.css?v=23.0">
+<script>
+/* Wake the backend in the background; the visitor always sees TAG's static homepage.
+   Never loop in the background or keep a free Render instance awake continuously. */
+window.addEventListener('load',()=>{
+  const img=new Image();
+  img.src='https://quiznova-arena-online.onrender.com/assets/brand/tag-favicon-v24.png?tag_wake='+(Date.now());
+},{once:true});
+</script>
 </head>
 <body>
 <header class="shell">
@@ -107,6 +115,7 @@ footer{border-top:1px solid #c4e8ee2c;padding-top:24px;margin-bottom:22px;text-a
 <div class="actions">
 <a class="button primary" href="/student/">🎮 دخول الطالب</a>
 <a class="button" href="/teacher/">👨‍🏫 دخول المعلم</a>
+<a class="button" href="/tag-lab/" aria-label="فتح مختبر TAG LAB عبر شاشة التجهيز">🧪 TAG LAB</a>
 <a class="button install" href="/app/" aria-label="فتح صفحة تثبيت تطبيق TAG">📲 تثبيت تطبيق TAG</a>
 </div>
 <p class="install-note">الآيفون: افتح صفحة التثبيت في Safari ثم اختر «إضافة إلى الشاشة الرئيسية». أندرويد: افتحها في Chrome واختر «تثبيت التطبيق».</p>
