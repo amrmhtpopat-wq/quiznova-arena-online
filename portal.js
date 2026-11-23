@@ -127,7 +127,7 @@ function renderStudents(){
     const characterName=esc(avatarDisplayName(student.avatar));
     return `<article class="idcard bo-student-id" dir="rtl" aria-label="بطاقة الطالب ${name}">
       <header class="bo-badge-header tag-brand-only" data-card-version="BADJ-TH42">
-        <div class="bo-badge-brand tag-brand-only"><img class="tag-card-logo" src="/assets/brand/tag-logo-dark-v21.png?v=16.0" alt="شعار TEACH AND GAME – TAG"></div>
+        <div class="bo-badge-brand tag-brand-only"><img class="tag-card-logo" src="/assets/brand/tag-spatial-identity-v3.webp?v=16.0" alt="شعار TEACH AND GAME – TAG"></div>
       </header>
       <div class="bo-badge-content">
         <div class="bo-badge-avatar"><img class="avatar-pic" loading="lazy" src="${avatarPath(student.avatar)}" alt="شخصية ${characterName}"><span>${characterName}</span></div>
@@ -240,7 +240,7 @@ $('#reissueTeachGameCards').onclick=async()=>{
   try{
     await loadAll();
     const cards=[...document.querySelectorAll('#studentsBoard .bo-student-id')];
-    if(cards.length!==cache.students.length||cards.some(card=>!card.querySelector('.bo-badge-brand img.tag-card-logo')?.getAttribute('src')?.includes('tag-logo-dark-v21.png'))){
+    if(cards.length!==cache.students.length||cards.some(card=>!card.querySelector('.bo-badge-brand img.tag-card-logo')?.getAttribute('src')?.includes('tag-spatial-identity-v3.webp'))){
       throw Error('card_refresh_incomplete');
     }
     notify('تم تحديث '+cards.length+' بطاقة باسم TEACH AND GAME؛ رموز الطلاب القديمة لم تتغير. افتح الطباعة لحفظ النسخة الجديدة.');

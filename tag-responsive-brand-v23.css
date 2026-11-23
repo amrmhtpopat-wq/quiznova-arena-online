@@ -1,0 +1,43 @@
+/* TAG Responsive Brand Navigation V23 — additive, excludes TAG LAB. */
+:root{--tag23-navy:#071b2c;--tag23-panel:#102f44;--tag23-mint:#80e4d7;--tag23-text:#f0fbf7}
+html{max-width:100%;overflow-x:clip}
+body:not(.tag-lab):not(.game-lab){max-width:100%;overflow-x:clip}
+body.tag-spatial-global,body.champion-portal{background-color:var(--tag23-navy);color:var(--tag23-text)}
+body.tag-spatial-global :is(button,a,input,select,textarea):focus-visible,
+body.champion-portal :is(button,a,input,select,textarea):focus-visible{outline:3px solid var(--tag23-mint);outline-offset:3px}
+body.tag-spatial-global :is(.pane,.panel,.page-hero,.card),
+body.champion-portal :is(.panel,.wc-stat){min-width:0;max-width:100%}
+body.tag-spatial-global :is(img,svg,canvas,video),body.champion-portal :is(img,svg,canvas,video){max-width:100%}
+.tag23-back{position:fixed!important;inset-inline-start:max(14px,env(safe-area-inset-left))!important;bottom:max(16px,env(safe-area-inset-bottom))!important;z-index:9900!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;min-height:44px!important;padding:9px 14px!important;border:1px solid #74dacd!important;border-radius:99px!important;background:#103e51f5!important;color:#f7fffd!important;font:700 13px/1.2 Tahoma,Arial,sans-serif!important;text-decoration:none!important;box-shadow:0 10px 30px #001e2c88!important;cursor:pointer!important;backdrop-filter:blur(12px)}
+.tag23-back:hover{background:#1b5968!important;transform:translateY(-2px)}
+.tag23-back:focus-visible{outline:3px solid white!important}
+body.v105-portal .bo-student-id .bo-badge-bottom{grid-template-columns:minmax(0,1fr) 113px!important;gap:8px!important}
+body.v105-portal .bo-student-id .bo-badge-qr img.qr{width:102px!important;height:102px!important;object-fit:contain}
+body.v105-portal .bo-student-id .bo-badge-header .tag-card-logo{width:110px!important;height:43px!important;object-fit:contain!important}
+body.v105-portal .bo-student-id .bo-badge-brand{min-width:110px}
+body.champion-portal .brand-img{width:clamp(130px,17vw,225px);height:auto;max-height:90px;object-fit:contain}
+body.champion-portal .top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+body.champion-portal .head-actions{display:flex;flex-wrap:wrap;gap:8px}
+@media(max-width:768px){
+ body.tag-spatial-global :is(.wrap,.container,.page-hero),body.champion-portal .wrap{width:min(100%,100vw)!important;max-width:100%!important;min-width:0!important;padding-inline:clamp(10px,3vw,20px);box-sizing:border-box}
+ body.v105-portal #workspace:has(#panel-home.active){padding-inline:0!important}\n body.v105-portal #workspace:has(#panel-home.active)>.main{width:100%!important;max-width:100%!important;margin-inline:0!important;padding-inline:0!important}\n body.tag-spatial-global :is(.grid,.cards-board),body.champion-portal :is(.form-grid,.wc-worldcup-stats){min-width:0;max-width:100%}
+ body.champion-portal .head-actions{width:100%;overflow-x:auto;flex-wrap:nowrap;padding-block:6px}
+ body.champion-portal .head-actions a{flex-shrink:0}
+ body.champion-portal .wc-worldcup-hero{grid-template-columns:minmax(0,1fr)!important}
+ body.champion-portal .wc-hero-buttons{display:flex;flex-wrap:wrap;gap:8px}
+ body.champion-portal .wc-worldcup-stats{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .tag23-back{padding:10px!important;min-width:44px!important}
+ .tag23-back .tag23-back-label{display:none}
+}
+@media(max-width:390px){body.champion-portal .wc-worldcup-stats{grid-template-columns:1fr!important}}
+@media print{
+ .tag23-back{display:none!important}
+ body.v105-portal #studentsBoard{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:3mm 4mm!important}
+ body.v105-portal .bo-student-id{height:62mm!important;min-height:62mm!important;max-height:62mm!important;break-inside:avoid!important;overflow:hidden!important}
+ body.v105-portal .bo-student-id .bo-badge-bottom{grid-template-columns:minmax(0,1fr) 26mm!important;gap:1mm!important;padding:1mm 1.7mm!important}
+ body.v105-portal .bo-student-id .bo-badge-qr{padding:.4mm!important;gap:0!important;border-radius:1mm!important}
+ body.v105-portal .bo-student-id .bo-badge-qr img.qr{width:24.5mm!important;height:24.5mm!important;padding:.3mm!important;image-rendering:pixelated!important}
+ body.v105-portal .bo-student-id .bo-badge-header .tag-card-logo{width:25mm!important;height:8.5mm!important}
+ body.v105-portal .bo-student-id .bo-badge-brand{min-width:0!important}
+}
+@media(prefers-reduced-motion:reduce){.tag23-back{transition:none!important;transform:none!important}}
