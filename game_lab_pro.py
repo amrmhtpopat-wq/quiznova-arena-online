@@ -563,7 +563,7 @@ def _google_generate_with_fallback(request_body, key, models, compact_body=None)
                 if status in (408,500,502,503,504):
                     had_overload=True
                     last_error='ai_provider_overloaded'
-                    if attempt==0:
+                    if attempt+1<attempts:
                         time.sleep(1.0+model_index+secrets.randbelow(650)/1000.0)
                         continue
                     break
@@ -583,7 +583,7 @@ def _google_generate_with_fallback(request_body, key, models, compact_body=None)
                       ', model '+model,flush=True)
                 had_overload=True
                 last_error='ai_network_error'
-                if attempt==0:
+                if attempt+1<attempts:
                     time.sleep(1.0+model_index+secrets.randbelow(650)/1000.0)
                     continue
                 break
@@ -609,7 +609,7 @@ def _refund_ai_usage(tid,usage_id):
         print('TAG LAB: could not release unsuccessful AI usage slot',flush=True)
 
 
-def _local_ai_recovery(tid,data,requested,reason):
+def _local_ai_recovery(tid,data,requested,reason,source_report=None):
     """Return teacher-reviewable book excerpts when every free Gemini request fails.
 
     This is deliberately NOT labeled as AI output. It runs locally without
@@ -633,6 +633,7 @@ def _local_ai_recovery(tid,data,requested,reason):
     why=reasons.get(reason,'تعذر الاتصال بخدمة Google المجانية')
     draft.update({
       'mode':'extract',
+      'sourceAudit':source_report,
       'fallbackFrom':'ai',
       'fallbackReason':reason,
       'requestedCount':requested,
@@ -773,7 +774,7 @@ def ai_generate(tid,data):
         _refund_ai_usage(tid,usage_id)
         if str(exc) in ('ai_provider_overloaded','ai_network_error',
                         'ai_rate_limited','ai_model_unavailable'):
-            return _local_ai_recovery(tid,data,maximum,str(exc))
+            return _local_ai_recovery(tid,data,maximum,str(exc),source_report)
         raise
     except Exception:
         _refund_ai_usage(tid,usage_id)
@@ -820,7 +821,7 @@ def ai_generate(tid,data):
     except ValueError as exc:
         _refund_ai_usage(tid,usage_id)
         if str(exc) in ('ai_empty_response','ai_invalid_response'):
-            return _local_ai_recovery(tid,data,maximum,str(exc))
+            return _local_ai_recovery(tid,data,maximum,str(exc),source_report)
         raise
     except Exception:
         _refund_ai_usage(tid,usage_id)
