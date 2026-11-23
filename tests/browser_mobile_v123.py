@@ -87,9 +87,18 @@ with sync_playwright() as playwright:
         no_body_overflow(page,f'teacher portal {width}')
         inside(page,'.workspace .main',f'workspace {width}')
         check(page.locator('.sidebar nav .nav').count()>=6,'teacher tabs missing')
+        # On the redesigned landing the 9 primary tools occupy the full page.
+        # The classic menu becomes visible only after entering a management view.
+        home=page.locator('#panel-home>.tag-spatial-native-host')
+        home.wait_for(state='visible',timeout=12000)
+        check(home.locator('[data-tool]').count()>=9,'Spatial teacher tools missing')
+        check(not page.locator('#workspace>.sidebar').is_visible(),
+              'legacy menu must not obstruct the full-width spatial landing')
+        home.locator('[data-tool="cards"]').first.click()
+        page.locator('#panel-students.active').wait_for(state='visible',timeout=12000)
         if width<=650:
             menu_button=page.locator('#tagTeacherMobileToggle')
-            check(menu_button.is_visible(),'compact teacher dropdown toggle missing')
+            check(menu_button.is_visible(),'teacher menu missing in management view')
             check(menu_button.get_attribute('aria-expanded')=='false','teacher menu must start closed')
             check(not page.locator('#tagTeacherSections').is_visible(),'teacher dropdown should start collapsed')
             check(not page.locator('#logout').is_visible(),'logout should be tucked into mobile dropdown')
@@ -102,19 +111,15 @@ with sync_playwright() as playwright:
                   'expanded teacher menu must be a compact single-column list')
             check(page.locator('#logout').is_visible(),'logout missing in expanded teacher dropdown')
             no_body_overflow(page,f'expanded teacher menu {width}')
+            menu_button.click()
+            check(not page.locator('#tagTeacherSections').is_visible(),'teacher dropdown failed to close')
         else:
             check(not page.locator('#tagTeacherMobileToggle').is_visible(),
                   'teacher dropdown toggle must not show on tablet or desktop')
-            check(page.locator('#logout').is_visible(),'logout hidden on teacher portal')
+            check(page.locator('#logout').is_visible(),'logout hidden in management view')
             if width<=1024:
                 check(page.locator('.sidebar nav').evaluate("el=>getComputedStyle(el).overflowX")=='auto',
                       'teacher tabs should be horizontally scrollable on tablets')
-        page.locator('button.nav[data-panel="students"]').click()
-        if width<=650:
-            check(page.locator('#tagTeacherMobileToggle').get_attribute('aria-expanded')=='false',
-                  'teacher dropdown did not close after choosing panel')
-            check(not page.locator('#tagTeacherSections').is_visible(),
-                  'teacher dropdown still blocks the dashboard')
         page.locator('#studentsBoard .bo-class-folder').first.wait_for(timeout=13000)
         no_body_overflow(page,f'student cards {width}')
         inside(page,'#studentsBoard .bo-class-folder',f'cards {width}')
