@@ -18,7 +18,7 @@ class UnifiedAuthRedirectV26(unittest.TestCase):
         src=(ROOT/'portal.js').read_text(encoding='utf-8')
         self.assertIn("new URLSearchParams(location.search).get('next')",src)
         self.assertIn("url.origin===location.origin",src)
-        self.assertIn("return '/studio.html#'+target",src)
+        self.assertIn("?'/studio.html#'+target:''",src)
         self.assertIn("return '/champion.html'",src)
     def test_public_origin_root_remains_indexed_while_portal_is_login(self):
         gateway=(ROOT/'deploy/teachgame-unified.render.yaml').read_text(encoding='utf-8')
