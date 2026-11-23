@@ -1,0 +1,60 @@
+name: TAG V24 Brand, Search Icon and Responsive Bank + AI
+on:
+  push:
+    branches: [tag-studio-bank-ai-readability-v24, main]
+    paths:
+      - 'tag-studio-bank-ai-v24.css'
+      - 'studio.html'
+      - 'short-link/**'
+      - 'assets/brand/tag-favicon-v24.png'
+      - 'assets/brand/tag-share-v24.png'
+      - 'assets/pwa/**'
+      - 'tests/test_tag_v24_brand_readability.py'
+      - 'tests/browser_tag_v24_readability.py'
+      - '.github/workflows/tag-v24-release.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'tag-studio-bank-ai-v24.css'
+      - 'studio.html'
+      - 'short-link/**'
+      - 'assets/brand/tag-favicon-v24.png'
+      - 'assets/pwa/**'
+      - 'tests/test_tag_v24_brand_readability.py'
+      - 'tests/browser_tag_v24_readability.py'
+      - '.github/workflows/tag-v24-release.yml'
+permissions:
+  contents: read
+jobs:
+  ui-and-brand:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install test dependencies
+        run: |
+          python -m pip install -r requirements.txt
+          python -m pip install playwright
+          python -m playwright install chromium
+      - name: Brand, Google PNG icon and responsive static tests
+        run: python -m unittest discover -s tests -p 'test_tag_v24_brand_readability.py' -v
+      - name: Brand SEO regression
+        run: python -m unittest discover -s tests -p 'test_tag_brand_seo_v2.py' -v
+      - name: Existing static public landing
+        run: python -m unittest discover -s tests -p 'test_tag_static_seo_landing_v19.py' -v
+      - name: Responsive book and bank real browser QA
+        run: python -u tests/browser_tag_v24_readability.py
+      - name: Actual book extraction and edit workflow regression
+        run: python -u tests/browser_tag_studio_book_ai_v1.py
+      - name: Preserve teacher-scoped subject and grade bank filters
+        run: python -u tests/browser_tag_jordan_library_v1.py
+      - name: Upload screenshots of 320/390/768/1024/1366px
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tag-v24-bank-ai-responsive
+          path: artifacts/tag-v24/*.png
+          if-no-files-found: ignore
