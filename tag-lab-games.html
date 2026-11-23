@@ -38,12 +38,12 @@
 <link rel="stylesheet" href="/tag-lab-templates-v32.css?v=32.0">
 <link rel="stylesheet" href="/tag-mobile-v2.css?v=2">
 <script defer src="/tag-app-bridge-v2.js?v=2"></script>
-<meta name="robots" content="noindex,nofollow"><link rel="stylesheet" href="/spatial-beta.css"></head>
-<body>
-<div class="mobilebar"><b><img class="tag-mobile-mark" src="/assets/brand/tag-logo-dark-v21.png" alt=""> TAG LAB</b><button class="button alt small" id="mobileMenu" aria-label="القائمة">☰</button></div><div id="shade" class="shade"></div>
+<meta name="robots" content="noindex,nofollow"><link rel="stylesheet" href="/spatial-beta.css?v=3"></head>
+<body data-space="lab" data-page="tag-lab-games">
+<div class="mobilebar"><b><img class="tag-mobile-mark" src="/assets/brand/tag-spatial.svg" alt=""> TAG LAB</b><button class="button alt small" id="mobileMenu" aria-label="القائمة">☰</button></div><div id="shade" class="shade"></div>
 <div class="shell">
 <aside class="rail" id="rail">
- <div class="brand"><div class="tag-lab-lockup"><img class="tag-lab-logo" src="/assets/brand/tag-logo-dark-v21.png" alt="شعار TEACH AND GAME"><div><strong>TAG LAB</strong><small>مختبر الألعاب التعليمية</small></div></div><span class="qachip">● نسخة QA للاختبار</span></div>
+ <div class="brand"><div class="tag-lab-lockup"><img class="tag-lab-logo" src="/assets/brand/tag-spatial.svg" alt="شعار TEACH AND GAME"><div><strong>TAG LAB</strong><small>مختبر الألعاب التعليمية</small></div></div><span class="qachip">● نسخة QA للاختبار</span></div>
  <div class="navlabel">استكشف المختبر</div>
  <button class="nav sel" data-jump="catalog"><span>🕹️</span>جميع الألعاب والقوالب</button>
  <button class="nav" data-jump="builder"><span>🪄</span>صانع الأنشطة</button>
@@ -59,7 +59,7 @@
  <a class="nav" href="/teacher-hub-preview.html"><span>🎓</span>مركز أدوات المعلم</a>
  <div class="note">نسخة تجريبية مستقلة: اللعب المحلي على جهازك، أما الحفظ والنشر ونتائج الطلاب فتتم عبر حساب المعلم على بيئة الاختبار.</div>
 </aside>
-<main class="main">
+<main class="main"><nav class="sp-route " aria-label="التنقّل بين الصفحات"><a class="sp-parent" href="/tag-lab-home.html">‹ &nbsp;رئيسية المختبر</a><details><summary>دليل الصفحات</summary><div class="sp-links"><a href="/tag-lab-home.html">رئيسية المختبر</a><a href="/game-lab-preview.html">القوالب</a><a href="/tag-lab-games.html">الألعاب</a><a href="/tag-lab-create.html">صانع الأنشطة</a><a href="/tag-lab-books.html">الكتب</a><a href="/tag-lab-library.html">مكتبتي</a><a href="/tag-lab-live.html">المنافسة المباشرة</a><a href="/tag-lab-students.html">بطاقات المختبر</a><a href="/tag-lab-mixer.html">الحصة التفاعلية</a><a href="/teacher-space.html">مساحة المعلم</a></div></details></nav>
  <div class="bar"><div class="crumb"><b>TAG</b> / مختبر الأنشطة / <strong>جميع الألعاب</strong></div>
  <div id="v4Toolbar"><span class="pill">✨ 24 قالبًا تعليميًا</span><span class="pill">تجريبي</span><button id="v4ThemeToggle" type="button" aria-pressed="false">◐ وضع العرض عالي التباين</button><a class="button alt small" href="/studio.html">استوديو المعلم</a></div></div>
  <section class="mast" aria-labelledby="v4Title"><div><span class="eyebrow">🎨 TAG LAB · النسخة التجريبية الجديدة</span>
@@ -177,7 +177,7 @@
  <div class="footer">TAG LAB · نموذج تعليمي أصلي مستوحى من مفهوم قوالب الأنشطة · تجربة QA دون تعديل المنصة الرسمية</div>
 </main></div>
 <div id="playOverlay" hidden role="dialog" aria-modal="true" aria-label="معاينة اللعبة">
- <div class="playhead"><div class="tag-lab-play-title" style="display:flex;align-items:center;gap:12px;min-width:0"><img src="/assets/brand/tag-logo-dark-v21.png" alt="TAG" style="width:92px;height:51px;object-fit:contain;flex:none"><div><span class="eyebrow">TAG LAB • تجربة اللعب</span><h2 id="playTitle">لعبة تعليمية</h2></div></div><div class="buttons"><span class="pill" id="playCounter">معاينة</span><button id="playFull" class="button alt small">⛶ ملء الشاشة</button><button id="closePlay" class="button transparent small">✕ إغلاق</button></div></div>
+ <div class="playhead"><div class="tag-lab-play-title" style="display:flex;align-items:center;gap:12px;min-width:0"><img src="/assets/brand/tag-spatial.svg" alt="TAG" style="width:92px;height:51px;object-fit:contain;flex:none"><div><span class="eyebrow">TAG LAB • تجربة اللعب</span><h2 id="playTitle">لعبة تعليمية</h2></div></div><div class="buttons"><span class="pill" id="playCounter">معاينة</span><button id="playFull" class="button alt small">⛶ ملء الشاشة</button><button id="closePlay" class="button transparent small">✕ إغلاق</button></div></div>
  <div class="playbody" id="playBody"></div><div class="status" id="playStatus" aria-live="polite"></div>
 </div><div class="print-page" id="printPage"></div>
 <script>

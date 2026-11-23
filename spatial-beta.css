@@ -4,3 +4,26 @@ body .nav-item.active{border-inline-start:3px solid #8ad9cd}
 body .tool{border-radius:15px}body .tool:hover{--lift:-4px}
 button:focus-visible,a:focus-visible{outline:3px solid #82cfc8;outline-offset:3px}
 @media(prefers-reduced-motion:reduce){.tool,.tile{transition:none!important}}
+
+/* Shared spatial surfaces. Game answer colours and selected stadium scenes belong to the activity. */
+body[data-space]{--sp-ink:#eef8f2;--sp-muted:#b4cdd3;--sp-edge:#406477;--sp-mint:#a2e4d6;--sp-panel:linear-gradient(125deg,#153f50,#102c40 76%);accent-color:#58c9bd}
+body[data-space]:not([data-page=champion]):not([data-space=display]){background:radial-gradient(ellipse at 85% 0%,#164657 0,transparent 48%),#071b2c!important;color:var(--sp-ink)}
+body[data-space] :is(.panel,.pane,.stat-card,.insight-card,.side-card,.auth-card,.field-card,.detail,.metric,.kpi,.block,.box,.step-card,.join-card,.question-card,.pool-card,.quiz-demo,.preview-float,.planitem,.teacher-card,.notice,.panel-glass,.quiz-card,.game-card,.stage-left,.stage-right,.tag-studio-quickhub,.modal-card,.entry-card,.install-guide,.bank-toolbar,.bank-summary,.quiz-item,.side-links,.v9-mode-intro,.bo-builder-properties,.round-stage,.loading){color:var(--sp-ink)!important;background:var(--sp-panel)!important;border:1px solid var(--sp-edge)!important;border-radius:17px!important;box-shadow:inset 0 1px #d1f5ea12,0 4px 0 #05172354!important}
+body[data-space] :is(.topbar,.rail,.sidebar,.bar,.mobilebar,.top,.site-header){background:#092638!important;border-color:var(--sp-edge)!important;color:var(--sp-ink)!important}
+body[data-space] :is(.panel,.pane,.auth-card,.box,.block,.side-card,.card,.kpi,.stat-card) :is(h1,h2,h3,h4,label){color:var(--sp-ink)!important}
+body[data-space] :is(.panel,.pane,.auth-card,.box,.side-card,.stat-card,.kpi) :is(p,small,.hint,.muted){color:var(--sp-muted)!important}
+body[data-space] :is(input:not([type=checkbox]):not([type=radio]):not([type=color]):not([type=range]):not([type=file]):not([type=image]),textarea,select){background-color:#0a2435!important;color:#eff9f4!important;border-color:#587483!important}
+body[data-space] :is(.primary,.btn-primary,.bo-entry-cta){background:#a2e4d6!important;color:#103741!important;border-color:#88cec1!important}
+body[data-space] :is(.pane,.panel,.block) th{background-color:#14394a;color:#d9f3e9}
+body[data-space] :is(.pane,.panel,.block) td{color:#e3f3ee;border-color:#426477}
+body[data-space=lab] :is(.mast,.hero,.studio .hero),body[data-space=teacher] :is(.game-hero,.tag-studio-quickhub),body[data-page=for-teachers] .hero,body[data-page=app] .hero,body[data-space=entry] .auth-art{background:radial-gradient(ellipse at 10% 25%,#36747577,transparent 51%),linear-gradient(125deg,#133f50,#0b2436)!important;border-color:#467080!important;color:var(--sp-ink)!important}
+body[data-space=lab] :is(.games,.cards,.detailgrid) > :is(a,article,button,div),body[data-page=about] article,body[data-page=for-teachers] :is(.feature-card,.demo-inner),body[data-page=app] .entries a,body[data-space=student] :is(.profile,.form,.box,.card),body[data-space=admin] :is(.metric,.visitor-stat,.login-intro),body[data-page=studio] :is(.mode-card,.pool-card,.stat-card),body[data-page=champion] :is(.wc-stat,.wc-bracket-panel,.create-screen){background:var(--sp-panel)!important;color:var(--sp-ink)!important;border:1px solid var(--sp-edge)!important;border-inline-start:3px solid #72bcb3!important;border-radius:15px!important}
+body[data-space=display] :is(.loading,.question,.round-stage,.wc-bracket-panel){background-color:#0d2c3ee8!important;color:#eff8f3!important;border-color:#548080!important}
+body[data-page=about] :is(header,footer),body[data-page=pwa-offline] main{background:#103247!important;color:#f1f8f4!important}
+body[data-page=about] :is(main,section),body[data-page=app] .page{color:#e5f4ee;background-color:#0c293a}
+body[data-space] .sp-route{position:relative;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin:8px 0 16px;padding:7px 12px;border:1px solid #446779;border-radius:12px;background:#0c293b;color:#eff8f2;font:600 14px/1.6 Tahoma,Arial,sans-serif;direction:rtl;z-index:6}
+.sp-route a,.sp-route summary{color:#bbedaF!important;text-decoration:none;cursor:pointer}
+.sp-route details{position:static}.sp-route details[open]{flex:1 0 100%}.sp-links{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}.sp-links a{padding:6px 10px;background:#153d4e;border-radius:7px}.sp-route a:hover,.sp-route summary:hover{color:white!important}.sp-route summary{padding:3px}
+@media(hover:hover) and (prefers-reduced-motion:no-preference){body[data-space] :is(.games,.cards,.entries,.tag-studio-quickhub-grid) > :is(a,button){transition:transform .18s,border-color .18s}body[data-space] :is(.games,.cards,.entries,.tag-studio-quickhub-grid) > :is(a,button):hover{transform:translateY(-3px);border-color:#8ed5cb!important}}
+@media(max-width:640px){body[data-space] .sp-route{margin:6px 0 10px;padding:5px 9px}.sp-route summary,.sp-route .sp-parent{min-height:40px;align-content:center}.sp-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.sp-links a{min-width:0;align-content:center;min-height:42px}.sp-route details{max-width:100%}}
+@media print{.sp-route{display:none!important}}

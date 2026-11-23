@@ -34,8 +34,8 @@ function stageTopFive(r){
 }
 
 async function load(){
- if(!code){$('#stage').innerHTML='<div class="loading">رمز الجلسة غير موجود</div>';return}
- if(!stageToken){$('#stage').innerHTML='<div class="loading">افتح شاشة العرض من زر شاشة العرض داخل غرفة المعلم.</div>';return}
+ if(!code){$('#stage').innerHTML='<div class="loading">رمز الجلسة غير موجود <a href="/studio.html#live">العودة إلى التحدي المباشر</a></div>';return}
+ if(!stageToken){$('#stage').innerHTML='<div class="loading">افتح شاشة العرض من زر شاشة العرض داخل غرفة المعلم. <a href="/studio.html#live">فتح غرفة المعلم</a></div>';return}
  if(stageLoading)return;stageLoading=true;
  try{
   const r=await fetch('/api/room/state?code='+encodeURIComponent(code)+'&stage='+encodeURIComponent(stageToken),{cache:'no-store'});

@@ -65,7 +65,7 @@ async function boot(){
   showWorkspace();
   try{await loadAll()}catch(e){notify('تعذر تحديث بيانات لوحة القيادة مؤقتًا. جرّب زر التحديث.')}
 }
-function showWorkspace(){if(location.hash==='#students')go('students');$('#studentWelcome').classList.add('hidden');$('#authWall').classList.add('hidden');$('#workspace').classList.remove('hidden');$('#teacherSideName').textContent=teacher.name;$('#teacherSubject').textContent=teacher.subject;$('#schoolFoot').textContent=teacher.school;$('#schoolModeEditor').value=teacher.school_type||'mixed';renderAvatarChoices();$('#welcome').textContent='أهلًا '+teacher.name+'، المادة: '+teacher.subject+' • '+teacher.school}
+function showWorkspace(){if(['#students','#classes'].includes(location.hash))go(location.hash.slice(1));$('#studentWelcome').classList.add('hidden');$('#authWall').classList.add('hidden');$('#workspace').classList.remove('hidden');$('#teacherSideName').textContent=teacher.name;$('#teacherSubject').textContent=teacher.subject;$('#schoolFoot').textContent=teacher.school;$('#schoolModeEditor').value=teacher.school_type||'mixed';renderAvatarChoices();$('#welcome').textContent='أهلًا '+teacher.name+'، المادة: '+teacher.subject+' • '+teacher.school}
 $('#downloadBackup').onclick=async()=>{try{const data=await api('/api/teacher/backup');const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='TAG_Backup_'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);notify('تم تنزيل نسخة البيانات. احتفظ بها في مكان آمن.')}catch(e){notify(err(e))}};
 $('#logout').onclick=async()=>{try{await api('/api/auth/logout',{method:'POST',body:'{}'})}catch(e){}localStorage.removeItem(TOKEN_KEY);location.reload()};
 const panels={school:['إعدادات المدرسة','إدارة صور الطلاب حسب نوع المدرسة'],home:['لوحة القيادة','نظرة شاملة على فصولك وتقدم طلابك'],classes:['حرب الشعب','منافسات مميزة بين شعب المادة'],mastery:['إتقان المهارات','تابع نتاجات التعلم بالتفصيل'],students:['الطلاب والبطاقات','إدارة الهويات الرقمية وصور الشخصيات'],history:['سجل الاختبارات','نتائج محفوظة تحت حسابك']};
@@ -273,5 +273,9 @@ $('#printCards').onclick=async()=>{
     window.print();
   }finally{button.disabled=false;button.textContent=original}
 };
+window.addEventListener('hashchange', () => {
+  const panel = location.hash.slice(1);
+  if (teacher && Object.hasOwn(panels, panel)) go(panel);
+});
 boot();
 })();
