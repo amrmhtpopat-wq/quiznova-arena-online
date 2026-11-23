@@ -200,3 +200,25 @@
  .tag-v3-aux{gap:7px}
  .tag-v3-aux button{padding:8px 10px;font-size:11px}
 }
+
+/* TAG V25.1 — luminous official brand in the native teacher workspace. */
+.header .brand:has(#tag-v3-officialLogo){position:relative;isolation:isolate}
+.header .brand #tag-v3-officialLogo:not([hidden]){
+ width:84px!important;height:84px!important;max-width:84px!important;max-height:84px!important;
+ object-fit:contain!important;filter:drop-shadow(0 0 9px #54ead660) drop-shadow(0 0 18px #54ead636)!important;
+ transition:filter .25s ease!important;
+}
+.header .brand:hover #tag-v3-officialLogo:not([hidden]){
+ filter:drop-shadow(0 0 12px #8cfbe49c) drop-shadow(0 0 25px #54ead65f)!important;
+}
+@media(max-width:780px){
+ .header .brand #tag-v3-officialLogo:not([hidden]){
+ width:58px!important;height:58px!important;max-width:58px!important;max-height:58px!important;
+ }
+}
+@media(max-width:375px){
+ .header .brand #tag-v3-officialLogo:not([hidden]){
+ width:49px!important;height:49px!important;max-width:49px!important;max-height:49px!important;
+ }
+}
+@media(prefers-reduced-motion:reduce){.header .brand #tag-v3-officialLogo{transition:none!important}}
