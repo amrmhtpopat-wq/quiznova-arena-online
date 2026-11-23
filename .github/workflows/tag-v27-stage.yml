@@ -25,6 +25,8 @@ jobs:
           node --check stage.js
       - name: Browser test live ranking, avatar podium, replay and privacy
         run: python -u tests/browser_tag_stage_cinematic_v27.py
+      - name: Verify all 35 projector scene and viewport combinations
+        run: python -u tests/browser_stage_fit_v126.py
       - name: Preserve existing QR and teacher authentication
         run: |
           python -m unittest discover -s tests -p 'test_tag_v23_release.py' -v
