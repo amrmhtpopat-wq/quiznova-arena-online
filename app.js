@@ -867,7 +867,7 @@ function renderLiveHost(data,quiz){
   liveSceneSelect.onchange=()=>{liveSceneSelect.dataset.userChoice='1'};
   $('#changeLiveScene').onclick=()=>liveControl('background');
   $('#liveStartBtn').onclick=()=>liveControl('start'); $('#liveNextBtn').onclick=()=>liveControl('next');$('#liveInlineNextBtn').onclick=()=>liveControl('next');$('#liveSkipBtn').onclick=()=>{if(confirm('تخطي السؤال الحالي والانتقال مباشرة إلى السؤال التالي؟'))liveControl('skip')}; $('#liveEndBtn').onclick=()=>liveControl('end'); $('#liveNewRoomBtn').onclick=openNewLiveRoom;
-  $('#copyJoinBtn').onclick=()=>navigator.clipboard?.writeText(join).then(()=>toast('تم نسخ رابط الدخول')).catch(()=>toast('انسخ الرابط الظاهر يدويًا')); $('#openStageBtn').onclick=()=>window.open('/stage.html?code='+encodeURIComponent(data.code)+'&stage='+encodeURIComponent(liveStageToken),'teachgame_stage','noopener');
+  $('#copyJoinBtn').onclick=()=>navigator.clipboard?.writeText(join).then(()=>toast('تم نسخ رابط الدخول')).catch(()=>toast('انسخ الرابط الظاهر يدويًا')); $('#openStageBtn').onclick=()=>window.open((location.hostname==='teachgame.onrender.com'?'/stage/':'/stage.html')+'?code='+encodeURIComponent(data.code)+'&stage='+encodeURIComponent(liveStageToken),'teachgame_stage','noopener');
 }
 
 // QA V12.4: projector requests are carried to this authenticated host tab only.
