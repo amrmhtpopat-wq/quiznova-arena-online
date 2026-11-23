@@ -48,7 +48,10 @@
   else if(file.startsWith('game-lab-'))dest=document.querySelector('header .actions,header nav,header.bar,header.topbar,header.header,header.top');
   else if(file==='tag-spatial-home-v3.html')dest=document.querySelector('header.header .header-actions');
   else if(file.startsWith('tag-lab-'))dest=document.querySelector('header .wrap,header nav');
-  else if(file==='admin.html')dest=document.querySelector('header.topbar');
+  else if(file==='admin.html')dest=null; // login-visible back control, retained after authentication
+  // An app can render a toolbar inside a hidden authenticated panel.
+  // In that case keep the back control visible on its public sign-in screen.
+  if(dest&&!dest.getClientRects().length)dest=null;
   if(dest){
    b.classList.add('tag-back-nav--inline');dest.appendChild(b);
   }else{
