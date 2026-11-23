@@ -24,7 +24,7 @@ import solo_api
 import game_lab_api as games
 import game_lab_uploads as uploads
 from game_lab_ai_quality import (selected_ai_source,audit_ai_source,verify_ai_rows,
-                                 suspicious_book_text,_plain)
+                                 suspicious_book_text,invalid_educational_pair,_plain)
 
 MAX_BOOK_BYTES=uploads.MAX_BOOK_BYTES
 INLINE_BOOK_BYTES=6_000_000
@@ -198,6 +198,7 @@ def explicit_qa_draft(text, maximum):
         question=re.sub(r'\s+',' ',question).strip().strip('ـ- ')
         answer=re.sub(r'\s+',' ',answer).strip().strip('ـ- ')
         if not 8<=len(question)<=200 or not 2<=len(answer)<=100:return
+        if invalid_educational_pair(question,answer,quote):return
         if not (question.endswith(('؟','?')) or re.match(
             r'^(?:ما|ماذا|كيف|لماذا|متى|أين|كم|من|هل|أي|اذكر|عرّف)\s',question)):return
         signature=(question.casefold(),answer.casefold())
@@ -259,6 +260,7 @@ def deterministic_draft(text,maximum):
         question=clean_book_text(question).strip(' ،؛')
         answer=clean_book_text(answer).strip(' ،؛')
         if not question or not answer or len(question)>200 or len(answer)>100:return
+        if invalid_educational_pair(question,answer,quote):return
         question=question.rstrip('؟?. ')
         question+=('.' if question.startswith('اذكر ') else '؟')
         key=(question.casefold(),answer.casefold())
@@ -446,6 +448,8 @@ def _direct_lesson_sentence_draft(text,maximum):
                         suspicious_book_text(subject) or suspicious_book_text(answer)):
                         continue
                     question=template.format(subject=subject)
+                    if invalid_educational_pair(question,answer,sentence):
+                        continue
                     sig=_plain(question)
                     if sig in seen:continue
                     seen.add(sig)
@@ -485,9 +489,12 @@ def _verified_local_rows(text,maximum):
             continue
         if row.get('origin')=='local_cloze' or '(....)' in q or 'أكمل العبارة من الكتاب' in q:
             continue
-        if any(suspicious_book_text(part) for part in (q,a,quote)):
+        if (invalid_educational_pair(q,a,quote) or
+                suspicious_book_text(quote)):
             continue
-        if evidence not in original or answer not in original:
+        # Match the answer to the SAME cited excerpt, not merely to another
+        # paragraph on the same page. This blocks mispaired PDF columns.
+        if evidence not in original or answer not in evidence:
             continue
         if question in seen:continue
         seen.add(question)
