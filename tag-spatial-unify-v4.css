@@ -116,6 +116,7 @@ body.v105-studio.tag-spatial-global #app>.main>.view{min-width:0!important;max-w
  }
 }
 @media(max-width:1024px){
+ body.v105-studio.tag-spatial-global #app>.sidebar{z-index:1202!important}
  body.v105-studio.tag-spatial-global #app>.sidebar:not(.open){
   transform:translateX(112%)!important;visibility:hidden!important;pointer-events:none!important;
  }
@@ -242,4 +243,22 @@ body.v105-portal.tag-spatial-global #panel-home .tag-spatial-native-stage{
 }
 @media(prefers-reduced-motion:reduce){
  body.v105-portal.tag-spatial-global #panel-home::before{animation:none!important}
+}
+
+/* Keep the 3D landing inside the physical mobile viewport, not an enlarged
+   virtual browser canvas. Fixed backgrounds and 3D transforms must not
+   create scrollable horizontal space. */
+html:has(body.v105-portal.tag-spatial-global #workspace:not(.hidden):has(#panel-home.active)){
+ max-width:100%;overflow-x:clip;
+}
+body.v105-portal.tag-spatial-global:has(#workspace:not(.hidden) #panel-home.active){
+ width:100%;max-width:100%;min-width:0!important;
+ overflow-x:clip!important;
+}
+body.v105-portal.tag-spatial-global #workspace:not(.hidden):has(#panel-home.active){
+ width:100%!important;max-width:100%!important;min-width:0!important;
+ overflow-x:clip!important;
+}
+body.v105-portal.tag-spatial-global #workspace:not(.hidden) #panel-home.active{
+ min-width:0!important;max-width:100%!important;overflow-x:clip!important;
 }
