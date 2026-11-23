@@ -1,0 +1,37 @@
+/* CHAMPION TAG V5: approved logo + tiny back affordance only.
+   Does not alter World Cup layouts, themes, competition engine or award effects. */
+body.champion-portal header.top .brand-img{
+ width:clamp(92px,11vw,132px)!important;
+ max-width:132px!important;height:clamp(66px,8vw,88px)!important;
+ max-height:88px!important;object-fit:contain!important;
+ filter:drop-shadow(0 5px 10px #0bd5d524);
+}
+body.champion-board header.top .brand-img{
+ width:95px!important;max-width:95px!important;height:49px!important;
+ object-fit:contain!important;
+}
+:is(body.champion-portal,body.champion-board) header.top{
+ max-width:100%;min-width:0;flex-wrap:wrap;gap:clamp(7px,1.5vw,17px);
+}
+:is(body.champion-portal,body.champion-board) header.top .head-actions{
+ display:flex;flex-wrap:wrap;align-items:center;gap:7px;min-width:0;
+}
+:is(body.champion-portal,body.champion-board) header.top .tag-back-nav{
+ background:#12465c!important;border-color:#65c2c1!important;color:#ebfff9!important;
+}
+@media(max-width:700px){
+ :is(body.champion-portal,body.champion-board) header.top{
+  justify-content:center;gap:7px;padding-block:9px;
+ }
+ :is(body.champion-portal,body.champion-board) header.top .head-actions{
+  justify-content:center;max-width:100%;gap:5px;
+ }
+ :is(body.champion-portal,body.champion-board) header.top .head-actions > :is(a,button){
+  min-width:0;min-height:37px;font-size:clamp(10px,2.4vw,12px);padding:7px 10px;
+ }
+}
+@media(max-width:420px){
+ body.champion-board header.top .brand-img{width:74px!important;height:37px!important}
+ body.champion-board header.top .head-actions{gap:4px}
+ body.champion-board header.top .head-actions > :is(a,button){font-size:10px;padding:5px 8px;min-height:32px}
+}

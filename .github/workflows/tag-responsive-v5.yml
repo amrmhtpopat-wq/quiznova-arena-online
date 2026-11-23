@@ -1,0 +1,39 @@
+name: TAG V5 Responsive + Navigation Audit
+on:
+  push:
+    branches: [fix/tag-site-responsive-back-nav-v5-20261123, main]
+    paths:
+      - 'tag-entry-spatial-v5.css'
+      - 'tag-back-nav-v5.*'
+      - 'tag-responsive-site-v5.css'
+      - 'tag-champion-logo-v5.css'
+      - 'tag-spatial-native-v3.*'
+      - '*.html'
+      - 'tests/browser_tag_responsive_v5.py'
+      - 'tests/test_tag_back_v5.cjs'
+      - '.github/workflows/tag-responsive-v5.yml'
+  pull_request:
+    paths:
+      - 'tag-entry-spatial-v5.css'
+      - 'tag-back-nav-v5.*'
+      - 'tag-responsive-site-v5.css'
+      - 'tag-champion-logo-v5.css'
+      - 'tag-spatial-native-v3.*'
+      - '*.html'
+      - 'tests/browser_tag_responsive_v5.py'
+      - 'tests/test_tag_back_v5.cjs'
+jobs:
+  responsive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements.txt playwright
+      - run: python -m playwright install --with-deps chromium
+      - name: Check back button coverage on every HTML page
+        run: node tests/test_tag_back_v5.cjs
+      - name: Verify layouts and back buttons in real browser
+        run: python -u tests/browser_tag_responsive_v5.py

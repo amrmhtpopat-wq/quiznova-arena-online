@@ -1,0 +1,35 @@
+/* TAG Spatial standalone V5 — isolates 3D art from mobile layout width. */
+html{width:100%;max-width:100%;overflow-x:clip}
+body{max-width:100%;width:100%;min-width:0;overflow-x:clip}
+.shell{box-sizing:border-box;min-width:0;max-width:100%}
+.header,.hero,.workspace,.workspace-head,.tools{box-sizing:border-box;min-width:0;max-width:100%}
+@media(max-width:800px){
+ .shell{width:calc(100% - 24px)!important;max-width:100%!important;margin-inline:auto}
+ .header{height:auto;min-height:65px;gap:6px!important;flex-wrap:nowrap!important}
+ .head-center{display:none!important}
+ .brand{min-width:0!important;max-width:48%!important;flex:1 1 auto!important;gap:6px!important}
+ .brand img{width:51px!important;height:auto!important;max-height:61px!important;object-fit:contain}
+ .brandcopy{display:none!important}
+ .header-actions{gap:4px!important;flex:0 0 auto;min-width:0;max-width:53%}
+ .header-actions .action{min-width:34px!important;max-width:38px!important;width:36px!important;height:36px!important;padding:0 6px!important;border-radius:10px!important}
+ .header-actions .action svg{width:16px;height:16px}
+ .header-actions .action span{display:none!important}
+ .hero{display:grid!important;grid-template-columns:minmax(0,1fr)!important;min-height:0!important;padding:20px 0 12px!important;gap:12px!important}
+ .hero-copy{min-width:0;max-width:100%}
+ .hero h1{font-size:clamp(30px,8vw,44px)!important;line-height:1.42!important;letter-spacing:-1px}
+ .scene{width:100%;max-width:100%;min-width:0;overflow:hidden!important}
+ .workspace-head{min-width:0;flex-wrap:wrap;gap:12px!important}
+ .tools{width:100%!important;max-width:100%!important;min-width:0;overflow:visible}
+ .tool{box-sizing:border-box;min-width:0!important;max-width:100%!important}
+}
+@media(max-width:480px){
+ .shell{width:calc(100% - 22px)!important}
+ .hero h1{font-size:clamp(28px,9vw,38px)!important}
+ .scene{height:205px!important}
+ .tool{max-width:100%!important}
+ .header-actions .action{width:33px!important;min-width:33px!important}
+ .tag-back-nav--floating{position:fixed!important;left:12px!important;bottom:max(12px,env(safe-area-inset-bottom))!important}
+}
+@media(prefers-reduced-motion:reduce){
+ .scene *{animation:none!important;transition:none!important}
+}

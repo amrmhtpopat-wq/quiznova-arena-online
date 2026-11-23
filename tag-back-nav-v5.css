@@ -1,0 +1,34 @@
+/* Shared small back control — site-wide with no blanket page styling. */
+.tag-back-nav{
+ box-sizing:border-box!important;flex:0 0 auto;display:inline-flex!important;
+ align-items:center;justify-content:center;gap:7px!important;
+ min-height:40px;max-width:min(100%,190px);
+ border:1px solid #52939f!important;border-radius:11px!important;
+ color:#edfaf7!important;background:#123a4ecc!important;
+ font:700 13px/1.4 "IBM Plex Sans Arabic",Tahoma,Arial,sans-serif!important;
+ padding:8px 13px!important;cursor:pointer;white-space:nowrap;
+ box-shadow:0 5px 16px #0003!important;
+ transition:transform .2s ease,background .2s ease,border-color .2s ease!important;
+}
+.tag-back-nav svg{width:17px;min-width:17px;height:17px;transform:scaleX(-1)}
+.tag-back-nav:hover{background:#1d596a!important;border-color:#8fe9df!important;transform:translateY(-2px)}
+.tag-back-nav:focus-visible{outline:3px solid #a9f8e4!important;outline-offset:3px}
+.tag-back-nav--inline{margin:0 4px!important;position:relative;z-index:1}
+.tag-back-nav--floating{
+ position:fixed;inset:auto auto max(14px,env(safe-area-inset-bottom)) 14px;
+ z-index:95;backdrop-filter:blur(9px);
+}
+body.champion-board .tag-back-nav--inline{min-height:33px!important;padding:5px 10px!important;font-size:11px!important}
+body.champion-board .tag-back-nav--floating{opacity:.86}
+body.v105-studio header.topbar .tag-back-nav{font-size:12px!important}
+@media(max-width:700px){
+ .tag-back-nav{min-height:38px!important;padding:7px 10px!important;font-size:12px!important}
+ .tag-back-nav--floating{left:10px;bottom:max(10px,env(safe-area-inset-bottom))}
+ .tag-back-nav--inline{margin-inline:2px!important}
+}
+@media(max-width:380px){
+ .tag-back-nav span{display:none}
+ .tag-back-nav{width:38px;min-width:38px;padding:7px!important}
+}
+@media(prefers-reduced-motion:reduce){.tag-back-nav{transition:none!important}}
+@media print{.tag-back-nav{display:none!important}}

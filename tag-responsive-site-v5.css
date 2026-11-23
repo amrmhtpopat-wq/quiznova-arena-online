@@ -1,0 +1,87 @@
+/* TAG V5 — Narrow, safe responsive alignment layer across existing pages.
+ * No changes to live quiz answer state, contest themes or printable QR sheets. */
+:where(html,body){max-width:100%}
+body.tag-spatial-global{
+ min-width:0;box-sizing:border-box;
+ --tag-v5-ink:#ecfbf7;--tag-v5-muted:#b7d4da;--tag-v5-line:#4b7e8e;
+}
+body.tag-spatial-global :where(img,svg,video){max-width:100%}
+body.tag-spatial-global :where(input,textarea,select,button){box-sizing:border-box}
+body.tag-spatial-global :where(.main,.page,.page-shell,.student-shell,.stage-shell,
+ .panel,.pane,.metric,.stat-card,.builder-layout,.bo-builder-layout,
+ .library-grid,.generator-layout,.auth-card,.topbar,.topbar-actions,
+ .quiz-card,.form-grid,.builder-main,.bo-entry-options,.bo-entry-intro){
+ min-width:0;max-width:100%;box-sizing:border-box;
+}
+body.tag-spatial-global :where(.topbar,.site-header,.student-brand,.page-shell header.top){
+ gap:clamp(7px,1.2vw,17px);min-width:0;
+}
+body.tag-spatial-global :where(.topbar-actions,.header-links,.head-actions){
+ min-width:0;max-width:100%;
+}
+body.v105-studio.tag-spatial-global #app>.main,
+body.v105-portal.tag-spatial-global #workspace>.main{
+ min-width:0!important;box-sizing:border-box!important;
+}
+body.tag-spatial-global :where(.pane,.panel,.quiz-card) h1,
+body.tag-spatial-global :where(.pane,.panel,.quiz-card) h2,
+body.tag-spatial-global :where(.pane,.panel,.quiz-card) h3{
+ overflow-wrap:break-word;
+}
+body.v105-studio.tag-spatial-global :where(.tag-studio-nav-group,.tag-studio-group-links) {
+ min-width:0;max-width:100%;box-sizing:border-box;
+}
+body.v105-studio.tag-spatial-global #sidebar .tag-studio-nav-group *,
+body.v105-portal.tag-spatial-global #workspace>.sidebar *{box-sizing:border-box}
+body.v105-student.tag-spatial-global .student-shell{
+ width:min(100%,1200px);margin-inline:auto;
+}
+body.v105-student.tag-spatial-global .student-brand{
+ display:flex;align-items:center;flex-wrap:wrap;justify-content:space-between;
+ padding-inline:clamp(4px,2vw,16px);min-width:0;
+}
+body.v105-student.tag-spatial-global .student-brand .logo{
+ min-width:0;flex:0 1 auto;
+}
+body.v105-student.tag-spatial-global .student-brand .logo img{
+ max-height:76px;max-width:clamp(85px,15vw,145px);
+ width:auto;object-fit:contain;
+}
+body.v105-student.tag-spatial-global .student-brand .tag-back-nav{
+ margin-inline-start:auto!important;
+}
+body.v105-studio.tag-spatial-global header.topbar{
+ flex-wrap:wrap;min-width:0;
+}
+body.v105-admin.tag-spatial-global :where(.table-panel,.table-scroll,.admin-app,.auth-stage){
+ min-width:0;max-width:100%;
+}
+body.v105-admin.tag-spatial-global :where(.table-scroll,.table-panel){
+ overflow-x:auto;overscroll-behavior-x:contain;
+}
+@media(max-width:1024px){
+ body.v105-studio.tag-spatial-global #app>.main{
+  width:100%!important;max-width:100%!important;
+  margin-right:0!important;padding-inline:clamp(12px,2.7vw,24px);
+ }
+ body.tag-spatial-global :where(.panel,.pane,.quiz-card,.stat-card){border-radius:14px!important}
+ body.tag-spatial-global :where(.auth-card,.page-shell,.main){min-width:0}
+}
+@media(max-width:650px){
+ body.tag-spatial-global :where(.page,.page-shell,.main,.student-shell){
+  min-width:0;max-width:100%;
+ }
+ body.v105-studio.tag-spatial-global #app>.main{padding-inline:12px!important}
+ body.v105-student.tag-spatial-global .student-brand{gap:8px}
+ body.v105-student.tag-spatial-global .student-brand .tag-back-nav{order:2}
+ body.v105-student.tag-spatial-global .student-brand .tag-pwa-shortcut{order:3}
+ body.v105-admin.tag-spatial-global :where(.login-layout,.admin-app){grid-template-columns:minmax(0,1fr)}
+ body.tag-spatial-global :where(.form-grid,.input-grid) > *{min-width:0}
+}
+/* Preserve full-bleed projector, color-coded answers, competitions and printing. */
+@media print{
+ body.tag-spatial-global .tag-back-nav{display:none!important}
+ body.tag-spatial-global :where(.print-sheet,.print-page,.idcard,.cards-board){
+  max-width:none!important;box-shadow:none!important;
+ }
+}
