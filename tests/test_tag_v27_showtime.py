@@ -23,7 +23,7 @@ class ShowTimeRelease(unittest.TestCase):
   self.assertIn('/tag-live-showtime-v27.css?v=27.0',html)
   self.assertIn('app.js?v=27.0',read('studio-auth.js'))
   src=read('app.js')
-  self.assertIn('room.status===\\'results\\'&&!room.examMode&&room.showFeedback!==false',src)
+  self.assertIn("room.status==='results'&&!room.examMode&&room.showFeedback!==false",src)
   self.assertIn("TagLiveShow.round(room,roundBody.querySelector('#tagV27RoundHost'),'host'",src)
   self.assertIn('dataset.tagV27ViewKey!==roundKey',src)
   self.assertIn('dataset.tagV27ViewKey!==finalKey',src)
