@@ -515,9 +515,17 @@ def _safe_local_cloze(text, maximum, existing):
     existing_q={clean_book_text(x.get('q')).casefold() for x in existing}
     answers={clean_book_text(x.get('a')).casefold() for x in existing}
     candidates={}
+    # Distinctive subject-specific words make better cloze prompts than
+    # frequent boilerplate words. Count within the teacher's selected pages.
+    chosen_pages=selected_book_pages(text)
+    token_frequency={}
+    for _,raw in chosen_pages:
+        for match in re.finditer(r'[\u0621-\u064a]{5,}|[A-Za-z]{5,}',clean_book_text(raw)):
+            token=match.group(0).casefold()
+            token_frequency[token]=token_frequency.get(token,0)+1
     rejected={'الذي','التي','الذين','هناك','حيث','هذه','هذا','كانت',
               'تكون','يمكن','الطلاب','الطالب','أثناء','بعض','احدى','جميع'}
-    for page,raw in selected_book_pages(text):
+    for page,raw in chosen_pages:
         current=[]
         for line in raw.splitlines():
             for chunk in re.split(r'(?<=[.؟!؛])\s+',line):
@@ -531,7 +539,9 @@ def _safe_local_cloze(text, maximum, existing):
                           5<=len(m.group(0))<=22]
                 if not eligible:continue
                 midpoint=len(sentence)//2
-                token=min(eligible,key=lambda m:abs((m.start()+m.end())//2-midpoint))
+                token=min(eligible,key=lambda m:
+                    (token_frequency.get(m.group(0).casefold(),1),
+                     abs((m.start()+m.end())//2-midpoint)))
                 answer=token.group(0)
                 question=('أكمل العبارة من الكتاب: «'+
                           sentence[:token.start()]+'(....)'+sentence[token.end():]+'»')
