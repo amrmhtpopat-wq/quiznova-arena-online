@@ -960,25 +960,28 @@ function renderQuestionStats(room){
 
 function renderRoundResults(room){
   const isTeams=room.playType==='teams',leaders=isTeams?(room.teams||[]):(room.leaders||[]),st=room.stats||{},medals=['🥇','🥈','🥉'];
-  const podium=leaders.slice(0,3).map((p,i)=>`<div class="round-podium-card p${i+1}"><div class="round-medal">${medals[i]}</div>${!isTeams?`<img class="sky-podium-avatar" src="${avatarPath(p.avatar)}" alt="">`:''}<b>${escapeHtml(p.name)}</b><small>${isTeams?`${p.members||0} طلاب • `:''}${p.score} نقطة</small></div>`).join('');
-  const rest=leaders.slice(3,8).map((p,i)=>`<div class="round-rank-row"><span>${i+4}</span><b>${escapeHtml(p.name)}</b><strong>${p.score}</strong></div>`).join('');
+  const showtime=Boolean(window.TagLiveShow&&room.showFeedback!==false);
+  const podium=showtime?(isTeams?'<div class="tag-v27-two-tracks"><section><h3>⚔️ ترتيب المجموعات</h3><div id="tagV27RoundHost" class="tag-v27-round"></div></section><section><h3>⭐ أفضل خمسة طلاب</h3><div id="tagV27RoundStudentsHost" class="tag-v27-round"></div></section></div>':'<div id="tagV27RoundHost" class="tag-v27-round"></div>'):leaders.slice(0,3).map((p,i)=>`<div class="round-podium-card p${i+1}"><div class="round-medal">${medals[i]}</div>${!isTeams?`<img class="sky-podium-avatar" src="${avatarPath(p.avatar)}" alt="">`:''}<b>${escapeHtml(p.name)}</b><small>${isTeams?`${p.members||0} طلاب • `:''}${p.score} نقطة</small></div>`).join('');
+  const rest=showtime?'':leaders.slice(3,8).map((p,i)=>`<div class="round-rank-row"><span>${i+4}</span><b>${escapeHtml(p.name)}</b><strong>${p.score}</strong></div>`).join('');
   if(room.examMode)return `<div class="round-results-hero"><h2>🛡️ تم استلام إجابات هذه الجولة</h2><p>النتائج محفوظة وسرية حتى نهاية الامتحان. اضغط السؤال التالي للمتابعة.</p></div>`;
-  return `<div class="round-results-hero"><div class="round-results-title"><span class="trophy-orb">🏆</span><div><div class="overline">ROUND RESULTS</div><h2>ترتيب الجولة ${room.index+1}</h2><p>${st.accuracy||0}% دقة • ${st.correct||0} صحيحة • ${st.wrong||0} خاطئة</p></div></div><div class="round-podium">${podium}</div>${rest?`<div class="round-rest">${rest}</div>`:''}<div class="next-round-note">الترتيب ظاهر الآن للطلاب وشاشة العرض. اضغط «السؤال التالي» للمتابعة.</div></div>`;
+  return `<div class="round-results-hero"><div class="round-results-title"><span class="trophy-orb">🏆</span><div><div class="overline">ROUND RESULTS</div><h2>ترتيب الجولة ${room.index+1}</h2><p>${st.accuracy||0}% دقة • ${st.correct||0} صحيحة • ${st.wrong||0} خاطئة</p></div></div>${showtime?'<div class="tag-v27-host-wrap">'+podium+'</div>':'<div class="round-podium">'+podium+'</div>'}${rest?`<div class="round-rest">${rest}</div>`:''}<div class="next-round-note">ترقبوا ظهور المتنافسين واحدًا بعد الآخر، ثم اضغط «السؤال التالي» للمتابعة.</div></div>`;
 }
 
 function renderFinal(room){
  const rows=room.report||[],top=room.playType==='teams'?(room.teams||[]):rows;
  const medals=['🥇','🥈','🥉'];
  const winner=top[0],classGrade=rows.length?Math.round(rows.reduce((sum,p)=>sum+(p.percent||0),0)/rows.length):0;
- const podium=top.slice(0,3).map((x,i)=>`<div class="v104-podium-card place-${i+1}" style="--delay:${i*0.15}s"><div class="v104-medal">${medals[i]}</div><span class="v104-place">${i+1===1?'البطل':i+1===2?'المركز الثاني':'المركز الثالث'}</span><h3>${escapeHtml(x.name)}</h3><b>${Number(x.score)||0} نقطة</b><small>${x.percent!=null?x.percent+'% دقة':(x.members||0)+' عضو'}</small></div>`).join('');
+ const podium=window.TagLiveShow?.podiumMarkup(top,{host:true,isTeams:room.playType==='teams'})||top.slice(0,3).map((x,i)=>`<div class="v104-podium-card place-${i+1}" style="--delay:${i*0.15}s"><div class="v104-medal">${medals[i]}</div><span class="v104-place">${i+1===1?'البطل':i+1===2?'المركز الثاني':'المركز الثالث'}</span><h3>${escapeHtml(x.name)}</h3><b>${Number(x.score)||0} نقطة</b><small>${x.percent!=null?x.percent+'% دقة':(x.members||0)+' عضو'}</small></div>`).join('');
  const table=rows.map((x,i)=>`<tr><td>${i+1}</td><td>${escapeHtml(x.name)}</td><td>${escapeHtml(x.team||'—')}</td><td>${x.correct}</td><td>${x.wrong}</td><td>${x.percent}%</td><td>${x.score}</td></tr>`).join('');
  const qrows=(room.questionReport||[]).map((q,i)=>`<tr><td>${i+1}</td><td>${escapeHtml(q.text)}</td><td>${q.accuracy}%</td><td>${escapeHtml((q.wrongStudents||[]).join('، ')||'—')}</td></tr>`).join('');
- return `<div class="v104-final-hero"><div class="v104-spotlight">✦ التحدي اكتمل ✦</div><h2>🏆 ليلة الأبطال!</h2><p>${winner?'نبارك لـ '+escapeHtml(winner.name)+' تحقيق المركز الأول!':'شكرًا لجميع المشاركين على أدائهم الرائع'}</p><div class="v104-final-stats"><span>👥 ${rows.length} مشارك</span><span>🎯 ${classGrade}% متوسط الدقة</span><span>📚 ${room.total} سؤال</span></div></div><div class="v104-podium">${podium}</div><div class="inline-actions" style="justify-content:center"><button type="button" class="btn btn-primary" onclick="replayHostFinale()">🎉 احتفل مجددًا</button></div><div class="overline" style="margin-top:18px">كشف النتائج التفصيلي</div><div class="report-table"><table><thead><tr><th>#</th><th>الطالب</th><th>الفريق</th><th>صحيح</th><th>خطأ</th><th>الدقة</th><th>النقاط</th></tr></thead><tbody>${table}</tbody></table></div><div class="overline" style="margin-top:18px">تحليل الأسئلة</div><div class="report-table"><table><thead><tr><th>#</th><th>السؤال</th><th>الدقة</th><th>من أخطأ</th></tr></thead><tbody>${qrows}</tbody></table></div><div class="inline-actions" style="margin-top:12px"><button class="btn btn-primary" id="exportLiveReport">تنزيل تقرير Excel (.xlsx)</button></div>`
+ return `<div class="v104-final-hero"><div class="v104-spotlight">✦ التحدي اكتمل ✦</div><h2>🏆 ليلة الأبطال!</h2><p class="tag-v27-winner-announcement" aria-live="polite">${window.TagLiveShow?'المنصة تستعد لاستقبال الأبطال…':(winner?'نبارك لـ '+escapeHtml(winner.name)+' تحقيق المركز الأول!':'شكرًا لجميع المشاركين على أدائهم الرائع')}</p><div class="v104-final-stats"><span>👥 ${rows.length} مشارك</span><span>🎯 ${classGrade}% متوسط الدقة</span><span>📚 ${room.total} سؤال</span></div></div><div class="v104-podium">${podium}</div><div class="inline-actions" style="justify-content:center"><button type="button" class="btn btn-primary" onclick="replayHostFinale()">🎉 إعادة مراسم التتويج</button></div><div class="overline" style="margin-top:18px">كشف النتائج التفصيلي</div><div class="report-table"><table><thead><tr><th>#</th><th>الطالب</th><th>الفريق</th><th>صحيح</th><th>خطأ</th><th>الدقة</th><th>النقاط</th></tr></thead><tbody>${table}</tbody></table></div><div class="overline" style="margin-top:18px">تحليل الأسئلة</div><div class="report-table"><table><thead><tr><th>#</th><th>السؤال</th><th>الدقة</th><th>من أخطأ</th></tr></thead><tbody>${qrows}</tbody></table></div><div class="inline-actions" style="margin-top:12px"><button class="btn btn-primary" id="exportLiveReport">تنزيل تقرير Excel (.xlsx)</button></div>`
 }
 window.replayHostFinale=()=>{
  const hero=document.querySelector('.v104-final-hero');
  if(!hero)return;
  hero.classList.remove('v104-replay');void hero.offsetWidth;hero.classList.add('v104-replay');
+ const host=document.querySelector('#liveQuestionBody');
+ if(window.TagLiveShow&&host)void window.TagLiveShow.celebrate(host,{onChampion:()=>hero.classList.add('v104-replay')});
 };
 
 function saveLiveSession(room){
@@ -1011,10 +1014,24 @@ function updateLiveHost(room){
   $('#liveHost').dataset.liveScene=room.background||'cartoon';
   const sceneEditor=$('#liveRoomBackground');
   if(sceneEditor&&!sceneEditor.dataset.userChoice&&sceneEditor.value!==room.background)sceneEditor.value=room.background||'cartoon';
+  window.TagLiveShow?.remember(room,'host');
+  if(room.playType==='teams')window.TagLiveShow?.remember({...room,playType:'individual'},'hostStudents');
   liveCurrentStatus=room.status;
   liveRosterMode=room.playType;liveRosterStatus=room.status;liveRosterTeams=room.teamNames||[];
   const players=Array.isArray(room.players)?room.players:[];$('#livePlayerCount').textContent=players.length;const sign=JSON.stringify(players.map(p=>[p.name,p.avatar,p.team,p.score]));if(sign!==livePlayerSignature){livePlayerSignature=sign;$('#livePlayers').innerHTML=renderPlayerCards(players)} const msg=document.getElementById('liveJoinMessage');if(msg)msg.textContent=players.length?'انضم '+players.length+' طالب إلى الغرفة':'بانتظار دخول الطلاب...';
-  $('#liveLeaderboard').innerHTML=room.examMode&&room.status!=='finished'?'🛡️ تم إخفاء الترتيب أثناء الامتحان':renderLeaderboard(room);const teamMomentum=$('#boLiveTeamMomentum');if(teamMomentum)teamMomentum.innerHTML=boRenderTeamMomentum(room);
+  const liveLeaderBoard=$('#liveLeaderboard');
+  const liveReveal=room.status==='results'&&!room.examMode&&room.showFeedback!==false&&!!window.TagLiveShow;
+  const revealKey=String(liveRoom)+':'+room.index;
+  if(liveReveal){
+    if(liveLeaderBoard.dataset.tagV27Pending!==revealKey){
+      liveLeaderBoard.dataset.tagV27Pending=revealKey;
+      liveLeaderBoard.innerHTML='<div class="tag-v27-pending">✨ يجري الآن الكشف عن أول خمسة… تابع ترتيب النقاط!</div>';
+    }
+  }else{
+    delete liveLeaderBoard.dataset.tagV27Pending;
+    liveLeaderBoard.innerHTML=room.examMode&&room.status!=='finished'?'🛡️ تم إخفاء الترتيب أثناء الامتحان':renderLeaderboard(room);
+  }
+  const teamMomentum=$('#boLiveTeamMomentum');if(teamMomentum)teamMomentum.innerHTML=boRenderTeamMomentum(room);
   const nextBtn=$('#liveNextBtn'),inlineNext=$('#liveInlineNextBtn'),startBtn=$('#liveStartBtn'),skipBtn=$('#liveSkipBtn'),clock=$('#liveClock');
   const missing=room.playType==='teams'&&players.some(p=>!p.team);
   if(startBtn){startBtn.disabled=room.status==='lobby'&&missing;startBtn.title=missing?'لا يمكن البدء قبل تعيين فريق لكل طالب':''}
@@ -1028,12 +1045,26 @@ function updateLiveHost(room){
   }
   if(startBtn)startBtn.classList.add('hidden');
   if(room.status==='finished'){
-    $('#liveQuestionTitle').textContent='النتائج النهائية';$('#liveAnswerCount').textContent='انتهى';$('#liveQuestionBody').innerHTML=renderFinal(room);
+    $('#liveQuestionTitle').textContent='النتائج النهائية';$('#liveAnswerCount').textContent='انتهى';
+    const finalBody=$('#liveQuestionBody'),finalKey=String(liveRoom)+':finished:'+room.index;
+    if(finalBody.dataset.tagV27ViewKey!==finalKey){
+      finalBody.dataset.tagV27ViewKey=finalKey;finalBody.innerHTML=renderFinal(room);
+      if(window.TagLiveShow)void window.TagLiveShow.celebrate(finalBody,{onChampion:()=>finalBody.querySelector('.v104-final-hero')?.classList.add('v104-replay')});
+    }
     if(nextBtn)nextBtn.classList.add('hidden');if(inlineNext)inlineNext.classList.add('hidden');saveLiveSession(room);if($('#exportLiveReport'))$('#exportLiveReport').onclick=()=>liveReportCsv(room);return;
   }
   if(nextBtn)nextBtn.classList.remove('hidden');if(inlineNext)inlineNext.classList.remove('hidden');
   if(room.status==='results'){
-    $('#liveQuestionTitle').textContent=`نتائج الجولة ${room.index+1}`;$('#liveAnswerCount').textContent='🏆 الترتيب';$('#liveQuestionBody').innerHTML=renderRoundResults(room);
+    $('#liveQuestionTitle').textContent=`نتائج الجولة ${room.index+1}`;$('#liveAnswerCount').textContent='🏆 الترتيب';
+    const roundBody=$('#liveQuestionBody'),roundKey=String(liveRoom)+':round:'+room.index;
+    if(roundBody.dataset.tagV27ViewKey!==roundKey){
+      roundBody.dataset.tagV27ViewKey=roundKey;roundBody.innerHTML=renderRoundResults(room);
+      if(liveReveal){
+        const finish=()=>{if($('#liveLeaderboard')?.dataset.tagV27Pending===revealKey)$('#liveLeaderboard').innerHTML=renderLeaderboard(room)};
+        window.TagLiveShow.round(room,roundBody.querySelector('#tagV27RoundHost'),'host',room.playType==='teams'?null:finish);
+        if(room.playType==='teams')window.TagLiveShow.round({...room,playType:'individual'},roundBody.querySelector('#tagV27RoundStudentsHost'),'hostStudents',finish);
+      }
+    }
     if(nextBtn)nextBtn.textContent=room.index+1>=room.total?'عرض النتائج النهائية 🎉':'السؤال التالي ⟵';if(inlineNext)inlineNext.textContent=nextBtn.textContent;
   }else{
     $('#liveQuestionTitle').textContent=room.variantMode==='models4'?`الجولة ${room.index+1} من ${room.total} — نماذج مختلفة`:`السؤال ${room.index+1} من ${room.total}`;

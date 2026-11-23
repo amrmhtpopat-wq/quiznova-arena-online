@@ -23,7 +23,7 @@ class StudioNavigationV6Contract(unittest.TestCase):
   for link in ('/champion.html','/tag-lab-home.html?v=34','href="/"'):
    self.assertIn(link,html)
   self.assertIn('tag-studio-navigation-v6.css?v=6',html)
-  self.assertIn('studio-auth.js?v=13.6',html)
+  self.assertIn('studio-auth.js?v=27.0',html)
  def test_navigation_loaded_after_teacher_auth_and_does_not_write_student_data(self):
   auth=source('studio-auth.js')
   nav=source('tag-studio-navigation-v6.js')

@@ -49,7 +49,14 @@ class PWASafeInstallContract(unittest.TestCase):
         self.assertIn('ar',m['lang'])
         self.assertEqual(len(m['shortcuts']),2)
         self.assertEqual({shortcut['short_name'] for shortcut in m['shortcuts']},{'الطالب','المعلم'})
+        self.assertEqual({shortcut['url'] for shortcut in m['shortcuts']},{'/student.html','/?teacher=1'})
         self.assertNotIn('TAG LAB',[shortcut['name'] for shortcut in m['shortcuts']])
+        # On the official static host only, the PWA starts in the branded
+        # /app/ waiting gateway. Old quiznova installations remain valid.
+        public=json.loads((ROOT/'short-link/manifest.webmanifest').read_text(encoding='utf8'))
+        self.assertEqual(public['id'],'/app.html')
+        self.assertEqual(public['start_url'],'/app/')
+        self.assertEqual({x['url'] for x in public['shortcuts']},{'/student/','/teacher/'})
 
     def test_real_pngs_are_square_not_svg_renamed(self):
         manifest=json.loads(get('/manifest.webmanifest')[2])

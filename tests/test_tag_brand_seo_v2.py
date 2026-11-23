@@ -3,7 +3,7 @@ import json
 import unittest
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-BASE='https://quiznova-arena-online.onrender.com'
+BASE='https://teachgame.onrender.com'
 class TagSeoChecks(unittest.TestCase):
  def test_logo_files(self):
   image=(ROOT/'assets/brand/tag-logo-v15.png').read_bytes()
@@ -47,7 +47,7 @@ class TagLogoOnlyV16(unittest.TestCase):
    'studio.html':['class="tag-brand-copy" aria-hidden="true"'],
    'student.html':['class="logo tag-student-logo"'],
    'admin.html':['sidebar-brand tag-brand-only'],
-   'stage.html':['stage.js?v=24.0'],
+   'stage.html':['stage.js?v=27.0'],
   }
   for path,needles in checks.items():
    text=(ROOT/path).read_text(encoding='utf-8')
