@@ -93,3 +93,8 @@ body.v105-stage .tag27-final-footer button:focus-visible{outline:3px solid #fff;
  body.v105-stage .tag27-rank-row,body.v105-stage .tag27-podium-card{transition:none!important}
  body.v105-stage .tag27-figure-glow,body.v105-stage .tag27-champion .tag27-figure{animation:none!important}
 }
+
+/* The purely decorative podium must not intercept the replay button. */
+body.v105-stage .tag27-podium,body.v105-stage .tag27-podium-card{pointer-events:none!important}
+body.v105-stage .tag27-final-footer{position:relative;z-index:20;margin-top:8px;flex-shrink:0}
+body.v105-stage #tag27Replay{position:relative;z-index:21;pointer-events:auto!important;touch-action:manipulation}
