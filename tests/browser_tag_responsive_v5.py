@@ -86,7 +86,8 @@ with sync_playwright() as pw:
               "tag-lab-home.html","tag-lab-books.html","tag-lab-create.html",
               "tag-lab-games.html","tag-lab-library.html","tag-lab-live.html",
               "tag-lab-mixer.html","tag-lab-students.html","game-lab-preview.html",
-              "stage.html"]:
+              "game-lab-card.html","game-lab-create.html","game-lab-live.html",
+              "game-lab-play.html","tag-spatial-home-v3.html","stage.html"]:
   ctx=browser.new_context(viewport={"width":390,"height":844},is_mobile=True,has_touch=True,service_workers="block")
   page=ctx.new_page()
   page.goto(BASE+"/"+path,wait_until="domcontentloaded",timeout=25000)
