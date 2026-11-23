@@ -10,7 +10,7 @@
   'tag-lab-home.html':'/?teacher=1',
   'app.html':'/','about.html':'/','for-teachers.html':'/'
  };
- const fallback=()=>loc().startsWith('tag-lab-')?'/tag-lab-home.html':(paths[loc()]||'/');
+ const fallback=()=>loc().startsWith('tag-lab-')?'/tag-lab-home.html':(loc().startsWith('game-lab-')?'/game-lab-preview.html':(paths[loc()]||'/'));
  const go=()=>{
   let previous=null;
   try{previous=document.referrer?new URL(document.referrer):null}catch(e){}
@@ -45,6 +45,8 @@
   else if(file==='about.html')dest=document.querySelector('header nav');
   else if(file==='for-teachers.html')dest=document.querySelector('header.site-header .nav-wrap');
   else if(file==='tag-lab-home.html')dest=document.querySelector('header .wrap');
+  else if(file.startsWith('game-lab-'))dest=document.querySelector('header .actions,header nav,header.bar,header.topbar,header.header,header.top');
+  else if(file==='tag-spatial-home-v3.html')dest=document.querySelector('header.header .header-actions');
   else if(file.startsWith('tag-lab-'))dest=document.querySelector('header .wrap,header nav');
   else if(file==='admin.html')dest=document.querySelector('header.topbar');
   if(dest){
