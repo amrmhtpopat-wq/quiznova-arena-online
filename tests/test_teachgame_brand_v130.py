@@ -29,7 +29,8 @@ class TeachGameBrandChecks(unittest.TestCase):
         self.assertEqual(next(item for item in data['@graph'] if item.get('@type')=='WebSite')['name'],'TEACH AND GAME')
         self.assertIn('تيتش آند جيم',next(item for item in data['@graph'] if item.get('@type')=='WebSite')['alternateName'])
         self.assertIn('TAG',next(item for item in data['@graph'] if item.get('@type')=='WebSite')['alternateName'])
-        self.assertIn('https://quiznova-arena-online.onrender.com/',text)
+        self.assertIn('https://teachgame.onrender.com/',text)
+        self.assertNotIn('https://quiznova-arena-online.onrender.com/',text)
 
     def test_badges_exports_progress_and_new_defaults(self):
         self.assertIn('أسطورة تيتش آند جيم',(ROOT/'platform_store.py').read_text(encoding='utf-8'))
