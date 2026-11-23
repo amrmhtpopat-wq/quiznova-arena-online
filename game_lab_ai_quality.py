@@ -17,6 +17,42 @@ def _plain(value):
     return re.sub(r'[^\w\u0621-\u064a]+',' ',text,flags=re.UNICODE).strip().casefold()
 
 
+def suspicious_book_text(value):
+    """Conservatively reject recognizable exam furniture and damaged PDF text.
+
+    Quoting the book proves provenance, not that the extracted words form a
+    meaningful educational statement. Apply to AI and local book candidates.
+    Normal curriculum paragraphs, numbers, mathematics and English are allowed.
+    """
+    raw=unicodedata.normalize('NFKC',str(value or ''))
+    normalized=_plain(raw)
+    if not normalized:return True
+    # Common exam instructions, headers, pagination and answer-sheet boilerplate.
+    if re.search(r'(?:اجب|أجب)\s+(?:عن|على)\s+(?:جميع\s+)?(?:الاسئله|الاسئلة|الأسئلة|السوال|السؤال)',raw):
+        return True
+    if re.search(r'(?:السؤال\s+(?:الاول|الثاني|الثالث)|اسم\s+الطالب|رقم\s+الجلوس|علامة\s+الامتحان)',normalized):
+        return True
+    if re.search(r'(?:ضع\s+دائرة|اختر\s+الاجابة\s+الصحيحة|الاسئلة\s+جميعها|مده\s+الامتحان)',normalized):
+        return True
+    # Very common forms of accidentally glued examination-header words.
+    if re.search(r'(?:منالمتحان|المةصفحة|الصفحاتادد|السئلةجميع|الاسئلةجميع|ازلزي|واددها|المتحان)',normalized):
+        return True
+    words=normalized.split()
+    arabic_words=[w for w in words if re.fullmatch(r'[\u0621-\u064a]+',w)]
+    if arabic_words and any(len(w)>25 for w in arabic_words):
+        return True
+    # Several numbered fields + examination terms usually indicate a header,
+    # rather than a lesson paragraph. Do not reject real mathematical numerals.
+    exam_terms=sum(bool(re.search(r'\b'+w+r'\b',normalized))
+                   for w in ('الامتحان','الاسئلة','الطالب','الصفحة','الصفحات',
+                             'ملاحظة','العلامة','الاسم','اجب','المدرسة'))
+    if exam_terms>=3 and len(re.findall(r'\d+',raw))>=2:
+        return True
+    if len(words)>=8 and sum(1 for w in words if re.fullmatch(r'\d+',w))>len(words)*.45:
+        return True
+    return False
+
+
 def selected_ai_source(book,start,end,decode_pages,max_chars=26000,max_pages=25):
     pages=decode_pages(book['page_data'],[])
     try:
@@ -96,6 +132,9 @@ def verify_ai_rows(raw_rows,selected_pages,maximum,include_stats=False):
         except (ValueError,TypeError,OverflowError):
             page=None
         normalized=_plain(quote)
+        if any(suspicious_book_text(part) for part in (q,a,quote)):
+            stats['invalid_fields']+=1
+            continue
         if not (8<=len(q)<=200 and 2<=len(a)<=100 and 14<=len(normalized)<=240):
             stats['invalid_fields']+=1
             continue
