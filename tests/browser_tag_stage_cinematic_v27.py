@@ -86,6 +86,10 @@ with sync_playwright() as pw:
   figure=geo['parts']['.tag27-place-1 .tag27-figure']
   assert float(gold['opacity'])>0.98,('Gold card did not enter',width,geo)
   assert figure['visible'] and figure['top']>=0 and figure['bottom']<=height+3,('Gold character clipped',width,geo)
+  stand=geo['parts']['.tag27-place-1 .tag27-stand']
+  footer=geo['parts']['.tag27-final-footer']
+  assert stand['bottom']<=footer['top']+2,('Podium/replay controls overlap',width,geo)
+  assert footer['bottom']<=height+3,('Replay controls leave screen',width,geo)
   assert page.locator('.tag27-place-1 .tag27-podium-name').inner_text()=='ليان'
   assert page.locator('.tag27-place-1 img').evaluate("(el)=>el.complete && el.naturalWidth>0")
   assert page.locator('#tag27Announcement').inner_text().find('بطل TAG')>=0
