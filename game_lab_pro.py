@@ -415,10 +415,18 @@ def offline_generate(tid,data):
                        'أُنشئت '+str(len(rows))+' أسئلة مباشرة ومتنوعة من التعريفات والأهداف والأمثلة والمعلومات الواضحة. راجع الإجابات وصفحات المصدر قبل اعتمادها.')}
 
 
+# When both free Gemini models fail with transient overload, short-circuit
+# repeated requests for 90 seconds. Teachers still receive local drafts.
+_GOOGLE_OVERLOAD_UNTIL=0.0
+
+
 def _google_generate_with_fallback(request_body, key, models):
     """Retry temporary Google failures, then try another free-tier model.
     Do not log API keys or book content, and never enable billing.
     """
+    global _GOOGLE_OVERLOAD_UNTIL
+    if time.time()<_GOOGLE_OVERLOAD_UNTIL:
+        raise ValueError('ai_provider_overloaded')
     last_error='ai_provider_unavailable'
     had_overload=False
     for model_index,model in enumerate(models):
@@ -480,8 +488,10 @@ def _google_generate_with_fallback(request_body, key, models):
                 print('TAG LAB Gemini unexpected failure: '+
                       type(exc).__name__,flush=True)
                 raise ValueError('ai_provider_unavailable') from exc
-    if had_overload and last_error=='ai_model_unavailable':
-        last_error='ai_provider_overloaded'
+    if had_overload:
+        _GOOGLE_OVERLOAD_UNTIL=max(_GOOGLE_OVERLOAD_UNTIL,time.time()+90)
+        if last_error=='ai_model_unavailable':
+            last_error='ai_provider_overloaded'
     raise ValueError(last_error)
 
 
@@ -492,6 +502,41 @@ def _refund_ai_usage(tid,usage_id):
                     (usage_id,tid))
     except Exception:
         print('TAG LAB: could not release unsuccessful AI usage slot',flush=True)
+
+
+def _local_ai_recovery(tid,data,requested,reason):
+    """Return teacher-reviewable book excerpts when every free Gemini request fails.
+
+    This is deliberately NOT labeled as AI output. It runs locally without
+    credentials, extra provider requests, or paid services.
+    """
+    draft=offline_generate(tid,data)
+    count=len(draft.get('rows') or [])
+    reasons={
+      'ai_provider_overloaded':'تعذر رد Google مؤقتًا (503)',
+      'ai_network_error':'انقطع الاتصال بمزوّد Google',
+      'ai_rate_limited':'بلغ مزوّد Google حد الطلبات المؤقت',
+      'ai_model_unavailable':'النموذج المجاني غير متاح للمشروع',
+      'ai_empty_response':'رد Google دون أسئلة قابلة للاعتماد',
+      'ai_invalid_response':'رد Google بصيغة غير مكتملة'
+    }
+    why=reasons.get(reason,'تعذر الاتصال بخدمة Google المجانية')
+    draft.update({
+      'mode':'extract',
+      'fallbackFrom':'ai',
+      'fallbackReason':reason,
+      'requestedCount':requested,
+      'generatedCount':count,
+      'count':count
+    })
+    draft['warning']=(why+'. انتقل TAG LAB تلقائيًا إلى استخراج أسئلة محلية من الكتاب، دون خصم محاولة TAG AI. '
+                      'هذه المقترحات ليست مولدة بالذكاء الاصطناعي، ولا تُنشر تلقائيًا. '
+                      'تم العثور على '+str(count)+' من '+str(requested)+' أسئلة مطلوبة؛ '
+                      'راجع نصوص الأسئلة والإجابات وصفحاتها قبل اعتمادها. '
+                      +(draft.get('warning') or ''))
+    print('TAG LAB AI fallback to local book extraction: '+reason+
+          '; generated='+str(count)+'; requested='+str(requested),flush=True)
+    return draft
 
 
 def ai_generate(tid,data):
@@ -521,7 +566,8 @@ def ai_generate(tid,data):
     # Pin an officially free-tier-eligible model; do not allow paid model override.
     # Gemini 2.5 may return 404 to newly-created free-tier projects.
     # Both models below have documented Free Tier access; never fall back to billing.
-    models=('gemini-3.8-flash','gemini-3.5-flash-lite')
+    # Free Lite model first: lower latency and less contention than Flash.
+    models=('gemini-3.5-flash-lite','gemini-3.8-flash')
     # The model returns JSON; every generated question is still grounded in the
     # exact original page quote before it reaches the teacher's review screen.
     schema={'type':'object','properties':{
@@ -572,6 +618,12 @@ def ai_generate(tid,data):
     request_body=json.dumps(payload,ensure_ascii=False).encode('utf8')
     try:
         obj=_google_generate_with_fallback(request_body,key,models)
+    except ValueError as exc:
+        _refund_ai_usage(tid,usage_id)
+        if str(exc) in ('ai_provider_overloaded','ai_network_error',
+                        'ai_rate_limited','ai_model_unavailable'):
+            return _local_ai_recovery(tid,data,maximum,str(exc))
+        raise
     except Exception:
         _refund_ai_usage(tid,usage_id)
         raise
@@ -611,6 +663,11 @@ def ai_generate(tid,data):
                 'warning':('لم ينتج TAG AI أسئلة موثقة كافية من الصفحات المحددة. وسّع النطاق أو اختر صفحات نصية أوضح.'
                            if not result else summary)}
 
+    except ValueError as exc:
+        _refund_ai_usage(tid,usage_id)
+        if str(exc) in ('ai_empty_response','ai_invalid_response'):
+            return _local_ai_recovery(tid,data,maximum,str(exc))
+        raise
     except Exception:
         _refund_ai_usage(tid,usage_id)
         raise
