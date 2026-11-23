@@ -38,7 +38,7 @@
   const file=loc(),portalRoot=file===''||file==='index.html';
   if(portalRoot)return;
   const b=make();let dest=null;
-  if(file==='champion.html')dest=document.querySelector('header.top .head-actions');
+  if(file==='champion.html'||file==='champion-board.html')dest=document.querySelector('header.top .head-actions');
   else if(file==='studio.html')dest=document.querySelector('#app header.topbar .topbar-actions,#app header.topbar');
   else if(file==='student.html')dest=document.querySelector('.student-brand');
   else if(file==='app.html')dest=document.querySelector('header.top');
