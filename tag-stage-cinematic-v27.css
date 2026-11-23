@@ -134,3 +134,62 @@ body.v105-stage .tag27-live-list .tag27-score span{font-size:9px;line-height:1}
  }
  body.v105-stage .tag27-live-head small{display:none}
 }
+
+/* Fixed-viewport results grid: reserve a real row for the teacher's Next
+   control. Without this, a five-person ranking can cover the control at
+   1280x720 and smaller projector resolutions. */
+body.v105-stage .round-stage.tag27-results{
+ display:grid!important;
+ grid-template-columns:minmax(0,1fr)!important;
+ grid-template-rows:auto minmax(0,1fr) auto auto!important;
+ align-items:stretch!important;justify-items:stretch!important;
+ justify-content:initial!important;
+ gap:clamp(4px,.7vh,9px)!important;
+ padding:clamp(6px,1vh,12px)!important;
+ min-height:0!important;max-height:100%!important;
+ overflow:hidden!important;
+}
+body.v105-stage .tag27-results .tag27-intro{min-height:0!important}
+body.v105-stage .tag27-results .tag27-intro h1{
+ font-size:clamp(23px,3.2vh,37px)!important;margin:2px 0!important;line-height:1.15!important
+}
+body.v105-stage .tag27-results .tag27-intro p{
+ font-size:clamp(12px,1.75vh,17px)!important;line-height:1.25!important;margin:2px 0!important
+}
+body.v105-stage .tag27-results .tag27-rank-panel{
+ min-height:0!important;max-height:100%!important;
+ display:flex!important;flex-direction:column!important;
+ overflow:hidden!important;padding:clamp(9px,1.4vh,16px)!important;
+ margin-inline:auto;
+}
+body.v105-stage .tag27-results .tag27-rank-heading{
+ flex:0 0 auto!important;margin-bottom:clamp(5px,1vh,11px)!important;
+ padding-bottom:clamp(3px,.65vh,8px)!important;
+}
+body.v105-stage .tag27-results .tag27-round-list{
+ min-height:0!important;max-height:100%!important;
+ flex:1 1 auto!important;overflow:hidden!important;
+ display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+ grid-template-rows:repeat(5,minmax(0,1fr))!important;
+ gap:clamp(3px,.6vh,7px)!important
+}
+body.v105-stage .tag27-results .tag27-rank-row{
+ min-height:0!important;height:100%!important;max-height:100%!important;
+ padding:clamp(2px,.55vh,6px) clamp(6px,1vw,12px)!important
+}
+body.v105-stage .tag27-results .tag27-position{
+ width:clamp(27px,4.5vh,43px);height:clamp(27px,4.5vh,43px);
+ flex-basis:clamp(27px,4.5vh,43px);font-size:clamp(15px,2.7vh,22px)
+}
+body.v105-stage .tag27-results .bo-stage-next-control{
+ flex-shrink:0!important;min-height:0!important;
+ grid-column:1!important;position:relative!important;
+ margin:0!important
+}
+@media(max-height:640px){
+ body.v105-stage .tag27-results .tag27-intro h1{font-size:22px!important}
+ body.v105-stage .tag27-results .tag27-player small{display:none}
+ body.v105-stage .tag27-results .tag27-rank-heading strong{font-size:15px!important}
+ body.v105-stage .tag27-results .tag27-score strong{font-size:16px!important}
+ body.v105-stage .tag27-results .tag27-rank-heading>span{font-size:11px!important}
+}
