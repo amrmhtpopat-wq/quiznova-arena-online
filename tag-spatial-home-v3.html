@@ -283,7 +283,15 @@
  };
  const els={cards:[...document.querySelectorAll('.tool')],filters:[...document.querySelectorAll('.filter')],inspector:document.getElementById('inspector'),inspectorBack:document.getElementById('inspectorBack'),palette:document.getElementById('palette')};let lastFocus=null;
  function toast(message){const t=document.getElementById('toast');t.textContent=message;t.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove('show'),2900)}
- function openItem(key){const item=items[key];if(!item)return;hidePalette();lastFocus=document.activeElement;document.getElementById('inspTitle').textContent=item.title;document.getElementById('inspText').textContent=item.text;document.getElementById('inspTag').textContent=item.tag;document.getElementById('inspCount').textContent='/ 0'+(Object.keys(items).indexOf(key)+1)+'   TAG SPACE';document.getElementById('inspIcon').innerHTML='<svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-'+item.icon+'"/></svg>';document.getElementById('inspLink').href=item.link;document.getElementById('routeNote').textContent=(item.note?item.note+' ':'')+'تفتح الصفحة المطلوبة ضمن منصة TAG، دون تغيير بيانات الطلاب أو الاختبارات.';document.getElementById('inspectorBack').classList.add('open');els.inspector.classList.add('open');document.getElementById('inspectorBack').setAttribute('aria-hidden','false');els.inspector.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';document.getElementById('closeInspector').focus()}
+ function openItem(key){
+  const item=items[key];if(!item)return;
+  hidePalette();
+  let link=item.link;
+  if(key==='cards')link=base+'/?teacher=1&panel=students';
+  const destination=new URL(link,location.href);
+  if(destination.origin!==location.origin)return;
+  location.assign(destination.href);
+ }
  function closeItem(){els.inspector.classList.remove('open');document.getElementById('inspectorBack').classList.remove('open');document.getElementById('inspectorBack').setAttribute('aria-hidden','true');els.inspector.setAttribute('aria-hidden','true');document.body.style.overflow='';if(lastFocus&&typeof lastFocus.focus==='function')lastFocus.focus()}
  document.querySelectorAll('[data-tool]').forEach(el=>el.addEventListener('click',()=>openItem(el.dataset.tool)));
  document.getElementById('settingsBtn').addEventListener('click',()=>openItem('settings'));

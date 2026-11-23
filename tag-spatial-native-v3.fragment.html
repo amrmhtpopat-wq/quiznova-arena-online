@@ -22,7 +22,7 @@
   <button class="action" id="tag-v3-searchBtn" title="ابحث عن أداة — Ctrl+K" aria-label="البحث عن أداة"><svg fill="none" stroke="currentColor" stroke-width="1.7"><use href="#tag-v3-icon-search"/></svg><span>بحث</span></button>
   <button class="action" id="tag-v3-motionBtn" title="إيقاف أو تشغيل تأثيرات الحركة" aria-pressed="true"><svg fill="none" stroke="currentColor" stroke-width="1.7"><use href="#tag-v3-icon-3d"/></svg><span>3D فعّال</span></button>
   <button class="action" id="tag-v3-settingsBtn" title="الإعدادات"><svg fill="none" stroke="currentColor" stroke-width="1.7"><use href="#tag-v3-icon-settings"/></svg><span>الإعدادات</span></button>
-  <span class="userround" aria-label="حساب المعلم"><svg fill="none" stroke="currentColor" stroke-width="1.5" width="21" height="21" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-6 16-6 16 0"/></svg></span>
+  <button type="button" class="action tag-spatial-logout" id="tag-v3-logoutBtn" title="تسجيل الخروج" aria-label="تسجيل الخروج"><svg fill="none" stroke="currentColor" stroke-width="1.5" width="21" height="21" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-6 16-6 16 0"/></svg><span>خروج</span></button>
  </div>
 </header>
 <main id="tag-v3-top">
@@ -105,6 +105,13 @@
  </button>
 </div>
 </section>
+<nav class="tag-v3-aux" aria-label="أدوات الإدارة الإضافية">
+ <span class="tag-v3-aux-caption">إدارة ومتابعة</span>
+ <button type="button" data-portal-panel="classes">الشعب <span aria-hidden="true">↗</span></button>
+ <button type="button" data-portal-panel="mastery">خريطة المهارات <span aria-hidden="true">↗</span></button>
+ <button type="button" data-portal-panel="history">سجل الجلسات <span aria-hidden="true">↗</span></button>
+ <button type="button" data-portal-panel="school">إدارة المدرسة <span aria-hidden="true">↗</span></button>
+</nav>
 </main>
 <footer class="footer"><span><span class="brandend">TEACH AND GAME</span> &nbsp; · &nbsp; تعلّم، تحدَّ، تفوّق</span><span>TAG Spatial / مساحة عمل المعلم</span><a class="footlink" href="/" rel="noopener">المنصة الرسمية ↗</a></footer>
 </div>

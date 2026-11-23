@@ -1,0 +1,31 @@
+name: TAG Spatial V4 Visual Layout and Direct Navigation
+on:
+  push:
+    branches: [fix/tag-spatial-layout-nav-audit-20261123, main]
+    paths:
+      - 'tag-spatial-*.css'
+      - 'tag-spatial-*.js'
+      - 'index.html'
+      - 'studio.html'
+      - 'tests/browser_tag_spatial_layout_v4.py'
+      - '.github/workflows/tag-spatial-layout-v4.yml'
+  pull_request:
+    paths:
+      - 'tag-spatial-*.css'
+      - 'tag-spatial-*.js'
+      - 'index.html'
+      - 'studio.html'
+      - 'tests/browser_tag_spatial_layout_v4.py'
+jobs:
+  playwright:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements.txt playwright
+      - run: python -m playwright install --with-deps chromium
+      - name: Real browser dimension and direct-routing audit
+        run: python -u tests/browser_tag_spatial_layout_v4.py

@@ -69,7 +69,10 @@ with sync_playwright() as playwright:
     teacher_page.locator('#password').fill(password)
     teacher_page.locator('#authSubmit').click()
     teacher_page.locator('#workspace').wait_for(state='visible',timeout=18000)
-    teacher_page.locator('button[data-panel="students"]').click()
+    # The approved TAG Spatial home hides its legacy side menu, but its
+    # student identity instrument goes directly to the SAME protected panel.
+    teacher_page.locator('#panel-home>.tag-spatial-native-host').wait_for(state='visible',timeout=15000)
+    teacher_page.locator('.tag-spatial-native-host').locator('[data-tool="cards"]').click()
     teacher_page.locator('#studentVerifyPanel').wait_for(state='visible',timeout=9000)
     teacher_page.wait_for_function("document.querySelector('#verifyStatus')?.textContent.includes('PIN صادر')",timeout=15000)
     check(not teacher_page.locator('#verifyToggle').is_enabled(),'PIN activated without issuance')
