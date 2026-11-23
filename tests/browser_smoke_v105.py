@@ -75,6 +75,7 @@ with sync_playwright() as p:
         errors=[]
         page.on('pageerror',lambda e:errors.append(str(e)))
         page.goto(base+'/student.html',wait_until='domcontentloaded',timeout=30000)
+        page.wait_for_function("typeof document.getElementById('showCardProfile')?.onclick === 'function'",timeout=12000)
         page.locator('#cardCode').fill(card['cardCode'])
         page.locator('#showCardProfile').click()
         page.locator('#cardProfile').wait_for(state='visible',timeout=12000)

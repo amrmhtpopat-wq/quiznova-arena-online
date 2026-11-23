@@ -1,6 +1,6 @@
 /* TAG PWA V1: network-first navigations, strictly no cached accounts or exam data. */
 'use strict';
-const CACHE_NAME='tag-pwa-public-shell-v1';
+const CACHE_NAME='tag-pwa-public-shell-v24';
 const OFFLINE_URL='/pwa-offline.html';
 const PUBLIC_ASSETS=[OFFLINE_URL,'/assets/pwa/tag-192.png','/assets/pwa/tag-512.png','/assets/pwa/tag-maskable-512.png'];
 self.addEventListener('install',event=>{

@@ -1,0 +1,82 @@
+name: TAG V24 Build unified official logo assets
+on:
+  push:
+    branches: [tag-studio-bank-ai-readability-v24]
+    paths:
+      - '.github/workflows/tag-v24-brand-assets.yml'
+permissions:
+  contents: write
+jobs:
+  create-brand-assets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install Pillow
+      - name: Convert existing approved TAG spatial logo to Google-compatible favicon and PWA icons
+        run: |
+          python - <<'PY'
+          from PIL import Image, ImageDraw, ImageFont, ImageOps
+          from pathlib import Path
+          Path('assets/brand').mkdir(parents=True,exist_ok=True)
+          Path('short-link/assets/brand').mkdir(parents=True,exist_ok=True)
+          Path('assets/pwa').mkdir(parents=True,exist_ok=True)
+          src=Image.open('assets/brand/tag-spatial-identity-v3.webp').convert('RGBA')
+          def icon(size,maskable=False):
+              color=(7,27,44,255)
+              canvas=Image.new('RGBA',(size,size),color)
+              dr=ImageDraw.Draw(canvas)
+              if not maskable:
+                  dr.rounded_rectangle((0,0,size-1,size-1),radius=round(size*.19),fill=color)
+              inner=round(size*(.64 if maskable else .86))
+              logo=ImageOps.contain(src,(inner,inner),Image.Resampling.LANCZOS)
+              canvas.alpha_composite(logo,((size-logo.width)//2,(size-logo.height)//2))
+              return canvas.convert('RGB')
+          favicon=icon(128)
+          favicon.save('assets/brand/tag-favicon-v24.png',optimize=True)
+          favicon.save('short-link/assets/brand/tag-favicon-v24.png',optimize=True)
+          icon(192).save('assets/pwa/tag-192.png',optimize=True)
+          icon(512).save('assets/pwa/tag-512.png',optimize=True)
+          icon(180).save('assets/pwa/tag-apple-180.png',optimize=True)
+          icon(512,maskable=True).save('assets/pwa/tag-maskable-512.png',optimize=True)
+          # Branded social previews for the main site and the public short-link.
+          share=Image.new('RGB',(1200,630),(7,27,44))
+          d=ImageDraw.Draw(share)
+          d.rounded_rectangle((50,50,1150,580),radius=70,fill=(15,54,73),outline=(68,178,170),width=4)
+          large=ImageOps.contain(src,(360,360),Image.Resampling.LANCZOS)
+          share.paste(large,(730+(360-large.width)//2,130+(360-large.height)//2),large)
+          try: font=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',65)
+          except OSError: font=ImageFont.load_default()
+          try: subfont=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',33)
+          except OSError: subfont=ImageFont.load_default()
+          d.text((115,236),'TAG',font=font,fill=(148,243,224))
+          d.text((115,326),'TEACH AND GAME',font=subfont,fill=(237,251,252))
+          share.save('assets/brand/tag-share-v24.png',optimize=True)
+          share.save('short-link/assets/brand/tag-share-v24.png',optimize=True)
+          PY
+      - name: Verify generated formats and sizes
+        run: |
+          python - <<'PY'
+          from PIL import Image
+          for p,sz in [('assets/brand/tag-favicon-v24.png',128),
+                       ('short-link/assets/brand/tag-favicon-v24.png',128),
+                       ('assets/pwa/tag-192.png',192),
+                       ('assets/pwa/tag-512.png',512),
+                       ('assets/pwa/tag-apple-180.png',180),
+                       ('assets/pwa/tag-maskable-512.png',512)]:
+              im=Image.open(p)
+              assert im.format=='PNG' and im.size==(sz,sz),(p,im.size)
+          PY
+      - name: Commit new official image assets to the review branch
+        run: |
+          git config user.name "TAG Design Automation"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/brand/tag-favicon-v24.png short-link/assets/brand/tag-favicon-v24.png assets/pwa/tag-192.png assets/pwa/tag-512.png assets/pwa/tag-apple-180.png assets/pwa/tag-maskable-512.png assets/brand/tag-share-v24.png short-link/assets/brand/tag-share-v24.png
+          if ! git diff --cached --quiet; then
+            git commit -m "TAG V24: generate official Google favicon and PWA assets from new logo"
+            git push origin HEAD:tag-studio-bank-ai-readability-v24
+          fi

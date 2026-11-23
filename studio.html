@@ -31,7 +31,7 @@
   <link rel="stylesheet" href="/booyah-responsive-v122.css?v=12.2">
   <link rel="stylesheet" href="/booyah-mobile-v123.css?v=12.3">
 <style>.live-question-panel .live-question-header{position:sticky;top:4px;z-index:7;background:#0b2d4ff0;border-radius:14px;padding:10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}.bo-live-inline-next{margin-inline-start:auto;white-space:nowrap;min-width:155px;position:sticky;top:8px;z-index:10;box-shadow:0 5px 18px #0005}.live-game-grid{align-items:start}.live-question-panel{min-width:0}.live-question-panel #liveQuestionBody{max-height:min(69vh,730px);overflow:auto;overscroll-behavior:contain}.bo-team-momentum{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:10px 0}.bo-team-momentum-card{background:linear-gradient(125deg,#103f77,#176c78);border:1px solid #55d8e6;border-radius:16px;padding:11px;display:grid;gap:2px;color:#fff}.bo-team-momentum-card:first-child{border-color:#ffde78;box-shadow:0 0 16px #d5aa343d}.bo-team-momentum-medal{font-size:22px}.bo-team-momentum-card strong{font-size:15px}.bo-team-momentum-card b{color:#aafff1;font-size:20px}.bo-team-momentum-card small{opacity:.8;font-size:11px}@media(max-width:700px){.live-question-panel #liveQuestionBody{max-height:none}.bo-live-inline-next{width:100%;margin:3px 0}}</style><script defer src="/visitor-tracker-v125.js?v=12.5"></script>
-<link rel="icon" type="image/svg+xml" href="/assets/brand/tag-icon.svg?v=15.0">
+<link rel="icon" type="image/png" sizes="128x128" href="/assets/brand/tag-favicon-v24.png">
 <link rel="stylesheet" href="/tag-brand-v2.css?v=20.0">
 <link rel="stylesheet" href="/tag-live-visual-v1.css?v=1.0">
 <link rel="stylesheet" href="/tag-live-host-layout-v1.css?v=1.0">
@@ -50,7 +50,7 @@
   <aside class="sidebar" id="sidebar" aria-label="قائمة استوديو المعلم">
     <div class="tag-studio-sidebar-head">
     <div class="brand">
-      <div class="brand-logo"><img class="tag-official-logo tag-studio-logo" src="/assets/brand/tag-logo-dark-v21.png?v=16.0" width="120" height="52" alt="شعار TEACH AND GAME – TAG"></div>
+      <div class="brand-logo"><img class="tag-official-logo tag-studio-logo" src="/assets/brand/tag-spatial-identity-v3.webp?v=24.0" width="120" height="52" alt="شعار TEACH AND GAME – TAG"></div>
       <div class="tag-brand-copy" aria-hidden="true"><h1>TEACH AND GAME</h1><p>تعلّم • تحدَّ • تفوّق · تيتش آند جيم</p></div>
     </div>
     <button type="button" id="mobileCloseNav" class="bo-mobile-menu-close" aria-label="إغلاق قائمة الأدوات">✕ <span>إغلاق</span></button>
@@ -166,6 +166,11 @@
     </section>
 
     <section class="view" id="view-generator">
+      <div class="tag24-intro" aria-labelledby="tag24GeneratorTitle"><div>
+<span class="tag24-overline">TAG STUDIO / SMART QUESTIONS</span>
+<h2 id="tag24GeneratorTitle">✦ صناعة الأسئلة والاختبارات الذكية</h2>
+<p>أنشئ أسئلة من صفحات كتابك عبر TAG AI أو الاستخراج المباشر، أو كوّن اختبارًا متوازنًا من بنك الأسئلة الموجود لديك.</p></div>
+<div class="tag24-symbol" aria-hidden="true">✦</div></div>
       <section class="panel tag-book-ai" id="tagBookMaker" aria-labelledby="tagBookMakerTitle">
         <div class="tag-book-title"><div class="tag-book-symbol" aria-hidden="true">📚</div><div><div class="overline">TAG AI • BOOK TO QUIZ</div>
         <h3 id="tagBookMakerTitle">ارفع كتابك وحوّله إلى اختبار</h3>
@@ -300,11 +305,16 @@
     </section>
 
     <section class="view" id="view-bank">
+      <div class="tag24-intro" aria-labelledby="tag24BankTitle"><div>
+<span class="tag24-overline">TAG STUDIO / QUESTION BANK</span>
+<h2 id="tag24BankTitle">▦ مكتبة أسئلتك التعليمية</h2>
+<p>ابحث وصفِّ الأسئلة حسب الصف والدرس والصعوبة، ثم استخدم السؤال مباشرة في اختبارك دون تغيير محتواه.</p></div>
+<div class="tag24-symbol" aria-hidden="true">▦</div></div>
       <div class="panel">
         <div class="panel-head"><div><div class="overline">QUESTION VAULT</div><h3>بنك الأسئلة</h3><p>مستقل عن الاختبارات، مصنف حسب الصف والوحدة والصعوبة.</p></div><div class="inline-actions"><button class="btn btn-secondary" id="importFromQuizzes">استيراد من الاختبارات</button><button class="btn btn-primary" id="openBankAdd">+ إضافة سؤال</button></div></div>
         <div class="jordan-source-header"><strong id="jordanTeacherSubject">مادة المعلم</strong><span>منهاج الأردن • أسئلة إثرائية أصلية</span><a href="https://nccd.gov.jo/Ar/Pages/textbooks" target="_blank" rel="noopener noreferrer">الكتب المعتمدة من المركز الوطني</a></div>
         <p class="jordan-review-note">تنبيه: الأسئلة الموسومة «تحتاج مراجعة» تدريبية وليست منقولة من الكتاب المدرسي. راجع ملاءمتها للوحدة والطبعة قبل نشرها.</p>
-        <div class="bank-toolbar"><input id="bankSearch" placeholder="ابحث في نص السؤال أو الوسوم..."><select id="bankDifficulty"><option value="all">كل الصعوبات</option><option value="easy">سهل</option><option value="medium">متوسط</option><option value="hard">صعب</option></select><select id="bankGrade"><option value="all">كل الصفوف</option><option>الأول</option><option>الثاني</option><option>الثالث</option><option>الرابع</option><option>الخامس</option><option>السادس</option><option>السابع</option><option>الثامن</option><option>التاسع</option><option>العاشر</option><option>الحادي عشر</option><option>الثاني عشر</option></select><select id="bankSemester"><option value="all">كل الفصول</option><option value="1">الفصل الأول</option><option value="2">الفصل الثاني</option><option value="عام">مراجعة عامة</option></select><select id="bankUnit"><option value="all">كل الوحدات</option></select><select id="bankLesson"><option value="all">كل الدروس</option></select><select id="bankType"><option value="all">كل الأنواع</option><option value="single">اختيار</option><option value="multi">متعدد</option><option value="tf">صح/خطأ</option><option value="short">قصير</option><option value="estimate">تقدير رقمي</option><option value="order">ترتيب</option><option value="match">مطابقة</option></select></div>
+        <div class="bank-toolbar"><label class="tag24-filter tag24-filter-search" for="bankSearch"><span>البحث في الأسئلة</span><input id="bankSearch" placeholder="ابحث في نص السؤال أو الوسوم..."></label><label class="tag24-filter" for="bankDifficulty"><span>مستوى الصعوبة</span><select id="bankDifficulty"><option value="all">كل الصعوبات</option><option value="easy">سهل</option><option value="medium">متوسط</option><option value="hard">صعب</option></select></label><label class="tag24-filter" for="bankGrade"><span>الصف الدراسي</span><select id="bankGrade"><option value="all">كل الصفوف</option><option>الأول</option><option>الثاني</option><option>الثالث</option><option>الرابع</option><option>الخامس</option><option>السادس</option><option>السابع</option><option>الثامن</option><option>التاسع</option><option>العاشر</option><option>الحادي عشر</option><option>الثاني عشر</option></select></label><label class="tag24-filter" for="bankSemester"><span>الفصل الدراسي</span><select id="bankSemester"><option value="all">كل الفصول</option><option value="1">الفصل الأول</option><option value="2">الفصل الثاني</option><option value="عام">مراجعة عامة</option></select></label><label class="tag24-filter" for="bankUnit"><span>الوحدة</span><select id="bankUnit"><option value="all">كل الوحدات</option></select></label><label class="tag24-filter" for="bankLesson"><span>الدرس</span><select id="bankLesson"><option value="all">كل الدروس</option></select></label><label class="tag24-filter" for="bankType"><span>نوع السؤال</span><select id="bankType"><option value="all">كل الأنواع</option><option value="single">اختيار</option><option value="multi">متعدد</option><option value="tf">صح/خطأ</option><option value="short">قصير</option><option value="estimate">تقدير رقمي</option><option value="order">ترتيب</option><option value="match">مطابقة</option></select></label></div>
         <div class="bank-summary" id="bankSummary"></div>
         <div id="questionBank" class="bank-grid"></div><button type="button" class="btn btn-secondary jordan-more" id="bankLoadMore" hidden>عرض المزيد من الأسئلة</button>
       </div>
@@ -393,6 +403,7 @@
 <link rel="stylesheet" href="/tag-semester1-library-v2.css?v=2">
 <link rel="stylesheet" href="/tag-studio-book-ai-v1.css?v=3">
 <link rel="stylesheet" href="/tag-studio-navigation-v6.css?v=6">
+<link rel="stylesheet" href="/tag-studio-bank-ai-v24.css?v=24.0">
 <script src="studio-auth.js?v=13.6"></script>
   <script defer src="/tag-spatial-site-v3.js?v=3"></script>
 </body>

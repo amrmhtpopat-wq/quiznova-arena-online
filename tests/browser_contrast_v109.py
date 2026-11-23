@@ -85,7 +85,7 @@ with sync_playwright() as p:
         page.evaluate("go('bank')")
         page.locator('#questionBank .bank-item h4').first.wait_for(state='visible',timeout=10000)
         check_ratio(page,'#bankSummary .summary-chip','#bankSummary .summary-chip')
-        assert brightness(page.locator('#questionBank .bank-item h4').first.evaluate('e=>getComputedStyle(e).color'))<135
+        assert brightness(page.locator('#questionBank .bank-item h4').first.evaluate('e=>getComputedStyle(e).color'))>180  # V24 dark cards require light readable question text
         screenshot(page,'contrast-bank-'+('mobile' if mobile else 'desktop')+'.png')
 
         page.evaluate("go('results')")

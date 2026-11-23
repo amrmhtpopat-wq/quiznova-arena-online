@@ -27,7 +27,7 @@ const make=(tag,cls,text)=>{const node=document.createElement(tag);if(cls)node.c
 const nav=make('header','tag-simple-nav');
 const inside=make('div','inside');
 const logo=make('a','tag-simple-logo');logo.href='/tag-lab-home.html';logo.setAttribute('aria-label','العودة إلى الرئيسية');
-const mark=document.createElement('img');mark.src='/assets/brand/tag-logo-dark-v21.png';mark.alt='شعار TAG';
+const mark=document.createElement('img');mark.src='/assets/brand/tag-spatial-identity-v3.webp?v=24.0';mark.alt='شعار TAG';
 const brand=make('span');brand.append(make('strong','', 'TAG LAB'),make('span','', 'تعلّم • العب • تفوّق'));
 logo.append(mark,brand);
 const menu=make('nav','tag-simple-links');menu.setAttribute('aria-label','الصفحات الرئيسية');
