@@ -54,7 +54,7 @@ function mountHub(){
     host.setAttribute('aria-busy','true');
     const shadow=host.attachShadow({mode:'open'});
     const sheet=document.createElement('link');sheet.rel='stylesheet';
-    sheet.href='/tag-spatial-native-v3.css?v=25';
+    sheet.href='/tag-spatial-native-v3.css?v=25.1';
     const stage=document.createElement('div');stage.className='tag-spatial-native-stage';
     stage.dir='rtl';stage.innerHTML=markup;
     let cssFinished=false;
