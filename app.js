@@ -961,10 +961,10 @@ function renderQuestionStats(room){
 function renderRoundResults(room){
   const isTeams=room.playType==='teams',leaders=isTeams?(room.teams||[]):(room.leaders||[]),st=room.stats||{},medals=['🥇','🥈','🥉'];
   const showtime=Boolean(window.TagLiveShow&&room.showFeedback!==false);
-  const podium=showtime?'<div id="tagV27RoundHost" class="tag-v27-round"></div>':leaders.slice(0,3).map((p,i)=>`<div class="round-podium-card p${i+1}"><div class="round-medal">${medals[i]}</div>${!isTeams?`<img class="sky-podium-avatar" src="${avatarPath(p.avatar)}" alt="">`:''}<b>${escapeHtml(p.name)}</b><small>${isTeams?`${p.members||0} طلاب • `:''}${p.score} نقطة</small></div>`).join('');
-  const rest=leaders.slice(3,8).map((p,i)=>`<div class="round-rank-row"><span>${i+4}</span><b>${escapeHtml(p.name)}</b><strong>${p.score}</strong></div>`).join('');
+  const podium=showtime?(isTeams?'<div class="tag-v27-two-tracks"><section><h3>⚔️ ترتيب المجموعات</h3><div id="tagV27RoundHost" class="tag-v27-round"></div></section><section><h3>⭐ أفضل خمسة طلاب</h3><div id="tagV27RoundStudentsHost" class="tag-v27-round"></div></section></div>':'<div id="tagV27RoundHost" class="tag-v27-round"></div>'):leaders.slice(0,3).map((p,i)=>`<div class="round-podium-card p${i+1}"><div class="round-medal">${medals[i]}</div>${!isTeams?`<img class="sky-podium-avatar" src="${avatarPath(p.avatar)}" alt="">`:''}<b>${escapeHtml(p.name)}</b><small>${isTeams?`${p.members||0} طلاب • `:''}${p.score} نقطة</small></div>`).join('');
+  const rest=showtime?'':leaders.slice(3,8).map((p,i)=>`<div class="round-rank-row"><span>${i+4}</span><b>${escapeHtml(p.name)}</b><strong>${p.score}</strong></div>`).join('');
   if(room.examMode)return `<div class="round-results-hero"><h2>🛡️ تم استلام إجابات هذه الجولة</h2><p>النتائج محفوظة وسرية حتى نهاية الامتحان. اضغط السؤال التالي للمتابعة.</p></div>`;
-  return `<div class="round-results-hero"><div class="round-results-title"><span class="trophy-orb">🏆</span><div><div class="overline">ROUND RESULTS</div><h2>ترتيب الجولة ${room.index+1}</h2><p>${st.accuracy||0}% دقة • ${st.correct||0} صحيحة • ${st.wrong||0} خاطئة</p></div></div>${showtime?'<div class="tag-v27-host-wrap">'+podium+'</div>':'<div class="round-podium">'+podium+'</div>'}${rest?`<div class="round-rest">${rest}</div>`:''}<div class="next-round-note">الترتيب ظاهر الآن للطلاب وشاشة العرض. اضغط «السؤال التالي» للمتابعة.</div></div>`;
+  return `<div class="round-results-hero"><div class="round-results-title"><span class="trophy-orb">🏆</span><div><div class="overline">ROUND RESULTS</div><h2>ترتيب الجولة ${room.index+1}</h2><p>${st.accuracy||0}% دقة • ${st.correct||0} صحيحة • ${st.wrong||0} خاطئة</p></div></div>${showtime?'<div class="tag-v27-host-wrap">'+podium+'</div>':'<div class="round-podium">'+podium+'</div>'}${rest?`<div class="round-rest">${rest}</div>`:''}<div class="next-round-note">ترقبوا ظهور المتنافسين واحدًا بعد الآخر، ثم اضغط «السؤال التالي» للمتابعة.</div></div>`;
 }
 
 function renderFinal(room){
@@ -1015,6 +1015,7 @@ function updateLiveHost(room){
   const sceneEditor=$('#liveRoomBackground');
   if(sceneEditor&&!sceneEditor.dataset.userChoice&&sceneEditor.value!==room.background)sceneEditor.value=room.background||'cartoon';
   window.TagLiveShow?.remember(room,'host');
+  if(room.playType==='teams')window.TagLiveShow?.remember({...room,playType:'individual'},'hostStudents');
   liveCurrentStatus=room.status;
   liveRosterMode=room.playType;liveRosterStatus=room.status;liveRosterTeams=room.teamNames||[];
   const players=Array.isArray(room.players)?room.players:[];$('#livePlayerCount').textContent=players.length;const sign=JSON.stringify(players.map(p=>[p.name,p.avatar,p.team,p.score]));if(sign!==livePlayerSignature){livePlayerSignature=sign;$('#livePlayers').innerHTML=renderPlayerCards(players)} const msg=document.getElementById('liveJoinMessage');if(msg)msg.textContent=players.length?'انضم '+players.length+' طالب إلى الغرفة':'بانتظار دخول الطلاب...';
@@ -1058,9 +1059,11 @@ function updateLiveHost(room){
     const roundBody=$('#liveQuestionBody'),roundKey=String(liveRoom)+':round:'+room.index;
     if(roundBody.dataset.tagV27ViewKey!==roundKey){
       roundBody.dataset.tagV27ViewKey=roundKey;roundBody.innerHTML=renderRoundResults(room);
-      if(liveReveal)window.TagLiveShow.round(room,roundBody.querySelector('#tagV27RoundHost'),'host',()=>{
-        if($('#liveLeaderboard')?.dataset.tagV27Pending===revealKey)$('#liveLeaderboard').innerHTML=renderLeaderboard(room);
-      });
+      if(liveReveal){
+        const finish=()=>{if($('#liveLeaderboard')?.dataset.tagV27Pending===revealKey)$('#liveLeaderboard').innerHTML=renderLeaderboard(room)};
+        window.TagLiveShow.round(room,roundBody.querySelector('#tagV27RoundHost'),'host',room.playType==='teams'?null:finish);
+        if(room.playType==='teams')window.TagLiveShow.round({...room,playType:'individual'},roundBody.querySelector('#tagV27RoundStudentsHost'),'hostStudents',finish);
+      }
     }
     if(nextBtn)nextBtn.textContent=room.index+1>=room.total?'عرض النتائج النهائية 🎉':'السؤال التالي ⟵';if(inlineNext)inlineNext.textContent=nextBtn.textContent;
   }else{
