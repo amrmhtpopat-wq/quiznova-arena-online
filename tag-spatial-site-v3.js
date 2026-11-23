@@ -26,10 +26,52 @@ function installIdentity(){
  test.onerror=()=>{document.documentElement.classList.add('tag-spatial-logo-fallback');};
  test.src=ART;
 }
+function mountHub(){
+ // Render interactive 3D elements in the SAME document; never create an iframe,
+ // extra storage context or replacement of the teacher app's handlers.
+ const page=document.getElementById('panel-home');
+ if(!page)return;
+ const workspace=page.closest('#workspace');
+ let host=null,loading=false,loaded=false;
+ function visible(){
+  return page.classList.contains('active')&&!document.hidden&&
+    (!workspace||!workspace.classList.contains('hidden'));
+ }
+ function sync(){
+  if(host)host.classList.toggle('tag-spatial-v3-paused',!visible());
+  if(!visible()||loaded||loading)return;
+  loading=true;
+  fetch('/tag-spatial-native-v3.fragment.html?v=3',{credentials:'same-origin'})
+   .then(res=>{if(!res.ok)throw Error('Workspace HTTP '+res.status);return res.text()})
+   .then(markup=>{
+    if(loaded||!page.isConnected)return;
+    if(typeof window.TAGSpatialNativeInit!=='function')throw Error('Workspace initializer not loaded');
+    host=document.createElement('div');host.className='tag-spatial-native-host';
+    host.setAttribute('aria-label','مساحة المعلم التفاعلية TAG Spatial');
+    const shadow=host.attachShadow({mode:'open'});
+    const sheet=document.createElement('link');sheet.rel='stylesheet';
+    sheet.href='/tag-spatial-native-v3.css?v=3';shadow.appendChild(sheet);
+    const stage=document.createElement('div');stage.className='tag-spatial-native-stage';
+    stage.dir='rtl';stage.innerHTML=markup;shadow.appendChild(stage);
+    page.insertBefore(host,page.firstChild);page.classList.add('tag-spatial-native-active');
+    try{window.TAGSpatialNativeInit(shadow,host);loaded=true;
+      host.classList.toggle('tag-spatial-v3-paused',!visible());
+    }catch(err){host.remove();host=null;page.classList.remove('tag-spatial-native-active');throw err}
+   }).catch(err=>console.warn('[TAG Spatial] Safe legacy dashboard fallback:',err.message))
+    .finally(()=>{loading=false});
+ }
+ if(window.MutationObserver){
+  new MutationObserver(sync).observe(page,{attributes:true,attributeFilter:['class']});
+  if(workspace)new MutationObserver(sync).observe(workspace,{attributes:true,attributeFilter:['class']});
+ }
+ document.addEventListener('visibilitychange',sync);
+ document.querySelectorAll('[data-panel]').forEach(btn=>btn.addEventListener('click',()=>requestAnimationFrame(sync)));
+ requestAnimationFrame(sync);
+}
 function enrichSurface(){
  const targets=document.querySelectorAll('.panel,.pane,.metric,.stat-card,.insight-card,.quiz-card');
  targets.forEach(el=>{
-  if(el.closest('.tag-spatial-embedded')||el.closest('.tag-spatial-host'))return;
+  if(el.closest('.tag-spatial-native-active')||el.closest('.tag-spatial-native-host'))return;
   el.classList.add('tag-spatial-surface');
  });
 }
@@ -58,6 +100,7 @@ function spatialHeadings(){
 }
 function start(){
  installIdentity();
+ mountHub();
  enrichSurface();
  spatialHeadings();
 }
