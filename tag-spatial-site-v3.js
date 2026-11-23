@@ -39,7 +39,7 @@ function mountHub(){
  }
  function sync(){
   if(host)host.classList.toggle('tag-spatial-v3-paused',!visible());
-  if(!visible()||loaded||loading)return;
+  if(!visible()||loaded||loading||page.classList.contains('tag-spatial-v4-fallback'))return;
   loading=true;
   fetch('/tag-spatial-native-v3.fragment.html?v=3',{credentials:'same-origin'})
    .then(res=>{if(!res.ok)throw Error('Workspace HTTP '+res.status);return res.text()})
@@ -47,22 +47,46 @@ function mountHub(){
     if(loaded||!page.isConnected)return;
     if(typeof window.TAGSpatialNativeInit!=='function')throw Error('Workspace initializer not loaded');
     host=document.createElement('div');host.className='tag-spatial-native-host';
+    // Prevent the raw HTML/oversized icons from flashing before Shadow DOM CSS arrives.
+    // visibility preserves box measurements for the 3D/WebGL initializer.
+    host.style.visibility='hidden';host.style.opacity='0';
     host.setAttribute('aria-label','مساحة المعلم التفاعلية TAG Spatial');
+    host.setAttribute('aria-busy','true');
     const shadow=host.attachShadow({mode:'open'});
     const sheet=document.createElement('link');sheet.rel='stylesheet';
-    sheet.href='/tag-spatial-native-v3.css?v=3';shadow.appendChild(sheet);
+    sheet.href='/tag-spatial-native-v3.css?v=25';
     const stage=document.createElement('div');stage.className='tag-spatial-native-stage';
-    stage.dir='rtl';stage.innerHTML=markup;shadow.appendChild(stage);
+    stage.dir='rtl';stage.innerHTML=markup;
+    let cssFinished=false;
+    const fallback=(reason)=>{
+      if(cssFinished)return;
+      cssFinished=true;clearTimeout(styleDeadline);
+      host?.remove();host=null;loaded=false;
+      page.classList.remove('tag-spatial-native-active');
+      page.classList.add('tag-spatial-v4-fallback');
+      console.warn('[TAG Spatial] Unstyled dashboard prevented:',reason);
+    };
+    const reveal=()=>{
+      if(cssFinished||!host?.isConnected)return;
+      cssFinished=true;clearTimeout(styleDeadline);
+      page.classList.add('tag-spatial-native-active');
+      host.style.visibility='visible';host.style.opacity='1';
+      host.removeAttribute('aria-busy');
+      host.classList.toggle('tag-spatial-v3-paused',!visible());
+    };
+    const styleDeadline=setTimeout(()=>fallback('Stylesheet timeout'),12000);
+    sheet.addEventListener('load',reveal,{once:true});
+    sheet.addEventListener('error',()=>fallback('Stylesheet failed'),{once:true});
+    shadow.appendChild(sheet);shadow.appendChild(stage);
     function arrange(){
      const quick=page.querySelector(':scope > .tag-v5-shortcuts');
      if(matchMedia('(max-width:650px)').matches) page.appendChild(host);
      else page.insertBefore(host,page.firstChild);
     }
     arrange();window.addEventListener('resize',arrange,{passive:true});
-    page.classList.add('tag-spatial-native-active');
     try{window.TAGSpatialNativeInit(shadow,host);loaded=true;
       host.classList.toggle('tag-spatial-v3-paused',!visible());
-    }catch(err){host.remove();host=null;page.classList.remove('tag-spatial-native-active');throw err}
+    }catch(err){clearTimeout(styleDeadline);host.remove();host=null;page.classList.remove('tag-spatial-native-active');throw err}
    }).catch(err=>{page.classList.add('tag-spatial-v4-fallback');console.warn('[TAG Spatial] Safe legacy dashboard fallback:',err.message)})
     .finally(()=>{loading=false});
  }
