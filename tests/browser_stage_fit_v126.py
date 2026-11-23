@@ -96,11 +96,14 @@ def run():
                             expected = "results" if scene in ("teamresults", "private") else ("question" if scene == "longquestion" else scene)
                             page.wait_for_function("(status) => document.body.dataset.stageView === status", arg=expected, timeout=8000)
                             page.wait_for_timeout(220)
+                            if scene in ("results","teamresults"):
+                                expected_ranks=2 if scene=="teamresults" else 5
+                                page.wait_for_function("(n) => document.querySelectorAll('#tag27RoundList .tag27-rank-row').length === n",arg=expected_ranks,timeout=12000)
                             sizes_seen = page.evaluate("""() => {
                                 let wrap = document.querySelector('.stage-wrap');
                                 let elements = ['.stage-head'];
                                 if (document.body.dataset.stageView === 'question') elements.push('.question','.bo-stage-next-control','.live-bottom');
-                                if (document.body.dataset.stageView === 'results') elements.push('.bo-result-title','.bo-result-grid','.bo-stage-next-control');
+                                if (document.body.dataset.stageView === 'results') elements.push('.tag27-intro','.tag27-rank-panel','.bo-stage-next-control');
                                 let rects = elements.map(sel => {
                                     let el = document.querySelector(sel), rect=el?.getBoundingClientRect();
                                     return {sel, bottom:rect?.bottom ?? -1,top:rect?.top ?? -1};
@@ -109,7 +112,7 @@ def run():
                                         bodyHeight:document.body.scrollHeight, stageScroll:wrap?.scrollHeight,
                                         stageClient:wrap?.clientHeight, rects,
                                         titleVisible:!!document.querySelector('.question h1') || document.body.dataset.stageView !== 'question',
-                                        firstRankVisible:!!document.querySelector('.bo-result-row') || document.body.dataset.stageView !== 'results'};
+                                        firstRankVisible:!!document.querySelector('.tag27-rank-row, .bo-result-row') || document.body.dataset.stageView !== 'results'};
                             }""")
                             errors = []
                             if sizes_seen["docHeight"] > height + 2 or sizes_seen["bodyHeight"] > height + 2: errors.append("whole-page overflow")
@@ -120,7 +123,7 @@ def run():
                             if not sizes_seen["titleVisible"] or (scene != "private" and not sizes_seen["firstRankVisible"]):
                                 errors.append("missing key content")
                             if scene in ("results", "teamresults"):
-                                visible_rank = page.locator(".bo-result-row").count()
+                                visible_rank = page.locator("#tag27RoundList .tag27-rank-row").count()
                                 if visible_rank != (2 if scene == "teamresults" else 5):
                                     errors.append(f"rank count {visible_rank}")
                             if errors:
