@@ -41,11 +41,9 @@ with sync_playwright() as playwright:
     errors=[]
     page.on('pageerror',lambda e:errors.append(str(e)))
     page.goto(base+'/?teacher=1',wait_until='domcontentloaded',timeout=30000)
-    if mobile:
-      page.locator('#tagTeacherMobileToggle').wait_for(state='visible',timeout=15000)
-      page.locator('#tagTeacherMobileToggle').click()
-    page.locator('button.nav[data-panel="students"]').wait_for(state='visible',timeout=15000)
-    page.locator('button.nav[data-panel="students"]').click()
+    # TAG Spatial replaces the legacy home menu with direct lesson instruments.
+    page.locator('#panel-home>.tag-spatial-native-host').wait_for(state='visible',timeout=15000)
+    page.locator('.tag-spatial-native-host').locator('[data-tool="cards"]').click()
     page.locator('.bo-student-id').first.wait_for(state='visible',timeout=12000)
     assert page.locator('.bo-student-id').count()==9
     codes=page.locator('.bo-badge-access-id').all_text_contents()
