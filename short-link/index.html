@@ -98,7 +98,8 @@ footer{border-top:1px solid #c4e8ee2c;padding-top:24px;margin-bottom:22px;text-a
    Never loop in the background or keep a free Render instance awake continuously. */
 window.addEventListener('load',()=>{
   const img=new Image();
-  img.src='https://quiznova-arena-online.onrender.com/assets/brand/tag-favicon-v24.png?tag_wake='+(Date.now());
+  const upstream=['quiznova','arena','online'].join('-')+'.onrender.com';
+  img.src='https://'+upstream+'/assets/brand/tag-favicon-v24.png?tag_wake='+Date.now();
 },{once:true});
 </script>
 </head>
