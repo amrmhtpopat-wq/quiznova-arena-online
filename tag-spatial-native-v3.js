@@ -30,6 +30,11 @@ window.TAGSpatialNativeInit=function(shadow,host){
  }
  function closeItem(){host.classList.remove('tag-spatial-overlay-open');els.inspector.classList.remove('open');shadow.getElementById('tag-v3-inspectorBack').classList.remove('open');shadow.getElementById('tag-v3-inspectorBack').setAttribute('aria-hidden','true');els.inspector.setAttribute('aria-hidden','true');document.body.style.overflow='';if(lastFocus&&typeof lastFocus.focus==='function')lastFocus.focus()}
  shadow.querySelectorAll('[data-tool]').forEach(el=>el.addEventListener('click',()=>openItem(el.dataset.tool)));
+ shadow.querySelectorAll('[data-portal-panel]').forEach(el=>el.addEventListener('click',()=>{
+  const panel=el.dataset.portalPanel;
+  const button=document.querySelector('button.nav[data-panel="'+panel+'"]');
+  if(!button)return;button.click();window.scrollTo({top:0,behavior:'instant'});
+ }));
  shadow.getElementById('tag-v3-settingsBtn').addEventListener('click',()=>openItem('settings'));
  const logout=shadow.getElementById('tag-v3-logoutBtn');if(logout)logout.addEventListener('click',()=>document.getElementById('logout')?.click());
  shadow.getElementById('tag-v3-inspLink').addEventListener('click',e=>{
