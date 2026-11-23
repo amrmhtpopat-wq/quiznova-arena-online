@@ -23,7 +23,7 @@ import platform_api as auth
 import solo_api
 import game_lab_api as games
 import game_lab_uploads as uploads
-from game_lab_ai_quality import selected_ai_source,verify_ai_rows
+from game_lab_ai_quality import selected_ai_source,verify_ai_rows,suspicious_book_text,_plain
 
 MAX_BOOK_BYTES=uploads.MAX_BOOK_BYTES
 INLINE_BOOK_BYTES=6_000_000
@@ -404,15 +404,55 @@ def deterministic_draft(text,maximum):
     return balanced
 
 
+def _verified_local_rows(text,maximum):
+    """Fail closed on corrupt Arabic OCR and on unsourced local answers.
+
+    A direct extraction is kept only when both its cited quote and answer
+    occur in the selected source page. No auto-cloze or invented distractors.
+    """
+    pages={p:_plain(raw) for p,raw in selected_book_pages(text)}
+    pool=deterministic_draft(text,min(100,maximum*4))
+    accepted=[]
+    seen=set()
+    for row in pool:
+        q=str(row.get('q') or '').strip()
+        a=str(row.get('a') or '').strip()
+        quote=str(row.get('sourceQuote') or '').strip()
+        try:page=int(row.get('sourcePage'))
+        except (ValueError,TypeError,OverflowError):continue
+        original=pages.get(page,'')
+        question=_plain(q);answer=_plain(a);evidence=_plain(quote)
+        if not (original and 8<=len(q)<=200 and 2<=len(a)<=100
+                and 15<=len(evidence)<=230):
+            continue
+        if row.get('origin')=='local_cloze' or '(....)' in q or 'أكمل العبارة من الكتاب' in q:
+            continue
+        if any(suspicious_book_text(part) for part in (q,a,quote)):
+            continue
+        if evidence not in original or answer not in original:
+            continue
+        if question in seen:continue
+        seen.add(question)
+        accepted.append(row)
+        if len(accepted)>=maximum:break
+    return accepted,len(pool)-len(accepted)
+
+
 def offline_generate(tid,data):
     book=require_book(tid,data.get('bookId'))
     text,count=source_selection(book,data.get('startPage'),data.get('endPage'),max_chars=400000)
     maximum=min(25,max(4,int(data.get('count') or 12)))
-    rows=deterministic_draft(text,maximum)
+    rows,rejected=_verified_local_rows(text,maximum)
+    warning=('لم أجد أسئلة تعليمية موثوقة كافية في الصفحات المحددة. '
+             'قد يكون نص PDF مشوها بسبب الاستخراج أو تكون الصفحات ترويسات امتحان. '
+             'اختر صفحات درس واضحة، أو ارفع نسخة PDF نصية سليمة أو DOCX. '
+             'لن أملأ العدد بأسئلة عشوائية، ويمكنك كتابة الأسئلة يدويًا. '
+             if len(rows)<4 else
+             'استُخرج '+str(len(rows))+' سؤالًا بدليل نصي مباشر من الكتاب. '
+             'راجع الإجابات وصفحات المصدر قبل اعتمادها. ')
     return {'book':metadata(book),'mode':'extract','rows':rows,'count':len(rows),
-            'sourcePages':count,
-            'warning':('لم أعثر على أربعة أسئلة واضحة من الصفحات المحددة. لا أكرر الأسئلة لإكمال العدد؛ اختر صفحات إضافية أو اكتب أسئلة يدويًا.' if len(rows)<4 else
-                       'أُنشئت '+str(len(rows))+' أسئلة مباشرة ومتنوعة من التعريفات والأهداف والأمثلة والمعلومات الواضحة. راجع الإجابات وصفحات المصدر قبل اعتمادها.')}
+            'sourcePages':count,'rejectedLocalCandidates':max(0,rejected),
+            'warning':warning}
 
 
 # When both free Gemini models fail with transient overload, short-circuit
@@ -504,72 +544,6 @@ def _refund_ai_usage(tid,usage_id):
         print('TAG LAB: could not release unsuccessful AI usage slot',flush=True)
 
 
-def _safe_local_cloze(text, maximum, existing):
-    """Offer literal fill-in-the-blank questions, never model-invented facts.
-
-    Used only when the normal textbook extractor returns too few questions.
-    Short clauses and named pages are copied verbatim (apart from whitespace)
-    so teachers can see the source and review before using them.
-    """
-    if maximum<=len(existing):return []
-    existing_q={clean_book_text(x.get('q')).casefold() for x in existing}
-    answers={clean_book_text(x.get('a')).casefold() for x in existing}
-    candidates={}
-    # Distinctive subject-specific words make better cloze prompts than
-    # frequent boilerplate words. Count within the teacher's selected pages.
-    chosen_pages=selected_book_pages(text)
-    token_frequency={}
-    for _,raw in chosen_pages:
-        for match in re.finditer(r'[\u0621-\u064a]{5,}|[A-Za-z]{5,}',clean_book_text(raw)):
-            token=match.group(0).casefold()
-            token_frequency[token]=token_frequency.get(token,0)+1
-    rejected={'الذي','التي','الذين','هناك','حيث','هذه','هذا','كانت',
-              'تكون','يمكن','الطلاب','الطالب','أثناء','بعض','احدى','جميع'}
-    for page,raw in chosen_pages:
-        current=[]
-        for line in raw.splitlines():
-            for chunk in re.split(r'(?<=[.؟!؛])\s+',line):
-                sentence=clean_book_text(chunk).strip('؛ .،:|')
-                if not 58<=len(sentence)<=155:continue
-                if len(sentence.split())<8:continue
-                matches=list(re.finditer(r'[\u0621-\u064a]{5,}|[A-Za-z]{5,}',sentence))
-                eligible=[m for m in matches
-                          if m.group(0).casefold() not in rejected and
-                          m.group(0).casefold() not in answers and
-                          5<=len(m.group(0))<=22]
-                if not eligible:continue
-                midpoint=len(sentence)//2
-                token=min(eligible,key=lambda m:
-                    (token_frequency.get(m.group(0).casefold(),1),
-                     abs((m.start()+m.end())//2-midpoint)))
-                answer=token.group(0)
-                question=('أكمل العبارة من الكتاب: «'+
-                          sentence[:token.start()]+'(....)'+sentence[token.end():]+'»')
-                if len(question)>200 or clean_book_text(question).casefold() in existing_q:
-                    continue
-                existing_q.add(clean_book_text(question).casefold())
-                answers.add(answer.casefold())
-                current.append({'q':question,'a':answer,'g':'صفحة '+str(page),
-                                'sourcePage':page,'sourceQuote':sentence,
-                                'origin':'local_cloze','questionType':'short',
-                                'difficulty':'easy'})
-                if len(current)>=maximum*2:break
-            if len(current)>=maximum*2:break
-        if current:candidates[page]=current
-    out=[]
-    for p in sorted(candidates):
-        candidates[p].sort(key=lambda row:len(row['sourceQuote']),reverse=True)
-    while len(out)+len(existing)<maximum:
-        found=False
-        for p in sorted(candidates):
-            if candidates[p]:
-                out.append(candidates[p].pop(0))
-                found=True
-                if len(out)+len(existing)>=maximum:break
-        if not found:break
-    return out
-
-
 def _local_ai_recovery(tid,data,requested,reason):
     """Return teacher-reviewable book excerpts when every free Gemini request fails.
 
@@ -577,11 +551,10 @@ def _local_ai_recovery(tid,data,requested,reason):
     credentials, extra provider requests, or paid services.
     """
     draft=offline_generate(tid,data)
+    # Do not invent more questions just to meet the requested number.
+    # Automatic fill-in-the-blank from arbitrary OCR/PDF lines produced broken
+    # exam-cover questions and has been permanently disabled.
     base_rows=list(draft.get('rows') or [])
-    if len(base_rows)<requested:
-        book=require_book(tid,data.get('bookId'))
-        text,_=source_selection(book,data.get('startPage'),data.get('endPage'),max_chars=220000)
-        base_rows.extend(_safe_local_cloze(text,requested,base_rows))
     draft['rows']=base_rows
     count=len(base_rows)
     reasons={
@@ -601,10 +574,11 @@ def _local_ai_recovery(tid,data,requested,reason):
       'generatedCount':count,
       'count':count
     })
-    draft['warning']=(why+'. انتقل TAG LAB تلقائيًا إلى استخراج أسئلة محلية من الكتاب، دون خصم محاولة TAG AI. '
-                      'هذه المقترحات ليست مولدة بالذكاء الاصطناعي؛ قد تتضمن أسئلة إكمال عبارة حرفية من الكتاب. لا تُنشر تلقائيًا. '
-                      'تم العثور على '+str(count)+' من '+str(requested)+' أسئلة مطلوبة؛ '
-                      'راجع نصوص الأسئلة والإجابات وصفحاتها قبل اعتمادها. '
+    draft['warning']=(why+'. انتقل TAG LAB تلقائيًا إلى فحص الكتاب محليًا دون خصم محاولة TAG AI. '
+                      'لم يعد النظام ينشئ أسئلة «أكمل العبارة» من نصوص PDF العشوائية. '
+                      'هذه المقترحات ليست مولدة بالذكاء الاصطناعي، ولا تُنشر تلقائيًا. '
+                      'تم قبول '+str(count)+' من '+str(requested)+' أسئلة مطلوبة بعد فحص النصوص؛ '
+                      'الجودة أهم من إكمال العدد. '
                       +(draft.get('warning') or ''))
     print('TAG LAB AI fallback to local book extraction: '+reason+
           '; generated='+str(count)+'; requested='+str(requested),flush=True)
