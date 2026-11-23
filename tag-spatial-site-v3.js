@@ -8,12 +8,14 @@ const here=(location.pathname.split('/').pop()||'index.html').toLowerCase();
 if(excluded.test(here)||!document.body.classList.contains('tag-spatial-global'))return;
 const ART='/assets/brand/tag-spatial-identity-v3.webp';
 function installIdentity(){
- const current=[...document.querySelectorAll('img.tag-official-logo,.auth-brand img,.sidebar-brand img,.brand-logo img,header .brand img,.tag-brand-logo img')];
+ const current=[...document.querySelectorAll('img.tag-official-logo,.auth-brand img,.sidebar-brand img,.brand-logo img,.tag-brand-logo img')];
  if(!current.length)return;
  const test=new Image();
  test.onload=()=>{
   for(const img of current){
    if(!img.isConnected||img.classList.contains('tag-spatial-identity'))continue;
+   // Product-install PWA icons are deliberately not interchangeable with a wordmark.
+   if(/\/assets\/pwa\//i.test(img.getAttribute('src')||''))continue;
    img.dataset.tagOldLogo=img.getAttribute('src')||'';
    img.src=ART;
    img.removeAttribute('srcset');
