@@ -348,3 +348,69 @@ body.tag-spatial-global footer,.tag-spatial-global .footer{
   animation:none!important;transition:none!important
  }
 }
+
+
+/* Spatial editorial marker for each tool page, intentionally no extra actions. */
+body.tag-spatial-global .tag-spatial-titleline{
+ display:flex;align-items:center;gap:13px;width:100%;margin:4px 0 18px;
+ color:#a5d0d5;font:600 11px/1.5 "Outfit",Arial,sans-serif;
+ letter-spacing:1.6px;direction:ltr;user-select:none;
+}
+body.tag-spatial-global .tag-spatial-titleline-code{color:#83e6dc;white-space:nowrap}
+body.tag-spatial-global .tag-spatial-titleline-rule{
+ flex:1;height:1px;min-width:24px;
+ background:linear-gradient(90deg,#4c9baf4d,#70d4d399);
+}
+body.tag-spatial-global .tag-spatial-titleline-label{
+ font-family:"IBM Plex Sans Arabic",Tahoma,Arial,sans-serif;font-size:11px;
+ color:#a2c4cc;letter-spacing:0;white-space:nowrap;
+}
+body.tag-spatial-global .builder-layout,
+body.tag-spatial-global .bo-builder-layout,
+body.tag-spatial-global .analysis-grid{
+ gap:16px;
+}
+body.tag-spatial-global .bo-builder-rail,
+body.tag-spatial-global .builder-rail,
+body.tag-spatial-global .modal-content,
+body.tag-spatial-global .modal-dialog,
+body.tag-spatial-global .dialog,
+body.tag-spatial-global #modalContent{
+ background:linear-gradient(135deg,#163e52,#0c283b)!important;
+ border-color:#5c899978!important;color:#f3fcf8!important;
+}
+body.tag-spatial-global :where(.tabs,.tabbar,.pill-tabs,.segmented){
+ border-color:#51839388!important;background-color:#123a4f!important;
+}
+body.tag-spatial-global :where(.tab,.tab-btn,.chip,.pill,.filter-chip){
+ border-color:#62909b80!important;color:#d6efea!important;
+}
+body.tag-spatial-global :where(.tab.active,.tab-btn.active,.chip.active,.pill.active,.filter-chip.active){
+ background:#9ee7d8!important;color:#082e3e!important;
+}
+body.tag-spatial-global :where(.builder-rail,.bo-builder-rail) button:hover,
+body.tag-spatial-global .bo-question-row:hover{
+ background:#205467!important;color:#f6fff8!important;
+}
+body.tag-spatial-global :where(.error,.error-box,.error-message){
+ border-color:#f58a9185!important;color:#ffcbd0!important;
+}
+body.tag-spatial-global :where(.success,.success-message){
+ border-color:#7ad7b48c!important;color:#c7ffe2!important;
+}
+/* Prevent the new dark UI from contaminating printed QR cards, answer sheets or exams. */
+@media print{
+ body.tag-spatial-global #panel-students > .pane,
+ body.tag-spatial-global #panel-students .cards-board,
+ body.tag-spatial-global #panel-students .pane-head,
+ body.tag-spatial-global .print-sheet,
+ body.tag-spatial-global .print-page,
+ body.tag-spatial-global .report-page{
+  background:#fff!important;color:#111!important;
+  box-shadow:none!important;border:0!important;
+ }
+ body.tag-spatial-global #panel-students > .pane :not(.idcard):not(.idcard *){
+  print-color-adjust:exact;-webkit-print-color-adjust:exact
+ }
+ body.tag-spatial-global .tag-spatial-titleline{display:none!important}
+}
