@@ -1,0 +1,58 @@
+/* TAG Official Static Landing V23 — shares palette with the core 3D spatial UI.
+   Zero application dependencies: permanent SEO page remains quick and indexable. */
+:root{color-scheme:dark;--bg:#071b2c;--bg2:#0d2d42;--cyan:#5dd6d2;--mint:#84e4da;--text:#f0fbf7;--muted:#b4d3dc;--line:#78cfc44a}
+html{scroll-padding-top:95px;max-width:100%;overflow-x:clip}
+body{background:radial-gradient(ellipse at 17% 20%,#17688738,transparent 42%),radial-gradient(ellipse at 88% 72%,#2a756838,transparent 45%),linear-gradient(160deg,#071b2c,#0c2d42 58%,#071b2c);color:var(--text);overflow-x:clip}
+.shell{max-width:1190px}
+header.shell{padding-top:14px;padding-bottom:12px;position:relative;z-index:5}
+.tag23-brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none;white-space:nowrap;direction:ltr}
+.tag23-brand .logo{width:68px;height:68px;object-fit:contain;filter:drop-shadow(0 6px 14px #0d8d8d44)}
+.tag23-brand-text{display:flex;flex-direction:column;align-items:flex-start;line-height:1.08}
+.tag23-brand-text strong{font:900 clamp(27px,3vw,37px)/1 'Segoe UI',Arial,sans-serif;color:#9aede4;letter-spacing:.04em}
+.tag23-brand-text small{font:800 10px/1.5 'Segoe UI',Arial,sans-serif;color:#e1f9ef;letter-spacing:.065em}
+nav{gap:clamp(8px,2vw,20px)}
+nav a{display:inline-flex;align-items:center;min-height:44px;padding:6px 10px;border-radius:9px;color:#dcf6f0}
+nav a:hover{background:#143c4e;text-decoration:none}
+nav a.tag23-join{border:1px solid #72bcb7;background:#153c4b;color:#aaf3e8}
+.hero{max-width:none;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr);align-items:center;gap:clamp(18px,5vw,64px);text-align:right;padding:clamp(42px,5vw,78px) 0 62px}
+.tag23-copy{min-width:0;position:relative;z-index:2}
+.kicker{color:#c8fbf2;background:#1b69572f;border-color:#6cbdaf8a;font-size:clamp(11px,1.25vw,13px);line-height:1.7;padding:5px 13px}
+.tag23-copy h1{margin:25px 0 18px;font-size:clamp(35px,4.5vw,58px);line-height:1.32;letter-spacing:-.028em}
+.tag23-copy h1 span{color:#84e4da;white-space:nowrap}
+.tag23-copy h1 .tag23-lead{display:block;color:#f0fbf7;font-weight:950}
+.hero .tag23-copy>p{margin:0 0 22px;color:#bededc;max-width:630px;font-size:clamp(15px,1.55vw,18px)}
+.hero .actions{justify-content:flex-start;gap:10px}
+.hero .button{min-width:154px;border-radius:14px;border-color:#4a8b91;background:#123b50;box-shadow:inset 0 1px 0 #ffffff20;transition:transform .2s,background .2s,box-shadow .2s}
+.hero .button:hover{transform:translateY(-3px);box-shadow:0 8px 25px #00171a6f}
+.hero .button.primary{background:linear-gradient(110deg,#70e4da,#9cedba);color:#072d38}
+.hero .button.install{background:linear-gradient(115deg,#72dfb4,#64d6ce);color:#072d38}
+.hero .install-note{font-size:12px;line-height:1.7;margin:14px 0 0;max-width:600px}
+.hero .trust{justify-content:flex-start;margin:20px 0 0}
+.hero .trust span{background:#123648b5;color:#b9e5df;border-color:#4d8883}
+.tag23-scene{position:relative;min-width:0;isolation:isolate;display:grid;place-items:center;height:clamp(300px,34vw,450px);perspective:950px}
+.tag23-scene:before{content:"";position:absolute;width:min(90%,370px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#48d6bf2d,#164f6460 38%,transparent 73%);filter:blur(4px)}
+.tag23-orbit{position:absolute;width:min(90%,392px);aspect-ratio:1;border-radius:50%;border:1px dashed #67b5b348;transform:rotateX(58deg) rotate(-20deg);animation:tag23-spin 32s linear infinite}
+.tag23-orbit.alt{width:min(75%,315px);transform:rotateX(58deg) rotate(30deg);border-style:solid;border-color:#8be5d32b;animation-direction:reverse;animation-duration:40s}
+.tag23-device{width:min(88%,360px);min-height:250px;border:1px solid #73dacf80;border-radius:30px;padding:28px 25px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:12px;text-align:center;background:linear-gradient(145deg,#174c61f0,#0b273cf4);box-shadow:0 30px 68px #00162699,inset 0 1px 0 #c7ffed33;transform:rotateY(-10deg) rotateX(4deg);animation:tag23-float 6s ease-in-out infinite;backdrop-filter:blur(10px)}
+.tag23-device img{width:90px;height:90px;object-fit:contain;filter:drop-shadow(0 5px 17px #31cfca61)}
+.tag23-device b{font:950 clamp(28px,3vw,42px)/1.05 'Segoe UI',Arial,sans-serif;direction:ltr;color:#a6f5e7;letter-spacing:.05em}
+.tag23-device strong{font-size:clamp(13px,1.5vw,17px)}
+.tag23-device small{font-size:12px;color:#9fcec9;letter-spacing:.02em;direction:ltr}
+.tag23-floating{position:absolute;z-index:3;display:grid;place-items:center;width:61px;height:61px;border:1px solid #7ae2cc81;background:linear-gradient(140deg,#206078,#103d52);border-radius:19px;font-size:28px;box-shadow:0 13px 30px #000c1db0;animation:tag23-float 5s ease-in-out infinite}
+.tag23-floating.one{top:12%;right:0}.tag23-floating.two{bottom:15%;left:0;animation-delay:-2s}.tag23-floating.three{top:7%;left:10%;animation-delay:-1.3s}
+#features{scroll-margin-top:25px}
+#features>h2,#how-to-start h2,#about h2{letter-spacing:-.02em}
+.cards{gap:15px;margin-bottom:34px}
+.card{border-color:#70beb560;background:linear-gradient(145deg,#153e51,#0b2b3d);box-shadow:0 10px 25px #00172560;padding:22px;transition:transform .2s,border-color .2s}
+.card:hover{transform:translateY(-5px);border-color:#94f4d6a1}
+.card .symbol{width:55px;height:55px;display:grid;place-items:center;border-radius:18px;background:#245e6890;margin-bottom:16px}
+.card p,.info p{color:#b5d5db}
+.info{background:linear-gradient(150deg,#133b4c,#0c2b3d);border-color:#5bbcb264;max-width:100%;margin-bottom:24px}
+.info a{color:#90f0df}
+footer{margin-top:36px}
+@keyframes tag23-spin{from{rotate:0deg}to{rotate:360deg}}
+@keyframes tag23-float{0%,100%{translate:0 0}50%{translate:0 -10px}}
+@media(max-width:900px){.hero{grid-template-columns:minmax(0,1fr);gap:10px;padding-top:38px}.tag23-scene{height:285px;max-width:460px;width:100%;margin:auto;grid-row:2}.tag23-device{width:min(75%,340px);min-height:225px}.tag23-device img{height:70px;width:70px}.tag23-floating{height:51px;width:51px;font-size:23px}.hero .actions{gap:10px}}
+@media(max-width:600px){.shell{padding-inline:16px}header.shell{justify-content:space-between;flex-wrap:wrap}.tag23-brand .logo{width:51px;height:51px}.tag23-brand-text strong{font-size:26px}.tag23-brand-text small{font-size:8px}nav{gap:4px;flex-wrap:wrap}nav a{font-size:12px;padding:5px 7px;min-height:40px}.hero{padding:28px 0 35px;gap:0}.tag23-copy h1{font-size:clamp(28px,8vw,42px);margin:16px 0}.kicker{font-size:11px}.hero .actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.hero .button{min-width:0!important;padding:12px 8px;font-size:12px}.hero .button.install{grid-column:1/-1}.hero .tag23-copy>p{font-size:14px}.hero .trust{gap:6px}.hero .trust span{font-size:10px;padding:3px 9px}.tag23-scene{height:245px}.tag23-device{min-height:185px;width:min(80%,310px);border-radius:22px}.tag23-device img{width:53px;height:53px}.tag23-device b{font-size:26px}.tag23-device strong{font-size:12px}.tag23-floating{width:43px;height:43px;border-radius:13px;font-size:20px}.cards{grid-template-columns:1fr;margin-bottom:24px}.card{padding:18px}.info{padding:19px 17px;margin-bottom:18px}}
+@media(max-width:360px){header.shell nav{width:100%;justify-content:center}.hero .button{font-size:11px}.tag23-scene{height:215px}.tag23-device{min-height:168px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
