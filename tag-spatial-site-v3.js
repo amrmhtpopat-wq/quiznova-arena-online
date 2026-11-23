@@ -80,10 +80,34 @@ function enrichSurface(){
   el.classList.add('tag-spatial-surface');
  });
 }
+function spatialHeadings(){
+ const names={
+  dashboard:['00 / WORKSPACE','مساحة المعلم'],generator:['01 / INTELLIGENCE','TAG AI'],
+  builder:['02 / DESIGN STUDIO','صناعة الاختبار'],bank:['03 / QUESTION VAULT','بنك الأسئلة'],
+  library:['04 / KNOWLEDGE INDEX','المكتبة'],media:['05 / MEDIA','الوسائط'],
+  live:['06 / CLASSROOM ON AIR','الصف المباشر'],play:['07 / SOLO MODE','التحدي الفردي'],
+  results:['08 / LEARNING SIGNALS','النتائج والتحليل'],settings:['09 / PERSONAL SPACE','إعدادات المعلم'],
+  classes:['CLASS WARS','الشعب'],mastery:['SKILL ATLAS','المهارات'],
+  students:['SMART STUDENT ID','بطاقات الطلاب'],history:['ACTIVITY LOG','السجل'],
+  school:['SCHOOL SETTINGS','إعدادات المدرسة']
+ };
+ document.querySelectorAll('.view[id^="view-"],.panel-view[id^="panel-"]').forEach(panel=>{
+  const key=panel.id.replace(/^(view|panel)-/,'');
+  if(key==='dashboard'||key==='home')return;
+  const detail=names[key];if(!detail||panel.querySelector(':scope > .tag-spatial-titleline'))return;
+  const el=document.createElement('div');
+  el.className='tag-spatial-titleline';el.setAttribute('aria-hidden','true');
+  el.innerHTML='<span class="tag-spatial-titleline-code"></span><span class="tag-spatial-titleline-rule"></span><span class="tag-spatial-titleline-label"></span>';
+  el.querySelector('.tag-spatial-titleline-code').textContent='TAG / '+detail[0];
+  el.querySelector('.tag-spatial-titleline-label').textContent=detail[1];
+  panel.prepend(el);
+ });
+}
 function start(){
  installIdentity();
  mountHub();
  enrichSurface();
+ spatialHeadings();
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});
 else start();
