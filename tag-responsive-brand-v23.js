@@ -11,7 +11,7 @@ function installBack(){
  b.innerHTML='<span aria-hidden="true">➜</span><span class="tag23-back-label">رجوع</span>';
  b.addEventListener('click',()=>{
   const sameOrigin=(()=>{try{return !!document.referrer&&new URL(document.referrer).origin===location.origin}catch{return false}})();
-  if(sameOrigin&&history.length>1)history.back();else location.assign(name==='student.html'?'/':ROOT);
+  if(sameOrigin&&history.length>1)history.back();else location.assign(name==='student.html'||name==='index.html'?'/':ROOT);
  });
  document.body.appendChild(b);
 }
