@@ -114,3 +114,24 @@ body.v105-stage .v104-stage-podium .tag-v27-pod.place-1{min-height:0}
  .tag-v27-spark,.tag-v27-row,.tag-v27-character,.tag-v27-arms i{animation:none!important}
  .tag-v27-pod,.tag-v27-pod.tag-v27-revealed{transition:none!important}
 }
+
+/* Separate suspense for the top five students when classes play in teams. */
+body.v105-stage .bo-stage-results .bo-top-five:has(.tag-v27-round){display:flex!important;flex-direction:column;min-width:0;overflow:hidden}
+body.v105-stage .bo-stage-results .bo-top-five .tag-v27-round{flex:1;min-height:0;gap:3px}
+body.v105-stage .bo-stage-results .bo-top-five .tag-v27-round-head{padding:4px 6px;gap:5px}
+body.v105-stage .bo-stage-results .bo-top-five .tag-v27-round-head small{display:none}
+body.v105-stage .bo-stage-results .bo-top-five .tag-v27-row{padding:2px 5px;gap:4px;grid-template-columns:24px 27px minmax(0,1fr) 62px}
+body.v105-stage .bo-stage-results .bo-top-five .tag-v27-rank{width:23px;height:23px;font-size:12px}
+body.v105-stage .bo-stage-results .bo-top-five .tag-v27-person{width:26px;height:26px}
+body.v105-stage .bo-stage-results .bo-top-five .tag-v27-name strong{font-size:clamp(10px,1vw,15px)!important}
+body.v105-stage .bo-stage-results .bo-top-five .tag-v27-name small{font-size:10px}
+body.v105-stage .bo-stage-results .bo-top-five .tag-v27-score{font-size:clamp(10px,1vw,14px)}
+#liveQuestionBody .tag-v27-two-tracks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+#liveQuestionBody .tag-v27-two-tracks>section{min-width:0;padding:11px;border:1px solid #66abb8;border-radius:17px;background:#0a2e44}
+#liveQuestionBody .tag-v27-two-tracks h3{margin:0 0 11px;color:#e2fff6;font-size:16px}
+#liveQuestionBody .tag-v27-two-tracks .tag-v27-row{grid-template-columns:27px 32px minmax(0,1fr) 68px;gap:5px;padding:5px}
+#liveQuestionBody .tag-v27-two-tracks .tag-v27-name strong{font-size:13px!important}
+#liveQuestionBody .tag-v27-two-tracks .tag-v27-name small{font-size:10px}
+#liveQuestionBody .tag-v27-two-tracks .tag-v27-score{font-size:12px}
+@media(max-width:950px){#liveQuestionBody .tag-v27-two-tracks{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:450px){body.v105-stage .bo-result-grid.is-teams:has(.tag-v27-round){grid-template-columns:1fr!important;overflow:auto}body.v105-stage .bo-stage-results .bo-result-grid.is-teams:has(.tag-v27-round){height:100%;overflow:auto}}
