@@ -22,6 +22,25 @@ shutil.copytree(SRC,OUT)
 for p in OUT.glob('*.html'):
     if p.name!='index.html':
         p.unlink()
+# New first-party routes load an always-available branded waiting screen first.
+# Their eventual destination is still the existing backend route; no auth/QR changes.
+extra_entries={
+    'studio':'/studio.html',
+    'tag-lab':'/tag-lab-home.html',
+    'champion':'/champion.html',
+    'stage':'/stage.html',
+}
+template=(SRC/'teacher'/'index.html').read_text(encoding='utf8')
+old='https://quiznova-arena-online.onrender.com/?teacher=1'
+assert old in template
+for slug,target in extra_entries.items():
+    folder=OUT/slug
+    folder.mkdir(exist_ok=True)
+    html=template.replace(old,LEGACY+target)
+    html=html.replace('TEACH AND GAME | TAG – الانتقال للمنصة',
+                      'TEACH AND GAME | TAG – جارٍ فتح '+slug)
+    (folder/'index.html').write_text(html,encoding='utf8')
+
 def first_party(url):
     if not url.startswith(LEGACY):return url
     parsed=urlsplit(url)
