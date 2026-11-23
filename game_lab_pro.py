@@ -406,6 +406,61 @@ def deterministic_draft(text,maximum):
     return balanced
 
 
+def _direct_lesson_sentence_draft(text,maximum):
+    """Supplement definition-only extraction with clear literal lesson facts.
+
+    Questions and answers are derived from one intact Arabic statement.
+    No fill-in-the-blank, generated distractors, outside knowledge, or OCR repair.
+    These are *drafts* requiring teacher approval, not AI questions.
+    """
+    output=[]
+    seen=set()
+    patterns=[
+      (re.compile(r'^(?:يساعد|تساعد)\s+(?P<subject>[^.،؛؟:]{4,65}?)\s+'
+                  r'(?:على|في)\s+(?P<answer>[^.،؛؟:]{12,110})',re.I),
+       'بماذا تساعد {subject}؟'),
+      (re.compile(r'^(?:يستخدم|تستخدم|يستعمل|تستعمل)\s+'
+                  r'(?P<subject>[^.،؛؟:]{4,65}?)\s+'
+                  r'(?:في|من أجل|لـ)\s+(?P<answer>[^.،؛؟:]{12,110})',re.I),
+       'لأي غرض يستخدم {subject}؟'),
+      (re.compile(r'^(?P<subject>[\u0621-\u064a][\u0621-\u064a\s]{4,52})'
+                  r'\s*[:：]\s*(?P<answer>[^.،؛؟:]{18,110})',re.I),
+       'ما المقصود بـ {subject}؟')
+    ]
+    for page,raw in selected_book_pages(text):
+        for line in raw.splitlines():
+            line=clean_book_text(line)
+            if not 45<=len(line)<=260 or suspicious_book_text(line):
+                continue
+            for piece in re.split(r'(?<=[.؟!؛])\s+',line):
+                sentence=piece.strip()
+                if not 45<=len(sentence)<=230 or suspicious_book_text(sentence):
+                    continue
+                for pattern,template in patterns:
+                    matched=pattern.match(sentence)
+                    if not matched:continue
+                    subject=matched.group('subject').strip(' ،؛:.')
+                    answer=matched.group('answer').strip(' ،؛:.')
+                    if (len(subject)<4 or len(subject)>65 or
+                        len(answer)<12 or len(answer)>100 or
+                        suspicious_book_text(subject) or suspicious_book_text(answer)):
+                        continue
+                    question=template.format(subject=subject)
+                    sig=_plain(question)
+                    if sig in seen:continue
+                    seen.add(sig)
+                    output.append({
+                      'q':question,'a':answer,'g':'صفحة '+str(page),
+                      'sourcePage':page,'sourceQuote':sentence,
+                      'origin':'lesson_statement','questionType':'short',
+                      'difficulty':'easy','requiresReview':True,
+                      'reviewReason':'صياغة محلية من جملة الكتاب، راجع المعنى قبل اعتمادها.'
+                    })
+                    break
+                if len(output)>=maximum:return output
+    return output
+
+
 def _verified_local_rows(text,maximum):
     """Fail closed on corrupt Arabic OCR and on unsourced local answers.
 
@@ -414,6 +469,7 @@ def _verified_local_rows(text,maximum):
     """
     pages={p:_plain(raw) for p,raw in selected_book_pages(text)}
     pool=deterministic_draft(text,min(100,maximum*4))
+    pool.extend(_direct_lesson_sentence_draft(text,min(100,maximum*4)))
     accepted=[]
     seen=set()
     for row in pool:
@@ -445,10 +501,11 @@ def offline_generate(tid,data):
     text,count=source_selection(book,data.get('startPage'),data.get('endPage'),max_chars=400000)
     maximum=min(25,max(4,int(data.get('count') or 12)))
     rows,rejected=_verified_local_rows(text,maximum)
-    warning=('لم أجد أسئلة تعليمية موثوقة كافية في الصفحات المحددة. '
-             'قد يكون نص PDF مشوها بسبب الاستخراج أو تكون الصفحات ترويسات امتحان. '
-             'اختر صفحات درس واضحة، أو ارفع نسخة PDF نصية سليمة أو DOCX. '
-             'لن أملأ العدد بأسئلة عشوائية، ويمكنك كتابة الأسئلة يدويًا. '
+    warning=('لم يتمكن الاستخراج المحلي المحدود من تكوين أربعة أسئلة مباشرة من الجمل المختارة. '
+             'هذا لا يعني بالضرورة تلف الكتاب؛ تعطّل Google مؤقتًا، بينما الاستخراج المحلي '
+             'لا يفهم الدرس مثل الذكاء الاصطناعي. أعد تجربة TAG AI عند عودة الخدمة، '
+             'أو اختر صفحات تضم تعريفات وجمل شرح واضحة. '
+             'لن نُنشئ أسئلة معطوبة لإكمال العدد. '
              if len(rows)<4 else
              'استُخرج '+str(len(rows))+' سؤالًا بدليل نصي مباشر من الكتاب. '
              'راجع الإجابات وصفحات المصدر قبل اعتمادها. ')
@@ -582,11 +639,11 @@ def _local_ai_recovery(tid,data,requested,reason):
       'generatedCount':count,
       'count':count
     })
-    draft['warning']=(why+'. انتقل TAG LAB تلقائيًا إلى فحص الكتاب محليًا دون خصم محاولة TAG AI. '
-                      'لم يعد النظام ينشئ أسئلة «أكمل العبارة» من نصوص PDF العشوائية. '
-                      'هذه المقترحات ليست مولدة بالذكاء الاصطناعي، ولا تُنشر تلقائيًا. '
-                      'تم قبول '+str(count)+' من '+str(requested)+' أسئلة مطلوبة بعد فحص النصوص؛ '
-                      'الجودة أهم من إكمال العدد. '
+    draft['warning']=(why+'. تعذّر التوليد الذكي حاليًا بعد تجربة نماذج Google المجانية المتاحة. '
+                      'أنشأ TAG LAB '+str(count)+' مقترحات محلية فقط من الجمل الواضحة؛ '
+                      'هذا لا يعني أن الكتاب تالف، ولا تُنشر المقترحات تلقائيًا. '
+                      'لم تُخصم محاولة TAG AI. عند استقرار Google أعد التوليد الذكي '
+                      'للحصول على أسئلة متنوعة واختيار من متعدد. '
                       +(draft.get('warning') or ''))
     print('TAG LAB AI fallback to local book extraction: '+reason+
           '; generated='+str(count)+'; requested='+str(requested),flush=True)
