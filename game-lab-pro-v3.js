@@ -392,9 +392,11 @@ async function generate(){
   $('labBookApprove').disabled=!rows.length;
   const breakdown=rows.length
    ?'أُنشئت '+rows.length+' أسئلة: '+rows.filter(r=>r.questionType==='mcq').length+' اختيار، '+rows.filter(r=>r.questionType==='true_false').length+' صح أو خطأ، '+rows.filter(r=>r.questionType==='short').length+' فهم وإجابة قصيرة. راجع الخيارات والأدلة قبل الاعتماد.'
-   :'لم أجد أسئلة كافية وواضحة في الصفحات المحددة. جرّب صفحات أخرى أو وسّع النطاق بدل إنشاء أسئلة غير موثوقة.';
+   :(localFallback
+     ?'تعذّر التوليد لدى Google، ولم يجد المحرك المحلي جملًا يمكن تحويلها إلى أسئلة مباشرة. هذا لا يعني أن الكتاب تالف. فحص جودة الصفحات أعلاه يوضح صلاحية النص؛ جرّب TAG AI مجددًا عندما تستقر الخدمة.'
+     :'لم أجد أسئلة كافية من الصيغ المباشرة في الصفحات المحددة. جرّب صفحات شرح أخرى أو وسّع النطاق.');
   const needsReview=rows.filter(r=>r.requiresReview).length;
-  $('labBookSummary').textContent=(localFallback?'⚠️ انتقلت المنصة إلى الاستخراج المحلي من الكتاب لتعطل Google؛ المقترحات ليست مولدة بالذكاء الاصطناعي. ':'')+breakdown+
+  $('labBookSummary').textContent=(localFallback?'⚠️ تعذّر الاتصال بالنماذج المجانية المتاحة، والبديل الحالي استخراج نصي وليس ذكاءً اصطناعيًا. ':'')+breakdown+
    (needsReview?' ⚠️ '+needsReview+' أسئلة تحتاج مراجعة الإجابة قبل تحديد اعتمادها.':'');
   message('labBookStatus',response.warning||'راجع المقترحات قبل اعتمادها.',rows.length<4);
  }catch(e){failed('labBookStatus',e)}
