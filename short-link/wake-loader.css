@@ -18,3 +18,10 @@ h1{margin:0 0 12px;font-size:clamp(23px,4vw,29px);font-weight:900;line-height:1.
 [hidden]{display:none!important}
 @media(max-width:450px){.splash{padding:29px 19px}.splash-logo{width:min(225px,85%)}}
 @media(prefers-reduced-motion:reduce){.spinner{animation:none;border-top-color:#75eddb;border-right-color:#91d83b}}
+
+/* TAG V23 wake-screen alignment to official spatial palette. */
+body{background:radial-gradient(ellipse at 17% 20%,#166a7b55,transparent 42%),linear-gradient(155deg,#071b2c,#0d2d42 65%,#071b2c)}
+.splash{border-color:#6fd6c96a;background:linear-gradient(160deg,#144153ac,#0a2838e6)}
+.splash-logo{width:104px!important;height:104px!important;max-height:104px!important;object-fit:contain}
+.actions a,.actions button{border-color:#6dd8c87a;background:#124957}
+.actions button{background:linear-gradient(115deg,#137c83,#198a75)}
