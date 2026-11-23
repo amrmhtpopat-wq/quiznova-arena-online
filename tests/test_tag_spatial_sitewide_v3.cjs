@@ -8,12 +8,19 @@ const excluded=['champion.html','tag-lab-home.html','game-lab-preview.html'];
 const css=fs.readFileSync('tag-spatial-site-v3.css','utf8');
 const js=fs.readFileSync('tag-spatial-site-v3.js','utf8');
 const hub=fs.readFileSync('tag-spatial-home-v3.html','utf8');
+const direct=fs.readFileSync('tag-spatial-direct-v3.js','utf8');
+const directCss=fs.readFileSync('tag-spatial-direct-v3.css','utf8');
 assert.doesNotThrow(()=>new vm.Script(js));
 assert.ok(css.includes('body.tag-spatial-global'));
 assert.match(css,/@media print/);
 assert.match(css,/prefers-reduced-motion/);
-assert.match(js,/tag-spatial-v3-visibility/);
-assert.match(js,/e\.origin!==location\.origin/);
+assert.doesNotThrow(()=>new vm.Script(direct));
+assert.ok(!js.includes("createElement('iframe')"),'production theme must not create iframe');
+assert.ok(!direct.includes("createElement('iframe')"),'dashboard must mount DOM directly');
+assert.match(directCss,/@scope \(\.tag-spatial-home3\)/);
+assert.ok(direct.includes("getContext('webgl'"),'approved WebGL scene missing');
+assert.ok(direct.includes("className='tag-spatial-home3'"),'direct mount missing');
+assert.ok(direct.includes("new MutationObserver(mount)"),'auth-wall mount missing');
 assert.match(js,/if\(excluded\.test\(here\)/);
 assert.ok(!js.includes('localStorage.clear()'));
 assert.ok(!js.includes('deleteStudent'));
@@ -35,10 +42,11 @@ for(const part of ['data-tool="create"','data-tool="ai"','data-tool="library"','
  'data-tool="cards"','data-tool="live"','data-tool="champ"','data-tool="results"','data-tool="settings"']){
  assert.ok(hub.includes(part),'missing teacher tool '+part);
 }
-assert.ok(hub.includes('tag-spatial-v3-size'),'iframe size bridge absent');
-assert.ok(hub.includes('tag-spatial-v3-paused'),'GPU pause guard absent');
+assert.ok(fs.readFileSync('index.html','utf8').includes('/tag-spatial-direct-v3.js?v=3'),'portal script missing');
+assert.ok(fs.readFileSync('index.html','utf8').includes('/tag-spatial-direct-v3.css?v=3'),'portal CSS missing');
+assert.ok(direct.includes('data-tool='),'dashboard action markup missing');
 assert.ok(hub.includes('location.origin'),'same origin links absent');
 assert.ok(hub.includes('tag-spatial-identity-v3.webp'),'new logo path not in prototype');
 assert.ok(fs.readFileSync('portal.js','utf8').includes('function go(name)'));
 assert.ok(fs.readFileSync('app.js','utf8').includes('function go(view'));
-console.log('PASS TAG Spatial V3: 7 themed pages, 9 destinations, safe iframe integration, QA exclusions, original app handlers.');
+console.log('PASS TAG Spatial V3: 7 themed pages, 9 destinations, direct 3D DOM integration, QA exclusions, original app handlers.');
