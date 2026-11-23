@@ -1,4 +1,4 @@
-"""Mobile V2 structural regression: all site pages receive responsive styles and PWA lab handoff."""
+"""Mobile V2 structural regression: all site pages receive responsive styles and same-window PWA LAB navigation."""
 import os
 import sys
 import json
@@ -42,12 +42,13 @@ class AllPagesMobileContract(unittest.TestCase):
     status,text=fetch('/'+path)
     self.assertEqual(status,200)
     self.assertIn('tag-mobile-v2.css?v=',text)
-    self.assertIn('tag-app-bridge-v2.js?v=2',text)
+    self.assertIn('tag-app-bridge-v2.js?v=26.0',text)
     self.assertIn('name="viewport"',text)
 
- def test_pwa_home_uses_browser_bridge_without_changing_url(self):
+ def test_pwa_home_opens_lab_in_same_window(self):
   _,page=fetch('/app.html')
-  self.assertIn('data-tag-lab-entry="external"',page)
+  self.assertIn('data-tag-lab-entry="internal"',page)
+  self.assertNotIn('data-tag-external-browser="true"',page)
   self.assertIn('href="/tag-lab-home.html?v=34"',page)
   self.assertIn('href="/student.html"',page)
   self.assertIn('href="/?teacher=1"',page)
@@ -84,13 +85,12 @@ class AllPagesMobileContract(unittest.TestCase):
   self.assertIn('tag-teacher-menu-open>nav',css)
   self.assertIn('display:none!important',css)
 
- def test_browser_externalization_only_when_standalone(self):
-  _,script=fetch('/tag-app-bridge-v2.js?v=2')
-  self.assertIn("if(!standalone())return",script)
-  self.assertIn("a.target='_blank'",script)
-  self.assertIn("a.rel='noopener noreferrer external'",script)
-  self.assertIn('directEntryFallback',script)
-  self.assertIn("u.origin===location.origin",script)
+ def test_browser_same_window_lab_navigation(self):
+  _,script=fetch('/tag-app-bridge-v2.js?v=26.0')
+  self.assertIn("anchor.removeAttribute('target')",script)
+  self.assertIn('firstPartyLab',script)
+  self.assertNotIn("a.target='_blank'",script)
+  self.assertNotIn('directEntryFallback',script)
   self.assertNotIn('localStorage.setItem',script)
   self.assertNotIn('sessionStorage.setItem',script)
 
