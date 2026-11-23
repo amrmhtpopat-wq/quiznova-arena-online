@@ -176,3 +176,27 @@
  .herosub{font-size:12px;line-height:1.9}
  .scene{height:205px!important}
 }
+
+/* Secondary teacher actions remain available without another bulky tile row. */
+.tag-v3-aux{
+ display:flex;align-items:center;flex-wrap:wrap;gap:9px;
+ padding:18px 0 5px;margin-top:11px;
+ border-top:1px solid #4d83905a;max-width:100%;
+}
+.tag-v3-aux-caption{
+ color:#84dcd2;letter-spacing:.3px;font:600 12px/1.5 "IBM Plex Sans Arabic",sans-serif;
+ margin-inline-end:6px;
+}
+.tag-v3-aux button{
+ border-radius:10px;border:1px solid #537d8a73;background:#0d2e41;
+ color:#bcdfe2;display:inline-flex;align-items:center;gap:6px;
+ padding:8px 14px;font-size:12px;line-height:1.5;cursor:pointer;
+ transition:background .2s ease,border-color .2s ease,color .2s ease;
+}
+.tag-v3-aux button:hover,.tag-v3-aux button:focus-visible{
+ background:#1d5260;border-color:#87dcd3;color:#f2fdf7;
+}
+@media(max-width:440px){
+ .tag-v3-aux{gap:7px}
+ .tag-v3-aux button{padding:8px 10px;font-size:11px}
+}
