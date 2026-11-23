@@ -1,5 +1,5 @@
 """TAG V27 release: safe source wiring, scoreboard, character assets and branded wake paths."""
-import subprocess,unittest
+import subprocess,unittest,json
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 read=lambda name:(ROOT/name).read_text(encoding='utf-8')
@@ -56,4 +56,7 @@ class ShowTimeRelease(unittest.TestCase):
   self.assertNotIn('href="https://quiznova-arena-online.onrender.com',home)
   self.assertFalse((out/'student.html').exists())
   self.assertTrue((out/'assets/brand/tag-favicon-v24.png').is_file())
+  branded=json.loads((out/'manifest.webmanifest').read_text(encoding='utf8'))
+  self.assertEqual(branded['start_url'],'/app/')
+  self.assertEqual(branded['id'],'/app.html')
 if __name__=='__main__':unittest.main()
