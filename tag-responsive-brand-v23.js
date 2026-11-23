@@ -2,7 +2,7 @@
 (()=>{'use strict';
 const name=(location.pathname.split('/').pop()||'index.html').toLowerCase();
 if(/^(tag-lab|game-lab|tag-independent)/.test(name))return;
-const ROOT='/?teacher=1';
+const ROOT=location.hostname==='teachgame.onrender.com'?'/portal.html?teacher=1':'/?teacher=1';
 function installBack(){
  if(document.querySelector('.tag23-back'))return;
  if(name==='index.html'&&!location.search&&!location.hash)return;

@@ -1,0 +1,22 @@
+name: TAG V26 TeachGame Unified Host Gateway (Safe Plan)
+on:
+  push:
+    branches: [tag-unified-domain-proxy-v26, main]
+    paths:
+      - 'tools/build_teachgame_unified.py'
+      - 'deploy/teachgame-unified.render.yaml'
+      - 'tests/test_tag_unified_gateway_v26.py'
+      - '.github/workflows/tag-v26-unified-gateway.yml'
+permissions: {contents: read}
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: Build and verify first-party TAG gateway
+        run: python -m unittest discover -s tests -p 'test_tag_unified_gateway_v26.py' -v
+      - name: Ensure old functional endpoints stay in backend
+        run: |
+          test -f server.py && test -f portal.js && test -f tag-lab-home.html
