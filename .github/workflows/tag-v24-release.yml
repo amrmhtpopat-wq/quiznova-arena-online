@@ -41,12 +41,16 @@ jobs:
           python -m playwright install chromium
       - name: Brand, Google PNG icon and responsive static tests
         run: python -m unittest discover -s tests -p 'test_tag_v24_brand_readability.py' -v
+      - name: Installed app and public icon contract
+        run: python -m unittest discover -s tests -p 'test_tag_pwa_v1.py' -v
       - name: Brand SEO regression
         run: python -m unittest discover -s tests -p 'test_tag_brand_seo_v2.py' -v
       - name: Existing static public landing
         run: python -m unittest discover -s tests -p 'test_tag_static_seo_landing_v19.py' -v
       - name: Responsive book and bank real browser QA
         run: python -u tests/browser_tag_v24_readability.py
+      - name: Contrast regression with redesigned dark bank cards
+        run: python -u tests/browser_contrast_v109.py
       - name: Actual book extraction and edit workflow regression
         run: python -u tests/browser_tag_studio_book_ai_v1.py
       - name: Preserve teacher-scoped subject and grade bank filters
