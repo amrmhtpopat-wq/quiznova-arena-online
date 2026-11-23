@@ -2,6 +2,10 @@ window.TAGSpatialNativeInit=function(shadow,host){
 'use strict';
 'use strict';
  const base=location.origin;
+ if(location.hostname==='teachgame.onrender.com'){
+  const brand=shadow.querySelector('.header .brand');
+  if(brand)brand.setAttribute('href','/portal.html?teacher=1');
+ }
  const official=shadow.getElementById('tag-v3-officialLogo');official.addEventListener('load',()=>{if(official.naturalWidth>0){official.hidden=false;shadow.querySelector('#tag-v3-fallbackBrand .brandmark').style.display='none'}});if(official.complete&&official.naturalWidth>0){official.hidden=false;shadow.querySelector('#tag-v3-fallbackBrand .brandmark').style.display='none'}
  const items={
  create:{title:'إنشاء اختبار',tag:'CREATE / 01',icon:'create',link:base+'/studio.html#builder',text:'مساحة تحرير الأسئلة اليدوية، إضافة الخيارات والصور، ومراجعة كل سؤال قبل حفظ الاختبار.'},
