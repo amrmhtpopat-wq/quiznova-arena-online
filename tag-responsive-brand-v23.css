@@ -19,8 +19,8 @@ body.champion-portal .brand-img{width:clamp(130px,17vw,225px);height:auto;max-he
 body.champion-portal .top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 body.champion-portal .head-actions{display:flex;flex-wrap:wrap;gap:8px}
 @media(max-width:768px){
- body.tag-spatial-global :is(.wrap,.container,.workspace,.page-hero),body.champion-portal .wrap{width:min(100%,100vw)!important;max-width:100%!important;min-width:0!important;padding-inline:clamp(10px,3vw,20px);box-sizing:border-box}
- body.tag-spatial-global :is(.grid,.cards-board),body.champion-portal :is(.form-grid,.wc-worldcup-stats){min-width:0;max-width:100%}
+ body.tag-spatial-global :is(.wrap,.container,.page-hero),body.champion-portal .wrap{width:min(100%,100vw)!important;max-width:100%!important;min-width:0!important;padding-inline:clamp(10px,3vw,20px);box-sizing:border-box}
+ body.v105-portal #workspace:has(#panel-home.active){padding-inline:0!important}\n body.v105-portal #workspace:has(#panel-home.active)>.main{width:100%!important;max-width:100%!important;margin-inline:0!important;padding-inline:0!important}\n body.tag-spatial-global :is(.grid,.cards-board),body.champion-portal :is(.form-grid,.wc-worldcup-stats){min-width:0;max-width:100%}
  body.champion-portal .head-actions{width:100%;overflow-x:auto;flex-wrap:nowrap;padding-block:6px}
  body.champion-portal .head-actions a{flex-shrink:0}
  body.champion-portal .wc-worldcup-hero{grid-template-columns:minmax(0,1fr)!important}
