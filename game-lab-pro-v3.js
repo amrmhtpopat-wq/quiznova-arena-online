@@ -34,7 +34,7 @@ const errors={
  ai_access_denied:'Google رفض الوصول للمشروع (403). راجع حالة Free Tier وصلاحية المشروع والمفتاح في Google AI Studio (مزود TAG AI).',
  ai_network_error:'تعذر الاتصال بخوادم Google من Render. تأكد من أن خوادم Google متاحة وحاول مجددًا.',
  ai_timeout:'انتهت مهلة اتصال TAG AI المجاني. جرّب تحديد صفحات أقل ثم أعد المحاولة.',
- ai_provider_overloaded:'Google مشغول مؤقتًا (503). جرّب TAG AI النموذج المجاني البديل أيضًا ولم تنجح المحاولة. لم يُفقد كتابك؛ أعد التوليد لاحقًا أو استخدم التوليد المحلي.',
+ ai_provider_overloaded:'خدمة Google مشغولة حاليًا (503). وإذا تعذّر التوليد ستقدّم المنصة أسئلة محلية مستخرجة من الكتاب لمراجعتها.',
  ai_provider_unavailable:'تعذر الاتصال بمزوّد TAG AI الخارجي حاليًا. احتفظ بكتابك وأسئلتك، وجرّب مجددًا لاحقًا أو استخدم التوليد المحلي.',
  ai_invalid_response:'لم يُرجع النموذج أسئلة صالحة. أعد المحاولة.',
  publish_first:'انشر النشاط أولًا ثم أضفه إلى بطاقات الطلاب.',
@@ -339,11 +339,13 @@ async function generate(){
   params.consent=mode==='ai'&&$('labAiConsent').checked;
   const response=await request('/api/game-lab/pro/books/'+(mode==='ai'?'ai':'draft'),params);
   const rows=Array.isArray(response.rows)?response.rows:[];
+  const localFallback=response.fallbackFrom==='ai';
   renderBookReview(rows);
   $('labBookApprove').disabled=!rows.length;
-  $('labBookSummary').textContent=rows.length
+  const breakdown=rows.length
    ?'أُنشئت '+rows.length+' أسئلة: '+rows.filter(r=>r.questionType==='mcq').length+' اختيار، '+rows.filter(r=>r.questionType==='true_false').length+' صح أو خطأ، '+rows.filter(r=>r.questionType==='short').length+' فهم وإجابة قصيرة. راجع الخيارات والأدلة قبل الاعتماد.'
    :'لم أجد أسئلة كافية وواضحة في الصفحات المحددة. جرّب صفحات أخرى أو وسّع النطاق بدل إنشاء أسئلة غير موثوقة.';
+  $('labBookSummary').textContent=(localFallback?'⚠️ انتقلت المنصة إلى الاستخراج المحلي من الكتاب لتعطل Google؛ المقترحات ليست مولدة بالذكاء الاصطناعي. ':'')+breakdown;
   message('labBookStatus',response.warning||'راجع المقترحات قبل اعتمادها.',rows.length<4);
  }catch(e){failed('labBookStatus',e)}
  finally{button.disabled=false}
