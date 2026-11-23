@@ -256,3 +256,95 @@ body.tag-spatial-global .tag-spatial-page-note{font-size:12px;color:#91bccc}
  }
  body.tag-spatial-global .tag-spatial-host{display:none!important}
 }
+
+
+/* Screen-specific adaptations keep original functionality and students' color-coded answers. */
+body.tag-spatial-global .authwall{
+ background:radial-gradient(ellipse at 15% 18%,#23748736,transparent 60%),#071b2c!important;
+}
+body.tag-spatial-global .authwall .auth-hero,
+body.tag-spatial-global .authwall .auth-brand,
+body.tag-spatial-global .authwall .auth-copy{color:#edf8f5!important}
+body.tag-spatial-global .authwall .auth-hero h1,
+body.tag-spatial-global .authwall .auth-hero h2{color:#f4fff8!important}
+body.tag-spatial-global .authwall .auth-hero h1 span{color:#83e6da!important}
+body.tag-spatial-global .authwall .auth-icons > *{
+ background:#164459!important;border:1px solid #69c4ca55!important;color:#e2f7f3!important;
+}
+body.tag-spatial-global.v105-student .student-shell{
+ color:#f2fbf7!important;background:transparent!important;
+}
+body.tag-spatial-global.v105-student :where(.student-brand,.bo-student-modes,.join-card,.question-card,.round-screen,.question-inner,.waiting-next,.game-top,.game-panel,.leaderboard,.end-screen,.finish-card,.bo-card-quizzes){
+ background:linear-gradient(145deg,#143d52,#0c2c3f 85%)!important;
+ color:#f0faf6!important;border-color:#6595a263!important;
+ box-shadow:0 10px 36px #0004!important;
+}
+body.tag-spatial-global.v105-student .join-visual{background:linear-gradient(135deg,#145568,#0a2d45)!important}
+body.tag-spatial-global.v105-student .join-card :where(h1,h2,h3,p,label),
+body.tag-spatial-global.v105-student .question-card :where(h1,h2,h3,p),
+body.tag-spatial-global.v105-student .game-panel :where(h1,h2,h3,p){color:#e8f7f4!important}
+body.tag-spatial-global.v105-student :where(.player-pill,.team-pill,.score-pill,.streak-pill,.avatar-picker,.join-features span,.bo-student-modes button){
+ background:#123d52!important;color:#e6f7f2!important;border-color:#699da66b!important;
+}
+body.tag-spatial-global.v105-student .bo-student-modes button.is-active{
+ background:#a9ebdb!important;color:#062e3e!important;
+}
+body.tag-spatial-global.v105-student .answer{
+ /* Red / blue / gold / green are deliberate identifiers and must not be replaced */
+ color:white!important;border-radius:16px!important;
+}
+body.tag-spatial-global.v105-student .answer:nth-child(4n+3){color:#112b3b!important}
+body.tag-spatial-global.v105-student .question-card .timer{color:white!important}
+body.tag-spatial-global.v105-student .waiting-next{color:#d4f5ec!important}
+body.tag-spatial-global.v105-stage{background:#071b2c!important;color:#effcf7!important}
+body.tag-spatial-global.v105-stage :where(.loading,.stage-shell,.stage-header,.stage-panel){color:#edfff8!important}
+body.tag-spatial-global .page-shell,
+body.tag-spatial-global .page,
+body.tag-spatial-global .wrap{color:#edf8f5}
+body.tag-spatial-global .page-shell .site-header,
+body.tag-spatial-global .page .top{
+ background:#0c2d42de!important;border-color:#629bb05a!important;
+ box-shadow:0 12px 36px #0004!important;
+}
+body.tag-spatial-global .feature-card,
+body.tag-spatial-global .step-card,
+body.tag-spatial-global .use-card,
+body.tag-spatial-global .entry,
+body.tag-spatial-global .install-guide,
+body.tag-spatial-global .tip,
+body.tag-spatial-global .grid > article,
+body.tag-spatial-global .grid > div{
+ background:linear-gradient(140deg,#173e52,#0e2a3f)!important;
+ color:#ecf9f4!important;border-color:#5a8a996b!important;
+ box-shadow:0 7px 0 #03182992,0 19px 41px #0003!important;
+ border-radius:18px!important;
+}
+body.tag-spatial-global :where(.feature-card,.step-card,.use-card,.entry):hover{
+ border-color:#8aebe3aa!important;transform:translateY(-3px);
+}
+body.tag-spatial-global .section-head h2,
+body.tag-spatial-global .feature-card h3,
+body.tag-spatial-global .step-card h3,
+body.tag-spatial-global .entry b,
+body.tag-spatial-global .entry strong{color:#effcf8!important}
+body.tag-spatial-global .feature-card p,
+body.tag-spatial-global .step-card p,
+body.tag-spatial-global .entry .desc,
+body.tag-spatial-global .lead{color:#bdd5dc!important}
+body.tag-spatial-global .button-primary,
+body.tag-spatial-global .install-btn,
+body.tag-spatial-global .nav-cta{
+ background:#a4eadc!important;color:#082f40!important;border-color:#bbfff0!important;
+}
+body.tag-spatial-global .button-glass,
+body.tag-spatial-global .outline-btn{
+ background:#153e54!important;color:#e7f9f5!important;border-color:#5e9eaf!important;
+}
+body.tag-spatial-global footer,.tag-spatial-global .footer{
+ color:#a9c9ce!important;border-color:#6cabbb55!important;
+}
+@media(prefers-reduced-motion:reduce){
+ body.tag-spatial-global .answer,body.tag-spatial-global .feature-card,body.tag-spatial-global .entry{
+  animation:none!important;transition:none!important
+ }
+}
