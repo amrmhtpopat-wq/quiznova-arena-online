@@ -66,16 +66,26 @@ with sync_playwright() as pw:
   page.wait_for_function("document.querySelector('.tag27-place-3')?.classList.contains('tag27-entered')",timeout=3000)
   page.wait_for_function("document.querySelector('.tag27-place-2')?.classList.contains('tag27-entered')",timeout=5000)
   page.wait_for_function("document.querySelector('.tag27-place-1')?.classList.contains('tag27-entered')",timeout=7500)
-  # CSS entry animation takes 1.05s after the entered class is set.
-  # Waiting only for the class captures a blank center podium mid-transition.
-  page.wait_for_function("""() => {
-    const hero=document.querySelector('.tag27-place-1');
-    if(!hero)return false;
-    const r=hero.getBoundingClientRect();
-    const style=getComputedStyle(hero);
-    return +style.opacity>0.98 && r.top>=0 && r.bottom<=innerHeight+2 &&
-           r.width>70 && r.height>100;
-  }""",timeout=4500)
+  # Wait for the entrance to visibly finish before checking the actual
+  # character/avatar and taking screenshots. Log bounds for a real 390px
+  # phone and 1366px classroom projector — not just a CSS class.
+  page.wait_for_timeout(1600)
+  geo=page.evaluate("""() => {
+    const nodes=['.tag27-place-1','.tag27-place-1 .tag27-figure',
+      '.tag27-place-1 .tag27-podium-name','.tag27-place-1 .tag27-stand',
+      '.tag27-final-footer'];
+    const geom=s=>{const n=document.querySelector(s);
+      if(!n)return null;const r=n.getBoundingClientRect();
+      return {top:r.top,bottom:r.bottom,left:r.left,right:r.right,
+              opacity:getComputedStyle(n).opacity,visible:r.bottom>0&&r.top<innerHeight}};
+    return {h:innerHeight,w:innerWidth,parts:Object.fromEntries(nodes.map(x=>[x,geom(x)]))};
+  }""")
+  print('TAG27_VISIBLE_FINAL_PODIUM',width,json.dumps(geo,ensure_ascii=False),flush=True)
+  page.screenshot(path=str(outdir/f'podium-{width}.png'),full_page=False)
+  gold=geo['parts']['.tag27-place-1']
+  figure=geo['parts']['.tag27-place-1 .tag27-figure']
+  assert float(gold['opacity'])>0.98,('Gold card did not enter',width,geo)
+  assert figure['visible'] and figure['top']>=0 and figure['bottom']<=height+3,('Gold character clipped',width,geo)
   assert page.locator('.tag27-place-1 .tag27-podium-name').inner_text()=='ليان'
   assert page.locator('.tag27-place-1 img').evaluate("(el)=>el.complete && el.naturalWidth>0")
   assert page.locator('#tag27Announcement').inner_text().find('بطل TAG')>=0
