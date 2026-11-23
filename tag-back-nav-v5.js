@@ -44,10 +44,10 @@
   else if(file==='app.html')dest=document.querySelector('header.top');
   else if(file==='about.html')dest=document.querySelector('header nav');
   else if(file==='for-teachers.html')dest=document.querySelector('header.site-header .nav-wrap');
-  else if(file==='tag-lab-home.html')dest=document.querySelector('header .wrap');
-  else if(file.startsWith('game-lab-'))dest=document.querySelector('header .actions,header nav,header.bar,header.topbar,header.header,header.top');
+  // TAG LAB/game pages have responsive sliding menu rails. A header child
+  // can end up translated outside the viewport; keep back fixed in the safe area.
+  else if(file.startsWith('tag-lab-')||file.startsWith('game-lab-'))dest=null;
   else if(file==='tag-spatial-home-v3.html')dest=document.querySelector('header.header .header-actions');
-  else if(file.startsWith('tag-lab-'))dest=document.querySelector('header .wrap,header nav');
   else if(file==='admin.html')dest=null; // login-visible back control, retained after authentication
   // An app can render a toolbar inside a hidden authenticated panel.
   // In that case keep the back control visible on its public sign-in screen.
