@@ -247,3 +247,59 @@ body.v105-stage .tag27-results .bo-stage-next-control{
  body.v105-stage .tag27-results .tag27-position{width:clamp(26px,4vh,34px);height:clamp(26px,4vh,34px);flex-basis:clamp(26px,4vh,34px);font-size:clamp(14px,2.1vh,19px)}
  body.v105-stage .tag27-results .tag27-rank-heading{margin-bottom:3px}
 }
+
+/* TAG V27.3 pre-class projector polish: full winner podium AND the replay
+   controls must fit in one 720–900px-high presentation screen. CSS only. */
+@media (min-width:700px) and (max-height:950px){
+ body.v105-stage .tag27-final{
+  justify-content:space-between!important;
+  gap:clamp(3px,.65vh,8px)!important;
+  padding:clamp(2px,.5vh,6px) 5px clamp(6px,1vh,12px)!important;
+  height:100%!important;min-height:0!important;
+ }
+ body.v105-stage .tag27-final-head h1{
+  font-size:clamp(27px,3.4vw,45px)!important;
+  line-height:1.16!important;margin:1px 0!important
+ }
+ body.v105-stage .tag27-final-head p{margin:1px 0!important;font-size:clamp(13px,1.5vw,19px)}
+ body.v105-stage .tag27-podium{
+  padding-top:0!important;min-height:0!important;
+  height:auto!important;max-height:calc(100% - 125px)!important;
+  flex:1 1 auto!important;
+  align-items:end!important;
+ }
+ body.v105-stage .tag27-figure{
+  height:clamp(128px,22vh,185px)!important
+ }
+ body.v105-stage .tag27-head{
+  width:clamp(56px,7vh,77px)!important;
+  height:clamp(56px,7vh,77px)!important
+ }
+ body.v105-stage .tag27-body{
+  width:clamp(64px,11vh,94px)!important;
+  height:clamp(69px,11vh,94px)!important
+ }
+ body.v105-stage .tag27-podium-name{
+  margin-top:clamp(8px,1.2vh,13px)!important;
+  font-size:clamp(15px,1.55vw,21px)!important
+ }
+ body.v105-stage .tag27-points{
+  font-size:clamp(13px,1.5vw,18px)!important;
+  margin-bottom:4px!important
+ }
+ body.v105-stage .tag27-stand{
+  height:clamp(62px,9vh,82px)!important
+ }
+ body.v105-stage .tag27-place-2 .tag27-stand{
+  height:clamp(76px,11vh,95px)!important
+ }
+ body.v105-stage .tag27-place-1 .tag27-stand{
+  height:clamp(95px,13vh,118px)!important
+ }
+ body.v105-stage .tag27-final-footer{
+  display:flex!important;position:relative!important;z-index:20!important;
+  flex:0 0 auto!important;max-height:70px!important;
+  margin-top:0!important;padding:4px 8px!important;
+  background:#0a2b42a8;border-radius:14px
+ }
+}
