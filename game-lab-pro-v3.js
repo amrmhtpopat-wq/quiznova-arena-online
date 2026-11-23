@@ -201,7 +201,8 @@ function requestDraft(){
    endPage:Number($('labBookEnd').value)||1,
    count:Number($('labBookCount').value)||12,
    subject:$('subject').value,grade:$('grade').value,
-   difficulty:$('labAiDifficulty').value,focus:$('labAiFocus').value}
+   difficulty:$('labAiDifficulty').value,focus:$('labAiFocus').value,
+   topic:$('labAiTopic').value.trim(),questionBalance:$('labAiQuestionBalance').value}
 }
 function clearBookReview(){
  if($('labBookSourceQuality'))$('labBookSourceQuality').textContent='';
