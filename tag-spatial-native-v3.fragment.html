@@ -1,0 +1,114 @@
+<div class="background" aria-hidden="true"></div><div class="progressbar" id="tag-v3-progressbar"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="tag-v3-icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m16.2 16.2 4.2 4.2"/></symbol>
+<symbol id="tag-v3-icon-settings" viewBox="0 0 24 24"><path d="M12 3.5l2 .6.7 2.2 2.3 1 2.1-1 2.3 2.3-1 2.1 1 2.3 2.2.7v3.2l-2.2.7-1 2.3 1 2.1-2.3 2.3-2.1-1-2.3 1-.7 2.2h-3.2l-.7-2.2-2.3-1-2.1 1-2.3-2.3 1-2.1-1-2.3-2.2-.7v-3.2l2.2-.7 1-2.3-1-2.1L6 6.3l2.1 1 2.3-1 .7-2.2Z" transform="translate(0 -2) scale(.98)"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="tag-v3-icon-create" viewBox="0 0 24 24"><path d="M12 20h9M3 18l.2 3.2L7 21l12-12-3.6-3.5L3 18Z"/><path d="m13.6 7.2 3.6 3.5M4 4h8"/></symbol>
+<symbol id="tag-v3-icon-ai" viewBox="0 0 24 24"><path d="m12 1.8 2.2 7.4L21.5 12l-7.3 2.4L12 22l-2.4-7.6L2.5 12l7.1-2.8L12 1.8ZM19.4 2l.8 2.3L22.6 5l-2.4.8-.8 2.3-.8-2.3-2.4-.8 2.4-.7.8-2.3Z"/></symbol>
+<symbol id="tag-v3-icon-library" viewBox="0 0 24 24"><path d="M4 3h5v18H4zM10 5h5v16h-5zM16 2l5 1v18l-5-1z"/><path d="M5 8h3M11 12h3M17 8h3"/></symbol>
+<symbol id="tag-v3-icon-lab" viewBox="0 0 24 24"><path d="M9 2v6l-5.4 9.1A3.3 3.3 0 0 0 6.5 22h11a3.3 3.3 0 0 0 2.9-4.9L15 8V2M7 2h10M6 15h12"/><path d="M11 18h.1M15 17h.1"/></symbol>
+<symbol id="tag-v3-icon-card" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="3"/><rect x="5" y="7" width="6" height="6" rx="1"/><path d="M14 8h5M14 11h5M5 16h14"/></symbol>
+<symbol id="tag-v3-icon-live" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="15" rx="2"/><path d="M8 22h8M12 18v4M9.5 7l6 3.7-6 3.5V7Z"/></symbol>
+<symbol id="tag-v3-icon-trophy" viewBox="0 0 24 24"><path d="M7 3h10v6c0 4-2 6-5 6s-5-2-5-6V3ZM7 5H3v3c0 2 2 4 5 4M17 5h4v3c0 2-2 4-5 4M12 15v4M8 21h8M10 19h4"/></symbol>
+<symbol id="tag-v3-icon-chart" viewBox="0 0 24 24"><path d="M3 3v18h18M5 15l5-5 4 3 6-8"/><path d="M16 5h4v4"/></symbol>
+<symbol id="tag-v3-icon-sound" viewBox="0 0 24 24"><path d="M4 10h4l5-4v12l-5-4H4zM16 9a5 5 0 0 1 0 6M19 6a9 9 0 0 1 0 12"/></symbol>
+<symbol id="tag-v3-icon-3d" viewBox="0 0 24 24"><path d="m12 2 9 5-9 5-9-5 9-5ZM3 7v10l9 5 9-5V7M12 12v10"/></symbol>
+<symbol id="tag-v3-icon-chevron" viewBox="0 0 24 24"><path d="M18 12H6m6-6-6 6 6 6"/></symbol>
+</defs></svg>
+<div class="shell">
+<header class="header">
+ <a class="brand" href="/" aria-label="TAG الرئيسية"><img id="tag-v3-officialLogo" src="/assets/brand/tag-spatial-identity-v3.webp" width="86" height="86" alt="شعار TAG الجديد" hidden style="max-width:86px;height:auto;max-height:86px;object-fit:contain"><span id="tag-v3-fallbackBrand" style="display:contents"><span class="brandmark">TAG</span><span class="brandcopy"><strong>TEACH AND GAME</strong><small>تعلّم · تحدَّ · تفوّق</small></span></span></a>
+ <div class="head-center"><span class="statusdot"></span><span>TAG / THE TEACHER ATELIER</span></div>
+ <div class="header-actions">
+  <button class="action" id="tag-v3-searchBtn" title="ابحث عن أداة — Ctrl+K" aria-label="البحث عن أداة"><svg fill="none" stroke="currentColor" stroke-width="1.7"><use href="#tag-v3-icon-search"/></svg><span>بحث</span></button>
+  <button class="action" id="tag-v3-motionBtn" title="إيقاف أو تشغيل تأثيرات الحركة" aria-pressed="true"><svg fill="none" stroke="currentColor" stroke-width="1.7"><use href="#tag-v3-icon-3d"/></svg><span>3D فعّال</span></button>
+  <button class="action" id="tag-v3-settingsBtn" title="الإعدادات"><svg fill="none" stroke="currentColor" stroke-width="1.7"><use href="#tag-v3-icon-settings"/></svg><span>الإعدادات</span></button>
+  <span class="userround" aria-label="حساب المعلم"><svg fill="none" stroke="currentColor" stroke-width="1.5" width="21" height="21" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-6 16-6 16 0"/></svg></span>
+ </div>
+</header>
+<main id="tag-v3-top">
+<section class="hero">
+ <div class="hero-copy">
+  <div class="eyebrow">TAG / WORKSPACE 01</div>
+  <h1>حصّتك القادمة<br><em>تبدأ من هنا.</em></h1>
+  <p class="herosub">صمّم، جرّب، وتحدَّ طلابك. أدواتك كلها في مساحة عمل واحدة، تتحرك معك بدل أن تبحث عنها بين القوائم.</p>
+  <div class="hero-ctas"><button class="primary" data-tool="create"><span>أنشئ اختبارًا</span><span class="arrow">←</span></button><button class="ghost" id="tag-v3-exploreBtn"><span>استكشف الأدوات</span><span class="arrow">↙</span></button></div>
+  <div class="microcopy"><span class="line"></span><span>حرّك المؤشر فوق مساحة العمل — كل أداة تستجيب لك</span></div>
+ </div>
+ <div class="scene" id="tag-v3-scene" aria-label="مجسم TAG ثلاثي الأبعاد متحرك">
+  <canvas class="webgl" id="tag-v3-webgl" width="550" height="360" aria-hidden="true"></canvas>
+  <div class="scene-center"><div class="scene-core"><span>TAG</span></div></div>
+  <div class="scene-label one"><i></i><span>CREATE</span></div>
+  <div class="scene-label two"><i></i><span>PLAY</span></div>
+  <div class="scene-label three"><i></i><span>GROW</span></div>
+ </div>
+</section>
+<section class="workspace" id="tag-v3-workspace" aria-labelledby="tag-v3-workspaceTitle">
+ <div class="workspace-head">
+  <div><div class="caption">THE WORKSHOP / NINE INSTRUMENTS</div><h2 id="tag-v3-workspaceTitle">أدواتك، لكل أداة شخصيتها.</h2></div>
+  <div class="filters" role="group" aria-label="تصفية أدوات المعلم"><button class="filter active" data-filter="all" aria-pressed="true">كل الأدوات</button><button class="filter" data-filter="prepare" aria-pressed="false">التحضير</button><button class="filter" data-filter="challenge" aria-pressed="false">التحدي</button><button class="filter" data-filter="track" aria-pressed="false">المتابعة</button></div>
+ </div>
+ <div class="workspace-topline"><div class="steps"><span><strong class="stepno">01</strong>تحضير</span><span class="stepsep"></span><span><strong class="stepno">02</strong>تحدي</span><span class="stepsep"></span><span><strong class="stepno">03</strong>متابعة</span></div></div>
+ <div class="tools" id="tag-v3-tools" aria-label="مساحات عمل المعلم">
+ <button class="tool tool-create" data-tool="create" data-cat="prepare" aria-label="إنشاء اختبار: فتح التفاصيل">
+  <span class="tile-number">01 / CREATE</span><span class="tile-kicker">DESIGN STUDIO</span>
+  <span class="tile-visual" aria-hidden="true"><span class="folio-shadow"></span><span class="folio-page"></span><span class="folio-tab"></span><span class="folio-pencil"></span></span>
+  <span class="tile-content"><h3>إنشاء اختبار</h3><p>ابدأ بفكرة. حوّلها إلى اختبار يعكس أسلوبك في التدريس.</p></span>
+  <span class="tile-foot">افتح مساحة الإنشاء <span class="go">←</span></span>
+ </button>
+ <button class="tool tool-ai" data-tool="ai" data-cat="prepare" aria-label="المولّد الذكي: فتح التفاصيل">
+  <span class="tile-number">02 / AI</span><span class="tile-kicker">INTELLIGENCE</span>
+  <span class="tile-content"><h3>المولّد الذكي</h3><p>من درس في كتابك إلى أسئلة قابلة للتعديل.</p></span>
+  <span class="tile-visual" aria-hidden="true"><span class="ai-orbit"></span><span class="ai-orbit o2"></span><span class="ai-gem"></span></span>
+  <span class="tile-foot">TAG AI <span class="go">←</span></span>
+ </button>
+ <button class="tool tool-library" data-tool="library" data-cat="prepare" aria-label="مكتبة الاختبارات: فتح التفاصيل">
+  <span class="tile-number">03 / LIBRARY</span><span class="tile-kicker">KNOWLEDGE INDEX</span>
+  <span class="tile-content"><h3>مكتبة الاختبارات</h3><p>كل اختبارات المنهاج وملفاتك المرتبة.</p></span>
+  <span class="tile-visual" aria-hidden="true"><span class="book b1">UNIT 01</span><span class="book b2">LESSON</span><span class="book b3">QUIZ</span><span class="book b4">TAG</span></span>
+  <span class="tile-foot">استكشف المكتبة <span class="go">←</span></span>
+ </button>
+ <button class="tool tool-lab" data-tool="lab" data-cat="prepare" aria-label="مختبر TAG: فتح التفاصيل">
+  <span class="tile-number">04 / LAB</span><span class="tile-kicker">INTERACTIVE MAKER</span>
+  <span class="tile-content"><h3>مختبر TAG</h3><p>لا تعرض الأسئلة فقط؛ اصنع منها تجربة.</p></span>
+  <span class="tile-visual" aria-hidden="true"><span class="lab-panel p1">QUIZ</span><span class="lab-panel p2">PAIRS</span><span class="lab-panel p3">WHEEL</span></span>
+  <span class="tile-foot">افتح المختبر <span class="go">←</span></span>
+ </button>
+ <button class="tool tool-live" data-tool="live" data-cat="challenge" aria-label="الصف المباشر: فتح التفاصيل">
+  <span class="tile-number">05 / LIVE</span><span class="tile-kicker">CLASSROOM ON AIR</span>
+  <span class="tile-content"><h3>الصف المباشر</h3><p>أنت تدير الإيقاع، والطلاب يعيشون التحدي لحظة بلحظة.</p></span>
+  <span class="tile-visual" aria-hidden="true"><span class="live-ring"></span><span class="live-ring r2"></span><span class="live-disc"></span><span class="live-mini">READY TO LAUNCH</span></span>
+  <span class="tile-foot">جهّز التحدي <span class="go">←</span></span>
+ </button>
+ <button class="tool tool-cards" data-tool="cards" data-cat="prepare" aria-label="بطاقات الطلاب: فتح التفاصيل">
+  <span class="tile-number">06 / ID</span><span class="tile-kicker">STUDENT IDENTITY</span>
+  <span class="tile-content"><h3>بطاقات الطلاب</h3><p>هوية الطالب ورموز الدخول في مكان واحد.</p></span>
+  <span class="tile-visual" aria-hidden="true"><span class="id-card-back"></span><span class="id-card"></span></span>
+  <span class="tile-foot">إدارة البطاقات <span class="go">←</span></span>
+ </button>
+ <button class="tool tool-champ" data-tool="champ" data-cat="challenge" aria-label="المسابقات والبطولات: فتح التفاصيل">
+  <span class="tile-number">07 / CHAMPION</span><span class="tile-kicker">THE BIG STAGE</span>
+  <span class="tile-content"><h3>المسابقات والبطولات</h3><p>حوّل التنافس بين الشعب إلى لحظات تستحق التتويج.</p></span>
+  <span class="tile-visual" aria-hidden="true"><svg class="trophy-gold" viewBox="0 0 110 128" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="tag-v3-tagGold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FFF1C9"/><stop offset="0.45" stop-color="#E8C37D"/><stop offset="1" stop-color="#A6763E"/></linearGradient></defs><path d="M30 14H82V48C82 70 70 82 56 82S30 70 30 48Z" fill="url(#tag-v3-tagGold)" stroke="#FAE1AD" stroke-width="2"/><path d="M30 24H11v17c0 15 10 23 23 24M82 24h18v17c0 15-10 23-23 24" stroke="#E8C37D" stroke-width="8" fill="none" stroke-linecap="round"/><path d="M55 82v18M40 101h30l8 10H32l8-10Z" fill="#D2AA6E" stroke="#F9E1A9" stroke-width="3"/><path d="M47 37h18l-9 19Z" fill="#714E30" opacity=".38"/><path d="M39 23H72" stroke="#FFEDC9" stroke-width="3" opacity=".8"/></svg><span class="trophy-platform"></span></span>
+  <span class="tile-foot">ادخل ساحة البطولات <span class="go">←</span></span>
+ </button>
+ <button class="tool tool-results" data-tool="results" data-cat="track" aria-label="النتائج والتحليل: فتح التفاصيل">
+  <span class="tile-number">08 / INSIGHTS</span><span class="tile-kicker">LEARNING SIGNALS</span>
+  <span class="tile-content"><h3>النتائج والتحليل</h3><p>اكتشف ما نجح، وما يحتاج خطوة أخرى.</p></span>
+  <span class="tile-visual" aria-hidden="true"><span class="chart-baseline"></span><span class="chart-bar c1"></span><span class="chart-bar c2"></span><span class="chart-bar c3"></span><span class="chart-bar c4"></span></span>
+  <span class="tile-foot">اقرأ النتائج <span class="go">←</span></span>
+ </button>
+ <button class="tool tool-settings" data-tool="settings" data-cat="track" aria-label="إعدادات المعلم: فتح التفاصيل">
+  <span class="tile-number">09 / SETUP</span><span class="tile-kicker">PERSONAL SPACE</span>
+  <span class="tile-content"><h3>الإعدادات</h3><p>مساحتك، على ذوقك.</p></span>
+  <span class="tile-visual" aria-hidden="true"><span class="setting-track"></span><span class="setting-knob k1"></span><span class="setting-knob k2"></span><span class="setting-knob k3"></span></span>
+  <span class="tile-foot">تخصيص <span class="go">←</span></span>
+ </button>
+</div>
+</section>
+</main>
+<footer class="footer"><span><span class="brandend">TEACH AND GAME</span> &nbsp; · &nbsp; تعلّم، تحدَّ، تفوّق</span><span>TAG Spatial / مساحة عمل المعلم</span><a class="footlink" href="/" rel="noopener">المنصة الرسمية ↗</a></footer>
+</div>
+<div class="inspector-back" id="tag-v3-inspectorBack" aria-hidden="true"></div>
+<aside class="inspector" id="tag-v3-inspector" role="dialog" aria-modal="true" aria-label="تفاصيل أداة المعلم" aria-hidden="true" tabindex="-1"><div class="inspector-top"><span class="inspector-number" id="tag-v3-inspCount">/ 01 &nbsp; TAG STUDIO</span><button class="close" id="tag-v3-closeInspector" aria-label="إغلاق التفاصيل">✕</button></div><div class="largeicon" id="tag-v3-inspIcon"></div><div class="caption" id="tag-v3-inspTag">TOOL / 01</div><h2 id="tag-v3-inspTitle">إنشاء اختبار</h2><p id="tag-v3-inspText"></p><div class="insp-bottom"><a id="tag-v3-inspLink" href="#" target="_self" rel="noopener">فتح الصفحة في TAG <span aria-hidden="true">↗</span></a><button id="tag-v3-inspBack">رجوع للمكتب</button></div><div class="route-note" id="tag-v3-routeNote">انتقل للأداة مباشرة. جميع أدواتك وبياناتك المحفوظة كما هي.</div></aside>
+<div class="palette-back" id="tag-v3-paletteBack" aria-hidden="true"></div><div class="palette" id="tag-v3-palette" role="dialog" aria-modal="true" aria-label="البحث السريع" aria-hidden="true"><div class="searchrow"><svg viewBox="0 0 24 24" width="23" height="23" stroke="#9ddad4" stroke-width="1.7" fill="none"><use href="#tag-v3-icon-search"/></svg><input type="search" id="tag-v3-searchInput" placeholder="ابحث عن: اختبار، بطاقة، مسابقات، مختبر..." autocomplete="off" aria-label="البحث بين أدوات المعلم"><span class="esc">ESC</span></div><div class="search-results" id="tag-v3-searchResults"></div></div>
+<div class="toast" id="tag-v3-toast" role="status"></div>

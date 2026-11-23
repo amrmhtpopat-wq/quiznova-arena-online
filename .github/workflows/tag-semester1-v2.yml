@@ -5,6 +5,16 @@ on:
     paths:
       - 'tag-semester1-*.js'
       - 'tag-semester1-*.css'
+      - 'tag-spatial-*.js'
+      - 'tag-spatial-*.css'
+      - 'tag-spatial-*.html'
+      - 'index.html'
+      - 'student.html'
+      - 'stage.html'
+      - 'for-teachers.html'
+      - 'about.html'
+      - 'app.html'
+      - 'tests/test_tag_spatial_sitewide_v3.cjs'
       - 'studio.html'
       - 'studio-auth.js'
       - 'app.js'
@@ -16,6 +26,16 @@ on:
     paths:
       - 'tag-semester1-*.js'
       - 'tag-semester1-*.css'
+      - 'tag-spatial-*.js'
+      - 'tag-spatial-*.css'
+      - 'tag-spatial-*.html'
+      - 'index.html'
+      - 'student.html'
+      - 'stage.html'
+      - 'for-teachers.html'
+      - 'about.html'
+      - 'app.html'
+      - 'tests/test_tag_spatial_sitewide_v3.cjs'
       - 'studio.html'
       - 'studio-auth.js'
       - 'app.js'
@@ -32,10 +52,12 @@ jobs:
           node-version: '22'
       - name: Original 29-packs compatibility regression
         run: node tests/test_tag_semester1_v2.cjs
-      - name: Complete 153-pack acceptance including answer checks
+      - name: Complete 150-pack acceptance including answer checks
         run: node tests/test_tag_semester1_v3.cjs
       - name: Pedagogical content and independent mathematics proof checks
         run: node tests/test_tag_semester1_pedagogy_v4.cjs
+      - name: TAG Spatial UI and untouched LAB / Champions regression
+        run: node tests/test_tag_spatial_sitewide_v3.cjs
       - name: JavaScript parse checks
         run: |
           node --check tag-semester1-catalog-v2.js
@@ -46,3 +68,4 @@ jobs:
           node --check tag-semester1-library-v2.js
           node --check app.js
           node --check studio-auth.js
+          node --check tag-spatial-site-v3.js
