@@ -172,3 +172,26 @@
   }
 }
 @media print{.tag-spatial-home3{display:none!important}}
+
+/* Keep compact V5 shortcuts clickable even when 3D tiles move in depth.
+ * The toolbar and student shortcuts must win the stacking order. */
+body.tag-spatial-global #panel-home > .tag-v5-shortcuts,
+body.tag-spatial-global #panel-home > .tag-v5-extra,
+body.tag-spatial-global #panel-home > .metric-grid,
+body.tag-spatial-global #panel-home > .grid-two,
+body.tag-spatial-global #panel-home > .pane {
+ position:relative;z-index:3;isolation:isolate;
+}
+body.tag-spatial-global #panel-home > .tag-spatial-home3 {
+ z-index:0;
+}
+.tag-spatial-home3 .shell{
+ overflow-x:clip;
+}
+.tag-spatial-home3 .tool{
+ backface-visibility:hidden;
+}
+@media(max-width:480px){
+ .tag-spatial-home3 .scene{max-width:100%;}
+ .tag-spatial-home3 .scene-label{max-width:40%;}
+}
