@@ -69,6 +69,23 @@ with sync_playwright() as playwright:
   assert page.locator('.tag-v27-pod.place-1 img[src*="n01"]').count()==1,'winner avatar lost'
   assert 'ليان' in page.locator('.tag-v27-winner-announcement').inner_text()
   assert page.evaluate('document.documentElement.scrollWidth <= innerWidth + 6'),(width,'podium overflow')
+  # Team rooms show animated rankings of both teams AND individual students.
+  team=build_room('results')
+  team['playType']='teams'
+  team['teams']=[{'name':'النسور','score':2050,'members':3},{'name':'الصقور','score':1280,'members':2}]
+  state['room']=team
+  page.reload(wait_until='domcontentloaded')
+  page.locator('#tagV27RoundStudents .tag-v27-row').first.wait_for(state='attached',timeout=7000)
+  assert page.locator('#tagV27RoundStudents .tag-v27-row').count()==5
+  assert page.locator('#tagV27RoundStage .tag-v27-row').count()==2
+  assert page.evaluate('document.documentElement.scrollWidth <= innerWidth + 6'),(width,'team mode horizontal overflow')
+  # Exam results must NEVER show animated leaderboards or per-student marks.
+  private=build_room('results');private['examMode']=True;private['showFeedback']=False
+  state['room']=private
+  page.reload(wait_until='domcontentloaded')
+  page.locator('body[data-stage-view="results"]').wait_for(state='attached')
+  assert page.locator('.tag-v27-row').count()==0,(width,'private exam leaderboard leak')
+  assert 'الترتيب' not in page.locator('#stage').inner_text() or 'أخفى' in page.locator('#stage').inner_text()
   assert not errors,(width,errors)
   context.close()
   print('PASS TAG V27 stage at',width,'pixels: suspense, score move, avatar third-second-first, no poll-reset',flush=True)
