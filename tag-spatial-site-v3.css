@@ -222,8 +222,16 @@ body.tag-spatial-global .brand-logo:has(.tag-spatial-identity){
 }
 /* Spatial home embedded only for authenticated teacher dashboard views. */
 body.tag-spatial-global .tag-spatial-host{width:100%;max-width:100%;min-height:850px;display:block;border:0;border-radius:0;background:transparent;color-scheme:dark}
-body.tag-spatial-global #panel-home.tag-spatial-embedded > :not(.tag-spatial-host),
-body.tag-spatial-global #view-dashboard.tag-spatial-embedded > :not(.tag-spatial-host){display:none!important}
+body.tag-spatial-global #panel-home.tag-spatial-embedded > :not(.tag-spatial-host){display:none!important}
+/* Studio dashboard keeps original functional quick actions and widgets below
+   Spatial home so pre-existing navigation and teacher workflows stay accessible. */
+body.tag-spatial-global #view-dashboard.tag-spatial-embedded > :not(.tag-spatial-host){display:revert!important}
+body.tag-spatial-global #view-dashboard.tag-spatial-embedded .tag-studio-quickhub{
+ margin-top:24px;
+ background:linear-gradient(150deg,#15394d,#0c283a)!important;
+ border:1px solid #54889b77!important;
+ border-radius:17px!important;
+}
 body.tag-spatial-global #panel-home.tag-spatial-embedded,
 body.tag-spatial-global #view-dashboard.tag-spatial-embedded{
  background:transparent!important;padding:0!important;border:0!important;
