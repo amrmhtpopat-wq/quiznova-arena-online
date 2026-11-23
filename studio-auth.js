@@ -2,7 +2,8 @@
   const allowedViews=['dashboard','generator','builder','bank','media','library','live','play','results','settings'];
   const requestedView=location.hash.slice(1);
   const safeView=allowedViews.includes(requestedView)?requestedView:'dashboard';
-  const loginTarget='/?next='+encodeURIComponent('/studio.html#'+safeView);
+  const teacherEntry=location.hostname==='teachgame.onrender.com'?'/portal.html':'/';
+  const loginTarget=teacherEntry+'?next='+encodeURIComponent('/studio.html#'+safeView);
   const tk=localStorage.getItem('qn9_teacher_token');
   if(!tk){location.replace(loginTarget);return}
   try{
@@ -130,7 +131,7 @@
       +'<a href="'+loginTarget+'" style="color:#fff;text-decoration:underline;margin-inline:12px">تسجيل الدخول من جديد</a>'
       +'</section>';
     document.querySelector('#qnRetryStudio')?.addEventListener('click',()=>location.reload());
-    main.querySelector('a[href^="/?next="]')?.addEventListener('click',()=>{
+    main.querySelector('a[href*="next="]')?.addEventListener('click',()=>{
       // Explicitly signing in again clears this local token; a temporary failure does not.
       localStorage.removeItem('qn9_teacher_token');
     });

@@ -366,7 +366,7 @@ function bind(){
 }
 async function init(){
  bind();drawPairs();updatePreview('create');
- if(!token()){location.replace('/?next='+encodeURIComponent('/champion.html'));return}
+ if(!token()){location.replace((location.hostname==='teachgame.onrender.com'?'/portal.html?next=':'/?next=')+encodeURIComponent('/champion.html'));return}
  try{
   const [auth,snapshot,champions]=await Promise.all([request('/api/auth/me'),request('/api/teacher/snapshot'),request('/api/champion')]);
   teacher=auth.teacher;quizzes=Array.isArray(snapshot.data?.quizzes)?snapshot.data.quizzes.filter(q=>q?.id&&Array.isArray(q.questions)&&q.questions.length):[];
@@ -378,7 +378,7 @@ async function init(){
   if(last&&tournaments.some(t=>t.id===last))await openTournament(last);
   else if(!quizzes.length)toast('أنشئ اختبارًا واحفظه في استوديو TAG قبل بدء البطولة.');
  }catch(e){
-  if(e.status===401){location.replace('/?next='+encodeURIComponent('/champion.html'));return}
+  if(e.status===401){location.replace((location.hostname==='teachgame.onrender.com'?'/portal.html?next=':'/?next=')+encodeURIComponent('/champion.html'));return}
   $('championLoading').innerHTML='<h2>تعذر تحميل البطولات</h2><p>'+safe(label(e.message))+'</p><button class="btn primary" onclick="location.reload()">إعادة المحاولة</button>';
  }
 }
