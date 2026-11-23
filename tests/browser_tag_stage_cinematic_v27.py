@@ -66,6 +66,18 @@ with sync_playwright() as pw:
   page.wait_for_function("document.querySelector('.tag27-place-3')?.classList.contains('tag27-entered')",timeout=3000)
   page.wait_for_function("document.querySelector('.tag27-place-2')?.classList.contains('tag27-entered')",timeout=5000)
   page.wait_for_function("document.querySelector('.tag27-place-1')?.classList.contains('tag27-entered')",timeout=7500)
+  # CSS entry animation takes 1.05s after the entered class is set.
+  # Waiting only for the class captures a blank center podium mid-transition.
+  page.wait_for_function("""() => {
+    const hero=document.querySelector('.tag27-place-1');
+    if(!hero)return false;
+    const r=hero.getBoundingClientRect();
+    const style=getComputedStyle(hero);
+    return +style.opacity>0.98 && r.top>=0 && r.bottom<=innerHeight+2 &&
+           r.width>70 && r.height>100;
+  }""",timeout=4500)
+  assert page.locator('.tag27-place-1 .tag27-podium-name').inner_text()=='ليان'
+  assert page.locator('.tag27-place-1 img').evaluate("(el)=>el.complete && el.naturalWidth>0")
   assert page.locator('#tag27Announcement').inner_text().find('بطل TAG')>=0
   finalOverflow=page.evaluate("document.documentElement.scrollWidth-innerWidth")
   assert finalOverflow<=10,('Final podium overflow',width,finalOverflow)
