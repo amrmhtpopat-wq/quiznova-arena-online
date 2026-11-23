@@ -47,7 +47,7 @@
   // TAG LAB/game pages have responsive sliding menu rails. A header child
   // can end up translated outside the viewport; keep back fixed in the safe area.
   else if(file.startsWith('tag-lab-')||file.startsWith('game-lab-'))dest=null;
-  else if(file==='tag-spatial-home-v3.html')dest=document.querySelector('header.header .header-actions');
+  else if(file==='tag-spatial-home-v3.html')dest=null; // preserve 3D toolbar sizing
   else if(file==='admin.html')dest=null; // login-visible back control, retained after authentication
   // An app can render a toolbar inside a hidden authenticated panel.
   // In that case keep the back control visible on its public sign-in screen.
