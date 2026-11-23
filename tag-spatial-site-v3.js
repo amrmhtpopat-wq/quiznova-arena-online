@@ -25,7 +25,9 @@ function installIdentity(){
  test.src=ART;
 }
 function mountHub(){
- const page=document.getElementById('panel-home')||document.getElementById('view-dashboard');
+ // Portal is the authenticated landing page. Studio tools retain their own DOM
+ // and never create extra frames (required for localStorage-safe editor flows).
+ const page=document.getElementById('panel-home');
  if(!page)return;
  // Only construct a browsing context when the teacher actually opens the
  // dashboard. Eager insertion creates transient about:blank frames and breaks
