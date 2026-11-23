@@ -36,6 +36,7 @@ window.TAGSpatialNativeInit=function(shadow,host){
   if(!button)return;button.click();window.scrollTo({top:0,behavior:'instant'});
  }));
  shadow.getElementById('tag-v3-settingsBtn').addEventListener('click',()=>openItem('settings'));
+ shadow.getElementById('tag-v3-backBtn').addEventListener('click',()=>{if(typeof window.TAGGoBack==='function')window.TAGGoBack();else location.assign('/')});
  const logout=shadow.getElementById('tag-v3-logoutBtn');if(logout)logout.addEventListener('click',()=>document.getElementById('logout')?.click());
  shadow.getElementById('tag-v3-inspLink').addEventListener('click',e=>{
  if(e.currentTarget.dataset.route==='cards'){
