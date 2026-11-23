@@ -169,7 +169,7 @@
 </defs></svg>
 <div class="shell">
 <header class="header">
- <a class="brand" href="#top" aria-label="TAG الرئيسية"><img id="officialLogo" src="/assets/brand/tag-spatial-identity-v3.webp" width="151" height="54" alt="شعار TEACH AND GAME الرسمي" hidden style="max-width:151px;height:auto;max-height:54px;object-fit:contain"><span id="fallbackBrand" style="display:contents"><span class="brandmark">TAG</span><span class="brandcopy"><strong>TEACH AND GAME</strong><small>تعلّم · تحدَّ · تفوّق</small></span></span></a>
+ <a class="brand" href="#top" aria-label="TAG الرئيسية"><img id="officialLogo" src="/assets/brand/tag-spatial-identity-v3.webp" width="86" height="86" alt="شعار TAG الجديد" hidden style="max-width:86px;height:auto;max-height:86px;object-fit:contain"><span id="fallbackBrand" style="display:contents"><span class="brandmark">TAG</span><span class="brandcopy"><strong>TEACH AND GAME</strong><small>تعلّم · تحدَّ · تفوّق</small></span></span></a>
  <div class="head-center"><span class="statusdot"></span><span>TAG / THE TEACHER ATELIER</span></div>
  <div class="header-actions">
   <button class="action" id="searchBtn" title="ابحث عن أداة — Ctrl+K" aria-label="البحث عن أداة"><svg fill="none" stroke="currentColor" stroke-width="1.7"><use href="#icon-search"/></svg><span>بحث</span></button>
@@ -269,7 +269,7 @@
 (()=>{
  'use strict';
  const base=location.origin;
- const official=document.getElementById('officialLogo');official.addEventListener('load',()=>{if(official.naturalWidth>0){official.hidden=false;document.getElementById('fallbackBrand').style.display='none'}});if(official.complete&&official.naturalWidth>0){official.hidden=false;document.getElementById('fallbackBrand').style.display='none'}
+ const official=document.getElementById('officialLogo');official.addEventListener('load',()=>{if(official.naturalWidth>0){official.hidden=false;document.querySelector('#fallbackBrand .brandmark').style.display='none'}});if(official.complete&&official.naturalWidth>0){official.hidden=false;document.querySelector('#fallbackBrand .brandmark').style.display='none'}
  const items={
  create:{title:'إنشاء اختبار',tag:'CREATE / 01',icon:'create',link:base+'/studio.html#builder',text:'مساحة تحرير الأسئلة اليدوية، إضافة الخيارات والصور، ومراجعة كل سؤال قبل حفظ الاختبار.'},
  ai:{title:'المولّد الذكي',tag:'TAG AI / 02',icon:'ai',link:base+'/studio.html#generator',text:'حوّل محتوى كتابك إلى أسئلة، واختر الصفحات ونطاق الدرس ثم راجع الاقتراحات قبل اعتمادها.'},
