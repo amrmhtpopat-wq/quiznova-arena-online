@@ -7,6 +7,9 @@ on:
       - 'tag-responsive-brand-v23.css'
       - 'tag-responsive-brand-v23.js'
       - 'index.html'
+      - 'tools/build_teachgame_unified.py'
+      - 'deploy/teachgame-unified.render.yaml'
+      - 'tests/test_tag_unified_gateway_v26.py'
       - 'portal.js'
       - 'champion.html'
       - 'student.html'
@@ -19,6 +22,9 @@ on:
       - 'tag-responsive-brand-v23.css'
       - 'tag-responsive-brand-v23.js'
       - 'index.html'
+      - 'tools/build_teachgame_unified.py'
+      - 'deploy/teachgame-unified.render.yaml'
+      - 'tests/test_tag_unified_gateway_v26.py'
       - 'portal.js'
       - 'tests/test_tag_v23_release.py'
 permissions:
@@ -36,5 +42,7 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_tag_v23_release.py' -v
       - name: SEO short-link compatibility
         run: python -m unittest discover -s tests -p 'test_tag_static_seo_landing_v19.py' -v
+      - name: TAG V26 collision-free gateway and canonical route checks
+        run: python -m unittest discover -s tests -p 'test_tag_unified_gateway_v26.py' -v
       - name: Original school QR contract
         run: python -m unittest discover -s tests -p 'test_tag_original_school_qr.py' -v
