@@ -174,3 +174,8 @@ html[data-tag-view] #playOverlay.v101-overhaul .flipcard{min-height:min(28vh,200
  html[data-tag-view] #playOverlay.v101-overhaul .playbody>.playcard{padding:7px 10px!important}
  html[data-tag-view] #playOverlay.v101-overhaul .v101-wheel-frame{width:min(100%,33vh,300px)!important}
 }
+
+/* TAG LAB V46 — the review footer must never cover mobile question fields. */
+html[data-tag-view="books"] #tagBookNext[hidden]{display:none!important}
+html[data-tag-view="books"] #tagBookNext.tag-simple-savebar{position:static!important;bottom:auto!important;z-index:auto!important;margin-top:20px!important;margin-bottom:14px!important;max-width:100%!important;box-shadow:0 4px 16px #23445516!important}
+@media(max-width:650px){html[data-tag-view="books"] #tagBookNext.tag-simple-savebar{padding:12px!important;border-radius:13px!important}html[data-tag-view="books"] #tagBookNext .tag-simple-actions{display:grid!important;grid-template-columns:1fr!important;gap:8px!important}html[data-tag-view="books"] #tagBookNext .tag-simple-btn{width:100%!important;min-width:0!important}}
