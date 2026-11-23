@@ -1,0 +1,165 @@
+/* TAG SPATIAL V4 | Last-loaded consistency and menu visibility pass.
+   Does not alter games, TAG LAB, championships, credentials, QR/PIN, or grade logic. */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+body.tag-spatial-global{
+  --tag-bg:#071b2c;--tag-base:#0c283b;--tag-card:#123c52;
+  --tag-teal:#84e4da;--tag-accent:#5dd6d2;--tag-line:#4d8090;
+  --tag-type:#f0fbf7;--tag-muted:#aed1d9;
+  --bg:#071b2c;--surface:#102f44;--surface2:#153b51;--line:#406b7b;
+  --ink:#f1f8f4;--muted:#a9cbd2;--violet:#37b9bb;--violet2:#83e8de;
+  --pink:#80dfd2;--cyan:#5dd6d2;--blue:#2587ad;--lime:#76dab4;
+  font-family:"IBM Plex Sans Arabic",Tahoma,Arial,sans-serif;
+  background:#071b2c!important;color:#f0fbf7;
+}
+body.tag-spatial-global :where(.page-hero,.panel,.pane,.stat-card,.metric,.insight-card,.auth-card,.feature-card,.step-card){
+  border-color:#5a87977a!important;
+}
+body.tag-spatial-global :where(.page-hero,.panel,.pane,.stat-card,.metric,.insight-card){
+  background:linear-gradient(147deg,#153b51,#0b293d)!important;
+  color:#f0fbf7!important;
+}
+body.tag-spatial-global :where(.page-hero,.panel,.pane,.stat-card,.metric,.insight-card)
+ :where(h1,h2,h3,h4,strong){color:#f1fbf8}
+body.tag-spatial-global :where(.page-hero,.panel,.pane,.stat-card,.metric,.insight-card)
+ :where(p,small,.muted,.subtitle){color:#b2d0d9}
+body.tag-spatial-global :where(.btn-primary,.primary,.bo-btn-primary){
+  background:#a0e9dc!important;border-color:#b8fff0!important;color:#0a3040!important;
+}
+body.tag-spatial-global :where(.btn-secondary,.secondary,.minibtn,.bo-btn-secondary){
+  background:#17455b!important;border-color:#5f97a6!important;color:#edf8f6!important;
+}
+body.tag-spatial-global :where(button,a,input,textarea,select):focus-visible{
+  outline:2px solid #9bf7e5!important;outline-offset:3px;
+}
+body.tag-spatial-global :where(input:not([type="checkbox"]):not([type="radio"]),textarea,select){
+  accent-color:#70dcd2;
+}
+body.tag-spatial-global :where(input[type="file"]){
+  color:#d8eef1!important;
+  padding:8px!important;
+  background:#10394c!important;border:1px solid #4e8998!important;border-radius:11px;
+}
+body.tag-spatial-global input[type="file"]::file-selector-button{
+  background:#93e7dc;color:#082a3b;border:0;border-radius:8px;
+  padding:8px 12px;font-weight:700;margin-inline-end:10px;
+}
+body.tag-spatial-global :where(select,textarea,input[type="text"],input[type="number"],
+input[type="password"],input[type="email"],input[type="search"],input[type="url"]){
+  background:#0b2c40!important;color:#effaf5!important;border-color:#528293!important;
+}
+body.tag-spatial-global :where(select option){background:#11364a;color:#f4fcf9}
+/* Studio sidebar: guarantee all grouped navigation is visible/scrollable, not only the logo. */
+body.v105-studio.tag-spatial-global #app>.sidebar{
+ background:linear-gradient(170deg,#113d4f,#0b2b3d 61%,#081d31)!important;
+ color:#e8faf6!important;box-sizing:border-box!important;
+ height:100dvh!important;max-height:100dvh!important;
+ padding:15px 12px 18px!important;
+ overflow-x:hidden!important;overflow-y:auto!important;
+ overscroll-behavior-y:contain;
+ scrollbar-color:#5ab3bc #102d3e;scrollbar-width:thin;
+ z-index:115!important;
+}
+body.v105-studio.tag-spatial-global #sidebar>.tag-studio-nav-v6{
+ position:relative!important;display:flex!important;flex-direction:column!important;
+ width:100%!important;min-width:0!important;max-width:100%!important;
+ overflow:visible!important;visibility:visible!important;opacity:1!important;
+ flex:0 0 auto!important;
+}
+body.v105-studio.tag-spatial-global #sidebar .tag-studio-nav-group{
+ background:#10364a!important;border-color:#56889777!important;
+ flex:0 0 auto!important;min-width:0!important;width:100%!important;
+}
+body.v105-studio.tag-spatial-global #sidebar .tag-studio-group-toggle{
+ color:#e9f9f5!important;background:#153b50!important;
+}
+body.v105-studio.tag-spatial-global #sidebar .tag-studio-group-heading strong{
+ color:#effbf7!important;
+}
+body.v105-studio.tag-spatial-global #sidebar .tag-studio-group-heading small{
+ color:#aacbd3!important;
+}
+body.v105-studio.tag-spatial-global #sidebar .tag-studio-group-links{
+ width:100%!important;min-width:0!important;
+ background:#0c2e41!important;border-color:#4a7887!important;
+}
+body.v105-studio.tag-spatial-global #sidebar .tag-studio-group-links>.nav-item,
+body.v105-studio.tag-spatial-global #sidebar .tag-studio-group-links>.tag-studio-external-link{
+ color:#d7f0f0!important;-webkit-text-fill-color:#d7f0f0!important;
+ border-radius:9px!important;
+}
+body.v105-studio.tag-spatial-global #sidebar .tag-studio-group-links>.nav-item.active{
+ background:linear-gradient(90deg,#245f6d,#187078)!important;
+ box-shadow:inset -3px 0 #a2eee1!important;border-color:#60b5b6!important;
+}
+body.v105-studio.tag-spatial-global #sidebar .tag-studio-group-links>.nav-item:hover,
+body.v105-studio.tag-spatial-global #sidebar .tag-studio-group-links>.tag-studio-external-link:hover{
+ background:#215568!important;
+}
+body.v105-studio.tag-spatial-global #sidebar>.tag-studio-sidebar-head{
+ flex:0 0 auto!important;background:none!important;
+}
+body.v105-studio.tag-spatial-global #sidebar .tag-studio-sidebar-head .brand-logo,
+body.v105-studio.tag-spatial-global #sidebar .tag-studio-sidebar-head img{
+ overflow:visible!important;object-fit:contain!important;
+}
+body.v105-studio.tag-spatial-global #app>.main{min-width:0!important;box-sizing:border-box!important}
+body.v105-studio.tag-spatial-global #app>.main>.view{min-width:0!important;max-width:100%!important}
+@media(min-width:1025px){
+ body.v105-studio.tag-spatial-global #app>.sidebar{
+  position:fixed!important;right:0!important;top:0!important;bottom:0!important;
+  width:268px!important;min-width:268px!important;max-width:268px!important;
+  transform:none!important;visibility:visible!important;
+ }
+ body.v105-studio.tag-spatial-global #app>.main{
+  margin-right:268px!important;max-width:calc(100vw - 268px)!important;
+  width:calc(100vw - 268px)!important;
+ }
+}
+@media(max-width:1024px){
+ body.v105-studio.tag-spatial-global #app>.sidebar:not(.open){
+  transform:translateX(112%)!important;visibility:hidden!important;pointer-events:none!important;
+ }
+ body.v105-studio.tag-spatial-global #app>.sidebar.open{
+  transform:translateX(0)!important;visibility:visible!important;pointer-events:auto!important;
+ }
+ body.v105-studio.tag-spatial-global #app>.main{
+  margin-right:0!important;max-width:100vw!important;width:100%!important;
+ }
+}
+/* Portal: on non-home pages preserve a full independent, readable right-side menu. */
+@media(min-width:961px){
+ body.v105-portal.tag-spatial-global #workspace:not(:has(#panel-home.active))>.sidebar{
+  position:sticky!important;top:0!important;height:100dvh!important;
+  overflow-y:auto!important;overflow-x:hidden!important;
+  padding:20px 12px!important;min-width:0;z-index:20;
+  background:#0c2c40!important;
+ }
+ body.v105-portal.tag-spatial-global #workspace:not(:has(#panel-home.active))>.sidebar nav{
+  display:flex!important;flex-direction:column!important;gap:7px;
+  width:100%!important;max-height:none!important;min-width:0!important;
+  visibility:visible!important;opacity:1!important;
+ }
+}
+body.v105-portal.tag-spatial-global #workspace>.sidebar .nav{
+ color:#dcf5f1!important;background:#12394d!important;border-color:#42788766!important;
+}
+body.v105-portal.tag-spatial-global #workspace>.sidebar .nav.active{
+ color:#eafff8!important;background:#1c6573!important;border-color:#86dfd7!important;
+}
+/* Consistent surface/background outside contest and independent lab pages. */
+body.tag-spatial-global :where(.builder-side,.generator-layout,.book-ai-panel,.media-item,.book-card,.library-card){
+ border-color:#4f829478!important;
+}
+body.tag-spatial-global :where(.book-ai-panel,.generator-layout,.builder-side){
+ color:#f0f9f5;
+}
+body.tag-spatial-global .tag-spatial-titleline{
+ border-bottom:1px solid #2f566663;padding-bottom:11px;margin-bottom:17px!important;
+}
+@media(max-width:650px){
+ body.v105-studio.tag-spatial-global #sidebar{width:min(344px,calc(100vw - 20px))!important;min-width:0!important}
+}
+@media print{
+ body.tag-spatial-global{background:#fff!important;color:#111!important;color-scheme:light!important}
+ body.tag-spatial-global .tag-spatial-titleline{display:none!important}
+}
