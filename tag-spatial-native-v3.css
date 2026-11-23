@@ -147,3 +147,32 @@
 
 /* Only the actual design content receives events; an empty host box never blocks older controls. */
 .tag-spatial-native-stage{position:relative;pointer-events:auto;}
+
+/* V4 exact-size home: the ShadowRoot is independent of page CSS and cannot
+   push a 390px phone into a 481px layout viewport. */
+:host{box-sizing:border-box;max-width:100%;width:100%;min-width:0}
+.tag-spatial-native-stage{box-sizing:border-box;max-width:100%;min-width:0;width:100%;overflow-x:clip}
+.shell{max-width:100%;box-sizing:border-box}
+.header,.hero,.workspace,.tools{box-sizing:border-box;max-width:100%;min-width:0}
+@media(max-width:800px){
+ .shell{width:calc(100% - 24px)!important;max-width:100%!important;margin-inline:auto!important}
+ .header{gap:5px!important;min-height:66px;height:auto;flex-wrap:nowrap}
+ .brand{min-width:0!important;max-width:48%!important;flex:1 1 48%!important;gap:6px!important}
+ .brand img{width:49px!important;height:auto!important;max-height:58px!important;object-fit:contain}
+ .brandcopy{display:none!important}
+ .header-actions{flex:0 0 auto;max-width:50%;gap:4px!important;min-width:0}
+ .header-actions .action{min-width:34px!important;max-width:38px!important;width:36px!important;height:36px!important;padding:0 6px!important;border-radius:10px!important}
+ .header-actions .action svg{width:16px;height:16px}
+ .header-actions .action span{display:none!important}
+ .hero{padding-inline:0!important}
+ .scene{width:100%;max-width:100%;overflow:hidden}
+ .workspace-head{max-width:100%;min-width:0}
+ .tools{width:100%;max-width:100%;min-width:0;overflow:visible}
+ .tool{max-width:100%;min-width:0}
+}
+@media(max-width:440px){
+ .shell{width:calc(100% - 22px)!important}
+ .hero h1{font-size:clamp(29px,8.5vw,37px)!important;line-height:1.4}
+ .herosub{font-size:12px;line-height:1.9}
+ .scene{height:205px!important}
+}
