@@ -25,6 +25,7 @@ const errors={
  ai_daily_limit:'وصلت إلى حد TAG AI (15 عملية خلال 24 ساعة متحركة). لا تُحتسب محاولات الاتصال الفاشلة أو النتائج غير القابلة للحفظ. جرّب بعد انتهاء مدة المحاولات السابقة، أو استخدم الاستخراج المحلي المجاني.',
  ai_global_daily_limit:'وصلت المنصة إلى حد الأمان اليومي لطلبات الذكاء الاصطناعي. حاول غدًا.',
  ai_too_many_pages:'لجودة أفضل وضمن الحدود المجانية، اختر 25 صفحة أو أقل في عملية التوليد الواحدة.',
+ ai_source_quality_low:'الصفحات المختارة لا تحتوي على نص تعليمي مقروء كافٍ. افحص جودة النص، أو اختر صفحات شرح أخرى أو ارفع ملف PDF نصيًا سليمًا.',
  ai_invalid_key:'مفتاح TAG AI المجاني غير صالح أو غير متاح في المنطقة. تأكد من إنشائه عبر Google AI Studio (مزود TAG AI) دون حساب فوترة.',
  ai_no_credit:'لا يوجد رصيد مجاني متاح. لا تفعّل الفوترة؛ استخدم الاستخراج المحلي المجاني.',
  ai_rate_limited:'وصلت إلى حصة TAG AI المجانية أو الحد المؤقت. لن تُحاول المنصة استخدام خدمة مدفوعة. جرّب لاحقًا أو استخدم التوليد المحلي.',
@@ -203,6 +204,7 @@ function requestDraft(){
    difficulty:$('labAiDifficulty').value,focus:$('labAiFocus').value}
 }
 function clearBookReview(){
+ if($('labBookSourceQuality'))$('labBookSourceQuality').textContent='';
  window.TG_BOOK_EDITOR_REUSE=false;
  bookDraftReady=false;
  $('labBookSaveCloud').disabled=true;
@@ -245,10 +247,15 @@ function renderBookReview(rows){
   const card=document.createElement('article');card.className='lab-bookrow tag-book-review-card';
   const header=document.createElement('div');header.className='tag-book-review-top';
   const keep=document.createElement('label');keep.className='tag-book-review-keep';
-  const check=document.createElement('input');check.type='checkbox';check.checked=true;check.className='tag-book-review-check';
+  const check=document.createElement('input');check.type='checkbox';check.checked=!r.requiresReview;check.className='tag-book-review-check';
   keep.append(check,document.createTextNode(' اعتماد السؤال '+(i+1)));
   const badge=document.createElement('small');badge.textContent='صفحة '+(r.sourcePage||'غير محددة')+' • '+(r.origin==='ai'?'TAG AI':'نص الكتاب');
   header.append(keep,badge);
+  if(r.requiresReview){
+   const warn=document.createElement('p');warn.className='notice';warn.style.margin='7px 0';
+   warn.textContent='⚠️ يحتاج هذا السؤال مراجعة خاصة: '+(r.reviewReason||'تحقق من الإجابة مع صفحة الكتاب.');
+   card.append(warn);
+  }
   const row=document.createElement('div');row.className='tag-book-review-controls';
   const typeLabel=document.createElement('label');typeLabel.textContent='نوع السؤال';
   const kind=reviewSelect('tag-book-type',r.questionType||'short',types);typeLabel.append(kind);
@@ -327,6 +334,41 @@ function approveBookSuggestions(){
  $('labBookSummary').textContent='أنواع الأسئلة: '+accepted.filter(x=>x.questionType==='mcq').length+' اختيار من متعدد، '+accepted.filter(x=>x.questionType==='true_false').length+' صح وخطأ، '+accepted.filter(x=>x.questionType==='short').length+' إجابة قصيرة. لم تُنشر للطلاب.';
  document.getElementById('builder')?.scrollIntoView({behavior:'smooth',block:'start'})
 }
+function showSourceQuality(report){
+ const host=$('labBookSourceQuality');
+ if(!host)return;
+ host.replaceChildren();
+ if(!report){host.textContent='لم تتوفر نتيجة فحص النص.';return}
+ const heading=document.createElement('b');
+ heading.textContent=(report.ready?'✅':'⚠️')+' نصوص صالحة: '+report.readablePages+' من '+report.selectedPages+' صفحة';
+ host.append(heading);
+ const description=document.createElement('p');description.textContent=report.message||'';
+ description.style.margin='4px 0';host.append(description);
+ const invalid=(report.pages||[]).filter(x=>!x.readable);
+ if(invalid.length){
+  const note=document.createElement('p');note.style.margin='4px 0';
+  note.textContent='صفحات لم تُرسل إلى TAG AI بسبب ضعف النص: '+invalid.map(x=>x.page).join('، ');
+  host.append(note)
+ }
+ const skipped=document.createElement('small');
+ skipped.textContent='مقاطع مستبعدة: '+(report.excludedFragments||0)+' • هذا الفحص لا يستهلك محاولات الذكاء الاصطناعي.';
+ host.append(skipped);
+}
+async function checkSourceQuality(){
+ const params=requestDraft();
+ const qs=new URLSearchParams({id:params.bookId,startPage:String(params.startPage),endPage:String(params.endPage)});
+ const response=await request('/api/game-lab/pro/books/quality?'+qs.toString());
+ showSourceQuality(response.quality);
+ return response.quality
+}
+async function auditBookSource(){
+ const button=$('labBookCheckSource');button.disabled=true;
+ try{
+  const report=await checkSourceQuality();
+  message('labBookStatus',report.message||'اكتمل فحص الصفحات.',!report.ready)
+ }catch(error){failed('labBookStatus',error)}
+ finally{button.disabled=false}
+}
 async function generate(){
  const button=$('labBookGenerate');button.disabled=true;
  window.TG_BOOK_EDITOR_REUSE=false;
@@ -336,16 +378,23 @@ async function generate(){
  try{
   const mode=$('labBookMode').value,params=requestDraft();
   if(mode==='ai'&&!$('labAiConsent').checked)throw Error('ai_consent_required');
+  if(mode==='ai'){
+   const report=await checkSourceQuality();
+   if(!report.ready)throw Error('ai_source_quality_low');
+  }
   params.consent=mode==='ai'&&$('labAiConsent').checked;
   const response=await request('/api/game-lab/pro/books/'+(mode==='ai'?'ai':'draft'),params);
   const rows=Array.isArray(response.rows)?response.rows:[];
+  if(response.sourceAudit)showSourceQuality(response.sourceAudit);
   const localFallback=response.fallbackFrom==='ai';
   renderBookReview(rows);
   $('labBookApprove').disabled=!rows.length;
   const breakdown=rows.length
    ?'أُنشئت '+rows.length+' أسئلة: '+rows.filter(r=>r.questionType==='mcq').length+' اختيار، '+rows.filter(r=>r.questionType==='true_false').length+' صح أو خطأ، '+rows.filter(r=>r.questionType==='short').length+' فهم وإجابة قصيرة. راجع الخيارات والأدلة قبل الاعتماد.'
    :'لم أجد أسئلة كافية وواضحة في الصفحات المحددة. جرّب صفحات أخرى أو وسّع النطاق بدل إنشاء أسئلة غير موثوقة.';
-  $('labBookSummary').textContent=(localFallback?'⚠️ انتقلت المنصة إلى الاستخراج المحلي من الكتاب لتعطل Google؛ المقترحات ليست مولدة بالذكاء الاصطناعي. ':'')+breakdown;
+  const needsReview=rows.filter(r=>r.requiresReview).length;
+  $('labBookSummary').textContent=(localFallback?'⚠️ انتقلت المنصة إلى الاستخراج المحلي من الكتاب لتعطل Google؛ المقترحات ليست مولدة بالذكاء الاصطناعي. ':'')+breakdown+
+   (needsReview?' ⚠️ '+needsReview+' أسئلة تحتاج مراجعة الإجابة قبل تحديد اعتمادها.':'');
   message('labBookStatus',response.warning||'راجع المقترحات قبل اعتمادها.',rows.length<4);
  }catch(e){failed('labBookStatus',e)}
  finally{button.disabled=false}
@@ -522,6 +571,7 @@ async function createRoom(){
 $('labBookUpload').onclick=uploadBook;
 $('labBookRefresh').onclick=refreshBooks;
 $('labBookGenerate').onclick=generate;
+$('labBookCheckSource').onclick=auditBookSource;
 $('labBookMode').onchange=()=>{aiModeTouched=true;updateAiSettings()};
 updateAiSettings();
 $('labBookApprove').onclick=approveBookSuggestions;
