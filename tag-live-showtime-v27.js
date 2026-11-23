@@ -5,7 +5,7 @@
  */
 (()=>{
 'use strict';
-const state={stage:{question:null,scores:new Map()},host:{question:null,scores:new Map()}};
+const state={stage:{question:null,scores:new Map()},host:{question:null,scores:new Map()},stageStudents:{question:null,scores:new Map()},hostStudents:{question:null,scores:new Map()}};
 const ceremonyRuns=new WeakMap();
 const prefersReduced=()=>!!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 const escapeText=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
