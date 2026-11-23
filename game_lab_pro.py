@@ -504,6 +504,62 @@ def _refund_ai_usage(tid,usage_id):
         print('TAG LAB: could not release unsuccessful AI usage slot',flush=True)
 
 
+def _safe_local_cloze(text, maximum, existing):
+    """Offer literal fill-in-the-blank questions, never model-invented facts.
+
+    Used only when the normal textbook extractor returns too few questions.
+    Short clauses and named pages are copied verbatim (apart from whitespace)
+    so teachers can see the source and review before using them.
+    """
+    if maximum<=len(existing):return []
+    existing_q={clean_book_text(x.get('q')).casefold() for x in existing}
+    answers={clean_book_text(x.get('a')).casefold() for x in existing}
+    candidates={}
+    rejected={'الذي','التي','الذين','هناك','حيث','هذه','هذا','كانت',
+              'تكون','يمكن','الطلاب','الطالب','أثناء','بعض','احدى','جميع'}
+    for page,raw in selected_book_pages(text):
+        current=[]
+        for line in raw.splitlines():
+            for chunk in re.split(r'(?<=[.؟!؛])\s+',line):
+                sentence=clean_book_text(chunk).strip('؛ .،:|')
+                if not 58<=len(sentence)<=155:continue
+                if len(sentence.split())<8:continue
+                matches=list(re.finditer(r'[\u0621-\u064a]{5,}|[A-Za-z]{5,}',sentence))
+                eligible=[m for m in matches
+                          if m.group(0).casefold() not in rejected and
+                          m.group(0).casefold() not in answers and
+                          5<=len(m.group(0))<=22]
+                if not eligible:continue
+                midpoint=len(sentence)//2
+                token=min(eligible,key=lambda m:abs((m.start()+m.end())//2-midpoint))
+                answer=token.group(0)
+                question=('أكمل العبارة من الكتاب: «'+
+                          sentence[:token.start()]+'(....)'+sentence[token.end():]+'»')
+                if len(question)>200 or clean_book_text(question).casefold() in existing_q:
+                    continue
+                existing_q.add(clean_book_text(question).casefold())
+                answers.add(answer.casefold())
+                current.append({'q':question,'a':answer,'g':'صفحة '+str(page),
+                                'sourcePage':page,'sourceQuote':sentence,
+                                'origin':'local_cloze','questionType':'short',
+                                'difficulty':'easy'})
+                if len(current)>=maximum*2:break
+            if len(current)>=maximum*2:break
+        if current:candidates[page]=current
+    out=[]
+    for p in sorted(candidates):
+        candidates[p].sort(key=lambda row:len(row['sourceQuote']),reverse=True)
+    while len(out)+len(existing)<maximum:
+        found=False
+        for p in sorted(candidates):
+            if candidates[p]:
+                out.append(candidates[p].pop(0))
+                found=True
+                if len(out)+len(existing)>=maximum:break
+        if not found:break
+    return out
+
+
 def _local_ai_recovery(tid,data,requested,reason):
     """Return teacher-reviewable book excerpts when every free Gemini request fails.
 
@@ -511,7 +567,13 @@ def _local_ai_recovery(tid,data,requested,reason):
     credentials, extra provider requests, or paid services.
     """
     draft=offline_generate(tid,data)
-    count=len(draft.get('rows') or [])
+    base_rows=list(draft.get('rows') or [])
+    if len(base_rows)<requested:
+        book=require_book(tid,data.get('bookId'))
+        text,_=source_selection(book,data.get('startPage'),data.get('endPage'),max_chars=220000)
+        base_rows.extend(_safe_local_cloze(text,requested,base_rows))
+    draft['rows']=base_rows
+    count=len(base_rows)
     reasons={
       'ai_provider_overloaded':'تعذر رد Google مؤقتًا (503)',
       'ai_network_error':'انقطع الاتصال بمزوّد Google',
@@ -530,7 +592,7 @@ def _local_ai_recovery(tid,data,requested,reason):
       'count':count
     })
     draft['warning']=(why+'. انتقل TAG LAB تلقائيًا إلى استخراج أسئلة محلية من الكتاب، دون خصم محاولة TAG AI. '
-                      'هذه المقترحات ليست مولدة بالذكاء الاصطناعي، ولا تُنشر تلقائيًا. '
+                      'هذه المقترحات ليست مولدة بالذكاء الاصطناعي؛ قد تتضمن أسئلة إكمال عبارة حرفية من الكتاب. لا تُنشر تلقائيًا. '
                       'تم العثور على '+str(count)+' من '+str(requested)+' أسئلة مطلوبة؛ '
                       'راجع نصوص الأسئلة والإجابات وصفحاتها قبل اعتمادها. '
                       +(draft.get('warning') or ''))
