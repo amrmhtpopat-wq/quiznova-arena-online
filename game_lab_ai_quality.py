@@ -53,7 +53,35 @@ def suspicious_book_text(value):
     return False
 
 
-def selected_ai_source(book,start,end,decode_pages,max_chars=26000,max_pages=25):
+def _usable_source_lines(text):
+    """Strip clearly corrupt PDF text before it reaches the external model.
+
+    This is an intentionally conservative text filter. It never repairs
+    damaged words by guessing. Teachers can inspect the unmodified text.
+    """
+    accepted=[]
+    removed=0
+    for raw_line in str(text or '').splitlines():
+        line=unicodedata.normalize('NFKC',raw_line).strip()
+        if not line:continue
+        # Long PDF text lines can contain several statements: segment them
+        # so one damaged header does not discard an entire clean paragraph.
+        segments=(re.split(r'(?<=[.؟!؛])\s+',line)
+                  if len(line)>800 else [line])
+        for part in segments:
+            candidate=re.sub(r'\s+',' ',part).strip()
+            tokens=_plain(candidate).split()
+            if (len(candidate)<25 or len(tokens)<4 or
+                    suspicious_book_text(candidate) or
+                    re.fullmatch(r'[\d\s\-()\[\].،:]+',candidate)):
+                removed+=1
+                continue
+            accepted.append(candidate)
+    return accepted,removed
+
+
+def audit_ai_source(book,start,end,decode_pages,max_chars=26000,max_pages=25):
+    """Readiness report without an AI call or external upload."""
     pages=decode_pages(book['page_data'],[])
     try:
         a=int(start or 1)
@@ -62,14 +90,53 @@ def selected_ai_source(book,start,end,decode_pages,max_chars=26000,max_pages=25)
         raise ValueError('invalid_pages')
     if a<1 or b<a or b>len(pages):
         raise ValueError('invalid_pages')
-    chosen=[p for p in pages if a<=int(p['p'])<=b and str(p.get('text') or '').strip()]
-    if not chosen:
+    selected=[p for p in pages if a<=int(p.get('p') or 0)<=b]
+    if not selected:
         raise ValueError('empty_pages')
-    if len(chosen)>max_pages:
+    if len(selected)>max_pages:
         raise ValueError('ai_too_many_pages')
-    per_page=max(300,(max_chars-24*len(chosen))//len(chosen))
-    fragments=['[صفحة '+str(p['p'])+']\n'+str(p['text'])[:per_page] for p in chosen]
-    return '\n\n'.join(fragments)[:max_chars],chosen
+    summary=[]
+    good=[]
+    for page in selected:
+        number=int(page['p'])
+        lines,removed=_usable_source_lines(page.get('text',''))
+        extracted='\n'.join(lines)
+        word_count=len(_plain(extracted).split())
+        usable=(len(extracted)>=65 and word_count>=10)
+        if usable:good.append({'p':number,'text':extracted})
+        summary.append({'page':number,'readable':usable,'words':word_count,
+                        'excludedFragments':removed})
+    selected_count=len(selected)
+    report={'selectedPages':selected_count,'readablePages':len(good),
+            'excludedPages':selected_count-len(good),
+            'excludedFragments':sum(p['excludedFragments'] for p in summary),
+            'pages':summary,'ready':bool(good)}
+    if not good:
+        report['message']=('النص المستخرج من الصفحات المحددة غير موثوق أو لا يحتوي على درس مقروء. '
+                           'اختر صفحات شرح واضحة أو ارفع PDF نصيًا سليمًا أو DOCX؛ '
+                           'لن نرسل نصًا مشوّهًا إلى TAG AI.')
+        return '',[],report
+    per_page=max(350,(max_chars-24*len(good))//len(good))
+    fragments=[]
+    for page in good:
+        snippet=page['text'][:per_page]
+        # Avoid truncating Arabic words if the page exceeds its text budget.
+        if len(page['text'])>per_page and ' ' in snippet:
+            snippet=snippet.rsplit(' ',1)[0]
+        fragments.append('[صفحة '+str(page['p'])+']\n'+snippet)
+    source='\n\n'.join(fragments)[:max_chars]
+    report['message']=('تم العثور على '+str(len(good))+' صفحات صالحة من '+
+                       str(selected_count)+'؛ استُبعدت المقاطع المشوهة قبل إرسال النص. '
+                       'راجع الصفحات والإجابات قبل اعتماد المقترحات.')
+    return source,good,report
+
+
+def selected_ai_source(book,start,end,decode_pages,max_chars=26000,max_pages=25):
+    source,pages,report=audit_ai_source(book,start,end,decode_pages,
+                                       max_chars=max_chars,max_pages=max_pages)
+    if not report['ready']:
+        raise ValueError('ai_source_quality_low')
+    return source,pages
 
 
 def _near_literal_quote(quote,original):
@@ -107,6 +174,30 @@ def _near_literal_quote(quote,original):
     return None
 
 
+_ANSWER_STOP_WORDS={'في','من','على','الى','إلى','عن','التي','الذي','هذا',
+                    'هذه','انه','بانه','لها','لهم','عند','لأن','بعض','وهي',
+                    'ذلك','تلك','تكون','يكون','هي','هو','مع','بين'}
+
+
+def answer_evidence_strength(answer,quote):
+    """High/low confidence of literal source support, not semantic truth."""
+    a=_plain(answer)
+    evidence=_plain(quote)
+    if not a or not evidence:return 'needs_review'
+    if a in evidence:return 'direct'
+    significant=[w for w in a.split()
+                 if len(w)>=3 and w not in _ANSWER_STOP_WORDS]
+    if len(significant)>=2:
+        supported=sum(any(w==token or
+                          (len(w)>=5 and len(token)>=5 and
+                           (w in token or token in w))
+                          for token in evidence.split())
+                      for w in significant)
+        if supported>=2 and supported/len(significant)>=0.75:
+            return 'partial'
+    return 'needs_review'
+
+
 def verify_ai_rows(raw_rows,selected_pages,maximum,include_stats=False):
     """Keep source-grounded questions, repairing only verifiable formatting.
 
@@ -117,7 +208,7 @@ def verify_ai_rows(raw_rows,selected_pages,maximum,include_stats=False):
     source_plain={p:_plain(t) for p,t in source_text.items()}
     stats={'missing_quote':0,'invalid_fields':0,'duplicate':0,
            'invalid_true_false':0,'corrected_page':0,'corrected_quote':0,
-           'repaired_choices':0,'accepted':0}
+           'repaired_choices':0,'accepted':0,'needs_review':0}
     found=[]
     seen=set()
     for row in (raw_rows if isinstance(raw_rows,list) else [])[:max(0,int(maximum))*3]:
@@ -201,6 +292,20 @@ def verify_ai_rows(raw_rows,selected_pages,maximum,include_stats=False):
             question['choices']=choices
         if explanation:
             question['explanation']=explanation
+        # Literal proof for MCQ/short answers. A false T/F answer requires
+        # semantic review, so it is never automatically marked verified.
+        strength=('needs_review' if question_type=='true_false' and a=='خطأ'
+                  else answer_evidence_strength(a,quote)
+                  if question_type in ('short','mcq') else 'direct')
+        if question_type=='short' and 'راجع خيارات' in explanation:
+            strength='needs_review'
+        question['evidenceStatus']=strength
+        if strength=='needs_review':
+            question['requiresReview']=True
+            question['reviewReason']=('قارن الإجابة مع اقتباس الكتاب؛ لا توجد مطابقة نصية كافية.'
+                                      if question_type!='true_false' else
+                                      'تأكد من صحة الحكم على العبارة بالرجوع إلى صفحة الدرس.')
+            stats['needs_review']+=1
         found.append(question)
         seen.add(signature)
         if len(found)>=maximum:
