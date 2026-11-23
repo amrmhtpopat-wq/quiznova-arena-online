@@ -115,7 +115,11 @@
    <option value="application">تطبيق على مواقف من الدرس</option>
   </select></div>
  </div>
- <details class="hint"><summary style="cursor:pointer">خصوصية التوليد</summary><p>عند استخدام TAG AI، يُرسل نص الصفحات المختارة إلى Google لإنشاء الأسئلة، وقد يُستخدم لتحسين خدماتها في المستوى المجاني. تجنّب تضمين بيانات شخصية للطلاب.</p></details>
+ <div class="row2" style="margin-top:10px">
+<div class="field"><label for="labAiTopic">📖 عنوان الدرس أو محور التركيز (اختياري)</label><input id="labAiTopic" type="text" maxlength="90" placeholder="مثال: أمن المعلومات أو النسبة المئوية"><p class="hint">يقتصر التوليد على المعلومات الموجودة في الصفحات المحددة.</p></div>
+<div class="field"><label for="labAiQuestionBalance">📝 نوع الأسئلة</label><select id="labAiQuestionBalance"><option value="mixed">متنوع — اختيار، صح وخطأ، إجابة قصيرة</option><option value="mcq">اختيار من متعدد فقط</option><option value="true_false">صح وخطأ فقط</option><option value="short">فهم وإجابة قصيرة فقط</option></select></div>
+</div>
+  <details class="hint"><summary style="cursor:pointer">خصوصية التوليد</summary><p>عند استخدام TAG AI، يُرسل نص الصفحات المختارة إلى Google لإنشاء الأسئلة، وقد يُستخدم لتحسين خدماتها في المستوى المجاني. تجنّب تضمين بيانات شخصية للطلاب.</p></details>
  </div><div id="labAiStatus" class="hint" aria-live="polite" hidden></div>
 <label style="display:flex;gap:9px;align-items:center;margin:10px 0;font-size:.83rem"><input type="checkbox" id="labAiConsent" style="width:auto"> أوافق على إرسال نص الصفحات المختارة إلى Google عند توليد الأسئلة.</label><div class="buttons"><button class="button gold" id="labBookGenerate">🪄 توليد مسودة أسئلة</button><button class="button transparent" id="labBookPages">📄 عرض الصفحات المستخرجة</button><button class="button alt" id="labBookCheckSource" type="button">🔎 فحص جودة نص الكتاب</button></div><div class="hint" id="labBookSourceQuality" aria-live="polite" style="margin-top:9px;padding:9px;border-radius:10px;border:1px solid #497caa44"></div>
 </div>
@@ -481,7 +485,7 @@ renderCatalog();refreshSaved();report('ابدأ بإدخال أسئلتك أو �
 })();
 </script>
 <script src="/game-lab-cloud-v2.js?v=41.0" defer></script>
-<script defer src="/game-lab-pro-v3.js?v=43.0"></script><script src="/game-lab-extra-v2.js?v=2.0"></script>
+<script defer src="/game-lab-pro-v3.js?v=44.0"></script><script src="/game-lab-extra-v2.js?v=2.0"></script>
 <script defer src="/game-lab-grade7-pilot.js?v=1.0"></script>
 <button id="v4BackToTop" type="button" aria-label="العودة إلى أعلى الصفحة">↑ للأعلى</button>
 <script defer src="/game-lab-v4.js?v=4.0"></script>
