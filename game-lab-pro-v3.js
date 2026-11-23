@@ -237,14 +237,37 @@ function reviewSelect(className,value,options){
  for(const [id,label] of options){const opt=document.createElement('option');opt.value=id;opt.textContent=label;control.append(opt)}
  control.value=value;return control
 }
+function invalidBookQuestion(q,a){
+ const question=String(q||'').normalize('NFKC').trim();
+ const answer=String(a||'').normalize('NFKC').trim();
+ const normalized=question.replace(/[\u064b-\u065f\u0670\u0640]/g,'')
+  .replace(/[أإآٱ]/g,'ا').replace(/ى/g,'ي').replace(/\s+/g,' ').trim();
+ if(!question||!answer)return true;
+ if(/(?:ثم\s+)?(?:اجب|اقرا|حل)\s+(?:عن|علي|الاسئلة|الاسئله|السؤال|النص)/.test(normalized))return true;
+ if(/(?:الاسئله|الاسئلة)\s+(?:التي\s+)?(?:تليه|تلي|التاليه|التالية)/.test(normalized))return true;
+ if(/^ما\s+المقصود\s+ب[ـ]?\s*(?:ثم|اجب|اقرا|اكتب|اختر|حل)/.test(normalized))return true;
+ if(/^[،؛:!?؟|)\]}]+/.test(answer))return true;
+ for(const [start,end] of [['"','"'],['«','»'],['“','”']]){
+  if(answer.startsWith(start)&&!answer.endsWith(end))return true;
+ }
+ if(/منالمتحان|المةصفحة|الصفحاتادد|السئلةجميع|ازلزي/.test(normalized))return true;
+ return false
+}
 function renderBookReview(rows){
  const parent=$('labBookPreview');parent.replaceChildren();
  const intro=document.createElement('p');intro.className='hint';
  intro.textContent='راجع نوع السؤال والصعوبة والإجابة الصحيحة والبدائل قبل اعتمادها. لا تُنشر أي أسئلة تلقائيًا.';
  parent.append(intro);
+ const validRows=(Array.isArray(rows)?rows:[]).filter(r=>!invalidBookQuestion(r?.q,r?.a));
+ const removed=(Array.isArray(rows)?rows.length:0)-validRows.length;
+ if(removed){
+  const warning=document.createElement('p');warning.className='notice';
+  warning.textContent='⚠️ استُبعد '+removed+' سؤالًا غير صالح بسبب تعليمات امتحان أو نص/إجابة مبتورة. لن تُعتمد هذه الأسئلة؛ أعد التوليد من صفحات الدرس.';
+  parent.append(warning);
+ }
  const types=[['mcq','🔘 اختيار من متعدد (4 خيارات)'],['true_false','✅ صح أو خطأ'],['short','🧠 فهم وإجابة قصيرة']];
  const levels=[['easy','سهل'],['medium','متوسط'],['hard','متقدم']];
- for(const [i,r] of rows.entries()){
+ for(const [i,r] of validRows.entries()){
   const card=document.createElement('article');card.className='lab-bookrow tag-book-review-card';
   const header=document.createElement('div');header.className='tag-book-review-top';
   const keep=document.createElement('label');keep.className='tag-book-review-keep';
@@ -286,6 +309,7 @@ function renderBookReview(rows){
   kind.addEventListener('change',()=>{updateChoices();bookDraftReady=false;$('labBookSaveCloud').disabled=true});
   updateChoices();card.append(header,row,questionLabel,answerLabel,choicesBlock,explainLabel,source);parent.append(card)
  }
+ return validRows
 }
 function approveBookSuggestions(){
  const cards=[...$('labBookPreview').querySelectorAll('.tag-book-review-card')];
@@ -298,6 +322,9 @@ function approveBookSuggestions(){
   const type=card.querySelector('.tag-book-type').value,level=card.querySelector('.tag-book-difficulty').value;
   const explanation=card.querySelector('.tag-book-explanation').value.trim().slice(0,240);
   if(!q||!a){message('labBookStatus','يوجد سؤال أو جواب فارغ ضمن الأسئلة المختارة.',true);return}
+  if(invalidBookQuestion(q,a)){
+   message('labBookStatus','تعذر اعتماد السؤال «'+q.slice(0,45)+'» لأن نصه أو إجابته غير صالح. عدّله أو ألغِ اختياره.',true);return
+  }
   const key=(q+'|'+a).toLocaleLowerCase('ar');if(seen.has(key))continue;seen.add(key);
   const source=card._tagSource||{},row={q,a,g:source.g||'عام',sourcePage:source.sourcePage||null,
    sourceQuote:source.sourceQuote||'',origin:source.origin||'ai',questionType:type,
@@ -388,17 +415,19 @@ async function generate(){
   const rows=Array.isArray(response.rows)?response.rows:[];
   if(response.sourceAudit)showSourceQuality(response.sourceAudit);
   const localFallback=response.fallbackFrom==='ai';
-  renderBookReview(rows);
-  $('labBookApprove').disabled=!rows.length;
-  const breakdown=rows.length
-   ?'أُنشئت '+rows.length+' أسئلة: '+rows.filter(r=>r.questionType==='mcq').length+' اختيار، '+rows.filter(r=>r.questionType==='true_false').length+' صح أو خطأ، '+rows.filter(r=>r.questionType==='short').length+' فهم وإجابة قصيرة. راجع الخيارات والأدلة قبل الاعتماد.'
+  const reviewable=renderBookReview(rows);
+  $('labBookApprove').disabled=!reviewable.length;
+  const breakdown=reviewable.length
+   ?'أُنشئت '+reviewable.length+' أسئلة صالحة للمراجعة: '+reviewable.filter(r=>r.questionType==='mcq').length+' اختيار، '+reviewable.filter(r=>r.questionType==='true_false').length+' صح أو خطأ، '+reviewable.filter(r=>r.questionType==='short').length+' فهم وإجابة قصيرة. راجع الخيارات والأدلة قبل الاعتماد.'
    :(localFallback
      ?'تعذّر التوليد لدى Google، ولم يجد المحرك المحلي جملًا يمكن تحويلها إلى أسئلة مباشرة. هذا لا يعني أن الكتاب تالف. فحص جودة الصفحات أعلاه يوضح صلاحية النص؛ جرّب TAG AI مجددًا عندما تستقر الخدمة.'
      :'لم أجد أسئلة كافية من الصيغ المباشرة في الصفحات المحددة. جرّب صفحات شرح أخرى أو وسّع النطاق.');
-  const needsReview=rows.filter(r=>r.requiresReview).length;
+  const needsReview=reviewable.filter(r=>r.requiresReview).length;
+  const discarded=rows.length-reviewable.length;
   $('labBookSummary').textContent=(localFallback?'⚠️ تعذّر الاتصال بالنماذج المجانية المتاحة، والبديل الحالي استخراج نصي وليس ذكاءً اصطناعيًا. ':'')+breakdown+
-   (needsReview?' ⚠️ '+needsReview+' أسئلة تحتاج مراجعة الإجابة قبل تحديد اعتمادها.':'');
-  message('labBookStatus',response.warning||'راجع المقترحات قبل اعتمادها.',rows.length<4);
+   (needsReview?' ⚠️ '+needsReview+' أسئلة تحتاج مراجعة الإجابة قبل تحديد اعتمادها.':'')+
+   (discarded?' 🛡️ استُبعد '+discarded+' سؤال مشوّه قبل عرضه.':'');
+  message('labBookStatus',response.warning||'راجع المقترحات قبل اعتمادها.',reviewable.length<4);
  }catch(e){failed('labBookStatus',e)}
  finally{button.disabled=false}
 }
@@ -591,9 +620,9 @@ document.addEventListener('gamelab:edit-structured-bank',event=>{
  if(!Array.isArray(rows)||!rows.length)return;
  window.TG_BOOK_EDITOR_REUSE=true;
  window.BOOYAH_LAB_BOOK_ID=event.detail?.bookId||'';
- renderBookReview(rows);
+ const reviewable=renderBookReview(rows);
  bookDraftReady=false;$('labBookSaveCloud').disabled=true;
- $('labBookApprove').disabled=false;
+ $('labBookApprove').disabled=!reviewable.length;
  $('labBookSummary').textContent='تعديل بنك محفوظ: يمكنك تحرير الإجابات البديلة والصعوبة والتفسير، ثم الضغط على «اعتماد المختار»، وبعدها «حفظ النشاط» في مكتبتي لتحديث المسودة نفسها دون استهلاك TAG AI.';
  scroll('bookLab');
 });
