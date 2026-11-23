@@ -53,6 +53,8 @@ jobs:
         run: python -u tests/browser_contrast_v109.py
       - name: Actual book extraction and edit workflow regression
         run: python -u tests/browser_tag_studio_book_ai_v1.py
+      - name: Legacy student card and classroom smoke compatibility
+        run: python -u tests/browser_smoke_v105.py
       - name: Preserve teacher-scoped subject and grade bank filters
         run: python -u tests/browser_tag_jordan_library_v1.py
       - name: Upload screenshots of 320/390/768/1024/1366px
