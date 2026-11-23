@@ -613,7 +613,7 @@ def ai_generate(tid,data):
       'true_false':'عبارات صح وخطأ فقط مع دليل واضح',
       'short':'أسئلة فهم وإجابات قصيرة فقط'
     }[balance]
-    topic=re.sub(r'\\s+',' ',ident(data.get('topic'))[:90])
+    topic=re.sub(r'\s+',' ',ident(data.get('topic'))[:90])
     topic_directive=('؛ محور الدرس: '+topic+' (تجاهله إن لم يظهر في النص المختار)' if topic else '')
     difficulty_label={'easy':'أسئلة سهلة مناسبة للمبتدئين',
        'balanced':'تدرج متوازن من السهل إلى المتوسط إلى الصعب',
