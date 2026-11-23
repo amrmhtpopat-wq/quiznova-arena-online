@@ -1,7 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;
 /* TAG Spatial Native V3 — isolated in ShadowRoot, no iframe/browser context */
 :host{display:block;min-width:0;width:100%;overflow:visible;--bg:#071b2c;--cream:#f4f7ef;color:#f4f7ef;font-family:"IBM Plex Sans Arabic",Tahoma,sans-serif;}
 
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
 :host {--bg:#071b2c;--bg2:#0a2439;--surface:#103047;--surface2:#143950;--edge:#25495e;--teal:#5dd6d2;--cyan:#2cb8cd;--cream:#f4f7ef;--muted:#abc2d2;--yellow:#ecc776;--shadow:0 26px 80px #0004;--mx:50%;--my:50%}
 *{box-sizing:border-box} :host {scroll-behavior:smooth}:host {margin:0;background:var(--bg);color:var(--cream);font-family:'IBM Plex Sans Arabic',Tahoma,Arial,sans-serif;overflow-x:hidden}a{color:inherit}button,input{font:inherit}button{cursor:pointer}button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--teal);outline-offset:3px}::selection{background:#6de0d4;color:#092235}
 .background{position:fixed;inset:0;pointer-events:none;z-index:-1;background:radial-gradient(ellipse 55% 55% at 76% -5%,#1c60726b,transparent 75%),radial-gradient(ellipse 54% 70% at -13% 55%,#123d5360,transparent 75%),#071b2c}.background:after{content:"";position:absolute;inset:0;opacity:.16;background-image:linear-gradient(#aec5ce13 1px,transparent 1px),linear-gradient(90deg,#aec5ce13 1px,transparent 1px);background-size:52px 52px;mask-image:linear-gradient(transparent 0%,black 32%,black 78%,transparent 100%)}
