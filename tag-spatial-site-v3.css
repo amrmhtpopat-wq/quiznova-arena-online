@@ -1,0 +1,258 @@
+/* TAG SPATIAL V3 — sitewide visual system, NOT a replacement of existing application logic.
+ * Opt-in on approved pages only; champion.html and TAG LAB are deliberately excluded.
+ * Preserves QR/PIN, game answer colors, stored data and printing.
+ */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+body.tag-spatial-global {
+ --tag-bg:#071b2c;--tag-bg-2:#0a2439;--tag-surface:#102f44;--tag-surface-2:#153b51;
+ --tag-edge:#376277;--tag-text:#f1f8f4;--tag-sub:#a8cad2;--tag-cyan:#5dd6d2;
+ --tag-ink:#092c3b;--tag-gold:#eac677;
+ --bg:#071b2c;--surface:#102f44;--surface2:#153b51;--ink:#f1f8f4;
+ --muted:#a8cad2;--line:#3d6679;--navy:#071b2c;--violet:#26adbd;--violet2:#66dcd7;
+ --pink:#86e2d8;--cyan:#5dd6d2;--blue:#2782b0;--lime:#75d8b4;
+ --yellow:#eac677;--red:#f27d88;--green:#75d8b4;--orange:#eac677;
+ --shadow:0 22px 52px rgba(0,8,20,.35);--softShadow:0 10px 25px rgba(0,9,20,.24);
+ background:var(--tag-bg)!important;color:var(--tag-text);
+ font-family:"IBM Plex Sans Arabic",Tahoma,Arial,sans-serif;
+ color-scheme:dark;
+ overflow-x:hidden;
+}
+body.tag-spatial-global::before{
+ content:"";position:fixed;inset:0;pointer-events:none;z-index:-2;
+ background:radial-gradient(ellipse 65% 40% at 85% -10%,#1b667358,transparent 77%),
+ radial-gradient(ellipse 65% 55% at -8% 75%,#153d5470,transparent 78%),#071b2c!important;
+}
+body.tag-spatial-global .ambient{opacity:.18!important;background:#2389a2!important}
+body.tag-spatial-global .sidebar,
+body.tag-spatial-global aside.sidebar{
+ background:linear-gradient(165deg,#10384d 0%,#0a2438 57%,#071b2c 100%)!important;
+ border-left:1px solid #82d1d72b!important;
+ box-shadow:-10px 0 46px #0004,inset 0 1px #b3f7eb13!important;
+}
+body.tag-spatial-global .sidebar::before{background:#42c8c7!important;opacity:.12}
+body.tag-spatial-global .sidebar::after{border-color:#76e6df14!important}
+body.tag-spatial-global .sidebar .brand,
+body.tag-spatial-global .brand-copy,
+body.tag-spatial-global .brand h1{color:#f4fff9!important}
+body.tag-spatial-global .brand p,
+body.tag-spatial-global .tag-brand-copy p,
+body.tag-spatial-global .sidebar small{color:#a6cad0!important}
+body.tag-spatial-global .sidebar .brand-logo{
+ border-radius:18px!important;background:#133d52!important;
+ box-shadow:inset 0 0 0 1px #76d9dc60,0 12px 28px #0006!important;
+ transform:none!important;overflow:visible;
+}
+body.tag-spatial-global .sidebar .nav-item,
+body.tag-spatial-global .sidebar .nav,
+body.tag-spatial-global .sidebar .tag-studio-external-link{color:#b9d7dc}
+body.tag-spatial-global .sidebar .nav-item:hover,
+body.tag-spatial-global .sidebar .tag-studio-external-link:hover{
+ color:#fff!important;background:#25607770!important;transform:translateX(-2px);
+}
+body.tag-spatial-global .sidebar .nav-item.active,
+body.tag-spatial-global .sidebar button.nav.active,
+body.tag-spatial-global .sidebar .tag-studio-group-toggle[aria-expanded="true"]{
+ color:#eafff8!important;background:linear-gradient(100deg,#1b586c,#174357)!important;
+ box-shadow:inset -3px 0 #78e4d3,0 10px 24px #00192566!important;
+}
+body.tag-spatial-global .sidebar .tag-studio-group-toggle{
+ color:#d9f0ef!important;background:#103449!important;border-color:#4d829058!important;
+}
+body.tag-spatial-global .sidebar .tag-studio-nav-group,
+body.tag-spatial-global .sidebar .teacher-card,
+body.tag-spatial-global .sidebar .tag-studio-sidebar-caption{
+ border-color:#60a8b144!important;background-color:#10374a7d!important;
+}
+body.tag-spatial-global .main,
+body.tag-spatial-global #app .main,
+body.tag-spatial-global .main-content{
+ color:var(--tag-text);
+}
+body.tag-spatial-global .topbar,
+body.tag-spatial-global header.topbar{
+ background:#0a24386b!important;border:1px solid #71d6d72a;
+ border-radius:17px;padding:14px 20px;
+ box-shadow:0 9px 26px #0002;
+ backdrop-filter:blur(10px);
+}
+body.tag-spatial-global .topbar h1,
+body.tag-spatial-global .topbar h2,
+body.tag-spatial-global .page-hero h2,
+body.tag-spatial-global .section-title h2,
+body.tag-spatial-global .panel h3,
+body.tag-spatial-global .pane h3{color:#effbf7}
+body.tag-spatial-global .topbar p,
+body.tag-spatial-global .page-hero p,
+body.tag-spatial-global .panel p,
+body.tag-spatial-global .pane p{color:#abc9d2}
+body.tag-spatial-global .panel,
+body.tag-spatial-global .pane,
+body.tag-spatial-global .metric,
+body.tag-spatial-global .stat-card,
+body.tag-spatial-global .insight-card,
+body.tag-spatial-global .quiz-card,
+body.tag-spatial-global .quiz-cards > *,
+body.tag-spatial-global .student-info,
+body.tag-spatial-global .play-setup,
+body.tag-spatial-global .auth-card,
+body.tag-spatial-global .builder-main{
+ background:linear-gradient(150deg,#143c51,#0e2d41 76%)!important;
+ color:#f3fbf6!important;border:1px solid #5a899867!important;
+ box-shadow:0 8px 0 #05142299,0 20px 43px #0003,inset 0 1px #ffffff0a!important;
+ border-radius:17px!important;
+}
+body.tag-spatial-global .panel-head,
+body.tag-spatial-global .pane-head,
+body.tag-spatial-global .section-title{
+ border-color:#7fc6c838!important;
+}
+body.tag-spatial-global .page-hero,
+body.tag-spatial-global .game-hero,
+body.tag-spatial-global .hero:not(.tag-spatial-hero){
+ color:#f5fbf9;background:linear-gradient(140deg,#145065,#0b283d 70%)!important;
+ border:1px solid #6ecfd16e;border-radius:23px;
+ box-shadow:0 16px 55px #020d186b,inset 0 1px #d4fff314;
+}
+body.tag-spatial-global .hero h2,
+body.tag-spatial-global .hero h3,
+body.tag-spatial-global .hero p{color:#eaf8f5!important}
+body.tag-spatial-global .hero em{color:#8beadd!important}
+body.tag-spatial-global .panel .overline,
+body.tag-spatial-global .pane .overline,
+body.tag-spatial-global .kicker{color:#83dcd4!important}
+body.tag-spatial-global .btn,
+body.tag-spatial-global .primary,
+body.tag-spatial-global button.minibtn,
+body.tag-spatial-global button.secondary{
+ border-radius:12px!important;transition:transform .23s ease,box-shadow .23s ease,background-color .2s;
+}
+body.tag-spatial-global .btn-primary,
+body.tag-spatial-global a.primary,
+body.tag-spatial-global button.primary,
+body.tag-spatial-global .bo-btn-primary{
+ background:#a0e9dc!important;color:#072c3b!important;border:1px solid #c6fff3!important;
+ box-shadow:0 12px 30px #3fbab125!important;
+}
+body.tag-spatial-global .btn-secondary,
+body.tag-spatial-global button.minibtn,
+body.tag-spatial-global .ghost{
+ background:#1a445a!important;border:1px solid #4e8193!important;color:#e7f6f5!important;
+}
+body.tag-spatial-global .btn:hover,
+body.tag-spatial-global .primary:hover,
+body.tag-spatial-global .ghost:hover,
+body.tag-spatial-global .minibtn:hover,
+body.tag-spatial-global .page-hero a:hover{
+ transform:translateY(-2px);filter:brightness(1.08);
+}
+body.tag-spatial-global input:not([type="checkbox"]):not([type="radio"]),
+body.tag-spatial-global textarea,
+body.tag-spatial-global select,
+body.tag-spatial-global .form-control{
+ background:#09273b!important;border:1px solid #527b8b!important;color:#f3fbf7!important;
+ border-radius:11px!important;box-shadow:inset 0 1px 4px #0002;
+}
+body.tag-spatial-global input::placeholder,
+body.tag-spatial-global textarea::placeholder{color:#9abec9!important}
+body.tag-spatial-global select option{background:#123349;color:#effbf6}
+body.tag-spatial-global input:focus-visible,
+body.tag-spatial-global textarea:focus-visible,
+body.tag-spatial-global select:focus-visible{outline:2px solid #80e9dc!important;outline-offset:2px}
+body.tag-spatial-global label,
+body.tag-spatial-global .form-stack label{color:#d4e8ea}
+body.tag-spatial-global .table-wrap,
+body.tag-spatial-global .table-responsive,
+body.tag-spatial-global table{
+ background:#112e43!important;color:#f3fcf8!important;border-color:#50778b!important;
+}
+body.tag-spatial-global th{background:#1d4a5e!important;color:#d6fcf3!important}
+body.tag-spatial-global td{border-color:#52788a55!important}
+body.tag-spatial-global tr:nth-child(even){background:#bde7f008}
+body.tag-spatial-global .status,
+body.tag-spatial-global .local-badge,
+body.tag-spatial-global .badge,
+body.tag-spatial-global .tag-pill{
+ background:#13465a!important;color:#bcf5e8!important;border-color:#5db6ba80!important;
+}
+body.tag-spatial-global .nav-item b{background:#a5e8db!important;color:#0b3443!important}
+body.tag-spatial-global .stats-grid .stat-card strong,
+body.tag-spatial-global .metric strong{color:#dcfff1!important}
+body.tag-spatial-global .stats-grid .stat-card small,
+body.tag-spatial-global .metric small{color:#a9cbd2!important}
+body.tag-spatial-global .rank-row,
+body.tag-spatial-global .skill-row,
+body.tag-spatial-global .analysis-grid > *,
+body.tag-spatial-global .list > *,
+body.tag-spatial-global .media-item,
+body.tag-spatial-global .bank-item{
+ background:#10394d!important;color:#eaf6f2!important;border-color:#53849566!important;
+}
+body.tag-spatial-global a:not(.btn):not(.nav):not(.nav-item):not(.tool):hover{color:#80e5d8}
+body.tag-spatial-global :where(.nav-item,.pane,.panel,.metric,.stat-card,.quiz-card,.insight-card,.media-item,.bank-item){
+ transition:border-color .25s ease,box-shadow .25s ease,transform .25s ease;
+}
+@media(hover:hover) and (pointer:fine){
+ body.tag-spatial-global :where(.pane,.metric,.stat-card,.insight-card):hover{
+  border-color:#84d9d49c!important;
+  box-shadow:0 11px 0 #05162284,0 23px 50px #0005,0 0 0 1px #68e9dd21!important;
+ }
+}
+/* Preserve original answer button color semantics, active states, student QR and card print surfaces. */
+body.tag-spatial-global.v105-student .student-shell,
+body.tag-spatial-global.v105-student .student-topbar,
+body.tag-spatial-global.v105-student .entry-card{
+ background:#0d3045!important;color:#ecf8f5!important;border-color:#548d9b70!important;
+}
+body.tag-spatial-global.v105-student :where(.student-answer,.answer-choice,.choice,.option){
+ transition:transform .18s ease,filter .18s ease;
+}
+@media(hover:hover){body.tag-spatial-global.v105-student :where(.student-answer,.answer-choice,.choice,.option):hover{transform:translateY(-2px)}}
+body.tag-spatial-global .tag-spatial-identity{
+ display:block;object-fit:contain;width:auto;max-width:100%;max-height:75px;
+ filter:drop-shadow(0 4px 12px #2ecaca3b);
+}
+body.tag-spatial-global .brand .tag-spatial-identity{max-width:180px;max-height:90px}
+body.tag-spatial-global .auth-card .tag-spatial-identity,
+body.tag-spatial-global .auth-hero .tag-spatial-identity,
+body.tag-spatial-global .auth-brand .tag-spatial-identity{max-width:220px;max-height:130px}
+body.tag-spatial-global .brandmark.tag-spatial-brandmark,
+body.tag-spatial-global .brand-logo:has(.tag-spatial-identity){
+ background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;
+ width:auto!important;height:auto!important;padding:0!important;
+}
+/* Spatial home embedded only for authenticated teacher dashboard views. */
+body.tag-spatial-global .tag-spatial-host{width:100%;max-width:100%;min-height:850px;display:block;border:0;border-radius:0;background:transparent;color-scheme:dark}
+body.tag-spatial-global #panel-home.tag-spatial-embedded > :not(.tag-spatial-host),
+body.tag-spatial-global #view-dashboard.tag-spatial-embedded > :not(.tag-spatial-host){display:none!important}
+body.tag-spatial-global #panel-home.tag-spatial-embedded,
+body.tag-spatial-global #view-dashboard.tag-spatial-embedded{
+ background:transparent!important;padding:0!important;border:0!important;
+ box-shadow:none!important;max-width:none!important;
+}
+body.tag-spatial-global .tag-spatial-page-note{font-size:12px;color:#91bccc}
+@media(max-width:1024px){
+ body.tag-spatial-global .topbar{padding:11px 14px;border-radius:12px}
+ body.tag-spatial-global .pane,body.tag-spatial-global .panel{border-radius:14px!important}
+ body.tag-spatial-global .tag-spatial-host{min-height:600px}
+}
+@media(max-width:600px){
+ body.tag-spatial-global .topbar{backdrop-filter:none}
+ body.tag-spatial-global .pane,body.tag-spatial-global .panel{
+  box-shadow:0 8px 20px #0003!important;
+ }
+ body.tag-spatial-global :where(.pane,.metric,.stat-card,.insight-card):hover{transform:none!important}
+ body.tag-spatial-global .tag-spatial-host{min-height:500px}
+}
+@media(prefers-reduced-motion:reduce){
+ body.tag-spatial-global *,body.tag-spatial-global *::before,body.tag-spatial-global *::after{
+  animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important
+ }
+}
+@media print{
+ body.tag-spatial-global{background:#fff!important;color:#111!important;color-scheme:light!important}
+ body.tag-spatial-global::before{display:none!important}
+ body.tag-spatial-global :where(.panel,.pane,.idcard,.cards-board,.card-print){
+  box-shadow:none!important;print-color-adjust:exact;-webkit-print-color-adjust:exact
+ }
+ body.tag-spatial-global .tag-spatial-host{display:none!important}
+}
