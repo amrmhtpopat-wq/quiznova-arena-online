@@ -28,6 +28,14 @@ def suspicious_book_text(value):
     normalized=_plain(raw)
     if not normalized:return True
     # Common exam instructions, headers, pagination and answer-sheet boilerplate.
+    # Do not turn imperative instructions into educational questions merely
+    # because the phrases are present in the original textbook PDF.
+    if re.search(r'(?:ثم\s+)?(?:اجب|اقرا|اقرأ|حل)\s+'
+                 r'(?:عن|على|ما\s+يلي|الاسئلة|الأسئلة|السؤال|النص)',normalized):
+        return True
+    if re.search(r'(?:الاسئله|الاسئلة)\s+(?:التي\s+)?(?:تليه|تلي|التاليه|التالية)'
+                 r'|(?:اجب|اقرا|اقرأ)\s+(?:عن\s+)?(?:الاسئله|الاسئلة)',normalized):
+        return True
     if re.search(r'(?:اجب|أجب)\s+(?:عن|على)\s+(?:جميع\s+)?(?:الاسئله|الاسئلة|الأسئلة|السوال|السؤال)',raw):
         return True
     if re.search(r'(?:السؤال\s+(?:الاول|الثاني|الثالث)|اسم\s+الطالب|رقم\s+الجلوس|علامة\s+الامتحان)',normalized):
@@ -50,6 +58,43 @@ def suspicious_book_text(value):
         return True
     if len(words)>=8 and sum(1 for w in words if re.fullmatch(r'\d+',w))>len(words)*.45:
         return True
+    return False
+
+
+def invalid_educational_pair(question,answer,quote=''):
+    """Reject malformed textbook-derived Q/A pairs before presenting them.
+
+    A literal quote can still be meaningless because PDFs interleave columns,
+    instructions, or reading-order fragments. This gate rejects recognizable
+    corruption rather than guessing a replacement answer.
+    """
+    q=str(question or '').strip()
+    a=str(answer or '').strip()
+    if not q or not a:
+        return True
+    nq=_plain(q)
+    na=_plain(a)
+    if suspicious_book_text(q) or suspicious_book_text(a):
+        return True
+    # Example of the actual failure: "ما المقصود بـ ثم أجب عن الأسئلة..."
+    # Not a valid concept following the definition-question stem.
+    if re.search(r'^ما\s+المقصود\s+ب(?:ـ|ال)?\s*(?:ثم|اجب|اقرا|اقرأ|انظر|اكتب|حل|اختر|ضع)\b',q):
+        return True
+    if re.search(r'^ما\s+المقصود\s+(?:ب|بال)\s*(?:ثم|اجب|اقرا|اكتب|حل|اختر)',nq):
+        return True
+    if re.search(r'(?:ثم\s+)?اجب\s+عن\s+(?:جميع\s+)?الاسئله'
+                 r'|(?:ثم\s+)?اجب\s+عن\s+(?:جميع\s+)?الاسئلة'
+                 r'|اقرا\s+(?:النص|الفقرة)\s+(?:التالي|التالية)',nq):
+        return True
+    # An answer beginning with an unmatched quote is a cut PDF fragment.
+    pairs=(('"','"'),('«','»'),('“','”'))
+    for opening,closing in pairs:
+        if a.startswith(opening) and not a.endswith(closing):
+            return True
+    if re.match(r'^[،؛:!?؟|)\]}]+',a):
+        return True
+    # It is not evidence to pair separate fragments from different locations.
+    # Additional semantics are handled by the teacher-facing review step.
     return False
 
 
@@ -223,7 +268,8 @@ def verify_ai_rows(raw_rows,selected_pages,maximum,include_stats=False):
         except (ValueError,TypeError,OverflowError):
             page=None
         normalized=_plain(quote)
-        if any(suspicious_book_text(part) for part in (q,a,quote)):
+        if (invalid_educational_pair(q,a,quote) or
+                suspicious_book_text(quote)):
             stats['invalid_fields']+=1
             continue
         if not (8<=len(q)<=200 and 2<=len(a)<=100 and 14<=len(normalized)<=240):
