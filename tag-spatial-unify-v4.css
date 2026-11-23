@@ -163,3 +163,83 @@ body.tag-spatial-global .tag-spatial-titleline{
  body.tag-spatial-global{background:#fff!important;color:#111!important;color-scheme:light!important}
  body.tag-spatial-global .tag-spatial-titleline{display:none!important}
 }
+
+/* TRUE SPA TIAL LANDING — never flash the old portal hero.
+   The :not(.hidden) guard preserves the existing login/auth boundary. */
+body.v105-portal.tag-spatial-global #workspace.hidden{display:none!important}
+body.v105-portal.tag-spatial-global #workspace:not(.hidden):has(#panel-home.active){
+ display:block!important;min-height:100dvh!important;
+ grid-template-columns:none!important;
+ background:radial-gradient(ellipse 70% 50% at 76% -10%,#205b6b66,transparent 72%),#071b2c!important;
+}
+body.v105-portal.tag-spatial-global #workspace:not(.hidden):has(#panel-home.active)>.sidebar{
+ display:none!important;
+}
+body.v105-portal.tag-spatial-global #workspace:not(.hidden):has(#panel-home.active)>.main{
+ width:100%!important;max-width:100%!important;min-width:0!important;
+ margin:0!important;
+ padding:12px clamp(12px,2.5vw,34px) 34px!important;
+}
+body.v105-portal.tag-spatial-global #workspace:not(.hidden):has(#panel-home.active)>.main>.topbar{
+ display:none!important;
+}
+body.v105-portal.tag-spatial-global #workspace:not(.hidden) #panel-home.active{
+ display:block!important;position:relative!important;
+ padding:0!important;margin:0 auto!important;max-width:1460px!important;
+ width:100%!important;min-height:500px!important;
+ overflow:visible!important;animation:none!important;
+}
+body.v105-portal.tag-spatial-global #workspace:not(.hidden) #panel-home.active
+ > :not(.tag-spatial-native-host){
+ display:none!important;
+}
+body.v105-portal.tag-spatial-global #workspace:not(.hidden) #panel-home.active.tag-spatial-v4-fallback
+ > .hero{
+ display:grid!important;min-height:270px!important;
+}
+body.v105-portal.tag-spatial-global #workspace:not(.hidden) #panel-home.active.tag-spatial-v4-fallback
+ > .metric-grid,
+body.v105-portal.tag-spatial-global #workspace:not(.hidden) #panel-home.active.tag-spatial-v4-fallback
+ > .grid-two,
+body.v105-portal.tag-spatial-global #workspace:not(.hidden) #panel-home.active.tag-spatial-v4-fallback
+ > .pane{
+ display:grid!important;
+}
+body.v105-portal.tag-spatial-global #panel-home.active:not(.tag-spatial-native-active):not(.tag-spatial-v4-fallback)::before{
+ content:"TAG  /  جارٍ تجهيز مساحة المعلم";
+ display:flex;align-items:center;justify-content:center;
+ font-family:"IBM Plex Sans Arabic",Tahoma,sans-serif;
+ font-size:13px;font-weight:600;letter-spacing:.4px;
+ width:100%;min-height:135px;margin-top:8px;
+ background:linear-gradient(120deg,#103147,#081f30);
+ border:1px solid #4c8a996b;border-radius:19px;
+ color:#a9e6db;animation:tagSpatialReady 1.8s ease-in-out infinite alternate;
+}
+@keyframes tagSpatialReady{from{opacity:.62}to{opacity:1}}
+body.v105-portal.tag-spatial-global #panel-home.active>.tag-spatial-native-host{
+ display:block!important;position:relative!important;
+ z-index:1!important;width:100%!important;max-width:100%!important;
+ margin:0 auto!important;flex:none!important;
+ box-shadow:none!important;border:0!important;overflow:visible!important;
+ pointer-events:auto!important;
+}
+body.v105-portal.tag-spatial-global #panel-home.active>.tag-spatial-native-host.tag-spatial-overlay-open{
+ z-index:80!important;
+}
+body.v105-portal.tag-spatial-global #panel-home .tag-spatial-native-stage{
+ display:block;width:100%;position:relative;
+}
+@media(max-width:650px){
+ body.v105-portal.tag-spatial-global #workspace:not(.hidden):has(#panel-home.active)>.main{
+  padding:8px 0 26px!important;
+ }
+ body.v105-portal.tag-spatial-global #workspace:not(.hidden) #panel-home.active{
+  max-width:100%!important;min-height:500px!important;
+ }
+ body.v105-portal.tag-spatial-global #workspace:not(.hidden) #panel-home.active>.tag-spatial-native-host{
+  margin:0!important;min-width:0!important;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ body.v105-portal.tag-spatial-global #panel-home::before{animation:none!important}
+}
