@@ -16,8 +16,18 @@ window.TAGSpatialNativeInit=function(shadow,host){
  };
  const els={cards:[...shadow.querySelectorAll('.tool')],filters:[...shadow.querySelectorAll('.filter')],inspector:shadow.getElementById('tag-v3-inspector'),inspectorBack:shadow.getElementById('tag-v3-inspectorBack'),palette:shadow.getElementById('tag-v3-palette')};let lastFocus=null;
  function toast(message){const t=shadow.getElementById('tag-v3-toast');t.textContent=message;t.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove('show'),2900)}
- function openItem(key){const item=items[key];if(!item)return;hidePalette();host.classList.add('tag-spatial-overlay-open');lastFocus=shadow.activeElement;shadow.getElementById('tag-v3-inspTitle').textContent=item.title;shadow.getElementById('tag-v3-inspText').textContent=item.text;shadow.getElementById('tag-v3-inspTag').textContent=item.tag;shadow.getElementById('tag-v3-inspCount').textContent='/ 0'+(Object.keys(items).indexOf(key)+1)+'   TAG SPACE';shadow.getElementById('tag-v3-inspIcon').innerHTML='<svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><use href="#tag-v3-icon-'+item.icon+'"/></svg>';shadow.getElementById('tag-v3-inspLink').href=item.link;
- shadow.getElementById('tag-v3-inspLink').dataset.route=key;shadow.getElementById('tag-v3-routeNote').textContent=(item.note?item.note+' ':'')+'تفتح الصفحة المطلوبة ضمن منصة TAG، دون تغيير بيانات الطلاب أو الاختبارات.';shadow.getElementById('tag-v3-inspectorBack').classList.add('open');els.inspector.classList.add('open');shadow.getElementById('tag-v3-inspectorBack').setAttribute('aria-hidden','false');els.inspector.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';shadow.getElementById('tag-v3-closeInspector').focus()}
+ function openItem(key){
+  const item=items[key];if(!item)return;
+  // Every instrument navigates in ONE click. No inspector/modal detour.
+  if(key==='cards'){
+   const nav=document.querySelector('button.nav[data-panel="students"]');
+   if(nav){hidePalette();nav.click();window.scrollTo({top:0,behavior:'instant'});return}
+  }
+  hidePalette();
+  const next=new URL(item.link,location.href);
+  if(next.origin!==location.origin)return;
+  window.location.assign(next.href);
+ }
  function closeItem(){host.classList.remove('tag-spatial-overlay-open');els.inspector.classList.remove('open');shadow.getElementById('tag-v3-inspectorBack').classList.remove('open');shadow.getElementById('tag-v3-inspectorBack').setAttribute('aria-hidden','true');els.inspector.setAttribute('aria-hidden','true');document.body.style.overflow='';if(lastFocus&&typeof lastFocus.focus==='function')lastFocus.focus()}
  shadow.querySelectorAll('[data-tool]').forEach(el=>el.addEventListener('click',()=>openItem(el.dataset.tool)));
  shadow.getElementById('tag-v3-settingsBtn').addEventListener('click',()=>openItem('settings'));
