@@ -39,7 +39,7 @@ class TagV25Safety(unittest.TestCase):
   self.assertIn('rel="canonical" href="https://teachgame.onrender.com/"',html)
  def test_dashboard_stylesheet_is_required_before_reveal(self):
   html=read('index.html')
-  self.assertIn('rel="preload" href="/tag-spatial-native-v3.css?v=25" as="style"',html)
+  self.assertIn('rel="preload" href="/tag-spatial-native-v3.css?v=25.1" as="style"',html)
   self.assertIn('tag-spatial-site-v3.js?v=25',html)
   js=read('tag-spatial-site-v3.js')
   self.assertIn("host.style.visibility='hidden'",js)
