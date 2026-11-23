@@ -1,0 +1,27 @@
+name: TAG V26 Single-Origin Login Redirect Safety
+on:
+  pull_request:
+    branches: [main]
+    paths: ['studio-auth.js', 'champion-tag.js', 'tests/test_tag_v26_auth_redirect.py', '.github/workflows/tag-v26-auth-routing.yml']
+  push:
+    branches: [main]
+    paths: ['studio-auth.js', 'champion-tag.js', 'tests/test_tag_v26_auth_redirect.py', '.github/workflows/tag-v26-auth-routing.yml']
+permissions: {contents: read}
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: Verify protected login and safe same-origin return paths
+        run: python -m unittest discover -s tests -p 'test_tag_v26_auth_redirect.py' -v
+      - name: Verify JavaScript parses
+        run: |
+          node --check studio-auth.js
+          node --check champion-tag.js
+      - name: Verify existing portal and QR contracts
+        run: |
+          python -m unittest discover -s tests -p 'test_tag_v23_release.py' -v
+          python -m unittest discover -s tests -p 'test_tag_original_school_qr.py' -v
