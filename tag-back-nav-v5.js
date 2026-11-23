@@ -4,7 +4,7 @@
  if(window.TAGGoBack)return;
  const loc=()=>location.pathname.split('/').pop().toLowerCase();
  const paths={
-  'studio.html':'/?teacher=1','champion.html':'/?teacher=1',
+  'studio.html':'/?teacher=1','champion.html':'/?teacher=1','champion-board.html':'/champion.html',
   'admin.html':'/','student.html':'/','stage.html':'/studio.html#live',
   'game-lab-preview.html':'/tag-lab-home.html',
   'tag-lab-home.html':'/?teacher=1',
