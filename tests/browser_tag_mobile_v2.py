@@ -76,41 +76,24 @@ with sync_playwright() as pw:
 
  # Android standalone: TAG LAB opens in a new browser browsing context,
  # while the four main app sections remain in the installed application.
- android=browser.new_context(viewport={'width':393,'height':852},is_mobile=True,has_touch=True,
-                             service_workers='block')
- android.add_init_script("Object.defineProperty(navigator,'standalone',{value:true,configurable:true});")
- home=android.new_page()
- home.goto(BASE+'/app.html',wait_until='domcontentloaded')
- lab=home.locator('a.entry.lab')
- lab.wait_for(state='visible')
- home.wait_for_function("document.querySelector('a.entry.lab')?.target==='_blank'")
- assert lab.get_attribute('rel')=='noopener noreferrer external'
- assert not home.locator('a.entry.student').get_attribute('target')
- with android.expect_page(timeout=12000) as spawned:
-  lab.click()
- popup=spawned.value
- popup.wait_for_load_state('domcontentloaded')
- assert '/tag-lab-home.html' in popup.url,popup.url
- assert '/app.html' in home.url,'App home was replaced instead of external handoff'
- popup.locator('#tag-lab-browser-handoff').wait_for(state='visible',timeout=10000)
- assert 'المتصفح' in popup.locator('#tag-lab-browser-handoff h1').inner_text()
- popup.close();android.close()
-
- # Normal Chrome browser: TAG LAB opens in a separate browser tab;
- # normal pages are not blocked by the standalone-only handoff dialog.
- browserCtx=browser.new_context(viewport={'width':390,'height':844},
-                                is_mobile=True,has_touch=True,service_workers='block')
- chrome=browserCtx.new_page()
- chrome.goto(BASE+'/app.html',wait_until='domcontentloaded')
- assert chrome.locator('a.entry.lab').get_attribute('target')=='_blank'
- with browserCtx.expect_page(timeout=12000) as new_tab:
-  chrome.locator('a.entry.lab').click()
- lab_tab=new_tab.value
- lab_tab.wait_for_url('**/tag-lab-home.html*',timeout=12000)
- assert not lab_tab.locator('#tag-lab-browser-handoff').count()
- assert '/app.html' in chrome.url
- browserCtx.close()
+ for label in ('installed-iphone','normal-browser'):
+  c=browser.new_context(viewport={'width':390,'height':844},is_mobile=True,has_touch=True,service_workers='block')
+  if label=='installed-iphone':
+   c.add_init_script("Object.defineProperty(navigator,'standalone',{value:true,configurable:true});")
+  home=c.new_page()
+  home.goto(BASE+'/app.html',wait_until='domcontentloaded')
+  lab=home.locator('a.entry.lab')
+  lab.wait_for(state='visible')
+  assert not lab.get_attribute('target'),label
+  assert lab.get_attribute('data-tag-lab-entry')=='internal',label
+  with home.expect_navigation(url='**/tag-lab-home.html*',timeout=15000):
+   lab.click()
+  assert '/tag-lab-home.html' in home.url,home.url
+  assert home.locator('#tag-lab-browser-handoff').count()==0,label
+  home.go_back()
+  assert '/app.html' in home.url,home.url
+  c.close()
  browser.close()
 
 http.shutdown();http.server_close()
-print('PASS: TAG Mobile V2 all 23 pages, 320/390/768 layouts, mobile browser handoff and normal-browser fallback')
+print('PASS: TAG Mobile V2 all 23 pages, 320/390/768 layouts, same-window TAG LAB on installed iPhone and browser')
