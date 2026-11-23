@@ -8,9 +8,7 @@
  if(typeof target!=="string"||!target.startsWith(base+"/")||typeof go!=="function")return;
  const status=document.getElementById("wakeStatus");
  const retry=document.getElementById("wakeRetry");
- const direct=document.getElementById("wakeDirect");
- if(!status||!retry||!direct)return;
- direct.href=typeof window.TAG_ENTRY_URL==='function'?window.TAG_ENTRY_URL():target+location.search+location.hash;
+ if(!status||!retry)return;
  let began=Date.now(),attempt=0,finished=false;
  const maxWindow=95000;
  function ping(){
@@ -32,7 +30,7 @@
     return;
    }
    if(Date.now()-began>=maxWindow){
-    status.textContent="تأخر تشغيل الخادم. يمكنك إعادة المحاولة أو فتح الرابط المباشر.";
+    status.textContent="تأخر تجهيز الخادم. اضغط إعادة المحاولة وسنفتح الصفحة تلقائيًا بعد جاهزيتها.";
     retry.hidden=false;
     return;
    }
@@ -40,7 +38,7 @@
   }
   probe.onload=()=>settle(true);
   probe.onerror=()=>settle(false);
-  probe.src=base+"/assets/brand/tag-logo-v15.png?wake="+Date.now()+"-"+attempt;
+  probe.src=base+"/assets/brand/tag-favicon-v24.png?wake="+Date.now()+"-"+attempt;
  }
  retry.addEventListener("click",()=>{began=Date.now();attempt=0;retry.hidden=true;ping();});
  ping();
