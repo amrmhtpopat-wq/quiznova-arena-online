@@ -697,8 +697,8 @@ def ai_generate(tid,data):
         piece=page['text'][:per_page]
         if len(page['text'])>per_page and ' ' in piece:
             piece=piece.rsplit(' ',1)[0]
-        brief_parts.append('[صفحة '+str(page['p'])+']\\n'+piece)
-    compact_source='\\n\\n'.join(brief_parts)[:10200]
+        brief_parts.append('[صفحة '+str(page['p'])+']\n'+piece)
+    compact_source='\n\n'.join(brief_parts)[:10200]
     compact_payload=json.loads(json.dumps(payload,ensure_ascii=False))
     compact_payload['generationConfig']['maxOutputTokens']=8500
     compact_payload['generationConfig']['temperature']=0.25
@@ -708,7 +708,7 @@ def ai_generate(tid,data):
         '؛ أعد حتى '+str(compact_target)+' سؤالًا عربيًا متنوعًا من النص فقط. '
         'أخرج JSON وفق المخطط دون مقدمات. اجعل sourceQuote اقتباسًا '
         'حرفيًا متصلًا من الصفحة المشار إليها ويثبت الإجابة. '
-        'إذا نقص المحتوى أعد عددًا أقل بدل التخمين. الصفحات:\\n'+compact_source)
+        'إذا نقص المحتوى أعد عددًا أقل بدل التخمين. الصفحات:\n'+compact_source)
     compact_body=json.dumps(compact_payload,ensure_ascii=False).encode('utf8')
     try:
         obj=_google_generate_with_fallback(request_body,key,models,compact_body)
