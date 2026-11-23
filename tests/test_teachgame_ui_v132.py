@@ -32,7 +32,8 @@ class UnifiedBrand(unittest.TestCase):
   self.assertIn('id="reissueTeachGameCards"',(ROOT/'index.html').read_text(encoding='utf-8'))
  def test_original_site_and_short_alias_unchanged(self):
   content=(ROOT/'index.html').read_text(encoding='utf-8')
-  self.assertIn('https://quiznova-arena-online.onrender.com/',content)
+  self.assertIn('https://teachgame.onrender.com/',content)
+  self.assertNotIn('https://quiznova-arena-online.onrender.com/',content)
   self.assertIn('"name": "TEACH AND GAME"',content)
   self.assertNotIn('BOOYAHJO',content)
   self.assertNotIn('بويا جو',content)
