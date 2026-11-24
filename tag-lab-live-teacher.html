@@ -112,7 +112,7 @@ async function api(path,data){
  if(!resp.ok||j.ok===false)throw Error(j.error||'request_failed');return j;
 }
 function tag(tag,text){const e=document.createElement(tag);e.textContent=text;return e}
-const friendly={login_required:'سجل دخولك من حساب المعلم أولًا.',activity_empty:'هذا النشاط لا يحتوي على أسئلة.',live_mode_not_supported:'اختر نشاطًا من القوالب المدعومة.',room_not_found:'انتهت الغرفة أو لم تعد متاحة.'};
+const friendly={login_required:'سجل دخولك من حساب المعلم أولًا.',activity_empty:'هذا النشاط لا يحتوي على أسئلة.',live_mode_not_supported:'اختر نشاطًا من القوالب المدعومة.',room_not_found:'انتهت الغرفة أو لم تعد متاحة.',live_quiz_requires_mcq:'التحدي المباشر يحتاج 4 أسئلة اختيار من متعدد على الأقل؛ عدّل القالب من مكتبتي أو أعد توليده بدون صح وخطأ.'};
 function err(e){return friendly[e.message]||e.message}
 async function loadActivities(){
  try{
