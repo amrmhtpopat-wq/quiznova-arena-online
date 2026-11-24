@@ -64,7 +64,7 @@ function stash(){
  const rows=window.TG_QUESTION_BANK_ROWS;
  if(!Array.isArray(rows)||!rows.length)return false;
  const payload={ts:Date.now(),title:$('activityTitle').value,subject:$('subject').value,
-  grade:$('grade').value,bookId:window.BOOYAH_LAB_BOOK_ID||'',
+  grade:$('grade').value,mode:$('cloudMode')?.value||$('labBookTemplate')?.value||'quiz',bookId:window.BOOYAH_LAB_BOOK_ID||'',
   rows:rows.map(x=>({...x}))};
  try{sessionStorage.setItem(draftKey,JSON.stringify(payload));return true}
  catch(_){show('يتعذر نقل الأسئلة بسبب مساحة المتصفح. حاول إزالة ملفات قديمة أو افتح صانع الألعاب واكتب أسئلتك.',true);return false}
@@ -81,6 +81,9 @@ function importStash(){
   if($('subject')&&[...$('subject').options].some(o=>o.value===data.subject))$('subject').value=data.subject;
   if($('grade')&&[...$('grade').options].some(o=>o.value===data.grade))$('grade').value=data.grade;
   if($('activityData'))$('activityData').value=data.rows.map(x=>x.q+' | '+x.a+' | '+(x.g||'عام')+(x.sourcePage?' | '+x.sourcePage:'')).join('\n');
+  if(data.mode&&$('cloudMode')&&[...$('cloudMode').options].some(o=>o.value===data.mode)){
+   $('cloudMode').value=data.mode;$('cloudMode').dispatchEvent(new Event('change'))
+  }
   window.TG_QUESTION_BANK_ROWS=data.rows.map(x=>({...x}));
   window.TG_CREATOR_PREVIEW_ROWS=data.rows.map(x=>({...x}));
   window.BOOYAH_LAB_BOOK_ID=data.bookId||'';
@@ -95,11 +98,36 @@ if(view==='books'){
  const title=make('strong','', 'انتهيت من مراجعة الأسئلة؟');
  const actions=make('div','tag-simple-actions');
  const next=make('button','tag-simple-btn','التالي: صانع الألعاب ←');next.type='button';next.disabled=true;
- next.onclick=()=>{if(stash())goto('create')};
+ let savedDraftId='';
+ const retry=make('button','tag-simple-btn alt','↻ إعادة الحفظ في مكتبتي');retry.type='button';retry.hidden=true;
+ retry.onclick=()=>{retry.hidden=true;title.textContent='جارٍ إعادة الحفظ في مكتبتي...';$('labBookSaveCloud')?.click()};
+ next.onclick=()=>{
+  if(savedDraftId)try{sessionStorage.setItem('tag_lab_v33_edit_saved_id',savedDraftId)}catch(_){}
+  if(stash())goto('create')
+ };
  const libraryLink=make('a','tag-simple-btn alt','مكتبتي الخاصة');libraryLink.href='/tag-lab-library.html';
- actions.append(next,libraryLink);after.append(title,actions);
+ actions.append(next,libraryLink,retry);after.append(title,actions);
  if(area)area.append(after);
- document.addEventListener('gamelab:book-bank-accepted',()=>{next.disabled=false;after.hidden=false;show('✓ الأسئلة المعتمدة جاهزة. اضغط «التالي: صانع الألعاب» لتكمل.');});
+ document.addEventListener('gamelab:book-bank-accepted',event=>{
+  savedDraftId='';
+  const count=Number(event.detail?.count)||0;
+  after.hidden=count<4;
+  next.disabled=true;retry.hidden=true;
+  if(count>=4)title.textContent='جارٍ حفظ النشاط في مكتبتي...';
+  else show('يلزم أربعة أسئلة مناسبة للقالب على الأقل قبل حفظ النشاط.',true)
+ });
+ document.addEventListener('gamelab:book-draft-saved',event=>{
+  savedDraftId=event.detail?.id||'';
+  next.disabled=!savedDraftId;
+  after.hidden=false;retry.hidden=true;
+  title.textContent='✅ تم حفظ النشاط في مكتبتي. يمكنك فتحه أو تعديله.';
+  show('✓ حُفظ نشاطك في مكتبتك باسم «'+(event.detail?.title||'نشاط جديد')+'».')
+ });
+ document.addEventListener('gamelab:book-draft-save-failed',event=>{
+  next.disabled=false;after.hidden=false;retry.hidden=false;
+  title.textContent='⚠️ لم يكتمل حفظ النشاط في مكتبتي؛ أعد المحاولة.';
+  show(event.detail?.reason||'تعذر الحفظ. جرّب مرة أخرى.',true)
+ });
  const oldSave=$('labBookSaveCloud');if(oldSave)oldSave.style.display='none';
  after.prepend(toast)
 }else if(view==='create'){
