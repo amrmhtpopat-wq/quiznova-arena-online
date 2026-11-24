@@ -689,7 +689,7 @@ def _local_ai_recovery(tid,data,requested,reason,source_report=None):
     template_note=('القالب المختار يتطلب '+required_type+'؛ لا يمكن اختراع بدائل اختيار من متعدد '
                    'أو أحكام صح وخطأ من نصوص محلية بدون تحقق. '
                    if required_type in ('mcq','true_false') else '')
-    draft['warning']=(why+'. تعذّر التوليد الذكي حاليًا بعد تجربة نماذج Google المجانية المتاحة. '+template_note
+    draft['warning']=(why+'. تعذّر التوليد الذكي حاليًا بعد تجربة نماذج Google المجانية المتاحة. '+template_note+
                       'أنشأ TAG LAB '+str(count)+' مقترحات محلية فقط من الجمل الواضحة؛ '
                       'هذا لا يعني أن الكتاب تالف، ولا تُنشر المقترحات تلقائيًا. '
                       'لم تُخصم محاولة TAG AI. عند استقرار Google أعد التوليد الذكي '
