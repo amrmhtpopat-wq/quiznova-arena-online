@@ -89,7 +89,11 @@ def question(s,with_answers=False):
         options=list(dict.fromkeys(x['a'] for x in s['rows'] if x['a']!=row['a']))
         rng.shuffle(options);options=[row['a']]+options[:3]
     answer=row['a'];candidate=None
-    if mode=='truth':
+    if mode=='truth' and row.get('questionType')=='true_false':
+        # An explicit statement is already authored as true or false.
+        # Do not scramble unrelated book answers into a bogus T/F question.
+        candidate=None;options=['صح','خطأ'];answer=row['a']
+    elif mode=='truth':
         wrongs=list(dict.fromkeys(x['a'] for x in s['rows'] if x['a']!=row['a']))
         truth=rng.randrange(2)==1 or not wrongs
         candidate=row['a'] if truth else rng.choice(wrongs)
@@ -156,6 +160,15 @@ def create(tid,data):
     if not rows:raise ValueError('activity_empty')
     mode=activity['mode']
     if mode not in LIVE_MODES:raise ValueError('live_mode_not_supported')
+    if mode=='quiz':
+        # Direct quiz is an MCQ challenge, not a truth/false round.
+        # Author-defined options take priority; untyped legacy teacher
+        # questions may still use their historical answer pool.
+        rows=[row for row in rows
+              if (row.get('questionType') not in ('true_false','short')
+                  and str(row.get('a','')).strip() not in ('صح','خطأ'))]
+        if len(rows)<4:
+            raise ValueError('live_quiz_requires_mcq')
     try:duration=int(data.get('duration',payload.get('time',25)))
     except (TypeError,ValueError):duration=25
     duration=max(10,min(120,duration))
