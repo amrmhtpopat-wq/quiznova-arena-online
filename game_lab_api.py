@@ -129,6 +129,8 @@ def validate_payload(raw):
     if len(result)<4:raise ValueError('too_few_unique_questions')
     mode=str(raw.get('mode') or 'quiz')
     if mode not in MODES:raise ValueError('invalid_game_mode')
+    if mode=='quiz' and any(row.get('questionType')=='true_false' for row in result):
+        raise ValueError('live_quiz_requires_mcq')
     subject=str(raw.get('subject') or 'عام').strip()[:80]
     grade=str(raw.get('grade') or 'عام').strip()[:40]
     raw_time=raw.get('time',25)
