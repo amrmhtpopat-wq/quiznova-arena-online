@@ -30,6 +30,34 @@ MAX_BOOK_BYTES=uploads.MAX_BOOK_BYTES
 INLINE_BOOK_BYTES=6_000_000
 MAX_IMAGE_BYTES=1_500_000
 MAX_BOOKS=12
+# Each activity template dictates the question formats it can play.
+# Keep this mapping server-side; a client-supplied balance cannot override it.
+TEMPLATE_QUESTION_TYPES={
+    'quiz':'mcq','fast':'mcq','wheel':'mcq','boxes':'mcq',
+    'board':'mcq','teams':'mcq','maze':'mcq','balloons':'mcq',
+    'truth':'true_false',
+    'pairs':'short','flash':'short','sort':'short','memory':'short',
+    'bingo':'short','order':'short','anagram':'short',
+    'crossword':'short','wordsearch':'short','cloze':'short',
+    'hidden':'short','diagram':'short','exit':'short','story':'short',
+    'survey':'mcq'
+}
+
+
+def requested_template(data):
+    mode=ident(data.get('templateMode'))
+    if mode and mode not in TEMPLATE_QUESTION_TYPES:
+        raise ValueError('invalid_game_mode')
+    return mode
+
+
+def expected_question_type(data):
+    mode=requested_template(data)
+    if mode:return TEMPLATE_QUESTION_TYPES[mode]
+    balance=ident(data.get('questionBalance') or 'mixed')
+    return balance if balance in ('mixed','mcq','true_false','short') else 'mixed'
+
+
 MAX_MEDIA=80
 BOOK_POSTS={'/api/game-lab/pro/books/upload','/api/game-lab/pro/books/upload/start',
             '/api/game-lab/pro/books/upload/chunk','/api/game-lab/pro/books/upload/finish',
@@ -623,6 +651,10 @@ def _local_ai_recovery(tid,data,requested,reason,source_report=None):
     credentials, extra provider requests, or paid services.
     """
     draft=offline_generate(tid,data)
+    required_type=expected_question_type(data)
+    if required_type!='mixed':
+        draft['rows']=[row for row in draft.get('rows',[])
+                       if row.get('questionType')==required_type]
     # Do not invent more questions just to meet the requested number.
     # Automatic fill-in-the-blank from arbitrary OCR/PDF lines produced broken
     # exam-cover questions and has been permanently disabled.
@@ -647,7 +679,10 @@ def _local_ai_recovery(tid,data,requested,reason,source_report=None):
       'generatedCount':count,
       'count':count
     })
-    draft['warning']=(why+'. تعذّر التوليد الذكي حاليًا بعد تجربة نماذج Google المجانية المتاحة. '
+    template_note=('القالب المختار يتطلب '+required_type+'؛ لا يمكن اختراع بدائل اختيار من متعدد '
+                   'أو أحكام صح وخطأ من نصوص محلية بدون تحقق. '
+                   if required_type in ('mcq','true_false') else '')
+    draft['warning']=(why+'. تعذّر التوليد الذكي حاليًا بعد تجربة نماذج Google المجانية المتاحة. '+template_note
                       'أنشأ TAG LAB '+str(count)+' مقترحات محلية فقط من الجمل الواضحة؛ '
                       'هذا لا يعني أن الكتاب تالف، ولا تُنشر المقترحات تلقائيًا. '
                       'لم تُخصم محاولة TAG AI. عند استقرار Google أعد التوليد الذكي '
@@ -676,8 +711,8 @@ def ai_generate(tid,data):
     if difficulty not in ('easy','balanced','advanced'):difficulty='balanced'
     focus=ident(data.get('focus') or 'mixed')
     if focus not in ('mixed','recall','understanding','application'):focus='mixed'
-    balance=ident(data.get('questionBalance') or 'mixed')
-    if balance not in ('mixed','mcq','true_false','short'):balance='mixed'
+    template_mode=requested_template(data)
+    balance=expected_question_type(data)
     balance_label={
       'mixed':'متنوع (نحو نصف الأسئلة اختيار من متعدد، والباقي صح وخطأ وإجابة قصيرة)',
       'mcq':'اختيار من متعدد بأربعة خيارات مختلفة',
@@ -799,6 +834,11 @@ def ai_generate(tid,data):
             if not isinstance(generated,list):raise ValueError('ai_invalid_response')
         except (ValueError,TypeError):raise ValueError('ai_invalid_response')
         result,quality=verify_ai_rows(generated,selected_pages,maximum,include_stats=True)
+        mismatched=0
+        if balance!='mixed':
+            compatible=[r for r in result if r.get('questionType')==balance]
+            mismatched=len(result)-len(compatible)
+            result=compatible
         if len(result)<4:
             # The activity cannot be saved with fewer than four questions.
             # Let the teacher review these proposals without charging a daily slot.
@@ -810,16 +850,21 @@ def ai_generate(tid,data):
               ', duplicates='+str(quality['duplicate'])+
               ', repaired_choices='+str(quality['repaired_choices'])+
               ', corrected_page='+str(quality['corrected_page'])+
-              ', teacher_review='+str(quality['needs_review']),flush=True)
+              ', teacher_review='+str(quality['needs_review'])+
+              ', incompatible_template='+str(mismatched)+
+              ', requested_template='+template_mode,flush=True)
         summary=('تم اعتماد '+str(len(result))+' من '+str(maximum)+' أسئلة مطلوبة. '
                  'أُصلح رقم الصفحة في '+str(quality['corrected_page'])+
                  ' أسئلة وتنسيق الاقتباس في '+str(quality['corrected_quote'])+
                  ' أسئلة، والخيارات في '+str(quality['repaired_choices'])+' أسئلة. '
                  'استُبعد '+str(rejected)+' مقترحات لعدم كفاية دليل المصدر أو تكرار المحتوى أو خطأ الحقول. '
                  'يحتاج '+str(quality['needs_review'])+' سؤالًا إلى مراجعة دليل الإجابة قبل تحديده للاعتماد. '
+                 'استُبعد '+str(mismatched)+' سؤالًا غير مناسب للقالب المختار. '
                  'راجع الأسئلة قبل حفظها أو نشرها.')
         return {'book':metadata(book),'mode':'ai','rows':result,'count':len(result),
                 'requestedCount':maximum,'generatedCount':len(generated),'verifiedCount':len(result),
+                'templateMode':template_mode,'questionBalance':balance,
+                'excludedByTemplate':mismatched,
                 'sourcePages':len(selected_pages),'sourceAudit':source_report,
                 'verification':quality,
                 'warning':('لم ينتج TAG AI أسئلة موثقة كافية من الصفحات المحددة. وسّع النطاق أو اختر صفحات نصية أوضح.'
