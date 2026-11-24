@@ -536,14 +536,21 @@ def offline_generate(tid,data):
     text,count=source_selection(book,data.get('startPage'),data.get('endPage'),max_chars=400000)
     maximum=min(25,max(4,int(data.get('count') or 12)))
     rows,rejected=_verified_local_rows(text,maximum)
-    warning=('لم يتمكن الاستخراج المحلي المحدود من تكوين أربعة أسئلة مباشرة من الجمل المختارة. '
-             'هذا لا يعني بالضرورة تلف الكتاب؛ تعطّل Google مؤقتًا، بينما الاستخراج المحلي '
-             'لا يفهم الدرس مثل الذكاء الاصطناعي. أعد تجربة TAG AI عند عودة الخدمة، '
-             'أو اختر صفحات تضم تعريفات وجمل شرح واضحة. '
-             'لن نُنشئ أسئلة معطوبة لإكمال العدد. '
-             if len(rows)<4 else
-             'استُخرج '+str(len(rows))+' سؤالًا بدليل نصي مباشر من الكتاب. '
-             'راجع الإجابات وصفحات المصدر قبل اعتمادها. ')
+    required_type=expected_question_type(data)
+    if required_type!='mixed':
+        rows=[row for row in rows if row.get('questionType')==required_type]
+    if required_type in ('mcq','true_false') and len(rows)<4:
+        warning=('هذا القالب يتطلب أسئلة '+required_type+
+                 '، بينما لا ينتج الاستخراج المحلي الآمن خيارات اختيار من متعدد '
+                 'أو أحكام صح وخطأ تلقائيًا. استخدم TAG AI عند توفر Google '
+                 'أو حرّر أسئلة القالب يدويًا؛ لن نحول إجابات قصيرة إلى نوع مختلف.')
+    elif len(rows)<4:
+        warning=('لم يتمكن الاستخراج المحلي من إعداد أربعة أسئلة من الجمل المحددة. '
+                 'هذا لا يعني بالضرورة تلف الكتاب. جرّب صفحات درس أوضح '
+                 'أو استخدم TAG AI لإنشاء أنواع إضافية من الأسئلة.')
+    else:
+        warning=('استُخرج '+str(len(rows))+' سؤالًا من الكتاب بنمط القالب المختار. '
+                 'راجع جميع الأسئلة والإجابات وصفحات المصدر قبل اعتمادها.')
     return {'book':metadata(book),'mode':'extract','rows':rows,'count':len(rows),
             'sourcePages':count,'rejectedLocalCandidates':max(0,rejected),
             'warning':warning}
