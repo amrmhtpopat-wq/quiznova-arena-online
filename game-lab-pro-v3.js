@@ -194,6 +194,26 @@ function updateAiSettings(){
  $('labAiConsent').disabled=!enabled;
  if(!enabled)$('labAiConsent').checked=false;
 }
+const TAG_BOOK_FORMATS={
+ quiz:'mcq',fast:'mcq',wheel:'mcq',boxes:'mcq',board:'mcq',teams:'mcq',
+ truth:'true_false',pairs:'short',flash:'short',sort:'short',memory:'short',
+ bingo:'short',order:'short',anagram:'short'
+};
+function selectedBookTemplate(){return $('labBookTemplate')?.value||'quiz'}
+function bookRequiredType(){return TAG_BOOK_FORMATS[selectedBookTemplate()]||'mcq'}
+function updateBookTemplate(){
+ const required=bookRequiredType();
+ const kinds={mcq:'اختيار من متعدد: 4 خيارات مختلفة لكل سؤال دون صح وخطأ.',
+  true_false:'عبارات صح وخطأ فقط؛ لا تُنشأ أسئلة اختيار من متعدد.',
+  short:'أسئلة مفاهيم وإجابات قصيرة مناسبة للقالب المختار.'};
+ const hint=$('labBookTemplateHint');
+ if(hint)hint.textContent='القالب المختار: '+$('labBookTemplate').selectedOptions[0].textContent+' — '+kinds[required];
+ if($('labAiQuestionBalance')){
+  $('labAiQuestionBalance').value=required;
+  $('labAiQuestionBalance').disabled=true;
+  $('labAiQuestionBalance').title='يحدد قالب اللعبة نوع الأسئلة تلقائيًا لضمان التوافق'
+ }
+}
 function requestDraft(){
  const id=$('labBookSelect').value;
  if(!id)throw Error('اختر كتابًا من مكتبتك أولًا');
@@ -202,7 +222,8 @@ function requestDraft(){
    count:Number($('labBookCount').value)||12,
    subject:$('subject').value,grade:$('grade').value,
    difficulty:$('labAiDifficulty').value,focus:$('labAiFocus').value,
-   topic:$('labAiTopic').value.trim(),questionBalance:$('labAiQuestionBalance').value}
+   topic:$('labAiTopic').value.trim(),questionBalance:bookRequiredType(),
+   templateMode:selectedBookTemplate()}
 }
 function clearBookReview(){
  if($('labBookSourceQuality'))$('labBookSourceQuality').textContent='';
@@ -258,14 +279,19 @@ function renderBookReview(rows){
  const intro=document.createElement('p');intro.className='hint';
  intro.textContent='راجع نوع السؤال والصعوبة والإجابة الصحيحة والبدائل قبل اعتمادها. لا تُنشر أي أسئلة تلقائيًا.';
  parent.append(intro);
- const validRows=(Array.isArray(rows)?rows:[]).filter(r=>!invalidBookQuestion(r?.q,r?.a));
+ const targetFormat=bookRequiredType();
+ const editingSaved=Boolean(window.TG_BOOK_EDITOR_REUSE);
+ const validRows=(Array.isArray(rows)?rows:[]).filter(r=>
+  !invalidBookQuestion(r?.q,r?.a)&&
+  (editingSaved||(r?.questionType||'short')===targetFormat));
  const removed=(Array.isArray(rows)?rows.length:0)-validRows.length;
  if(removed){
   const warning=document.createElement('p');warning.className='notice';
-  warning.textContent='⚠️ استُبعد '+removed+' سؤالًا غير صالح بسبب تعليمات امتحان أو نص/إجابة مبتورة. لن تُعتمد هذه الأسئلة؛ أعد التوليد من صفحات الدرس.';
+  warning.textContent='⚠️ استُبعد '+removed+' سؤالًا غير صالح أو غير مناسب للقالب المختار. لن تُعتمد أسئلة بنمط مختلف.';
   parent.append(warning);
  }
- const types=[['mcq','🔘 اختيار من متعدد (4 خيارات)'],['true_false','✅ صح أو خطأ'],['short','🧠 فهم وإجابة قصيرة']];
+ const allTypes=[['mcq','🔘 اختيار من متعدد (4 خيارات)'],['true_false','✅ صح أو خطأ'],['short','🧠 فهم وإجابة قصيرة']];
+ const types=editingSaved?allTypes:allTypes.filter(t=>t[0]===targetFormat);
  const levels=[['easy','سهل'],['medium','متوسط'],['hard','متقدم']];
  for(const [i,r] of validRows.entries()){
   const card=document.createElement('article');card.className='lab-bookrow tag-book-review-card';
@@ -325,6 +351,9 @@ function approveBookSuggestions(){
   if(invalidBookQuestion(q,a)){
    message('labBookStatus','تعذر اعتماد السؤال «'+q.slice(0,45)+'» لأن نصه أو إجابته غير صالح. عدّله أو ألغِ اختياره.',true);return
   }
+  if(!window.TG_BOOK_EDITOR_REUSE&&type!==bookRequiredType()){
+   message('labBookStatus','لا يمكن اعتماد نوع سؤال غير مناسب للقالب. غيّر القالب ثم أعد استخراج الأسئلة.',true);return
+  }
   const key=(q+'|'+a).toLocaleLowerCase('ar');if(seen.has(key))continue;seen.add(key);
   const source=card._tagSource||{},row={q,a,g:source.g||'عام',sourcePage:source.sourcePage||null,
    sourceQuote:source.sourceQuote||'',origin:source.origin||'ai',questionType:type,
@@ -353,11 +382,16 @@ function approveBookSuggestions(){
  }
  window.TG_QUESTION_BANK_ROWS=accepted.map(x=>({...x}));
  window.TG_CREATOR_PREVIEW_ROWS=accepted.map(x=>({...x}));
- document.dispatchEvent(new CustomEvent('gamelab:book-bank-accepted',{detail:{editingExisting}}));
+ if(!editingExisting&&$('cloudMode'))$('cloudMode').value=selectedBookTemplate();
+ document.dispatchEvent(new CustomEvent('gamelab:book-bank-accepted',{detail:{editingExisting,templateMode:editingExisting?$('cloudMode').value:selectedBookTemplate()}}));
  window.TG_BOOK_EDITOR_REUSE=false;
  bookDraftReady=accepted.length>=4;$('labBookSaveCloud').disabled=editingExisting||!bookDraftReady;
  if(bookDraftReady){$('applyContent').click();
-  message('labBookStatus','✓ اعتمدت '+accepted.length+' أسئلة وحُفظت الخيارات والصعوبة والتفسير في المحرر؛ يمكنك حفظها بمكتبتك الخاصة.');
+  if(!editingExisting){
+   message('labBookStatus','✓ اعتمدت '+accepted.length+' أسئلة. جارٍ حفظ النشاط تلقائيًا في مكتبتي...');
+   document.dispatchEvent(new CustomEvent('gamelab:save-book-draft',
+    {detail:{bookId:$('labBookSelect').value,templateMode:selectedBookTemplate(),auto:true}}));
+  }else message('labBookStatus','✓ اعتمدت '+accepted.length+' أسئلة. اضغط حفظ التعديلات على النشاط الموجود.');
  }else message('labBookStatus','اعتمدت '+accepted.length+' أسئلة. أضف أسئلة موثوقة حتى يصبح العدد 4 على الأقل قبل الحفظ.',true);
  $('labBookSummary').textContent='أنواع الأسئلة: '+accepted.filter(x=>x.questionType==='mcq').length+' اختيار من متعدد، '+accepted.filter(x=>x.questionType==='true_false').length+' صح وخطأ، '+accepted.filter(x=>x.questionType==='short').length+' إجابة قصيرة. لم تُنشر للطلاب.';
  document.getElementById('builder')?.scrollIntoView({behavior:'smooth',block:'start'})
@@ -604,6 +638,12 @@ $('labBookUpload').onclick=uploadBook;
 $('labBookRefresh').onclick=refreshBooks;
 $('labBookGenerate').onclick=generate;
 $('labBookCheckSource').onclick=auditBookSource;
+$('labBookTemplate').onchange=()=>{
+ updateBookTemplate();
+ if(!window.TG_BOOK_EDITOR_REUSE)clearBookReview();
+ $('labBookStatus').textContent='تم اختيار القالب. سيُستخرج نوع الأسئلة المناسب له فقط.'
+};
+updateBookTemplate();
 $('labBookMode').onchange=()=>{aiModeTouched=true;updateAiSettings()};
 updateAiSettings();
 $('labBookApprove').onclick=approveBookSuggestions;
