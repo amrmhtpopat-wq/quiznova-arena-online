@@ -148,20 +148,52 @@ function useExistingQuiz(){
    subject:q.subject||'عام',grade:q.grade||'عام',time:25,mode:'quiz',rows}});
  note('✓ تم تحويل '+rows.length+' سؤالًا من اختبارك إلى صانع الألعاب. لم نعدل الاختبار الأصلي.');
 }
+let lastBookSave=null,bookSaveBusy=false;
 async function saveGeneratedBookDraft(event){
- const btn=$('labBookSaveCloud');if(!token){note('سجّل دخول المعلم أولًا لحفظ مسودة الكتاب.',true);return}
- if(event.detail?.bookId!==window.BOOYAH_LAB_BOOK_ID){note('أعد توليد مسودة الكتاب المحدد قبل الحفظ.',true);return}
- btn.disabled=true;
+ const detail=event.detail||{},button=$('labBookSaveCloud'),bookId=String(detail.bookId||'');
+ const mode=String(detail.templateMode||$('labBookTemplate')?.value||'quiz');
+ const notifyFailure=(text)=>{
+  note(text,true);$('labBookStatus').textContent=text;
+  document.dispatchEvent(new CustomEvent('gamelab:book-draft-save-failed',{detail:{reason:text}}))
+ };
+ if(bookSaveBusy)return;
+ if(!token){notifyFailure('لم يُحفظ النشاط: يرجى تسجيل الدخول إلى حساب المعلم. ستبقى الأسئلة في صفحة المراجعة.');return}
+ if(bookId!==window.BOOYAH_LAB_BOOK_ID){notifyFailure('اختر الكتاب واعتمد الأسئلة مرة أخرى قبل الحفظ.');return}
+ if(!MODES.some(x=>x[0]===mode)){notifyFailure('قالب اللعبة المحدد غير معروف. اختر القالب مجددًا.');return}
+ bookSaveBusy=true;button.disabled=true;
  try{
-  $('cloudMode').value='quiz';selectedMode='quiz';
-  const draft=current();draft.bookId=event.detail.bookId;draft.sourceGroup='';draft.imageId='';
-  const result=await api('/api/game-lab/teacher/save',{activity:draft});
-  currentId=result.id;await refresh();
-  note('✓ تم حفظ مسودة «'+draft.title+'» بشكل خاص في مكتبتك. يمكنك فتحها وتعديلها ثم نشرها.');
-  $('labBookStatus').textContent='✓ حُفظت مسودة الكتاب في حساب المعلم. انتقل إلى مكتبتي لمراجعتها ونشرها.';
-  $('cloudList').scrollIntoView({behavior:'smooth',block:'start'});
- }catch(e){note('تعذر حفظ مسودة الكتاب: '+(translations[e.message]||e.message),true)}finally{btn.disabled=false}
+  $('cloudMode').value=mode;selectedMode=mode;
+  const draft=current();draft.mode=mode;draft.bookId=bookId;draft.sourceGroup='';draft.imageId='';
+  if(!draft.title)throw Error('title_required');
+  const fingerprint=JSON.stringify({bookId,mode,draft});
+  if(lastBookSave?.fingerprint===fingerprint&&lastBookSave.id){
+   document.dispatchEvent(new CustomEvent('gamelab:book-draft-saved',
+    {detail:{id:lastBookSave.id,mode,title:draft.title,existing:true}}));
+   note('✓ النشاط محفوظ بالفعل في مكتبتك.');$('labBookStatus').textContent='✓ النشاط محفوظ بالفعل في مكتبتي.';
+   return
+  }
+  const previous=lastBookSave?.bookId===bookId?lastBookSave.id:null;
+  const saved=await api('/api/game-lab/teacher/save',
+    {id:previous||undefined,activity:draft});
+  await refresh();
+  if(!items.some(x=>x.id===saved.id))throw Error('save_not_visible');
+  lastBookSave={fingerprint,bookId,id:saved.id};
+  currentId=saved.id;
+  try{sessionStorage.setItem('tag_lab_recent_saved_id',saved.id)}catch(_){}
+  const msg='✓ حُفظ نشاط «'+draft.title+'» تلقائيًا في مكتبتك كمسودة خاصة بقالب '+label(mode)+'.';
+  note(msg);$('labBookStatus').textContent=msg;
+  document.dispatchEvent(new CustomEvent('gamelab:book-draft-saved',
+    {detail:{id:saved.id,mode,title:draft.title}}));
+  document.dispatchEvent(new CustomEvent('taglab:activity-saved',
+    {detail:{id:saved.id,mode,title:draft.title}}));
+ }catch(error){
+  const description=translations[error.message]||
+    (error.message==='save_not_visible'?'رد الخادم بالحفظ ولكن لم يظهر النشاط في قائمة مكتبتك. اضغط «تحديث» بعد فتح مكتبتي.':
+      'تعذر تأكيد الحفظ: '+error.message);
+  notifyFailure(description)
+ }finally{bookSaveBusy=false;button.disabled=false}
 }
+
 async function duplicate(id){
  const origin=items.find(x=>x.id===id);if(!origin)return;
  try{const p=origin.activity||{};const duplicate={...p,title:('نسخة من '+origin.title).slice(0,90),sourceGroup:''};
@@ -228,8 +260,10 @@ document.addEventListener('gamelab:book-bank-accepted',event=>{
  if(event.detail?.editingExisting){
   note('تم تحديث خيارات بنك الأسئلة في المحرر؛ اضغط «حفظ النشاط» لتحديث المسودة الأصلية.');
  }else{
-  currentId=null;selectedMode='quiz';$('cloudMode').value='quiz';
-  note('تم إعداد بنك أسئلة جديد. احفظه كمسودة خاصة قبل النشر.');
+  currentId=null;
+  const mode=event.detail?.templateMode||$('labBookTemplate')?.value||'quiz';
+  selectedMode=mode;$('cloudMode').value=mode;
+  note('تم اعتماد الأسئلة لقالب '+label(mode)+'. سيبدأ الحفظ التلقائي في مكتبتي عند اكتمال أربعة أسئلة صالحة.');
  }
 });
 refresh();
