@@ -383,7 +383,7 @@ function approveBookSuggestions(){
  window.TG_QUESTION_BANK_ROWS=accepted.map(x=>({...x}));
  window.TG_CREATOR_PREVIEW_ROWS=accepted.map(x=>({...x}));
  if(!editingExisting&&$('cloudMode'))$('cloudMode').value=selectedBookTemplate();
- document.dispatchEvent(new CustomEvent('gamelab:book-bank-accepted',{detail:{editingExisting,templateMode:editingExisting?$('cloudMode').value:selectedBookTemplate()}}));
+ document.dispatchEvent(new CustomEvent('gamelab:book-bank-accepted',{detail:{editingExisting,count:accepted.length,templateMode:editingExisting?$('cloudMode').value:selectedBookTemplate()}}));
  window.TG_BOOK_EDITOR_REUSE=false;
  bookDraftReady=accepted.length>=4;$('labBookSaveCloud').disabled=editingExisting||!bookDraftReady;
  if(bookDraftReady){$('applyContent').click();
