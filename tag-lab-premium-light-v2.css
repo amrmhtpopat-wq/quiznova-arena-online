@@ -1,0 +1,111 @@
+/* TAG LAB 2.0 Premium Light — books UI only, additive and rollback-safe.
+   Keep game overlays, auth, AI, storage and classroom engines untouched. */
+html[data-tag-view="books"]:not([data-tag-theme="dark"]){
+ --tagv-bg:#f7fbff;--tagv-surface:#ffffff;--tagv-soft:#edf7ff;
+ --tagv-glass:#edf5ff;--tagv-accent:#e8f2ff;--tagv-text:#173a62;
+ --tagv-muted:#5c7896;--tagv-border:#dceaf7;--tagv-side:#ffffff;
+ --tagv-primary:#2585c8;--tagv-strong:#1871b4;--tagv-teal:#17b8a8;
+ --tagv-purple-gradient:linear-gradient(110deg,#168fd0,#6179db);
+ --tagv-shadow:0 16px 40px rgba(33,86,151,.075);
+ color-scheme:light;
+}
+html[data-tag-view="books"]:not([data-tag-theme="dark"]) body.tagv-enabled{
+ background-color:#f7fbff!important;
+ background-image:radial-gradient(ellipse 55% 27% at 84% 1%,#d7eeffb5,transparent 75%),radial-gradient(ellipse 43% 30% at 0% 100%,#f0eaffb5,transparent 75%)!important;
+}
+html[data-tag-view="books"]:not([data-tag-theme="dark"]) body.tagv-enabled .tagv-sidebar{
+ background:linear-gradient(180deg,#ffffff,#f5faff 75%,#eef6ff)!important;
+ border-left-color:#d9e7f5!important;
+ box-shadow:-9px 0 42px rgba(16,72,141,.045)!important;
+}
+html[data-tag-view="books"]:not([data-tag-theme="dark"]) body.tagv-enabled .tagv-topbar{
+ background:rgba(250,253,255,.94)!important;
+ border-bottom-color:#dce8f6!important;
+ box-shadow:0 9px 34px rgba(35,80,135,.035)!important;
+}
+html[data-tag-view="books"]:not([data-tag-theme="dark"]) body.tagv-enabled .tagv-topbar .tagv-search{
+ background:#fff!important;border:1px solid #d9e7f5!important;
+ border-radius:15px!important;box-shadow:0 8px 22px #16456f0c!important;
+}
+html[data-tag-view="books"]:not([data-tag-theme="dark"]) body.tagv-enabled .tagv-links a,
+html[data-tag-view="books"]:not([data-tag-theme="dark"]) body.tagv-enabled .tagv-sidebar-footer a{
+ border-radius:14px!important;transition:background .18s,transform .18s!important;
+}
+html[data-tag-view="books"]:not([data-tag-theme="dark"]) body.tagv-enabled .tagv-links a[aria-current="page"]{
+ background:linear-gradient(110deg,#147fc6,#536cda)!important;
+ box-shadow:0 11px 25px rgba(32,117,190,.20)!important;
+}
+html[data-tag-view="books"]:not([data-tag-theme="dark"]) body.tagv-enabled .tagv-links a:hover{transform:translateX(-2px)}
+html[data-tag-view="books"]:not([data-tag-theme="dark"]) body.tagv-enabled .tag-simple-intro{
+ background:radial-gradient(circle at 84% 25%,#d7edff 0,transparent 42%),linear-gradient(120deg,#fff,#f3faff 56%,#f2eeff)!important;
+ border:1px solid #d8e7f6!important;
+ border-radius:27px!important;
+ box-shadow:0 20px 47px rgba(30,96,166,.095)!important;
+ padding:clamp(20px,3.2vw,42px)!important;
+}
+html[data-tag-view="books"]:not([data-tag-theme="dark"]) body.tagv-enabled .tag-simple-intro h1{
+ color:#143e72!important;font-weight:900!important;
+ font-size:clamp(1.5rem,2.7vw,2.25rem)!important;
+}
+html[data-tag-view="books"]:not([data-tag-theme="dark"]) body.tagv-enabled .tag-simple-intro .tag-step{
+ background:#e8f5ff!important;color:#18709f!important;border-color:#c4e5fa!important;
+}
+html[data-tag-view="books"]:not([data-tag-theme="dark"]) body.tagv-enabled #bookLab .block,
+html[data-tag-view="books"]:not([data-tag-theme="dark"]) body.tagv-enabled #bookLab .tag-v33-card{
+ background:linear-gradient(145deg,#fff 72%,#fbfdff)!important;
+ border:1px solid #dbe9f6!important;border-radius:22px!important;
+ box-shadow:0 13px 36px rgba(25,80,148,.07)!important;
+}
+html[data-tag-view="books"]:not([data-tag-theme="dark"]) body.tagv-enabled #bookLab .block:hover{
+ border-color:#c5ddf1!important;
+}
+html[data-tag-view="books"]:not([data-tag-theme="dark"]) body.tagv-enabled #bookLab .block h3{
+ color:#184873!important;font-weight:900!important;
+}
+html[data-tag-view="books"]:not([data-tag-theme="dark"]) body.tagv-enabled #bookLab .field label{
+ color:#245273!important;
+}
+html[data-tag-view="books"]:not([data-tag-theme="dark"]) body.tagv-enabled #bookLab input:not([type="checkbox"]):not([type="radio"]),
+html[data-tag-view="books"]:not([data-tag-theme="dark"]) body.tagv-enabled #bookLab textarea,
+html[data-tag-view="books"]:not([data-tag-theme="dark"]) body.tagv-enabled #bookLab select{
+ background:#f8fbff!important;color:#183f68!important;
+ border:1px solid #c9ddee!important;border-radius:14px!important;
+ min-height:45px!important;
+}
+html[data-tag-view="books"]:not([data-tag-theme="dark"]) body.tagv-enabled #bookLab input:focus-visible,
+html[data-tag-view="books"]:not([data-tag-theme="dark"]) body.tagv-enabled #bookLab textarea:focus-visible,
+html[data-tag-view="books"]:not([data-tag-theme="dark"]) body.tagv-enabled #bookLab select:focus-visible{
+ outline:3px solid #6bc3ed!important;outline-offset:2px!important;
+}
+html[data-tag-view="books"]:not([data-tag-theme="dark"]) body.tagv-enabled #bookLab .tag-ai-settings,
+html[data-tag-view="books"]:not([data-tag-theme="dark"]) body.tagv-enabled #bookLab .lab-bookrow,
+html[data-tag-view="books"]:not([data-tag-theme="dark"]) body.tagv-enabled #bookLab .lab-target-choices{
+ background:#f2f8ff!important;color:#285878!important;
+ border:1px solid #d7e7f6!important;border-radius:17px!important;
+}
+html[data-tag-view="books"]:not([data-tag-theme="dark"]) body.tagv-enabled #bookLab .button:not(.alt):not(.gold):not(.transparent),
+html[data-tag-view="books"]:not([data-tag-theme="dark"]) body.tagv-enabled #bookLab .tag-simple-btn:not(.alt){
+ background:linear-gradient(112deg,#1a92cb,#4d73d3)!important;
+ border:1px solid #3d8dc8!important;color:#fff!important;
+ border-radius:14px!important;box-shadow:0 9px 22px rgba(44,121,185,.20)!important;
+}
+html[data-tag-view="books"]:not([data-tag-theme="dark"]) body.tagv-enabled #bookLab .button:hover:not(:disabled){
+ filter:brightness(1.045);transform:translateY(-2px);
+}
+html[data-tag-view="books"]:not([data-tag-theme="dark"]) body.tagv-enabled #bookLab .button.alt{
+ background:#fff!important;color:#205a85!important;
+ border:1px solid #c9dff0!important;border-radius:13px!important;
+}
+html[data-tag-view="books"]:not([data-tag-theme="dark"]) body.tagv-enabled #bookLab .notice{
+ background:#fff9ed!important;border-color:#f1d9ab!important;color:#8a661d!important;
+}
+html[data-tag-view="books"]:not([data-tag-theme="dark"]) body.tagv-enabled #bookLab .good{
+ background:#eafaf7!important;border-color:#a5e0d2!important;color:#1b665b!important;
+}
+@media(max-width:760px){
+ html[data-tag-view="books"]:not([data-tag-theme="dark"]) body.tagv-enabled .tag-simple-intro{border-radius:19px!important;padding:19px!important}
+ html[data-tag-view="books"]:not([data-tag-theme="dark"]) body.tagv-enabled #bookLab .block{padding:17px!important;border-radius:17px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ html[data-tag-view="books"]:not([data-tag-theme="dark"]) body.tagv-enabled #bookLab .button{transition:none!important;transform:none!important}
+}
