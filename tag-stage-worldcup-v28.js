@@ -93,6 +93,8 @@
    return award({...avatarItem,...item},i,room,parts);
   }).join('');
   const c4=ranked[3],c5=ranked[4];
+  const sideCard=(participant,label)=>participant?'<div class="tag28-sidecard"><img class="tag28-side-avatar" src="'+safe(avatarOf(participant,room,parts))+'" alt="" loading="eager">'+
+   '<span>المركز '+label+'</span><strong>'+safe(participant.name)+'</strong><b>🏆 '+points(participant.score)+' نقطة</b></div>':'';
   const winner=ranked[0];
   const fullRows=ranked.map(row).join('');
   mount.innerHTML='<div class="stage-wrap tag28-wrap">'+parts.head+
@@ -104,8 +106,8 @@
    '<p id="tag28Announcement" class="tag27-announcement" aria-live="polite">استعدوا لصعود الأبطال إلى منصة المجد</p></header>'+
    '<section class="tag28-main-grid">'+
    '<aside class="tag28-side tag28-left" aria-label="المركزان الرابع والخامس">'+
-   (c4?'<div class="tag28-sidecard"><span>المركز الرابع</span><strong>'+safe(c4.name)+'</strong><b>🏆 '+points(c4.score)+' نقطة</b></div>':'')+
-   (c5?'<div class="tag28-sidecard"><span>المركز الخامس</span><strong>'+safe(c5.name)+'</strong><b>🏆 '+points(c5.score)+' نقطة</b></div>':'')+
+   sideCard(c4,'الرابع')+
+   sideCard(c5,'الخامس')+
    '</aside>'+
    '<div class="tag28-arena"><div class="tag28-orbit" aria-hidden="true"></div><div class="tag28-podium">'+podium+'</div><div class="tag28-stage-lip" aria-hidden="true"><span>★ TAG • THE GRAND FINALE ★</span></div></div>'+
    '<aside class="tag28-side tag28-right" aria-label="إحصاءات التحدي">'+
