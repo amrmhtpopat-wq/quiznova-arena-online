@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#07152c">
+<title>TAG — تجربة حفل التتويج السينمائي</title>
+<link rel="icon" href="/assets/brand/tag-favicon-v24.png" type="image/png">
+<link rel="stylesheet" href="/stage.css">
+<link rel="stylesheet" href="/tag-stage-worldcup-v28.css?v=28.0">
+<style>html,body{margin:0;background:#06132b;color:#fff}#stage{height:100dvh}.tag28-demo-watermark{position:fixed;z-index:70;top:56px;right:12px;background:#072f43e9;border:1px solid #70e9f5;border-radius:12px;color:#e8ffff;padding:6px 11px;font:bold 12px Tahoma,Arial;pointer-events:none}</style>
+</head><body class="v105-stage" data-stage-view="finished">
+<main id="stage"></main><div class="tag28-demo-watermark">عرض تجريبي • أسماء ونقاط افتراضية</div>
+<script src="/tag-stage-worldcup-v28.js?v=28.0"></script>
+<script>
+(() => {
+ const featured=[
+  {name:'أحمد',score:2450,avatar:'b01'},
+  {name:'محمد',score:2220,avatar:'b02'},
+  {name:'عمر',score:1980,avatar:'b03'},
+  {name:'يوسف',score:1850,avatar:'b04'},
+  {name:'خالد',score:1720,avatar:'b05'}
+ ];
+ const rest=Array.from({length:23},(_,i)=>({name:'طالب تجريبي '+(i+6),score:Math.max(120,1600-i*61),avatar:'b'+String((i%16)+1).padStart(2,'0')}));
+ const report=[...featured,...rest];
+ const logo='<img class="tag-official-logo tag-stage-logo" src="/assets/brand/tag-spatial-identity-v3.webp" alt="TAG" width="155" height="54">';
+ const heading='<div class="stage-head"><div class="brand">'+logo+'</div><button type="button" class="bo-fullscreen" onclick="document.documentElement.requestFullscreen?.()">⛶ ملء الشاشة</button><div class="pin">DEMO</div></div>';
+ window.TAGStageWorldCup.finale({status:'finished',playType:'individual',report,players:report,total:20},{head:heading,avatarPath:avatar=>'/assets/avatars3d/'+(avatar||'b01')+'.webp'});
+})();
+</script>
+</body></html>
