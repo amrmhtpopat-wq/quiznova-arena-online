@@ -121,6 +121,10 @@ def init_database(demo=False):
                 salt,digest=password_hash(pw)
                 c.execute('INSERT INTO users VALUES(?,?,?,?,?,?,?,?)',(id,name,display,role,cl,salt,digest,utcnow()))
             c.execute('INSERT INTO assignments VALUES(?,?,?,?,?,?,?,?,?,?)',('demo-equations-30','t01','السابع أ','تدريب حل المعادلات — 30 سؤالًا','u3l1',30,'practice',5,None,utcnow()))
+        if demo and os.environ.get('PILOT_TEACHER_PASSWORD'):
+            # The public pilot uses a separate instructor secret; never share it with students.
+            tsalt,tdigest=password_hash(os.environ['PILOT_TEACHER_PASSWORD'])
+            c.execute("UPDATE users SET salt=?, password_digest=? WHERE username='teacher' AND role='teacher'",(tsalt,tdigest))
 
 def sanitize_text(s,maxlen=100):
     s=str(s).strip()
@@ -434,6 +438,9 @@ def main():
         demo_pw=os.environ.get('PILOT_PASSWORD','')
         if len(demo_pw)<18 or demo_pw=='TagMath!Demo2026':
             sys.exit('Public pilot requires a strong unique PILOT_PASSWORD environment secret.')
+        teach_pw=os.environ.get('PILOT_TEACHER_PASSWORD','')
+        if len(teach_pw)<18 or teach_pw==demo_pw:
+            sys.exit('Public pilot requires a distinct strong PILOT_TEACHER_PASSWORD.')
     DEMO_MODE=args.demo
     init_database(demo=DEMO_MODE)
     server=ThreadingHTTPServer((args.host,args.port),Handler)
