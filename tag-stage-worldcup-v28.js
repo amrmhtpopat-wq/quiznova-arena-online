@@ -163,15 +163,18 @@
   panel.addEventListener('click',e=>{if(e.target===panel)closePanel()});
   root.addEventListener('keydown',e=>{if(e.key==='Escape'&&tokens.open){e.preventDefault();closePanel()}if(e.key==='Tab'&&tokens.open){const buttons=panel.querySelectorAll('button');if(buttons.length===1){e.preventDefault();buttons[0].focus()}}});
   root.querySelector('#tag28Back').addEventListener('click',()=>{
-   // Return to the actual previous page when this projector view was navigated in-place.
-   if(window.history.length>1){window.history.back();return}
-   // A projector often opens in a new tab (no back entry): use its referring page.
+   // History length alone is unreliable (some browsers include an empty new tab).
+   // Only go back when a real in-platform referring page is known.
    let previous=null;
    try{previous=document.referrer?new URL(document.referrer):null}catch(_e){}
    const platformHosts=['teachgame.onrender.com','quiznova-arena-online.onrender.com'];
    if(previous&&previous.href!==window.location.href&&
       (previous.origin===window.location.origin||
        (previous.protocol==='https:'&&platformHosts.includes(previous.hostname)))){
+    if(previous.origin===window.location.origin&&window.history.length>1){
+     window.history.back();return;
+    }
+    // Opening a result screen in a new tab has a referrer but no usable back entry.
     window.location.assign(previous.href);return;
    }
    // Direct URL, bookmark or QR with no previous page: return to the teacher workspace.
