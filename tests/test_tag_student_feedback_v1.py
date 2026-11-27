@@ -40,7 +40,9 @@ class SpeedChampion(unittest.TestCase):
   s=(ROOT/'server.py').read_text(encoding='utf-8')
   self.assertIn("room['status']=='results' and room.get('showFeedback',True) and not room.get('examMode')",s)
   js=(ROOT/'student.js').read_text(encoding='utf-8')
-  self.assertIn('r.speedChampion&&r.showFeedback',js)
+  # V29 deliberately hides competitive ranking and speed badges on student devices.
+  # The older showFeedback guard remains valid if that badge is retained later.
+  self.assertTrue('r.speedChampion&&r.showFeedback' in js or 'tag-speed-champion' not in js)
   self.assertIn('reveal&&res?.correct===true',js)
   self.assertIn('examMode?',js)
   solo=(ROOT/'solo-student-v120.js').read_text(encoding='utf-8')
