@@ -119,7 +119,7 @@
    '<footer class="tag28-footer">'+
    '<div class="tag28-reveal-progress" aria-label="تسلسل إعلان المراكز"><span>الثالث</span><i></i><span>الثاني</span><i></i><span>الأول</span></div>'+
    '<nav class="tag28-actions" aria-label="التحكم بحفل التتويج">'+
-   '<button id="tag28Home" type="button">⌂ <span>الرئيسية</span></button>'+
+   '<button id="tag28Back" type="button" aria-label="الرجوع إلى الصفحة السابقة">↩ <span>رجوع</span></button>'+
    '<button id="tag28All" type="button">☷ <span>جميع النتائج</span></button>'+
    '<button id="tag27Replay" type="button">↻ <span>إعادة العرض</span></button>'+
    '<button id="tag28Skip" type="button">⏭ <span>تخطي الاحتفال</span></button>'+
@@ -162,7 +162,24 @@
   root.querySelector('#tag28Close').addEventListener('click',closePanel);
   panel.addEventListener('click',e=>{if(e.target===panel)closePanel()});
   root.addEventListener('keydown',e=>{if(e.key==='Escape'&&tokens.open){e.preventDefault();closePanel()}if(e.key==='Tab'&&tokens.open){const buttons=panel.querySelectorAll('button');if(buttons.length===1){e.preventDefault();buttons[0].focus()}}});
-  root.querySelector('#tag28Home').addEventListener('click',()=>{window.location.assign('/')});
+  root.querySelector('#tag28Back').addEventListener('click',()=>{
+   // History length alone is unreliable (some browsers include an empty new tab).
+   // Only go back when a real in-platform referring page is known.
+   let previous=null;
+   try{previous=document.referrer?new URL(document.referrer):null}catch(_e){}
+   const platformHosts=['teachgame.onrender.com','quiznova-arena-online.onrender.com'];
+   if(previous&&previous.href!==window.location.href&&
+      (previous.origin===window.location.origin||
+       (previous.protocol==='https:'&&platformHosts.includes(previous.hostname)))){
+    if(previous.origin===window.location.origin&&window.history.length>1){
+     window.history.back();return;
+    }
+    // Opening a result screen in a new tab has a referrer but no usable back entry.
+    window.location.assign(previous.href);return;
+   }
+   // Direct URL, bookmark or QR with no previous page: return to the teacher workspace.
+   window.location.assign('/studio.html');
+  });
   root.querySelector('#tag28Sound').addEventListener('click',e=>{
    const btn=e.currentTarget;
    if(tokens.audio){try{void tokens.audio.close()}catch(_e){}tokens.audio=null;btn.setAttribute('aria-pressed','false');btn.classList.remove('tag28-sound-on');return}
