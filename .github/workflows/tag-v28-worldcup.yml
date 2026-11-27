@@ -1,0 +1,29 @@
+name: TAG V28 World Cup Finale — Browser Release Gate
+on:
+  pull_request:
+    branches: [main]
+    paths: ['stage.html','tag-stage-worldcup-v28.js','tag-stage-worldcup-v28.css','tag-worldcup-preview.html','tests/browser_tag_worldcup_v28.py','.github/workflows/tag-v28-worldcup.yml']
+  push:
+    branches: [main]
+    paths: ['stage.html','tag-stage-worldcup-v28.js','tag-stage-worldcup-v28.css','tag-worldcup-preview.html','tests/browser_tag_worldcup_v28.py','.github/workflows/tag-v28-worldcup.yml']
+permissions: {contents: read}
+jobs:
+  award-ceremony:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Parse JavaScript and compile the Python tests
+        run: |
+          node --check tag-stage-worldcup-v28.js
+          node --check stage.js
+          python -m py_compile tests/browser_tag_worldcup_v28.py
+      - name: Install headless Chromium
+        run: |
+          python -m pip install playwright
+          python -m playwright install chromium
+      - name: Test World Cup podium on desktop and phones
+        run: python -u tests/browser_tag_worldcup_v28.py
