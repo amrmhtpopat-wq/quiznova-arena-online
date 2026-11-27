@@ -2,10 +2,10 @@ name: TAG V28 World Cup Finale — Browser Release Gate
 on:
   pull_request:
     branches: [main]
-    paths: ['stage.html','tag-stage-worldcup-v28.js','tag-stage-worldcup-v28.css','tag-worldcup-preview.html','tests/browser_tag_worldcup_v28.py','.github/workflows/tag-v28-worldcup.yml']
+    paths: ['stage.html','tag-stage-worldcup-v28.js','tag-stage-worldcup-v28.css','tag-worldcup-preview.html','tests/browser_tag_worldcup_v28.py','tests/browser_tag_final_back_v29.py','.github/workflows/tag-v28-worldcup.yml']
   push:
     branches: [main]
-    paths: ['stage.html','tag-stage-worldcup-v28.js','tag-stage-worldcup-v28.css','tag-worldcup-preview.html','tests/browser_tag_worldcup_v28.py','.github/workflows/tag-v28-worldcup.yml']
+    paths: ['stage.html','tag-stage-worldcup-v28.js','tag-stage-worldcup-v28.css','tag-worldcup-preview.html','tests/browser_tag_worldcup_v28.py','tests/browser_tag_final_back_v29.py','.github/workflows/tag-v28-worldcup.yml']
 permissions: {contents: read}
 jobs:
   award-ceremony:
@@ -27,3 +27,5 @@ jobs:
           python -m playwright install chromium
       - name: Test World Cup podium on desktop and phones
         run: python -u tests/browser_tag_worldcup_v28.py
+      - name: Verify actual previous-page navigation in a browser
+        run: python -u tests/browser_tag_final_back_v29.py
