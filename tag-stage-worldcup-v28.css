@@ -46,18 +46,6 @@ body.v105-stage .tag28-place-medal{position:absolute;top:clamp(-12px,1vh,16px);z
 body.v105-stage .tag28-person{position:relative;z-index:3;width:min(82%,150px);height:clamp(95px,19vh,240px);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;filter:drop-shadow(0 5px 10px #000b);flex:none}
 body.v105-stage .tag28-person-aura{position:absolute;z-index:-3;inset:-10% -25% 8%;border-radius:100%;background:radial-gradient(ellipse,var(--glow),transparent 65%);opacity:.25;filter:blur(21px)}
 body.v105-stage .tag28-place-1 .tag28-person-aura{opacity:.65;animation:tag28-aura 2s ease-in-out infinite alternate}
-body.v105-stage .tag28-person-head{position:relative;z-index:4;width:clamp(51px,7vw,96px);height:clamp(51px,7vw,96px);border:3px solid var(--metal1);box-shadow:0 0 0 3px #0d2545,0 8px 18px #000a,0 0 15px var(--glow);border-radius:50%;overflow:hidden;background:#184365}
-body.v105-stage .tag28-person-head img{display:block;width:100%;height:100%;object-fit:cover;background:linear-gradient(145deg,#12517a,#0d1b32)}
-body.v105-stage .tag28-person-neck{width:22%;height:6%;min-height:5px;background:#c99e7c;z-index:2;margin-top:-4px}
-body.v105-stage .tag28-person-body{position:relative;width:clamp(61px,9.6vw,130px);height:clamp(49px,9.5vh,108px);z-index:3;border-radius:24% 24% 12% 12%;background:linear-gradient(115deg,var(--shirt),var(--shirtdark));border:2px solid #e8efff90;box-shadow:inset 10px 0 12px #ffffff50,inset -12px 0 20px #0007;display:flex;justify-content:center;align-items:center}
-body.v105-stage .tag28-person-mark{font:1000 clamp(12px,2vw,25px) Arial,sans-serif;letter-spacing:.02em;color:#fff;filter:drop-shadow(0 2px 3px #333)}
-body.v105-stage .tag28-place-1 .tag28-person-mark{color:#163d5a}
-body.v105-stage .tag28-sleeve{position:absolute;top:10%;z-index:-1;width:28%;height:76%;border-radius:40% 40% 30% 30%;background:linear-gradient(90deg,var(--shirt),var(--shirtdark));border:1px solid #ffffff7a;transform-origin:top}
-body.v105-stage .tag28-sleeve-left{left:-22%;transform:rotate(22deg)}
-body.v105-stage .tag28-sleeve-right{right:-22%;transform:rotate(-30deg)}
-body.v105-stage .tag28-person-medal{position:absolute;z-index:8;top:54%;border-radius:100%;background:linear-gradient(145deg,#fff8cf,#eabb45);border:2px solid #b38338;box-shadow:0 2px 8px #0009;color:#735123;width:clamp(18px,2.2vw,32px);height:clamp(18px,2.2vw,32px);display:grid;place-items:center;font-size:clamp(12px,1.4vw,19px)}
-body.v105-stage .tag28-leg{position:absolute;top:77%;height:25%;width:21%;background:linear-gradient(100deg,#1d3855,#071d33);border-radius:0 0 9px 9px;z-index:0}
-body.v105-stage .tag28-leg-left{left:25%}body.v105-stage .tag28-leg-right{right:25%}
 body.v105-stage .tag28-nameplate{position:relative;z-index:7;width:100%;max-width:95%;border:2px solid var(--metal1);border-radius:clamp(9px,1vw,15px);background:linear-gradient(150deg,#10223ff2,#192b48e9);box-shadow:0 0 23px #0009,0 0 20px var(--glow);display:flex;flex-direction:column;gap:1px;padding:clamp(4px,.7vw,10px) 5px;margin-bottom:0}
 body.v105-stage .tag28-place-1 .tag28-nameplate{background:linear-gradient(125deg,#805817,#cf9d35,#74501c)}
 body.v105-stage .tag28-nameplate span{color:var(--metal1);font-weight:900;font-size:clamp(10px,1vw,16px)}
@@ -121,9 +109,6 @@ body.v105-stage .tag28-winner.tag28-crowned .tag28-person{animation:tag28-crown 
  body.v105-stage .tag28-stat strong{font-size:clamp(15px,3vw,24px)}
  body.v105-stage .tag28-banner{opacity:.4}
  body.v105-stage .tag28-person{height:clamp(80px,15vh,140px)}
- body.v105-stage .tag28-person-head{width:clamp(36px,7.5vw,63px);height:clamp(36px,7.5vw,63px)}
- body.v105-stage .tag28-person-body{width:clamp(41px,8vw,65px);height:clamp(46px,8vh,70px)}
- body.v105-stage .tag28-person-mark{font-size:12px}
  body.v105-stage .tag28-nameplate strong{font-size:clamp(11px,2.2vw,16px)}
  body.v105-stage .tag28-nameplate b{font-size:clamp(10px,2vw,16px)}
  body.v105-stage .tag28-nameplate span{font-size:10px}
@@ -158,8 +143,6 @@ body.v105-stage .tag28-winner.tag28-crowned .tag28-person{animation:tag28-crown 
  body.v105-stage .tag28-arena{height:80%;width:100%;align-self:end}
  body.v105-stage .tag28-podium{padding-bottom:18px;gap:4px}
  body.v105-stage .tag28-person{height:clamp(80px,18vh,152px)}
- body.v105-stage .tag28-person-head{width:clamp(42px,11vw,62px);height:clamp(42px,11vw,62px)}
- body.v105-stage .tag28-person-body{width:clamp(47px,11vw,67px);height:clamp(40px,9vh,65px)}
  body.v105-stage .tag28-stand{height:76px}
  body.v105-stage .tag28-place-1 .tag28-stand{height:115px}
  body.v105-stage .tag28-place-2 .tag28-stand{height:92px}
@@ -197,4 +180,36 @@ body.v105-stage .tag28-side-avatar{position:absolute;left:clamp(7px,.9vw,12px);t
 @media(max-width:540px){
  body.v105-stage .tag28-sidecard{padding-left:37px!important}
  body.v105-stage .tag28-side-avatar{left:4px;width:28px;height:28px;border-width:1px}
+}
+/* V29: use the saved student-selected avatar AS IS, not a synthetic body.
+   No circular face cropping or limbs. Lighting is behind the original image. */
+body.v105-stage .tag28-person{
+ width:min(92%,200px);height:clamp(100px,20vh,245px);
+ display:grid;place-items:center;flex:none;overflow:visible;
+}
+body.v105-stage .tag28-avatar-original{
+ width:100%;height:100%;display:block;min-width:0;min-height:0;
+ object-fit:contain;object-position:center bottom;
+ background:none;border:0;border-radius:0;
+ filter:drop-shadow(0 8px 14px #000b);
+}
+body.v105-stage .tag28-side-avatar{
+ object-fit:contain;border-radius:12px;background:#0b2546;
+}
+body.v105-stage .tag28-nameplate b,
+body.v105-stage .tag28-stat strong,
+body.v105-stage .tag28-sidecard b,
+body.v105-stage .tag28-all-rank,
+body.v105-stage .tag28-all-row strong{
+ font-variant-numeric:tabular-nums;
+}
+@media(max-width:800px){
+ body.v105-stage .tag28-person{width:min(96%,140px);height:clamp(82px,16vh,155px)}
+}
+@media(max-width:540px){
+ body.v105-stage .tag28-person{width:100%;height:clamp(82px,18vh,150px)}
+ body.v105-stage .tag28-side-avatar{border-radius:7px}
+}
+@media(max-height:700px){
+ body.v105-stage .tag28-person{height:clamp(76px,17vh,137px)}
 }
