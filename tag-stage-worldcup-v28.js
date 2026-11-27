@@ -4,7 +4,7 @@
 (()=>{'use strict';
  const tokens={sequence:0,timers:[],audio:null,open:false};
  const safe=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
- const points=value=>Math.max(0,Math.round(Number(value)||0)).toLocaleString('ar-JO');
+ const points=value=>Math.max(0,Math.round(Number(value)||0)).toLocaleString('en-US');
  const reduced=()=>window.matchMedia?.('(prefers-reduced-motion: reduce)').matches===true;
  const schedule=(fn,ms)=>{const timer=setTimeout(fn,ms);tokens.timers.push(timer)};
  const stop=()=>{tokens.sequence++;tokens.timers.forEach(clearTimeout);tokens.timers=[]};
@@ -12,16 +12,17 @@
   const roster=room.players||[];
   const actual=roster.find(x=>p.id&&x.id&&String(x.id)===String(p.id)) ||
    roster.find(x=>String(x.name||'').trim()===String(p.name||'').trim()) || {};
-  const avatar=String(p.avatar||actual.avatar||'01');
+  const avatar=String(actual.avatar||p.avatar||'01');
   return parts.avatarPath(avatar);
  };
  function figure(participant,room,parts){
+  // Display ONLY the complete original avatar chosen by this student.
+  // No generated torso, limbs, altered face, cropped circle or stitched figure.
   const img=safe(avatarOf(participant,room,parts));
   const name=safe(participant.name||'مشارك');
-  return '<div class="tag28-person" role="img" aria-label="شخصية '+name+'">'+
-   '<div class="tag28-person-aura"></div><div class="tag28-person-head"><img src="'+img+'" alt="الشخصية الشخصية لـ '+name+'" loading="eager"></div>'+
-   '<div class="tag28-person-neck"></div><div class="tag28-person-body"><i class="tag28-sleeve tag28-sleeve-left"></i><i class="tag28-sleeve tag28-sleeve-right"></i><span class="tag28-person-mark">TAG</span></div>'+
-   '<i class="tag28-leg tag28-leg-left"></i><i class="tag28-leg tag28-leg-right"></i><span class="tag28-person-medal">★</span></div>';
+  return '<div class="tag28-person" role="group" aria-label="صورة '+name+'">'+
+   '<div class="tag28-person-aura" aria-hidden="true"></div>'+
+   '<img class="tag28-avatar-original" src="'+img+'" alt="الصورة التي اختارها '+name+'" loading="eager" decoding="async"></div>';
  }
  function award(p,index,room,parts){
   const place=index+1,colors=['ذهبي','فضي','برونزي'];

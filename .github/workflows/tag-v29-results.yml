@@ -1,0 +1,50 @@
+name: TAG V29 Original Avatar and Teacher-Only Results
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'student.js'
+      - 'student.html'
+      - 'stage.html'
+      - 'tag-stage-worldcup-v28.js'
+      - 'tag-stage-worldcup-v28.css'
+      - 'tag-stage-cinematic-v27.js'
+      - 'tests/browser_tag_student_results_v29.py'
+      - 'tests/browser_tag_worldcup_v28.py'
+      - '.github/workflows/tag-v29-results.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'student.js'
+      - 'student.html'
+      - 'stage.html'
+      - 'tag-stage-worldcup-v28.js'
+      - 'tag-stage-worldcup-v28.css'
+      - 'tag-stage-cinematic-v27.js'
+      - 'tests/browser_tag_student_results_v29.py'
+      - 'tests/browser_tag_worldcup_v28.py'
+      - '.github/workflows/tag-v29-results.yml'
+permissions: {contents: read}
+jobs:
+  results:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate browser JavaScript syntax
+        run: |
+          node --check student.js
+          node --check tag-stage-worldcup-v28.js
+          node --check tag-stage-cinematic-v27.js
+          python -m py_compile tests/browser_tag_student_results_v29.py
+      - name: Install Chromium
+        run: |
+          python -m pip install playwright
+          python -m playwright install chromium
+      - name: Teacher podium — original avatars, English numerals and responsive layout
+        run: python -u tests/browser_tag_worldcup_v28.py
+      - name: Student screens — score and XP only, no leaderboard
+        run: python -u tests/browser_tag_student_results_v29.py
