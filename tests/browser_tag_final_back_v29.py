@@ -22,7 +22,7 @@ def respond(route):
  if path.endswith('/stage.html'):
   body='<html lang="ar" dir="rtl"><body class="v105-stage" data-stage-view="finished"><main id="stage"></main></body></html>'
  else:
-  body='<html lang="ar"><body><h1 id="source">صفحة المعلم</h1></body></html>'
+  body='<html lang="ar"><body><h1 id="source">صفحة المعلم</h1><a id="go-stage" href="/stage.html?code=123456">شاشة النتائج</a></body></html>'
  route.fulfill(status=200,content_type='text/html',body=body)
 
 with sync_playwright() as pw:
@@ -32,7 +32,8 @@ with sync_playwright() as pw:
  # Same-tab navigation must go to the exact prior teacher page, not the home page.
  p=ctx.new_page()
  p.goto(ORIGIN+'/champion.html')
- p.goto(ORIGIN+'/stage.html?code=123456')
+ p.locator('#go-stage').click()
+ p.wait_for_url(ORIGIN+'/stage.html?code=123456',timeout=6000)
  show(p)
  p.locator('#tag28Back').click()
  p.wait_for_url(ORIGIN+'/champion.html',timeout=6000)
