@@ -14,12 +14,12 @@
  function animateScore(node,next,previous,token,done){
   if(!node)return;
   const to=numeric(next),from=Math.min(to,numeric(previous));
-  if(reduced()||from===to){node.textContent=to.toLocaleString('ar-JO');done?.();return}
+  if(reduced()||from===to){node.textContent=to.toLocaleString('en-US');done?.();return}
   const start=performance.now(),duration=550;
   const run=now=>{
    if(token!==state.seq||!node.isConnected)return;
    const step=Math.min(1,(now-start)/duration);
-   node.textContent=Math.round(from+(to-from)*(1-(1-step)**3)).toLocaleString('ar-JO');
+   node.textContent=Math.round(from+(to-from)*(1-(1-step)**3)).toLocaleString('en-US');
    if(step<1)requestAnimationFrame(run);else done?.();
   };
   requestAnimationFrame(run);
@@ -114,7 +114,7 @@
     '<div class="tag27-medal">'+marker(i)+'</div>'+
     fullFigure({...avatarItem,name:item.name},parts)+
     '<div class="tag27-podium-name">'+safe(item.name)+'</div>'+
-    '<div class="tag27-points">'+numeric(item.score).toLocaleString('ar-JO')+' نقطة</div>'+
+    '<div class="tag27-points">'+numeric(item.score).toLocaleString('en-US')+' نقطة</div>'+
     '<div class="tag27-stand">'+(place===1?'البطل':place===2?'الوصيف':'المركز الثالث')+'</div></article>';
   }).join('');
   dest.innerHTML='<div class="stage-wrap tag27-final-wrap">'+parts.head+
