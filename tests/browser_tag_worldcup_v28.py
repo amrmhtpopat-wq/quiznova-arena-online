@@ -42,7 +42,10 @@ with sync_playwright() as playwright:
   assert page.locator('.tag28-winner').count()==3
   assert page.locator('.tag28-sidecard').count()==2
   assert page.locator('.tag28-stat').count()==3
-  assert page.locator('.tag28-person-head img').count()==3
+  assert page.locator('.tag28-avatar-original').count()==3
+  assert page.locator('.tag28-person-body, .tag28-person-neck, .tag28-sleeve, .tag28-leg').count()==0, 'Synthetic limbs or body should never be shown'
+  assert page.locator('.tag28-place-1 .tag28-avatar-original').get_attribute('src').startswith('data:image/svg+xml'), 'Final podium must use saved avatar path'
+  assert page.locator('.tag28-place-1 .tag28-nameplate b').inner_text().startswith('2,450'), 'Scores must use English 0-9 digits'
   assert page.locator('.tag28-place-1 .tag27-podium-name').inner_text()=='أحمد'
   # Show the podium in third → second → first order on an actual browser timer.
   page.wait_for_function("document.querySelector('.tag28-place-3')?.classList.contains('tag28-visible')",timeout=3000)
@@ -61,6 +64,7 @@ with sync_playwright() as playwright:
   page.locator('#tag28All').click()
   assert page.locator('#tag28AllPanel').is_visible()
   assert page.locator('.tag28-all-row').count()==5
+  assert '2,450' in page.locator('.tag28-all-row').first.inner_text(), 'The results list must use Latin digits'
   assert page.locator('.tag28-all-name').all_text_contents()==[r['name'] for r in DATA]
   page.keyboard.press('Escape')
   assert page.locator('#tag28AllPanel').is_hidden()
