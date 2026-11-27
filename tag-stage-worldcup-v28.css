@@ -190,3 +190,11 @@ body.v105-stage .tag28-winner.tag28-crowned .tag28-person{animation:tag28-crown 
  body.v105-stage .tag28-person-aura,body.v105-stage .tag28-lightbeams,body.v105-stage .tag28-crowned .tag28-person{animation:none!important}
  body.v105-stage .tag28-confetti,body.v105-stage .tag28-fireworks{display:none}
 }
+
+/* V28.1 — show genuine student avatar in fourth/fifth place, including phones. */
+body.v105-stage .tag28-sidecard{position:relative;padding-left:clamp(58px,6.3vw,82px)}
+body.v105-stage .tag28-side-avatar{position:absolute;left:clamp(7px,.9vw,12px);top:50%;transform:translateY(-50%);width:clamp(37px,4.2vw,55px);height:clamp(37px,4.2vw,55px);object-fit:cover;border-radius:50%;background:#17667f;border:2px solid #ffda89;box-shadow:0 0 0 3px #ffffff20,0 6px 16px #0009}
+@media(max-width:540px){
+ body.v105-stage .tag28-sidecard{padding-left:37px!important}
+ body.v105-stage .tag28-side-avatar{left:4px;width:28px;height:28px;border-width:1px}
+}
